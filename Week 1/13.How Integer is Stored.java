@@ -1,3 +1,4 @@
+/*
 a) How are integers stored ?
 
 
@@ -14,11 +15,11 @@ Computers use 2's complement in representing signed integers because:
 2. Positive and negative integers can be treated together in addition and subtraction. Subtraction can be carried out using the "addition logic".
 
 
-Example:
+Example:   */
 
 int i = -4;
 
-
+/*
 Steps to calculate Two’s Complement of -4 are as follows:
 
 Step 1: Take Binary Equivalent of the positive value (4 in this case)
@@ -38,3 +39,4 @@ Step 3: Find 2's complement by adding 1 to the corresponding 1's complement
 
 Thus, integer -4 is represented by the binary sequence (1111 1111 1111 1111
 1111 1111 1111 1100) in Java.
+*/
