@@ -1,0 +1,48 @@
+Operators
+
+
+a) Arithmetic operators
+
+Arithmetic operators are used in mathematical expression in the same way that are used in algebra.
+  OPERATOR              DESCRIPTION
+     +                Adds two operands
+     -                Subtracts second operand from first
+     *                Multiplies two operands
+     /                Divides numerator by denominator
+     %                Calculates Remainder of division
+
+
+b) Relational operators
+
+
+Relational Operators are the operators that used to test some king of relation between two entities. The following table lists the relation operators supported
+by Java.
+
+
+     OPERATOR             DESCRIPTION
+        ==                  Check if two operands are equal
+        !=                  Check if two operands are not equal.
+        >                   Check if operand on the left is greater than operand on the right
+        <                   Check if operand on the left is smaller than right operand
+        >=                  Check if left operand is greater than or equal to right operand
+        <=                  Check if operand on left is smaller than or equal to right operand
+
+
+
+c) Logical operators
+
+
+Java supports following 3 logical operators. The result of logical operators is a Boolean i.e. true or false.
+    OPERATOR          DESCRIPTION
+      &&                AND
+      ||                OR
+       !                NOT
+
+
+Example:
+
+Suppose a = true and b = false, then:
+
+(a && b) is false
+(a || b) is true
+(!a) is false
