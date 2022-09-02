@@ -6,4 +6,11 @@ I am doing all the codes in java and if anyone is intrested in adding other lang
 
 
 Week 1 :- 
+1. Basics of Java
+2. Data Types
+3. Operators in Java
+
+
+Week2 :-
+
 
