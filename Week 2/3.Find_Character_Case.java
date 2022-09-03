@@ -11,6 +11,13 @@ Write a program that takes a character as input and prints either 1, 0 or -1 acc
 
 // Input Format :- Single Character
 
+
+/*How to approach?
+1. Take the input character form the user.
+2. Check for the conditions if the given character lies between “A” and “Z”, this means we
+have uppercase in the input character then print 1, if it lies between “a” and “z”, we have
+lowercase in the input character then print 0 otherwise print -1.   */
+
 import java.util.Scanner;
 
 public class C_Case {
