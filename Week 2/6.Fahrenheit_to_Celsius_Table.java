@@ -18,7 +18,7 @@ celsius value.
 */
 
 import java.util.Scanner;
-public class Solution {
+public class F_C_Table {
 
 
 	public static void main(String[] args) {
