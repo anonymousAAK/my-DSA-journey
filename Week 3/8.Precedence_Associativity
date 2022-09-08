@@ -1,0 +1,51 @@
+Precedence and Associativity
+
+
+Operator precedence determines which operator is performed first in an expression with more than one operators with different precedence.
+
+For example, 10 + 20 * 30 is calculated as 10 + (20 * 30) and not as (10 + 20) * 30.
+
+
+  
+Precedence and Associativity are two characteristics of operators that determine the evaluation order of subexpressions in absence of brackets.
+
+  
+Note : We should generally use add proper brackets in expressions to avoid
+confusion and bring clarity.
+
+ 
+  1) Associativity is only used when there are two or more operators of same
+precedence.
+  
+  
+The point to note is associativity doesn’t define the order in which operands of a single operator are evaluated. For example, consider the following program,
+associativity of the + operator is left to right, but it doesn’t mean f1() is always called before f2(). The output of following program is in-fact compiler dependent.
+// Associativity is not used in the below program. Output is compiler dependent.
+  
+  
+static int x = 0;
+  public static int F1() {
+      x = 5;
+      return x;
+    }
+  public static int F2() {
+      x = 10;
+      return x;
+     }
+
+public static void main(String[] args) {
+      int p = F1() + F2();
+      System.out.println(x);
+    }
+
+
+2) All operators with same precedence have same associativity. This is necessary, otherwise there won’t be any way for compiler to decide
+evaluation order of expressions which have two operators of same precedence and different associativity. For example, + and – have same associativity.
+
+  
+  3) There is no chaining of comparison operators in Java
+  
+  
+Trying to execute the statement a>b>c will give an error and the code will not compile
+
+Check Precedence :- https://docs.oracle.com/javase/tutorial/java/nutsandbolts/operators.html
