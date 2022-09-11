@@ -6,7 +6,9 @@ public class ArithematicOperators {
       Scanner s=new Scanner(System.in);
       a=s.nextInt();
       b=s.nextInt();
-      int c=a+b;
+      int c;
+
+      c =a+b;
       
       String str=s.nextLine();
       char ch=str.charAt(0);
