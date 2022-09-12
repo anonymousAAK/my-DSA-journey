@@ -48,17 +48,17 @@ print(binary_number)
 
 
 import java.util.Scanner;
-public class Main {
-public static void main(String[] args) {
-Scanner s = new Scanner(System.in);
-int n = s.nextInt();
-long binary = 0, pow = 1;
-while(n > 0) {
-int lastBit = n % 2;
-binary += lastBit * pow;
-pow *= 10;
-n = n / 2;
-}
-System.out.println(binary);
-}
+  public class Main {
+      public static void main(String[] args) {
+          Scanner s = new Scanner(System.in);
+          int n = s.nextInt();
+          long binary = 0, pow = 1;
+          while(n > 0) {
+             int lastBit = n % 2;
+             binary += lastBit * pow;
+              pow *= 10;
+              n = n / 2;
+          }
+          System.out.println(binary);
+      }
 }
