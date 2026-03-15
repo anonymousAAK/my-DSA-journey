@@ -1811,6 +1811,407 @@ Result: [4, 5, 0, 2, 3, 1] (one valid topological order)
 </div>
 </div>
 
+<!-- Topological Sort DFS Full -->
+<div class="card" id="topo-dfs-full">
+<h2><span class="icon">&#128279;</span> Topological Sort -- DFS Approach (All Languages)</h2>
+<p>The DFS-based topological sort works by performing a post-order DFS and reversing the result. Each vertex is added to the output <strong>after</strong> all its descendants have been processed, ensuring dependencies come first.</p>
+
+<div class="diagram">
+DAG:  A &rarr; B &rarr; D
+      |         &uarr;
+      +&rarr; C &rarr;-+
+      |
+      +&rarr; E
+
+DFS from A:
+  Visit A &rarr; Visit B &rarr; Visit D &rarr; push <span class="highlight">D</span>
+  Back to B &rarr; push <span class="highlight">B</span>
+  Back to A &rarr; Visit C &rarr; D already done &rarr; push <span class="highlight">C</span>
+  Back to A &rarr; Visit E &rarr; push <span class="highlight">E</span>
+  push <span class="highlight">A</span>
+
+Post-order stack: [D, B, C, E, A]
+Reversed (topo order): [<span class="sorted">A, E, C, B, D</span>]
+</div>
+
+<div class="insight">
+<div class="label">DFS vs Kahn's</div>
+<p><strong>DFS approach:</strong> Simpler to implement, naturally integrates with cycle detection (3-color). <strong>Kahn's approach:</strong> More intuitive (process nodes with no dependencies first), gives lexicographically smallest order when using a min-heap, and can detect cycles by checking output size.</p>
+</div>
+
+<h3>Complete DFS Topological Sort</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TopologicalSortDFS.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Returns topological order, or null if cycle detected
+List&lt;Integer&gt; topologicalSortDFS() {
+    int[] color = new int[V]; // 0=WHITE, 1=GRAY, 2=BLACK
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+
+    for (int i = 0; i &lt; V; i++) {
+        if (color[i] == 0) {
+            if (!dfsTopoHelper(i, color, stack)) {
+                return null; // cycle detected
+            }
+        }
+    }
+
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;(V);
+    while (!stack.isEmpty()) result.add(stack.pop());
+    return result;
+}
+
+boolean dfsTopoHelper(int u, int[] color, Deque&lt;Integer&gt; stack) {
+    color[u] = 1; // GRAY: currently processing
+    for (int v : adj.get(u)) {
+        if (color[v] == 1) return false; // back edge = cycle
+        if (color[v] == 0) {
+            if (!dfsTopoHelper(v, color, stack)) return false;
+        }
+    }
+    color[u] = 2; // BLACK: fully processed
+    stack.push(u); // add to stack in post-order
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>topo_sort_dfs.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Returns topological order, or nullopt if cycle detected
+std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_dfs() const {
+    std::vector&lt;int&gt; color(n_, 0); // 0=W, 1=G, 2=B
+    std::vector&lt;int&gt; order;
+    order.reserve(n_);
+
+    for (int i = 0; i &lt; n_; ++i) {
+        if (color[i] == 0) {
+            if (!dfs_topo(i, color, order))
+                return std::nullopt; // cycle
+        }
+    }
+    std::reverse(order.begin(), order.end());
+    return order;
+}
+
+bool dfs_topo(int u, std::vector&lt;int&gt;&amp; color,
+              std::vector&lt;int&gt;&amp; order) const {
+    color[u] = 1; // GRAY
+    for (auto [v, w] : adj_[u]) {
+        if (color[v] == 1) return false; // cycle
+        if (color[v] == 0 &amp;&amp; !dfs_topo(v, color, order))
+            return false;
+    }
+    color[u] = 2; // BLACK
+    order.push_back(u); // post-order
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>topo_sort_dfs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def topological_sort_dfs(graph: Graph) -&gt; Optional[List[int]]:
+    """DFS-based topological sort. Returns None if cycle detected."""
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {v: WHITE for v in graph.vertices}
+    order: List[int] = []
+
+    def dfs(node: int) -&gt; bool:
+        color[node] = GRAY
+        for neighbor in graph.adj[node]:
+            nc = color.get(neighbor, WHITE)
+            if nc == GRAY:
+                return False  # cycle detected
+            if nc == WHITE and not dfs(neighbor):
+                return False
+        color[node] = BLACK
+        order.append(node)  # post-order
+        return True
+
+    for v in sorted(graph.vertices):
+        if color[v] == WHITE:
+            if not dfs(v):
+                return None  # cycle exists
+
+    order.reverse()
+    return order</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>topo_sort_dfs.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// DFS-based topological sort. Returns None if cycle detected.
+fn topo_sort_dfs(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    let mut color = vec![0u8; self.num_vertices]; // 0=W, 1=G, 2=B
+    let mut order = Vec::with_capacity(self.num_vertices);
+
+    for i in 0..self.num_vertices {
+        if color[i] == 0 {
+            if !self.dfs_topo(i, &amp;mut color, &amp;mut order) {
+                return None; // cycle
+            }
+        }
+    }
+
+    order.reverse();
+    Some(order)
+}
+
+fn dfs_topo(&amp;self, u: usize, color: &amp;mut Vec&lt;u8&gt;,
+            order: &amp;mut Vec&lt;usize&gt;) -&gt; bool {
+    color[u] = 1; // GRAY
+    for &amp;v in &amp;self.adj[u] {
+        if color[v] == 1 { return false; } // cycle
+        if color[v] == 0 &amp;&amp; !self.dfs_topo(v, color, order) {
+            return false;
+        }
+    }
+    color[u] = 2; // BLACK
+    order.push(u); // post-order
+    true
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Kahn's Full -->
+<div class="card" id="kahns-full">
+<h2><span class="icon">&#128640;</span> Kahn's Algorithm -- BFS Topological Sort (All Languages)</h2>
+<p>Kahn's algorithm uses an iterative BFS approach based on in-degrees. It repeatedly removes vertices with no incoming edges, updating the in-degrees of their neighbors. This naturally produces a topological ordering.</p>
+
+<h3>Algorithm Steps</h3>
+<table>
+<thead><tr><th>Step</th><th>Action</th><th>Explanation</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Compute in-degrees</td><td>Count incoming edges for each vertex</td></tr>
+<tr><td>2</td><td>Enqueue zero in-degree</td><td>Vertices with no dependencies are ready</td></tr>
+<tr><td>3</td><td>Process queue</td><td>Dequeue, add to result, decrement neighbor in-degrees</td></tr>
+<tr><td>4</td><td>Enqueue new zeros</td><td>When in-degree becomes 0, vertex is ready</td></tr>
+<tr><td>5</td><td>Check result size</td><td>If result.size() &lt; V, a cycle exists</td></tr>
+</tbody>
+</table>
+
+<h3>Complete Kahn's Algorithm</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>KahnsAlgorithm.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Kahn's BFS topological sort with cycle detection
+List&lt;Integer&gt; topologicalSortKahn() {
+    // Step 1: compute in-degrees
+    int[] indegree = new int[V];
+    for (int u = 0; u &lt; V; u++)
+        for (int v : adj.get(u))
+            indegree[v]++;
+
+    // Step 2: enqueue all zero-indegree vertices
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    for (int i = 0; i &lt; V; i++)
+        if (indegree[i] == 0) queue.offer(i);
+
+    // Step 3-4: process and update
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    while (!queue.isEmpty()) {
+        int u = queue.poll();
+        result.add(u);
+        for (int v : adj.get(u)) {
+            indegree[v]--;
+            if (indegree[v] == 0) queue.offer(v);
+        }
+    }
+
+    // Step 5: cycle check
+    if (result.size() != V) {
+        throw new IllegalStateException("Graph has a cycle!");
+    }
+    return result;
+}
+
+// Variant: lexicographically smallest topological order
+List&lt;Integer&gt; topoSortLexSmallest() {
+    int[] indegree = new int[V];
+    for (int u = 0; u &lt; V; u++)
+        for (int v : adj.get(u)) indegree[v]++;
+    PriorityQueue&lt;Integer&gt; pq = new PriorityQueue&lt;&gt;();
+    for (int i = 0; i &lt; V; i++)
+        if (indegree[i] == 0) pq.offer(i);
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    while (!pq.isEmpty()) {
+        int u = pq.poll();
+        result.add(u);
+        for (int v : adj.get(u))
+            if (--indegree[v] == 0) pq.offer(v);
+    }
+    return result.size() == V ? result : null;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>kahns_algorithm.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Kahn's algorithm with cycle detection
+std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_kahn() const {
+    std::vector&lt;int&gt; indegree(n_, 0);
+    for (int u = 0; u &lt; n_; ++u)
+        for (auto [v, w] : adj_[u])
+            ++indegree[v];
+
+    std::queue&lt;int&gt; q;
+    for (int i = 0; i &lt; n_; ++i)
+        if (indegree[i] == 0) q.push(i);
+
+    std::vector&lt;int&gt; order;
+    order.reserve(n_);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (auto [v, w] : adj_[u])
+            if (--indegree[v] == 0) q.push(v);
+    }
+
+    if (static_cast&lt;int&gt;(order.size()) != n_)
+        return std::nullopt; // cycle exists
+    return order;
+}
+
+// Lexicographically smallest using priority queue
+std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_lex_smallest() const {
+    std::vector&lt;int&gt; indegree(n_, 0);
+    for (int u = 0; u &lt; n_; ++u)
+        for (auto [v, w] : adj_[u])
+            ++indegree[v];
+
+    std::priority_queue&lt;int, std::vector&lt;int&gt;, std::greater&lt;&gt;&gt; pq;
+    for (int i = 0; i &lt; n_; ++i)
+        if (indegree[i] == 0) pq.push(i);
+
+    std::vector&lt;int&gt; order;
+    while (!pq.empty()) {
+        int u = pq.top(); pq.pop();
+        order.push_back(u);
+        for (auto [v, w] : adj_[u])
+            if (--indegree[v] == 0) pq.push(v);
+    }
+    if (static_cast&lt;int&gt;(order.size()) != n_) return std::nullopt;
+    return order;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>kahns_algorithm.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def topological_sort_kahn(graph: Graph) -&gt; Optional[List[int]]:
+    """Kahn's BFS topological sort. Returns None if cycle exists."""
+    indegree: Dict[int, int] = {v: 0 for v in graph.vertices}
+    for u in graph.vertices:
+        for v in graph.adj[u]:
+            indegree[v] = indegree.get(v, 0) + 1
+
+    # Start with zero-indegree vertices
+    queue = deque(v for v in graph.vertices if indegree[v] == 0)
+    order: List[int] = []
+
+    while queue:
+        u = queue.popleft()
+        order.append(u)
+        for v in graph.adj[u]:
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                queue.append(v)
+
+    if len(order) != len(graph.vertices):
+        return None  # cycle detected
+    return order
+
+def topo_sort_lex_smallest(graph: Graph) -&gt; Optional[List[int]]:
+    """Lexicographically smallest topological order using min-heap."""
+    import heapq
+    indegree = {v: 0 for v in graph.vertices}
+    for u in graph.vertices:
+        for v in graph.adj[u]:
+            indegree[v] = indegree.get(v, 0) + 1
+
+    heap = [v for v in graph.vertices if indegree[v] == 0]
+    heapq.heapify(heap)
+    order = []
+
+    while heap:
+        u = heapq.heappop(heap)
+        order.append(u)
+        for v in graph.adj[u]:
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                heapq.heappush(heap, v)
+
+    return order if len(order) == len(graph.vertices) else None</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>kahns_algorithm.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Kahn's BFS topological sort. Returns None if cycle detected.
+fn topo_sort_kahn(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    let mut indegree = vec![0usize; self.num_vertices];
+    for u in 0..self.num_vertices {
+        for &amp;v in &amp;self.adj[u] {
+            indegree[v] += 1;
+        }
+    }
+
+    let mut queue: VecDeque&lt;usize&gt; = VecDeque::new();
+    for (v, &amp;deg) in indegree.iter().enumerate() {
+        if deg == 0 { queue.push_back(v); }
+    }
+
+    let mut order = Vec::with_capacity(self.num_vertices);
+    while let Some(u) = queue.pop_front() {
+        order.push(u);
+        for &amp;v in &amp;self.adj[u] {
+            indegree[v] -= 1;
+            if indegree[v] == 0 {
+                queue.push_back(v);
+            }
+        }
+    }
+
+    if order.len() == self.num_vertices { Some(order) } else { None }
+}
+
+/// Lexicographically smallest topological order
+fn topo_sort_lex_smallest(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    use std::collections::BinaryHeap;
+    use std::cmp::Reverse;
+
+    let mut indegree = vec![0usize; self.num_vertices];
+    for u in 0..self.num_vertices {
+        for &amp;v in &amp;self.adj[u] { indegree[v] += 1; }
+    }
+
+    let mut heap = BinaryHeap::new();
+    for (v, &amp;deg) in indegree.iter().enumerate() {
+        if deg == 0 { heap.push(Reverse(v)); }
+    }
+
+    let mut order = Vec::with_capacity(self.num_vertices);
+    while let Some(Reverse(u)) = heap.pop() {
+        order.push(u);
+        for &amp;v in &amp;self.adj[u] {
+            indegree[v] -= 1;
+            if indegree[v] == 0 { heap.push(Reverse(v)); }
+        }
+    }
+
+    if order.len() == self.num_vertices { Some(order) } else { None }
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Topological Sort is Not Unique</div>
+<p>A DAG can have <strong>multiple valid topological orderings</strong>. For example, if vertices A and B have no dependency between them, either can come first. Use a min-heap (priority queue) in Kahn's algorithm if you need the lexicographically smallest ordering.</p>
+</div>
+</div>
+
 <!-- Comparison -->
 <div class="card" id="comparison">
 <h2><span class="icon">&#128202;</span> Algorithm Complexity Summary</h2>

@@ -1200,6 +1200,320 @@ Each element is visited at most twice: once as a potential start, and at most on
 </div>
 </div>
 
+<!-- LRU Cache -->
+<div class="card" id="lru-cache">
+<h2><span class="icon">&#128451;</span> LRU Cache</h2>
+<p>Design a data structure that supports <code>get(key)</code> and <code>put(key, value)</code> in <strong>O(1)</strong> time, evicting the <strong>Least Recently Used</strong> item when the cache reaches capacity. This is LeetCode 146 and a top interview question.</p>
+
+<h3>Strategy: HashMap + Doubly Linked List</h3>
+<p>Combine two data structures for O(1) operations:</p>
+<ul class="objectives">
+<li><strong>HashMap</strong> maps each key to its node in the linked list &rarr; O(1) lookup</li>
+<li><strong>Doubly Linked List</strong> maintains access order &rarr; O(1) move-to-front and remove-last</li>
+<li>Most recently used items sit at the <strong>head</strong>; least recently used at the <strong>tail</strong></li>
+<li>On <code>get</code>: move accessed node to front</li>
+<li>On <code>put</code>: insert at front; if over capacity, remove tail node</li>
+</ul>
+
+<div class="diagram">
+Capacity = 3
+
+put(1,A)   Head &harr; <span class="highlight">[1:A]</span> &harr; Tail
+put(2,B)   Head &harr; <span class="highlight">[2:B]</span> &harr; [1:A] &harr; Tail
+put(3,C)   Head &harr; <span class="highlight">[3:C]</span> &harr; [2:B] &harr; [1:A] &harr; Tail
+get(1)     Head &harr; <span class="highlight">[1:A]</span> &harr; [3:C] &harr; [2:B] &harr; Tail  (moved to front)
+put(4,D)   Head &harr; <span class="highlight">[4:D]</span> &harr; [1:A] &harr; [3:C] &harr; Tail  (<span class="swap">[2:B] evicted!</span>)
+
+HashMap: {1 &rarr; node_1, 3 &rarr; node_3, 4 &rarr; node_4}
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>LRUCache.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class LRUCache {
+    private static class Node {
+        int key, value;
+        Node prev, next;
+        Node(int k, int v) { key = k; value = v; }
+    }
+
+    private final int capacity;
+    private final Map&lt;Integer, Node&gt; map = new HashMap&lt;&gt;();
+    private final Node head = new Node(0, 0); // sentinel
+    private final Node tail = new Node(0, 0); // sentinel
+
+    LRUCache(int capacity) {
+        this.capacity = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    int get(int key) {
+        if (!map.containsKey(key)) return -1;
+        Node node = map.get(key);
+        remove(node);
+        insertAfterHead(node);
+        return node.value;
+    }
+
+    void put(int key, int value) {
+        if (map.containsKey(key)) {
+            Node node = map.get(key);
+            node.value = value;
+            remove(node);
+            insertAfterHead(node);
+        } else {
+            if (map.size() == capacity) {
+                Node lru = tail.prev; // least recently used
+                remove(lru);
+                map.remove(lru.key);
+            }
+            Node node = new Node(key, value);
+            insertAfterHead(node);
+            map.put(key, node);
+        }
+    }
+
+    private void remove(Node n) {
+        n.prev.next = n.next;
+        n.next.prev = n.prev;
+    }
+
+    private void insertAfterHead(Node n) {
+        n.next = head.next;
+        n.prev = head;
+        head.next.prev = n;
+        head.next = n;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>lru_cache.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class LRUCache {
+    struct Node {
+        int key, value;
+        Node* prev; Node* next;
+    };
+
+    int capacity;
+    std::unordered_map&lt;int, Node*&gt; cache;
+    Node* head; // sentinel
+    Node* tail; // sentinel
+
+    void remove(Node* n) {
+        n-&gt;prev-&gt;next = n-&gt;next;
+        n-&gt;next-&gt;prev = n-&gt;prev;
+    }
+
+    void push_front(Node* n) {
+        n-&gt;next = head-&gt;next;
+        n-&gt;prev = head;
+        head-&gt;next-&gt;prev = n;
+        head-&gt;next = n;
+    }
+
+public:
+    LRUCache(int cap) : capacity(cap) {
+        head = new Node{0, 0, nullptr, nullptr};
+        tail = new Node{0, 0, nullptr, nullptr};
+        head-&gt;next = tail;
+        tail-&gt;prev = head;
+    }
+
+    int get(int key) {
+        auto it = cache.find(key);
+        if (it == cache.end()) return -1;
+        Node* node = it-&gt;second;
+        remove(node);
+        push_front(node);
+        return node-&gt;value;
+    }
+
+    void put(int key, int value) {
+        if (auto it = cache.find(key); it != cache.end()) {
+            Node* node = it-&gt;second;
+            node-&gt;value = value;
+            remove(node);
+            push_front(node);
+        } else {
+            if ((int)cache.size() == capacity) {
+                Node* lru = tail-&gt;prev;
+                remove(lru);
+                cache.erase(lru-&gt;key);
+                delete lru;
+            }
+            Node* node = new Node{key, value, nullptr, nullptr};
+            push_front(node);
+            cache[key] = node;
+        }
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>lru_cache.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class Node:
+    __slots__ = ('key', 'value', 'prev', 'next')
+    def __init__(self, key: int = 0, value: int = 0):
+        self.key = key
+        self.value = value
+        self.prev: Node | None = None
+        self.next: Node | None = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache: dict[int, Node] = {}
+        # Sentinel nodes simplify edge cases
+        self.head = Node()
+        self.tail = Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node: Node) -&gt; None:
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _push_front(self, node: Node) -&gt; None:
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -&gt; int:
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self._remove(node)
+        self._push_front(node)
+        return node.value
+
+    def put(self, key: int, value: int) -&gt; None:
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._remove(node)
+            self._push_front(node)
+        else:
+            if len(self.cache) == self.capacity:
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.cache[lru.key]
+            node = Node(key, value)
+            self._push_front(node)
+            self.cache[key] = node</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>lru_cache.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::HashMap;
+use std::ptr;
+
+struct Node {
+    key: i32,
+    value: i32,
+    prev: *mut Node,
+    next: *mut Node,
+}
+
+struct LRUCache {
+    capacity: usize,
+    map: HashMap&lt;i32, *mut Node&gt;,
+    head: *mut Node, // sentinel
+    tail: *mut Node, // sentinel
+}
+
+impl LRUCache {
+    fn new(capacity: usize) -&gt; Self {
+        unsafe {
+            let head = Box::into_raw(Box::new(Node {
+                key: 0, value: 0, prev: ptr::null_mut(), next: ptr::null_mut(),
+            }));
+            let tail = Box::into_raw(Box::new(Node {
+                key: 0, value: 0, prev: head, next: ptr::null_mut(),
+            }));
+            (*head).next = tail;
+            LRUCache { capacity, map: HashMap::new(), head, tail }
+        }
+    }
+
+    fn remove(&amp;self, node: *mut Node) {
+        unsafe {
+            (*(*node).prev).next = (*node).next;
+            (*(*node).next).prev = (*node).prev;
+        }
+    }
+
+    fn push_front(&amp;self, node: *mut Node) {
+        unsafe {
+            (*node).next = (*self.head).next;
+            (*node).prev = self.head;
+            (*(*self.head).next).prev = node;
+            (*self.head).next = node;
+        }
+    }
+
+    fn get(&amp;mut self, key: i32) -&gt; i32 {
+        if let Some(&amp;node) = self.map.get(&amp;key) {
+            self.remove(node);
+            self.push_front(node);
+            unsafe { (*node).value }
+        } else {
+            -1
+        }
+    }
+
+    fn put(&amp;mut self, key: i32, value: i32) {
+        if let Some(&amp;node) = self.map.get(&amp;key) {
+            unsafe { (*node).value = value; }
+            self.remove(node);
+            self.push_front(node);
+        } else {
+            if self.map.len() == self.capacity {
+                let lru = unsafe { (*self.tail).prev };
+                self.remove(lru);
+                let lru_key = unsafe { (*lru).key };
+                self.map.remove(&amp;lru_key);
+                unsafe { drop(Box::from_raw(lru)); }
+            }
+            let node = Box::into_raw(Box::new(Node {
+                key, value, prev: ptr::null_mut(), next: ptr::null_mut(),
+            }));
+            self.push_front(node);
+            self.map.insert(key, node);
+        }
+    }
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The sentinel nodes (dummy head and tail) eliminate all null-pointer edge cases. Every real node always has valid <code>prev</code> and <code>next</code> pointers, so <code>remove()</code> and <code>insertAfterHead()</code> never need special-case logic. This is a classic technique for simplifying doubly linked list operations.
+</div>
+
+<div class="warning-box">
+<div class="label">Interview Tip</div>
+LRU Cache is one of the most frequently asked design questions. Interviewers expect you to (1) identify the HashMap + doubly linked list approach, (2) explain why both are needed for O(1), and (3) implement it cleanly with sentinel nodes. Practice until you can write it from memory.
+</div>
+
+<h3>Complexity</h3>
+<table>
+<thead><tr><th>Operation</th><th>Time</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>get(key)</td><td><span class="badge badge-green">O(1)</span></td><td>HashMap lookup + linked list move</td></tr>
+<tr><td>put(key, value)</td><td><span class="badge badge-green">O(1)</span></td><td>HashMap insert + linked list insert/remove</td></tr>
+<tr><td>Eviction</td><td><span class="badge badge-green">O(1)</span></td><td>Remove tail.prev + delete from HashMap</td></tr>
+<tr><td>Space</td><td>O(capacity)</td><td>HashMap + linked list nodes</td></tr>
+</tbody>
+</table>
+</div>
+
 <!-- Comparison Table -->
 <div class="card" id="comparison">
 <h2><span class="icon">&#128202;</span> Complexity Summary</h2>
@@ -1213,6 +1527,7 @@ Each element is visited at most twice: once as a potential start, and at most on
 <tr><td>Group Anagrams</td><td><span class="badge badge-blue">O(n*k log k)</span></td><td>O(n*k)</td><td>Sorted string as key</td></tr>
 <tr><td>Subarray Sum = k</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>Prefix sum + count map</td></tr>
 <tr><td>Longest Consecutive</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>HashSet + sequence start</td></tr>
+<tr><td>LRU Cache</td><td><span class="badge badge-green">O(1)</span></td><td>O(capacity)</td><td>HashMap + doubly linked list</td></tr>
 </tbody>
 </table>
 </div>
@@ -1240,6 +1555,14 @@ Each element is visited at most twice: once as a potential start, and at most on
 <span class="difficulty badge badge-yellow">Medium</span>
 <strong>Top K Frequent Elements</strong> -- LeetCode 347. Combine frequency count with heap or bucket sort.
 </div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>LRU Cache</strong> -- LeetCode 146. HashMap + doubly linked list for O(1) get and put.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-red">Hard</span>
+<strong>LFU Cache</strong> -- LeetCode 460. Extension of LRU with frequency-based eviction.
+</div>
 </div>
 
 <!-- Summary -->
@@ -1254,6 +1577,8 @@ Each element is visited at most twice: once as a potential start, and at most on
 <tr><td>Prefix Sum + Map</td><td>Count subarrays with given sum</td><td>Subarray Sum = k</td></tr>
 <tr><td>HashSet membership</td><td>O(1) existence check</td><td>Longest Consecutive</td></tr>
 <tr><td>Frequency Map</td><td>Count occurrences</td><td>Top K Frequent</td></tr>
+<tr><td>HashMap + Linked List</td><td>O(1) ordered access with fast lookup</td><td>LRU Cache</td></tr>
+<tr><td>Custom Hash Function</td><td>Need domain-specific key distribution</td><td>Rolling hash, FNV-1a</td></tr>
 </tbody>
 </table>
 
