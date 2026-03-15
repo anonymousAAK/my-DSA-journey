@@ -1,9 +1,31 @@
+/*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: Variables and Addition
+ * File: 4.Add_two_numbers.java
+ *
+ * CONCEPT:
+ * Introduces variables in Java - the basic unit of storage. Demonstrates
+ * how to declare integer variables, assign values, and perform arithmetic.
+ *
+ * KEY POINTS:
+ * - Variables must be declared with a type before use (e.g., int a)
+ * - Declaration and initialization can happen on the same line
+ * - Variable names follow specific rules: letters, digits, _ and $ allowed;
+ *   cannot start with a digit; cannot be a reserved keyword
+ * - Java is case-sensitive: 'myVar' and 'MyVar' are different variables
+ * - Local variables are NOT assigned default values by the compiler
+ *
+ * SYNTAX:
+ * type variableName = value;  // declaration with initialization
+ * type variableName;          // declaration only (must initialize before use)
+ */
+
 package fundamentals;
 public class AddTwoNumbers {
     public static void main(String args[]) {
-      int a=10;
-      int b=25;
-      int c=a+b;
+      int a=10;   // Declare and initialize first operand
+      int b=25;   // Declare and initialize second operand
+      int c=a+b;  // Store the sum in a new variable
       System.out.println(c);
     }
 }

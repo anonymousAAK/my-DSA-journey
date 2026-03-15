@@ -1,3 +1,25 @@
+/*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: Java Installation & IDE Setup
+ * File: 1.Java Installation
+ *
+ * CONCEPT:
+ * This file provides step-by-step instructions for setting up the Java
+ * development environment, including JDK installation and IDE configuration.
+ *
+ * KEY POINTS:
+ * - Java Development Kit (JDK) must be installed from Oracle's official website
+ * - Java must be added to system environment variables (PATH) for command-line access
+ * - An IDE like Eclipse simplifies Java development with features like
+ *   syntax highlighting, auto-completion, and debugging
+ * - Eclipse supports Java and many other programming languages via plugins
+ * - New Java classes can be created through File menu, Package Explorer, or toolbar
+ *
+ * PREREQUISITES:
+ * - A computer with Windows/Mac/Linux
+ * - Internet connection for downloading JDK and Eclipse
+ */
+
 1. At first we need to install java from the oracle website.
 
     Here's the link

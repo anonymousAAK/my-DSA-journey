@@ -1,18 +1,44 @@
+/*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: Comprehensive Scanner Input Methods
+ * File: 7.Taking_Input_all.java
+ *
+ * CONCEPT:
+ * Demonstrates all major Scanner input methods for reading different data
+ * types. Shows how to read integers, strings, characters, doubles, and
+ * longs from user input in a single program.
+ *
+ * KEY POINTS:
+ * - nextInt() reads an int token; nextDouble() reads a double token
+ * - nextLong() reads a long token; next() reads a single word (token)
+ * - nextLine() reads the entire line including spaces
+ * - charAt(index) retrieves a character at a specific position in a String
+ * - Java has no nextChar() method; use next().charAt(0) to read a single char
+ * - Tokens are delimited by whitespace (space, tab, newline)
+ *
+ * SYNTAX:
+ * s.nextInt()     // read int
+ * s.nextDouble()  // read double
+ * s.nextLong()    // read long
+ * s.next()        // read single word (token)
+ * s.nextLine()    // read entire line
+ */
+
  package fundamentals;
 import java.util.Scanner;
 public class ArithematicOperators {
     public static void main(String args[]) {
       int a,b;
       Scanner s=new Scanner(System.in);
-      a=s.nextInt();
-      b=s.nextInt();
-      int c=a+b;
-      
-      String str=s.nextLine();
-      char ch=str.charAt(0);
+      a=s.nextInt();   // Read first integer
+      b=s.nextInt();   // Read second integer
+      int c=a+b;       // Sum the two integers
+
+      String str=s.nextLine();   // Read rest of line (caution: consumes leftover newline)
+      char ch=str.charAt(0);     // Get first character of the string
       System.out.println(ch);
-      s.nextDouble();
-      s.nextLong();
+      s.nextDouble();  // Read a double-precision floating point value
+      s.nextLong();    // Read a long integer value
     }
 }
 

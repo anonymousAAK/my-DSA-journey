@@ -1,3 +1,25 @@
+/*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: Hello World - First Java Program
+ * File: 2.hello_world.java
+ *
+ * CONCEPT:
+ * The classic "Hello World" program introduces the basic structure of every
+ * Java application. Every Java program must have at least one class and a
+ * main() method which serves as the entry point for execution.
+ *
+ * KEY POINTS:
+ * - Every Java file must contain a class definition
+ * - The main() method is the entry point: public static void main(String args[])
+ * - System.out.println() prints text to the console followed by a newline
+ * - Java is case-sensitive: 'System' is not the same as 'system'
+ * - Every statement ends with a semicolon (;)
+ * - Code blocks are enclosed in curly braces {}
+ *
+ * SYNTAX:
+ * System.out.println("text"); // prints text with newline
+ */
+
 //After creating a class .
 // Here's the first code
 package fundamentals;

@@ -1,49 +1,31 @@
 /*
-Triangular Star Pattern
-
-
-Print the following pattern for the given N number of rows.
-Pattern for N = 4
-*
-**
-***
-****
-Note : There are no spaces between the stars (*).
-  
-  
-Input format :
-Integer N (Total no. of rows)
-  
-  
-Output format :
-Pattern in N lines
-
-How to approach?
-1. Take N as input from the user.
-2. Figure out the number of rows, (which is N here) and run a loop for that.
-3. Now, figure out how many columns are there in ith row and run a loop for that within
-this.
-4. Now, figure out “What to print?” in a particular (row, column). Here we have to print
-“*”.
-  
-  
-Pseudo code for the given problem:
-input=N
-i=1
-While i is less than or equal to N:
- j=1
- While j is less than or equal to i:
- print(“*”)
- Increment j by 1
- Increment i by 1
- Add a new line here
- 
- 
+ * WEEK 4 - PATTERN PROBLEMS
+ * Topic: Triangular Star Pattern
+ * File: 2.Tri_Star_Pattern.java
+ *
+ * PATTERN (for N=4):
+ * *
+ * **
+ * ***
+ * ****
+ *
+ * CONCEPT:
+ * Print a right-angled triangle made of '*' characters.
+ * Row i contains exactly i stars, so the number of columns
+ * grows linearly with the row number.
+ *
+ * APPROACH:
+ * - Outer loop: controls rows (i = 1 to N)
+ * - Inner loop: controls columns (j = 1 to i)
+ * - Print '*' at every position in the inner loop
+ *
+ * KEY INSIGHT:
+ * The inner loop bound is 'i' (not N), so each row prints
+ * exactly as many stars as its row number — creating the triangle shape.
+ *
+ * Time Complexity: O(N^2) — nested loops
+ * Space Complexity: O(1) — no extra data structures
  */
-
-
-
-
 import java.util.Scanner;
 
 public class Solution {
@@ -53,13 +35,16 @@ public class Solution {
 		int n;
 		Scanner s = new Scanner(System.in);
 		n = s.nextInt();
-		
+
+        // Outer loop: iterate through each row (1 to N)
         for(int i = 1; i <=n ; i++){
+            // Inner loop: print i stars for row i (columns grow with row number)
             for(int j = 1; j <=i ; j++){
                 System.out.print('*');
             }
+            // Move to the next line after completing one row
             System.out.println();
-        }	
+        }
 	}
 
 }
