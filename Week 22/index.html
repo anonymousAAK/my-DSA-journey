@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 22: Advanced Graphs | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#21262d;--text:#c9d1d9;--text-secondary:#8b949e;--accent:#58a6ff;--accent2:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--code-border:#30363d;--warning:#d29922;--error:#f85149;--font-mono:'SF Mono','Cascadia Code','Fira Code','Consolas',monospace;--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.hero{position:relative;padding:5rem 0 4rem;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(63,185,80,.15) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;background:var(--gradient);color:#fff;font-weight:700;font-size:.75rem;padding:.35rem .9rem;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+.hero .subtitle{font-size:1.2rem;color:var(--text-secondary);max-width:700px;margin:0 auto 1.5rem}
+.hero-meta{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;color:var(--text-secondary);font-size:.9rem}
+.hero-meta span{display:flex;align-items:center;gap:.4rem}
+.page-layout{display:grid;grid-template-columns:260px 1fr;gap:2rem;align-items:start;padding:2rem 0 4rem}
+@media(max-width:900px){.page-layout{grid-template-columns:1fr}}
+.sidebar{position:sticky;top:2rem}
+@media(max-width:900px){.sidebar{position:static}}
+.sidebar-toggle{display:none;width:100%;padding:.8rem;background:var(--card);border:1px solid var(--card-border);color:var(--text);border-radius:8px;font-size:1rem;cursor:pointer}
+@media(max-width:900px){.sidebar-toggle{display:block}.sidebar-nav{display:none}.sidebar-nav.open{display:block}}
+.sidebar-nav{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1rem 0;margin-top:.5rem}
+.sidebar-nav a{display:block;padding:.5rem 1.2rem;color:var(--text-secondary);font-size:.85rem;transition:all .2s}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--accent);background:rgba(88,166,255,.08);text-decoration:none;border-right:2px solid var(--accent)}
+.content{min-width:0}
+.section{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:2rem;margin-bottom:2rem;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.section.visible{opacity:1;transform:translateY(0)}
+.section h2{font-size:1.6rem;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--card-border)}
+.section h3{font-size:1.2rem;color:var(--accent);margin:1.5rem 0 .75rem}
+.section p,.section li{color:var(--text-secondary);margin-bottom:.5rem}
+.section ul,.section ol{padding-left:1.5rem;margin-bottom:1rem}
+.objectives{display:grid;gap:.5rem}
+.objective{display:flex;align-items:baseline;gap:.5rem;padding:.5rem .75rem;background:rgba(88,166,255,.05);border-radius:6px;border-left:3px solid var(--accent)}
+.objective::before{content:'';display:inline-block;width:8px;height:8px;background:var(--gradient);border-radius:50%;flex-shrink:0;margin-top:6px}
+.code-viewer{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--code-border);overflow-x:auto}
+.code-tab{padding:.6rem 1.2rem;color:var(--text-secondary);font-size:.8rem;font-family:var(--font-mono);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(88,166,255,.08)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;background:var(--card);border:1px solid var(--code-border);color:var(--text-secondary);padding:.3rem .6rem;border-radius:6px;font-size:.75rem;cursor:pointer;z-index:2;transition:all .2s}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent)}
+.code-panel pre{margin:0;padding:1rem;overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6}
+.code-panel code{color:var(--text)}
+.key-insight{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:1rem 1.2rem;margin:1rem 0}
+.key-insight-title{font-weight:700;color:var(--accent);font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.key-insight-title::before{content:'';display:inline-block;width:18px;height:18px;background:var(--gradient);border-radius:50%;flex-shrink:0}
+.key-insight p{color:var(--text-secondary);font-size:.9rem;margin:0}
+.complexity-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+.complexity-table th{background:rgba(88,166,255,.1);color:var(--accent);padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--card-border)}
+.complexity-table td{padding:.5rem .8rem;border-bottom:1px solid rgba(48,54,61,.5);color:var(--text-secondary)}
+.complexity-table tr:hover td{background:rgba(88,166,255,.04)}
+.diagram{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;padding:1.5rem;margin:1.5rem 0;text-align:center;overflow-x:auto}
+.diagram pre{font-family:var(--font-mono);font-size:.78rem;color:var(--accent);display:inline-block;text-align:left;line-height:1.5}
+.diagram-caption{font-size:.8rem;color:var(--text-secondary);margin-top:.75rem;font-style:italic}
+.practice-list{display:grid;gap:.75rem;margin:1rem 0}
+.practice-item{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:8px;font-size:.9rem}
+.practice-item .diff{font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase}
+.diff-medium{background:rgba(210,153,34,.15);color:var(--warning)}
+.diff-hard{background:rgba(248,81,73,.15);color:var(--error)}
+.summary-card{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(63,185,80,.08));border:1px solid rgba(88,166,255,.2);border-radius:12px;padding:2rem}
+.summary-card h2{border-bottom-color:rgba(88,166,255,.2)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.summary-item{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1rem}
+.summary-item h4{color:var(--accent);font-size:.9rem;margin-bottom:.4rem}
+.summary-item p{font-size:.8rem;color:var(--text-secondary);margin:0}
+.nav-footer{display:flex;justify-content:space-between;margin:2rem 0;gap:1rem;flex-wrap:wrap}
+.nav-btn{flex:1;min-width:200px;padding:1rem 1.5rem;background:var(--card);border:1px solid var(--card-border);border-radius:10px;color:var(--text);transition:all .3s;display:flex;flex-direction:column}
+.nav-btn:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none}
+.nav-btn .label{font-size:.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.nav-btn .title{font-weight:600;color:var(--accent)}
+.nav-btn.next{text-align:right;align-items:flex-end}
+.kw{color:#ff7b72}.typ{color:#79c0ff}.str{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.num{color:#79c0ff}.op{color:#ff7b72}
+.step-box{background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:1rem 1.2rem;margin:.75rem 0}
+.step-box .step-title{font-weight:700;color:var(--accent2);font-size:.9rem;margin-bottom:.3rem}
+</style>
+</head>
+<body>
+
+<section class="hero">
+<div class="container">
+<span class="hero-badge">Advanced</span>
+<h1>Week 22: Advanced Graphs</h1>
+<p class="subtitle">Shortest path algorithms (Dijkstra, Bellman-Ford, Floyd-Warshall), Union-Find, and Minimum Spanning Trees -- the algorithmic foundations of networking, routing, and optimization.</p>
+<div class="hero-meta">
+<span>Week 22 of 24</span>
+<span>Estimated: 15-18 hours</span>
+<span>6 Algorithms</span>
+<span>4 Languages</span>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="page-layout">
+
+<aside class="sidebar">
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('open')">Table of Contents</button>
+<nav class="sidebar-nav">
+<a href="#objectives">Learning Objectives</a>
+<a href="#dijkstra">Dijkstra's Algorithm</a>
+<a href="#bellman-ford">Bellman-Ford</a>
+<a href="#floyd-warshall">Floyd-Warshall</a>
+<a href="#dsu">Disjoint Set Union</a>
+<a href="#kruskal">Kruskal's MST</a>
+<a href="#prim">Prim's MST</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="content">
+
+<div id="objectives" class="section">
+<h2>Learning Objectives</h2>
+<div class="objectives">
+<div class="objective">Implement Dijkstra's algorithm with a priority queue for O((V+E) log V) shortest paths</div>
+<div class="objective">Use Bellman-Ford for graphs with negative weights and detect negative cycles</div>
+<div class="objective">Apply Floyd-Warshall for all-pairs shortest paths in O(V^3)</div>
+<div class="objective">Build Union-Find with path compression and union by rank for near-O(1) operations</div>
+<div class="objective">Construct MSTs using Kruskal's (sort + DSU) and Prim's (priority queue) algorithms</div>
+<div class="objective">Choose the right shortest-path algorithm based on graph properties</div>
+</div>
+</div>
+
+<!-- Dijkstra -->
+<div id="dijkstra" class="section">
+<h2>Dijkstra's Algorithm</h2>
+<p>Dijkstra's algorithm finds the shortest path from a single source to all other vertices in a graph with <strong>non-negative edge weights</strong>. It is the go-to algorithm for GPS navigation, network routing (OSPF protocol), and game pathfinding.</p>
+
+<h3>Algorithm: Greedy + Priority Queue</h3>
+<p>Dijkstra works by greedily processing the nearest unvisited vertex. It maintains tentative distances and relaxes edges to find shorter paths.</p>
+
+<div class="diagram">
+<pre>
+Dijkstra Step-by-Step: Source = 0
+
+Graph:  0 --4-- 1 --1-- 3      Step 1: Process 0 (dist=0)
+        |       |       |        dist = [0, 4, 1, INF, INF]
+        1       2       3
+        |       |       |      Step 2: Process 2 (dist=1)
+        2 --5-- 3       4        dist = [0, 3, 1, 6, INF]
+
+                                Step 3: Process 1 (dist=3)
+ Priority Queue progression:      dist = [0, 3, 1, 4, INF]
+   [(0,0)]
+   [(1,2), (4,1)]              Step 4: Process 3 (dist=4)
+   [(3,1), (6,3)]                dist = [0, 3, 1, 4, 7]
+   [(4,3)]
+   [(7,4)]                     Step 5: Process 4 (dist=7)
+                                 DONE. Final: [0, 3, 1, 4, 7]
+</pre>
+<p class="diagram-caption">Dijkstra processes vertices in order of increasing distance from source. Each vertex is processed exactly once.</p>
+</div>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>Dijkstra fails with negative edges because it assumes once a vertex is settled, its distance is final. A negative edge could later provide a shorter path to an already-settled vertex. Use Bellman-Ford for negative edges.</p>
+</div>
+
+<table class="complexity-table">
+<tr><th>Implementation</th><th>Time</th><th>Space</th></tr>
+<tr><td>Binary Heap (standard)</td><td>O((V + E) log V)</td><td>O(V + E)</td></tr>
+<tr><td>Fibonacci Heap (theoretical)</td><td>O(V log V + E)</td><td>O(V + E)</td></tr>
+<tr><td>Dense graph (array)</td><td>O(V^2)</td><td>O(V)</td></tr>
+</table>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'dijk')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'dijk')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'dijk')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'dijk')">Rust</button>
+</div>
+<div class="code-panel active" data-group="dijk">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Dijkstra's Algorithm (Java)</span>
+<span class="kw">static int</span>[] <span class="fn">dijkstra</span>(List&lt;<span class="typ">int</span>[]&gt;[] adj, <span class="typ">int</span> src, <span class="typ">int</span> V) {
+    <span class="typ">int</span>[] dist = <span class="kw">new int</span>[V];
+    Arrays.fill(dist, INF);
+    dist[src] = <span class="num">0</span>;
+    <span class="cm">// Min-heap: [distance, vertex]</span>
+    PriorityQueue&lt;<span class="typ">int</span>[]&gt; pq = <span class="kw">new</span> PriorityQueue&lt;&gt;(
+        Comparator.comparingInt(a -&gt; a[<span class="num">0</span>]));
+    pq.offer(<span class="kw">new int</span>[]{<span class="num">0</span>, src});
+
+    <span class="kw">while</span> (!pq.isEmpty()) {
+        <span class="typ">int</span>[] curr = pq.poll();
+        <span class="typ">int</span> d = curr[<span class="num">0</span>], u = curr[<span class="num">1</span>];
+        <span class="kw">if</span> (d &gt; dist[u]) <span class="kw">continue</span>; <span class="cm">// stale entry</span>
+        <span class="kw">for</span> (<span class="typ">int</span>[] edge : adj[u]) {
+            <span class="typ">int</span> v = edge[<span class="num">0</span>], w = edge[<span class="num">1</span>];
+            <span class="kw">if</span> (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.offer(<span class="kw">new int</span>[]{dist[v], v});
+            }
+        }
+    }
+    <span class="kw">return</span> dist;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="dijk">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Dijkstra — single-source shortest paths (C++17)</span>
+std::vector&lt;<span class="typ">long long</span>&gt; <span class="fn">dijkstra</span>(
+    <span class="kw">const</span> AdjList&amp; adj, <span class="typ">int</span> src) {
+    <span class="typ">int</span> n = adj.size();
+    std::vector&lt;<span class="typ">long long</span>&gt; dist(n, LLONG_MAX);
+    dist[src] = <span class="num">0</span>;
+
+    <span class="kw">using</span> P = std::pair&lt;<span class="typ">long long</span>, <span class="typ">int</span>&gt;;
+    std::priority_queue&lt;P, std::vector&lt;P&gt;,
+                        std::greater&lt;&gt;&gt; pq;
+    pq.push({<span class="num">0</span>, src});
+
+    <span class="kw">while</span> (!pq.empty()) {
+        <span class="kw">auto</span> [d, u] = pq.top(); pq.pop();
+        <span class="kw">if</span> (d &gt; dist[u]) <span class="kw">continue</span>;
+        <span class="kw">for</span> (<span class="kw">auto</span> [v, w] : adj[u]) {
+            <span class="kw">if</span> (dist[u] + w &lt; dist[v]) {
+                dist[v] = dist[u] + w;
+                pq.push({dist[v], v});
+            }
+        }
+    }
+    <span class="kw">return</span> dist;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="dijk">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Dijkstra with path reconstruction (Python)</span>
+<span class="kw">def</span> <span class="fn">dijkstra</span>(adj, source, vertices):
+    dist = {v: <span class="fn">float</span>(<span class="str">'inf'</span>) <span class="kw">for</span> v <span class="kw">in</span> vertices}
+    parent = {v: <span class="kw">None</span> <span class="kw">for</span> v <span class="kw">in</span> vertices}
+    dist[source] = <span class="num">0.0</span>
+    heap = [(<span class="num">0.0</span>, source)]
+
+    <span class="kw">while</span> heap:
+        d, u = heapq.heappop(heap)
+        <span class="kw">if</span> d &gt; dist[u]:
+            <span class="kw">continue</span>  <span class="cm"># stale entry</span>
+        <span class="kw">for</span> v, w <span class="kw">in</span> adj[u]:
+            new_dist = dist[u] + w
+            <span class="kw">if</span> new_dist &lt; dist[v]:
+                dist[v] = new_dist
+                parent[v] = u
+                heapq.heappush(heap, (new_dist, v))
+    <span class="kw">return</span> dist, parent</code></pre>
+</div>
+<div class="code-panel" data-group="dijk">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Dijkstra (Rust) — uses BinaryHeap with Reverse for min-heap</span>
+<span class="kw">fn</span> <span class="fn">dijkstra</span>(adj: &amp;[Vec&lt;(<span class="typ">usize</span>, <span class="typ">i64</span>)&gt;], src: <span class="typ">usize</span>) -&gt; Vec&lt;<span class="typ">i64</span>&gt; {
+    <span class="kw">let</span> n = adj.len();
+    <span class="kw">let mut</span> dist = <span class="fn">vec!</span>[<span class="typ">i64</span>::MAX; n];
+    dist[src] = <span class="num">0</span>;
+
+    <span class="kw">let mut</span> heap: BinaryHeap&lt;Reverse&lt;(<span class="typ">i64</span>, <span class="typ">usize</span>)&gt;&gt; =
+        BinaryHeap::new();
+    heap.push(Reverse((<span class="num">0</span>, src)));
+
+    <span class="kw">while let</span> Some(Reverse((d, u))) = heap.pop() {
+        <span class="kw">if</span> d &gt; dist[u] { <span class="kw">continue</span>; }
+        <span class="kw">for</span> &amp;(v, weight) <span class="kw">in</span> &amp;adj[u] {
+            <span class="kw">let</span> new_dist = dist[u] + weight;
+            <span class="kw">if</span> new_dist &lt; dist[v] {
+                dist[v] = new_dist;
+                heap.push(Reverse((new_dist, v)));
+            }
+        }
+    }
+    dist
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Bellman-Ford -->
+<div id="bellman-ford" class="section">
+<h2>Bellman-Ford Algorithm</h2>
+<p>Bellman-Ford handles <strong>negative edge weights</strong> and detects <strong>negative-weight cycles</strong>. It relaxes all edges V-1 times. After V-1 iterations, if any edge can still be relaxed, a negative cycle exists.</p>
+
+<h3>Why V-1 Iterations?</h3>
+<p>In a graph with V vertices, the shortest path between any two vertices uses at most V-1 edges (since a simple path visits each vertex at most once). After k iterations of relaxing all edges, the algorithm has found all shortest paths using at most k edges. So V-1 iterations are sufficient for correctness.</p>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>Bellman-Ford's negative cycle detection is used in finance: if currency exchange rates form a negative cycle, there's an arbitrage opportunity (you can make money by cycling through currencies). The algorithm can find such cycles in O(V*E).</p>
+</div>
+
+<table class="complexity-table">
+<tr><th>Property</th><th>Dijkstra</th><th>Bellman-Ford</th><th>Floyd-Warshall</th></tr>
+<tr><td>Scope</td><td>Single-source</td><td>Single-source</td><td>All-pairs</td></tr>
+<tr><td>Negative weights</td><td>No</td><td>Yes</td><td>Yes</td></tr>
+<tr><td>Negative cycles</td><td>No</td><td>Detects</td><td>Detects</td></tr>
+<tr><td>Time</td><td>O((V+E) log V)</td><td>O(V*E)</td><td>O(V^3)</td></tr>
+</table>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'bf')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'bf')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'bf')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'bf')">Rust</button>
+</div>
+<div class="code-panel active" data-group="bf">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Bellman-Ford (Java)</span>
+<span class="kw">static int</span>[] <span class="fn">bellmanFord</span>(<span class="typ">int</span> V, <span class="typ">int</span>[][] edges, <span class="typ">int</span> src) {
+    <span class="typ">int</span>[] dist = <span class="kw">new int</span>[V];
+    Arrays.fill(dist, INF);
+    dist[src] = <span class="num">0</span>;
+
+    <span class="cm">// Relax all edges V-1 times</span>
+    <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; V - <span class="num">1</span>; i++) {
+        <span class="kw">for</span> (<span class="typ">int</span>[] e : edges) {
+            <span class="typ">int</span> u = e[<span class="num">0</span>], v = e[<span class="num">1</span>], w = e[<span class="num">2</span>];
+            <span class="kw">if</span> (dist[u] != INF &amp;&amp; dist[u] + w &lt; dist[v])
+                dist[v] = dist[u] + w;
+        }
+    }
+    <span class="cm">// Check for negative weight cycles</span>
+    <span class="kw">for</span> (<span class="typ">int</span>[] e : edges) {
+        <span class="kw">if</span> (dist[e[<span class="num">0</span>]] != INF &amp;&amp;
+            dist[e[<span class="num">0</span>]] + e[<span class="num">2</span>] &lt; dist[e[<span class="num">1</span>]]) {
+            System.out.println(<span class="str">"Negative cycle!"</span>);
+            <span class="kw">return null</span>;
+        }
+    }
+    <span class="kw">return</span> dist;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="bf">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Bellman-Ford (C++17) — returns nullopt on negative cycle</span>
+std::optional&lt;std::vector&lt;<span class="typ">long long</span>&gt;&gt;
+<span class="fn">bellman_ford</span>(<span class="typ">int</span> n, <span class="kw">const</span> std::vector&lt;Edge&gt;&amp; edges, <span class="typ">int</span> src) {
+    std::vector&lt;<span class="typ">long long</span>&gt; dist(n, LLONG_MAX);
+    dist[src] = <span class="num">0</span>;
+
+    <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; n - <span class="num">1</span>; ++i) {
+        <span class="kw">for</span> (<span class="kw">auto</span> [u, v, w] : edges) {
+            <span class="kw">if</span> (dist[u] != LLONG_MAX &amp;&amp;
+                dist[u] + w &lt; dist[v])
+                dist[v] = dist[u] + w;
+        }
+    }
+    <span class="kw">for</span> (<span class="kw">auto</span> [u, v, w] : edges)
+        <span class="kw">if</span> (dist[u] != LLONG_MAX &amp;&amp;
+            dist[u] + w &lt; dist[v])
+            <span class="kw">return</span> std::nullopt;
+    <span class="kw">return</span> dist;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="bf">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Bellman-Ford with early termination (Python)</span>
+<span class="kw">def</span> <span class="fn">bellman_ford</span>(edges, source, vertices):
+    dist = {v: <span class="fn">float</span>(<span class="str">'inf'</span>) <span class="kw">for</span> v <span class="kw">in</span> vertices}
+    parent = {v: <span class="kw">None</span> <span class="kw">for</span> v <span class="kw">in</span> vertices}
+    dist[source] = <span class="num">0.0</span>
+    n = <span class="fn">len</span>(vertices)
+
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n - <span class="num">1</span>):
+        updated = <span class="kw">False</span>
+        <span class="kw">for</span> u, v, w <span class="kw">in</span> edges:
+            <span class="kw">if</span> dist[u] + w &lt; dist[v]:
+                dist[v] = dist[u] + w
+                parent[v] = u
+                updated = <span class="kw">True</span>
+        <span class="kw">if not</span> updated:
+            <span class="kw">break</span>  <span class="cm"># early termination</span>
+
+    <span class="cm"># Negative cycle check</span>
+    <span class="kw">for</span> u, v, w <span class="kw">in</span> edges:
+        <span class="kw">if</span> dist[u] + w &lt; dist[v]:
+            <span class="kw">return None</span>, parent
+    <span class="kw">return</span> dist, parent</code></pre>
+</div>
+<div class="code-panel" data-group="bf">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Bellman-Ford (Rust)</span>
+<span class="kw">fn</span> <span class="fn">bellman_ford</span>(edges: &amp;[(<span class="typ">usize</span>, <span class="typ">usize</span>, <span class="typ">i64</span>)],
+                n: <span class="typ">usize</span>, src: <span class="typ">usize</span>) -&gt; Option&lt;Vec&lt;<span class="typ">i64</span>&gt;&gt; {
+    <span class="kw">let mut</span> dist = <span class="fn">vec!</span>[<span class="typ">i64</span>::MAX; n];
+    dist[src] = <span class="num">0</span>;
+
+    <span class="kw">for</span> _ <span class="kw">in</span> <span class="num">0</span>..n - <span class="num">1</span> {
+        <span class="kw">for</span> &amp;(u, v, w) <span class="kw">in</span> edges {
+            <span class="kw">if</span> dist[u] != <span class="typ">i64</span>::MAX &amp;&amp;
+               dist[u] + w &lt; dist[v] {
+                dist[v] = dist[u] + w;
+            }
+        }
+    }
+    <span class="kw">for</span> &amp;(u, v, w) <span class="kw">in</span> edges {
+        <span class="kw">if</span> dist[u] != <span class="typ">i64</span>::MAX &amp;&amp;
+           dist[u] + w &lt; dist[v] {
+            <span class="kw">return</span> None; <span class="cm">// Negative cycle</span>
+        }
+    }
+    Some(dist)
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Floyd-Warshall -->
+<div id="floyd-warshall" class="section">
+<h2>Floyd-Warshall Algorithm</h2>
+<p>Floyd-Warshall computes <strong>all-pairs shortest paths</strong> using dynamic programming. The key recurrence: <code>dist[i][j] = min(dist[i][j], dist[i][k] + dist[k][j])</code> for each intermediate vertex k.</p>
+
+<h3>The DP Intuition</h3>
+<p>Think of it as: "Can I find a shorter path from i to j by going through vertex k?" We try every possible intermediate vertex. The ordering (k outermost) is critical -- after processing k, we have found all shortest paths using vertices {0..k} as intermediaries.</p>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>Floyd-Warshall detects negative cycles by checking if dist[i][i] &lt; 0 after completion. If the shortest path from a vertex to itself is negative, the graph contains a negative cycle. The algorithm's O(V^3) time is optimal for dense graphs since there are O(V^2) pairs to consider.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'fw')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'fw')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'fw')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'fw')">Rust</button>
+</div>
+<div class="code-panel active" data-group="fw">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Floyd-Warshall — all-pairs shortest paths (Java)</span>
+<span class="kw">static int</span>[][] <span class="fn">floydWarshall</span>(<span class="typ">int</span> V, <span class="typ">int</span>[][] graph) {
+    <span class="typ">int</span>[][] dist = <span class="kw">new int</span>[V][V];
+    <span class="kw">for</span> (<span class="typ">int</span>[] row : dist) Arrays.fill(row, INF);
+    <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; V; i++) dist[i][i] = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="typ">int</span>[] e : graph)
+        dist[e[<span class="num">0</span>]][e[<span class="num">1</span>]] = Math.min(dist[e[<span class="num">0</span>]][e[<span class="num">1</span>]], e[<span class="num">2</span>]);
+
+    <span class="kw">for</span> (<span class="typ">int</span> k = <span class="num">0</span>; k &lt; V; k++)
+        <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; V; i++)
+            <span class="kw">for</span> (<span class="typ">int</span> j = <span class="num">0</span>; j &lt; V; j++)
+                <span class="kw">if</span> (dist[i][k] != INF &amp;&amp; dist[k][j] != INF)
+                    dist[i][j] = Math.min(dist[i][j],
+                                          dist[i][k] + dist[k][j]);
+    <span class="kw">return</span> dist;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="fw">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Floyd-Warshall (C++17)</span>
+std::vector&lt;std::vector&lt;<span class="typ">long long</span>&gt;&gt;
+<span class="fn">floyd_warshall</span>(<span class="typ">int</span> n, <span class="kw">const</span> std::vector&lt;Edge&gt;&amp; edges) {
+    std::vector dist(n, std::vector&lt;<span class="typ">long long</span>&gt;(n, FW_INF));
+    <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; n; ++i) dist[i][i] = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="kw">auto</span> [u, v, w] : edges)
+        dist[u][v] = std::min(dist[u][v], (<span class="typ">long long</span>)w);
+
+    <span class="kw">for</span> (<span class="typ">int</span> k = <span class="num">0</span>; k &lt; n; ++k)
+        <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; n; ++i)
+            <span class="kw">for</span> (<span class="typ">int</span> j = <span class="num">0</span>; j &lt; n; ++j)
+                <span class="kw">if</span> (dist[i][k] &lt; FW_INF &amp;&amp;
+                    dist[k][j] &lt; FW_INF)
+                    dist[i][j] = std::min(dist[i][j],
+                                 dist[i][k] + dist[k][j]);
+    <span class="kw">return</span> dist;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="fw">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Floyd-Warshall with path reconstruction (Python)</span>
+<span class="kw">def</span> <span class="fn">floyd_warshall</span>(n, edges):
+    INF = <span class="fn">float</span>(<span class="str">'inf'</span>)
+    dist = [[INF] * n <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n)]
+    nxt = [[<span class="kw">None</span>] * n <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n)]
+
+    <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n): dist[i][i] = <span class="num">0.0</span>
+    <span class="kw">for</span> u, v, w <span class="kw">in</span> edges:
+        dist[u][v] = w
+        nxt[u][v] = v
+
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(n):
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(n):
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="fn">range</span>(n):
+                <span class="kw">if</span> dist[i][k] + dist[k][j] &lt; dist[i][j]:
+                    dist[i][j] = dist[i][k] + dist[k][j]
+                    nxt[i][j] = nxt[i][k]
+    <span class="kw">return</span> dist, nxt</code></pre>
+</div>
+<div class="code-panel" data-group="fw">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Floyd-Warshall (Rust)</span>
+<span class="kw">fn</span> <span class="fn">floyd_warshall</span>(adj_matrix: &amp;[Vec&lt;<span class="typ">i64</span>&gt;]) -&gt; Vec&lt;Vec&lt;<span class="typ">i64</span>&gt;&gt; {
+    <span class="kw">let</span> n = adj_matrix.len();
+    <span class="kw">let mut</span> dist = adj_matrix.to_vec();
+
+    <span class="kw">for</span> k <span class="kw">in</span> <span class="num">0</span>..n {
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="num">0</span>..n {
+            <span class="kw">for</span> j <span class="kw">in</span> <span class="num">0</span>..n {
+                <span class="kw">if</span> dist[i][k] != <span class="typ">i64</span>::MAX &amp;&amp;
+                   dist[k][j] != <span class="typ">i64</span>::MAX {
+                    <span class="kw">let</span> through_k = dist[i][k] + dist[k][j];
+                    <span class="kw">if</span> through_k &lt; dist[i][j] {
+                        dist[i][j] = through_k;
+                    }
+                }
+            }
+        }
+    }
+    dist
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- DSU -->
+<div id="dsu" class="section">
+<h2>Disjoint Set Union (Union-Find)</h2>
+<p>DSU tracks disjoint sets and supports two operations: <strong>find</strong> (which set does x belong to?) and <strong>union</strong> (merge two sets). With path compression and union by rank, both operations run in amortized O(alpha(n)) -- the inverse Ackermann function, which is effectively constant for all practical inputs.</p>
+
+<h3>Two Key Optimizations</h3>
+<ul>
+<li><strong>Path Compression:</strong> During find(x), make every node on the path point directly to the root. This flattens the tree for future queries.</li>
+<li><strong>Union by Rank:</strong> Always attach the shorter tree under the root of the taller tree. This keeps trees balanced.</li>
+</ul>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'dsu')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'dsu')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'dsu')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'dsu')">Rust</button>
+</div>
+<div class="code-panel active" data-group="dsu">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Union-Find / DSU (Java)</span>
+<span class="kw">static class</span> <span class="typ">DSU</span> {
+    <span class="typ">int</span>[] parent, rank;
+    <span class="fn">DSU</span>(<span class="typ">int</span> n) {
+        parent = <span class="kw">new int</span>[n]; rank = <span class="kw">new int</span>[n];
+        <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; n; i++) parent[i] = i;
+    }
+    <span class="typ">int</span> <span class="fn">find</span>(<span class="typ">int</span> x) {
+        <span class="kw">if</span> (parent[x] != x)
+            parent[x] = find(parent[x]); <span class="cm">// path compression</span>
+        <span class="kw">return</span> parent[x];
+    }
+    <span class="typ">boolean</span> <span class="fn">union</span>(<span class="typ">int</span> x, <span class="typ">int</span> y) {
+        <span class="typ">int</span> px = find(x), py = find(y);
+        <span class="kw">if</span> (px == py) <span class="kw">return false</span>;
+        <span class="cm">// Union by rank</span>
+        <span class="kw">if</span> (rank[px] &lt; rank[py]) { <span class="typ">int</span> t=px; px=py; py=t; }
+        parent[py] = px;
+        <span class="kw">if</span> (rank[px] == rank[py]) rank[px]++;
+        <span class="kw">return true</span>;
+    }
+}</code></pre>
+</div>
+<div class="code-panel" data-group="dsu">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// DSU / Union-Find (C++17)</span>
+<span class="kw">class</span> <span class="typ">DSU</span> {
+<span class="kw">public</span>:
+    <span class="kw">explicit</span> <span class="fn">DSU</span>(<span class="typ">int</span> n) : parent_(n), rank_(n, <span class="num">0</span>) {
+        std::iota(parent_.begin(), parent_.end(), <span class="num">0</span>);
+    }
+    <span class="typ">int</span> <span class="fn">find</span>(<span class="typ">int</span> x) {
+        <span class="kw">if</span> (parent_[x] != x)
+            parent_[x] = find(parent_[x]);
+        <span class="kw">return</span> parent_[x];
+    }
+    <span class="typ">bool</span> <span class="fn">unite</span>(<span class="typ">int</span> x, <span class="typ">int</span> y) {
+        <span class="typ">int</span> px = find(x), py = find(y);
+        <span class="kw">if</span> (px == py) <span class="kw">return false</span>;
+        <span class="kw">if</span> (rank_[px] &lt; rank_[py]) std::swap(px, py);
+        parent_[py] = px;
+        <span class="kw">if</span> (rank_[px] == rank_[py]) ++rank_[px];
+        <span class="kw">return true</span>;
+    }
+};</code></pre>
+</div>
+<div class="code-panel" data-group="dsu">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Union-Find with path compression and union by rank (Python)</span>
+<span class="kw">class</span> <span class="typ">UnionFind</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, n):
+        self.parent = <span class="fn">list</span>(<span class="fn">range</span>(n))
+        self.rank = [<span class="num">0</span>] * n
+        self.count = n  <span class="cm"># number of components</span>
+
+    <span class="kw">def</span> <span class="fn">find</span>(self, x):
+        <span class="kw">if</span> self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        <span class="kw">return</span> self.parent[x]
+
+    <span class="kw">def</span> <span class="fn">union</span>(self, x, y):
+        rx, ry = self.find(x), self.find(y)
+        <span class="kw">if</span> rx == ry: <span class="kw">return False</span>
+        <span class="kw">if</span> self.rank[rx] &lt; self.rank[ry]:
+            rx, ry = ry, rx
+        self.parent[ry] = rx
+        <span class="kw">if</span> self.rank[rx] == self.rank[ry]:
+            self.rank[rx] += <span class="num">1</span>
+        self.count -= <span class="num">1</span>
+        <span class="kw">return True</span></code></pre>
+</div>
+<div class="code-panel" data-group="dsu">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// DSU (Rust) — path compression + union by rank</span>
+<span class="kw">struct</span> <span class="typ">DSU</span> {
+    parent: Vec&lt;<span class="typ">usize</span>&gt;,
+    rank: Vec&lt;<span class="typ">usize</span>&gt;,
+}
+<span class="kw">impl</span> <span class="typ">DSU</span> {
+    <span class="kw">fn</span> <span class="fn">new</span>(n: <span class="typ">usize</span>) -&gt; Self {
+        DSU { parent: (<span class="num">0</span>..n).collect(), rank: <span class="fn">vec!</span>[<span class="num">0</span>; n] }
+    }
+    <span class="kw">fn</span> <span class="fn">find</span>(&amp;<span class="kw">mut</span> self, x: <span class="typ">usize</span>) -&gt; <span class="typ">usize</span> {
+        <span class="kw">if</span> self.parent[x] != x {
+            self.parent[x] = self.find(self.parent[x]);
+        }
+        self.parent[x]
+    }
+    <span class="kw">fn</span> <span class="fn">union</span>(&amp;<span class="kw">mut</span> self, x: <span class="typ">usize</span>, y: <span class="typ">usize</span>) -&gt; <span class="typ">bool</span> {
+        <span class="kw">let</span> rx = self.find(x);
+        <span class="kw">let</span> ry = self.find(y);
+        <span class="kw">if</span> rx == ry { <span class="kw">return false</span>; }
+        <span class="kw">match</span> self.rank[rx].cmp(&amp;self.rank[ry]) {
+            Less =&gt; self.parent[rx] = ry,
+            Greater =&gt; self.parent[ry] = rx,
+            Equal =&gt; {
+                self.parent[ry] = rx;
+                self.rank[rx] += <span class="num">1</span>;
+            }
+        }
+        <span class="kw">true</span>
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Kruskal -->
+<div id="kruskal" class="section">
+<h2>Kruskal's MST</h2>
+<p>Kruskal's algorithm builds a Minimum Spanning Tree by sorting all edges by weight and greedily adding them if they don't form a cycle. Cycle detection uses Union-Find.</p>
+
+<div class="diagram">
+<pre>
+MST Construction (Kruskal):
+
+Edges sorted by weight:
+  (2,4,1)  (1,2,2)  (4,5,3)  (0,1,4)  (0,2,4)  (1,3,6)  ...
+
+Step 1: Add 2-4 (w=1)  Components: {0},{1},{2,4},{3},{5}
+Step 2: Add 1-2 (w=2)  Components: {0},{1,2,4},{3},{5}
+Step 3: Add 4-5 (w=3)  Components: {0},{1,2,4,5},{3}
+Step 4: Add 0-1 (w=4)  Components: {0,1,2,4,5},{3}
+Step 5: Add 1-3 (w=6)  Components: {0,1,2,3,4,5}  DONE!
+
+Total MST weight: 1+2+3+4+6 = 16
+</pre>
+<p class="diagram-caption">Kruskal's algorithm: sort edges, add lightest edge that doesn't create a cycle.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'krus')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'krus')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'krus')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'krus')">Rust</button>
+</div>
+<div class="code-panel active" data-group="krus">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Kruskal's MST (Java)</span>
+<span class="kw">static int</span> <span class="fn">kruskalMST</span>(<span class="typ">int</span> V, <span class="typ">int</span>[][] edges) {
+    Arrays.sort(edges, (a, b) -&gt; a[<span class="num">2</span>] - b[<span class="num">2</span>]);
+    DSU dsu = <span class="kw">new</span> DSU(V);
+    <span class="typ">int</span> mstWeight = <span class="num">0</span>, edgeCount = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="typ">int</span>[] e : edges) {
+        <span class="kw">if</span> (edgeCount == V - <span class="num">1</span>) <span class="kw">break</span>;
+        <span class="kw">if</span> (dsu.union(e[<span class="num">0</span>], e[<span class="num">1</span>])) {
+            mstWeight += e[<span class="num">2</span>];
+            edgeCount++;
+        }
+    }
+    <span class="kw">return</span> mstWeight;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="krus">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Kruskal's MST (C++17)</span>
+std::pair&lt;<span class="typ">long long</span>, std::vector&lt;Edge&gt;&gt;
+<span class="fn">kruskal_mst</span>(<span class="typ">int</span> n, std::vector&lt;Edge&gt; edges) {
+    std::sort(edges.begin(), edges.end(),
+        [](<span class="kw">const</span> Edge&amp; a, <span class="kw">const</span> Edge&amp; b) {
+            <span class="kw">return</span> std::get&lt;<span class="num">2</span>&gt;(a) &lt; std::get&lt;<span class="num">2</span>&gt;(b);
+        });
+    DSU dsu(n);
+    <span class="typ">long long</span> total = <span class="num">0</span>;
+    std::vector&lt;Edge&gt; mst_edges;
+    <span class="kw">for</span> (<span class="kw">auto</span>&amp; [u, v, w] : edges) {
+        <span class="kw">if</span> (dsu.unite(u, v)) {
+            total += w;
+            mst_edges.emplace_back(u, v, w);
+            <span class="kw">if</span> (mst_edges.size() == n - <span class="num">1</span>) <span class="kw">break</span>;
+        }
+    }
+    <span class="kw">return</span> {total, mst_edges};
+}</code></pre>
+</div>
+<div class="code-panel" data-group="krus">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Kruskal's MST (Python)</span>
+<span class="kw">def</span> <span class="fn">kruskal_mst</span>(n, edges):
+    sorted_edges = <span class="fn">sorted</span>(edges, key=<span class="kw">lambda</span> e: e[<span class="num">2</span>])
+    uf = UnionFind(n)
+    mst_weight = <span class="num">0.0</span>
+    mst_edges = []
+    <span class="kw">for</span> u, v, w <span class="kw">in</span> sorted_edges:
+        <span class="kw">if</span> uf.union(u, v):
+            mst_weight += w
+            mst_edges.append((u, v, w))
+            <span class="kw">if</span> <span class="fn">len</span>(mst_edges) == n - <span class="num">1</span>:
+                <span class="kw">break</span>
+    <span class="kw">return</span> mst_weight, mst_edges</code></pre>
+</div>
+<div class="code-panel" data-group="krus">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Kruskal's MST (Rust)</span>
+<span class="kw">fn</span> <span class="fn">kruskal_mst</span>(n: <span class="typ">usize</span>,
+    edges: &amp;[(<span class="typ">usize</span>, <span class="typ">usize</span>, <span class="typ">i64</span>)])
+    -&gt; (<span class="typ">i64</span>, Vec&lt;(<span class="typ">usize</span>, <span class="typ">usize</span>, <span class="typ">i64</span>)&gt;) {
+    <span class="kw">let mut</span> sorted = edges.to_vec();
+    sorted.sort_unstable_by_key(|&amp;(_, _, w)| w);
+    <span class="kw">let mut</span> dsu = DSU::new(n);
+    <span class="kw">let mut</span> mst = Vec::new();
+    <span class="kw">let mut</span> total = <span class="num">0i64</span>;
+    <span class="kw">for</span> (u, v, w) <span class="kw">in</span> sorted {
+        <span class="kw">if</span> dsu.union(u, v) {
+            total += w;
+            mst.push((u, v, w));
+            <span class="kw">if</span> mst.len() == n - <span class="num">1</span> { <span class="kw">break</span>; }
+        }
+    }
+    (total, mst)
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Prim -->
+<div id="prim" class="section">
+<h2>Prim's MST</h2>
+<p>Prim's grows the MST from a single vertex, greedily adding the cheapest edge connecting a new vertex to the existing MST. Uses a min-heap for efficiency.</p>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>Kruskal vs. Prim: Use <strong>Kruskal</strong> for sparse graphs (E is close to V) since it's dominated by sorting E edges. Use <strong>Prim</strong> for dense graphs (E is close to V^2) since its heap-based approach handles adjacency well. Both produce the same MST weight (MSTs are unique if all edge weights are distinct).</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'prim')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'prim')">Python</button>
+</div>
+<div class="code-panel active" data-group="prim">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Prim's MST (Java)</span>
+<span class="kw">static int</span> <span class="fn">primMST</span>(<span class="typ">int</span> V, List&lt;<span class="typ">int</span>[]&gt;[] adj) {
+    <span class="typ">boolean</span>[] inMST = <span class="kw">new boolean</span>[V];
+    <span class="typ">int</span>[] key = <span class="kw">new int</span>[V];
+    Arrays.fill(key, Integer.MAX_VALUE);
+    key[<span class="num">0</span>] = <span class="num">0</span>;
+    PriorityQueue&lt;<span class="typ">int</span>[]&gt; pq = <span class="kw">new</span> PriorityQueue&lt;&gt;(
+        Comparator.comparingInt(a -&gt; a[<span class="num">0</span>]));
+    pq.offer(<span class="kw">new int</span>[]{<span class="num">0</span>, <span class="num">0</span>});
+    <span class="typ">int</span> mstWeight = <span class="num">0</span>;
+
+    <span class="kw">while</span> (!pq.isEmpty()) {
+        <span class="typ">int</span>[] curr = pq.poll();
+        <span class="typ">int</span> w = curr[<span class="num">0</span>], u = curr[<span class="num">1</span>];
+        <span class="kw">if</span> (inMST[u]) <span class="kw">continue</span>;
+        inMST[u] = <span class="kw">true</span>;
+        mstWeight += w;
+        <span class="kw">for</span> (<span class="typ">int</span>[] edge : adj[u]) {
+            <span class="typ">int</span> v = edge[<span class="num">0</span>], ew = edge[<span class="num">1</span>];
+            <span class="kw">if</span> (!inMST[v] &amp;&amp; ew &lt; key[v]) {
+                key[v] = ew;
+                pq.offer(<span class="kw">new int</span>[]{ew, v});
+            }
+        }
+    }
+    <span class="kw">return</span> mstWeight;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="prim">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Prim's MST (Python)</span>
+<span class="kw">def</span> <span class="fn">prim_mst</span>(adj, start, n):
+    visited = [<span class="kw">False</span>] * n
+    mst_weight = <span class="num">0.0</span>
+    mst_edges = []
+    heap = [(<span class="num">0.0</span>, -<span class="num">1</span>, start)]
+
+    <span class="kw">while</span> heap <span class="kw">and</span> <span class="fn">len</span>(mst_edges) &lt; n - <span class="num">1</span>:
+        w, frm, to = heapq.heappop(heap)
+        <span class="kw">if</span> visited[to]: <span class="kw">continue</span>
+        visited[to] = <span class="kw">True</span>
+        <span class="kw">if</span> frm != -<span class="num">1</span>:
+            mst_weight += w
+            mst_edges.append((frm, to, w))
+        <span class="kw">for</span> neighbor, weight <span class="kw">in</span> adj[to]:
+            <span class="kw">if not</span> visited[neighbor]:
+                heapq.heappush(heap, (weight, to, neighbor))
+    <span class="kw">return</span> mst_weight, mst_edges</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Practice -->
+<div id="practice" class="section">
+<h2>Practice Problems</h2>
+<div class="practice-list">
+<div class="practice-item"><span>Network Delay Time (LeetCode 743) - Dijkstra</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Cheapest Flights Within K Stops (LeetCode 787) - Bellman-Ford</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Find the City With Smallest Neighbors (LeetCode 1334) - Floyd-Warshall</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Number of Connected Components (LeetCode 323) - Union-Find</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Min Cost to Connect All Points (LeetCode 1584) - MST</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Swim in Rising Water (LeetCode 778) - Dijkstra/MST</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Path With Maximum Probability (LeetCode 1514)</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Critical Connections in a Network (LeetCode 1192)</span><span class="diff diff-hard">Hard</span></div>
+</div>
+</div>
+
+<!-- Summary -->
+<div id="summary" class="section summary-card">
+<h2>Summary &amp; Cheat Sheet</h2>
+<div class="summary-grid">
+<div class="summary-item"><h4>Dijkstra</h4><p>Non-negative weights. O((V+E) log V). Greedy + priority queue. Use for GPS, routing.</p></div>
+<div class="summary-item"><h4>Bellman-Ford</h4><p>Handles negative weights. Detects negative cycles. O(V*E). Use for currency arbitrage.</p></div>
+<div class="summary-item"><h4>Floyd-Warshall</h4><p>All-pairs shortest paths. O(V^3). Simple triple loop DP. Good for dense graphs with small V.</p></div>
+<div class="summary-item"><h4>Union-Find</h4><p>Near-O(1) find/union. Path compression + rank. Used in Kruskal's MST and connectivity queries.</p></div>
+<div class="summary-item"><h4>Kruskal's MST</h4><p>Sort edges + DSU. O(E log E). Better for sparse graphs.</p></div>
+<div class="summary-item"><h4>Prim's MST</h4><p>Priority queue from single vertex. O((V+E) log V). Better for dense graphs.</p></div>
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 21/index.html" class="nav-btn"><span class="label">Previous</span><span class="title">Week 21: Advanced Trees</span></a>
+<a href="../Week 23/index.html" class="nav-btn next"><span class="label">Next</span><span class="title">Week 23: Advanced DP</span></a>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+function switchTab(btn,group){const v=btn.closest('.code-viewer');v.querySelectorAll('.code-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');const p=v.querySelectorAll('.code-panel');p.forEach(x=>x.classList.remove('active'));p[Array.from(btn.parentElement.children).indexOf(btn)].classList.add('active')}
+function copyCode(btn){const c=btn.nextElementSibling.textContent;navigator.clipboard.writeText(c).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})}
+const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});
+document.querySelectorAll('.section').forEach(s=>observer.observe(s));
+const sections=document.querySelectorAll('.section[id]');const navLinks=document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)c=s.id});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})});
+</script>
+</body>
+</html>

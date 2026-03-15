@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 15: Heaps & Priority Queues | DSA Learning Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#21262d;--text:#c9d1d9;--text-muted:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--accent-gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--orange:#ffa657;--red:#ff7b72;--yellow:#e3b341}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.hero{padding:4rem 0 3rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 50%,rgba(88,166,255,.08) 0%,transparent 50%);pointer-events:none}
+.hero-week{display:inline-block;padding:.35rem 1rem;border-radius:999px;font-size:.85rem;font-weight:600;background:var(--accent-gradient);color:#0d1117;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;margin-bottom:.75rem;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1.15rem;color:var(--text-muted);max-width:700px;margin:0 auto 1.5rem}
+.badge-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.badge{padding:.3rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;border:1px solid var(--card-border)}
+.badge-diff{border-color:var(--orange);color:var(--orange)}
+.badge-time{border-color:var(--accent-blue);color:var(--accent-blue)}
+.page-layout{display:flex;gap:2rem;align-items:flex-start;padding:2rem 0 4rem}
+.sidebar{position:sticky;top:2rem;width:260px;flex-shrink:0}
+.sidebar-inner{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1.25rem;max-height:calc(100vh - 4rem);overflow-y:auto}
+.sidebar h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.75rem}
+.sidebar ul{list-style:none}.sidebar li{margin-bottom:.35rem}
+.sidebar a{display:block;padding:.35rem .65rem;border-radius:6px;font-size:.88rem;color:var(--text-muted);transition:all .2s}
+.sidebar a:hover,.sidebar a.active{background:rgba(88,166,255,.1);color:var(--accent-blue);text-decoration:none}
+.main-content{flex:1;min-width:0}
+.section-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:2rem;margin-bottom:2rem;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.section-card.visible{opacity:1;transform:translateY(0)}
+.section-card h2{font-size:1.6rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--card-border)}
+.section-card h3{font-size:1.2rem;margin:1.5rem 0 .75rem;color:var(--accent-blue)}
+.section-card p,.section-card li{margin-bottom:.5rem}
+.section-card ul,.section-card ol{padding-left:1.5rem;margin-bottom:1rem}
+.obj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+.obj-item{background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.15);border-radius:8px;padding:1rem;display:flex;gap:.75rem;align-items:flex-start}
+.obj-icon{width:28px;height:28px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:#0d1117;font-weight:700}
+.code-viewer{background:var(--code-bg);border:1px solid var(--card-border);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.code-tabs{display:flex;background:#13171d;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:.6rem 1.2rem;font-size:.82rem;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue);background:rgba(88,166,255,.06)}
+.code-panel{display:none;position:relative}.code-panel.active{display:block}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;padding:.35rem .75rem;font-size:.75rem;background:rgba(255,255,255,.08);color:var(--text-muted);border:1px solid var(--card-border);border-radius:6px;cursor:pointer;z-index:2;transition:all .2s}
+.copy-btn:hover{background:rgba(255,255,255,.15);color:var(--text)}
+.code-panel pre{padding:1.25rem;overflow-x:auto;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:.85rem;line-height:1.65;counter-reset:line}
+.code-panel pre .line{display:block}
+.code-panel pre .line::before{counter-increment:line;content:counter(line);display:inline-block;width:3ch;margin-right:1.5ch;text-align:right;color:var(--text-muted);opacity:.4;font-size:.78rem;user-select:none}
+.kw{color:var(--kw)}.str{color:var(--str)}.cmt{color:var(--cmt);font-style:italic}.num{color:var(--num)}.fn{color:var(--fn)}.type{color:var(--orange)}
+.insight{background:rgba(63,185,80,.06);border-left:3px solid var(--accent-green);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1.25rem 0}
+.insight-title{font-weight:700;color:var(--accent-green);margin-bottom:.35rem;font-size:.92rem}
+.complexity-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.complexity-table th{background:rgba(88,166,255,.1);padding:.6rem 1rem;text-align:left;font-weight:600;border-bottom:2px solid var(--card-border)}
+.complexity-table td{padding:.55rem 1rem;border-bottom:1px solid var(--card-border)}
+.complexity-table tr:last-child td{border-bottom:none}
+.viz{margin:1.5rem 0;padding:1.5rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:10px;overflow-x:auto}
+.viz-title{font-weight:700;color:var(--accent-blue);margin-bottom:1rem;text-align:center;font-size:1rem}
+/* Heap visualization */
+.heap-dual{display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;align-items:flex-start}
+.heap-tree{display:flex;flex-direction:column;align-items:center;gap:0}
+.heap-level{display:flex;justify-content:center;gap:0}
+.heap-node{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;border:2px solid var(--accent-blue);background:rgba(88,166,255,.12);color:var(--accent-blue);margin:0 .35rem}
+.heap-node.root{border-color:var(--accent-green);background:var(--accent-green);color:#0d1117}
+.heap-edges{text-align:center;color:var(--text-muted);font-size:.7rem;margin:.1rem 0}
+.heap-array{display:flex;gap:2px;margin-top:.5rem}
+.heap-arr-cell{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;border:2px solid var(--card-border);background:rgba(88,166,255,.06);color:var(--text);border-radius:6px}
+.heap-arr-cell:first-child{border-color:var(--accent-green);color:var(--accent-green)}
+.heap-arr-idx{display:flex;gap:2px}
+.heap-arr-idx span{width:44px;text-align:center;font-size:.7rem;color:var(--text-muted)}
+.summary-card{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(63,185,80,.08));border:1px solid rgba(88,166,255,.2);border-radius:12px;padding:2rem}
+.summary-card h2{background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.summary-item{background:rgba(0,0,0,.2);border-radius:8px;padding:1rem}
+.summary-item h4{color:var(--accent-blue);margin-bottom:.5rem;font-size:.92rem}
+.summary-item code{background:rgba(88,166,255,.1);padding:.15rem .4rem;border-radius:4px;font-size:.82rem;color:var(--accent-blue)}
+.page-nav{display:flex;justify-content:space-between;padding:2rem 0;border-top:1px solid var(--card-border);margin-top:2rem}
+.nav-btn{padding:.65rem 1.5rem;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-btn:hover{border-color:var(--accent-blue);color:var(--accent-blue);text-decoration:none}
+.practice-list{list-style:none;padding:0}
+.practice-list li{padding:.65rem 1rem;margin-bottom:.5rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.practice-diff{font-size:.72rem;padding:.2rem .6rem;border-radius:999px;font-weight:600}
+.diff-easy{background:rgba(63,185,80,.15);color:var(--accent-green)}.diff-med{background:rgba(227,179,65,.15);color:var(--yellow)}.diff-hard{background:rgba(255,123,114,.15);color:var(--red)}
+.sidebar-toggle{display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;width:48px;height:48px;border-radius:50%;background:var(--accent-gradient);border:none;color:#0d1117;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+@media(max-width:900px){.sidebar{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99;padding:1rem;background:rgba(13,17,23,.95);backdrop-filter:blur(8px)}.sidebar.open{display:block}.sidebar-inner{max-height:calc(100vh - 2rem)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.page-layout{flex-direction:column}}
+</style>
+</head>
+<body>
+<section class="hero">
+<div class="container">
+<span class="hero-week">WEEK 15</span>
+<h1>Heaps & Priority Queues</h1>
+<p class="hero-desc">Master the heap data structure: build max-heaps from scratch, implement heap sort, solve kth largest element, merge k sorted arrays, and find running medians with the two-heap technique.</p>
+<div class="badge-row">
+<span class="badge badge-diff">Intermediate-Advanced</span>
+<span class="badge badge-time">~7 hours</span>
+<span class="badge" style="border-color:var(--fn);color:var(--fn)">5 Implementations</span>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="page-layout">
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-inner">
+<h3>Contents</h3>
+<ul>
+<li><a href="#objectives">Learning Objectives</a></li>
+<li><a href="#heap-basics">Heap Fundamentals</a></li>
+<li><a href="#max-heap">MaxHeap Implementation</a></li>
+<li><a href="#heap-sort">Heap Sort</a></li>
+<li><a href="#kth-largest">Kth Largest Element</a></li>
+<li><a href="#median-finder">Median from Stream</a></li>
+<li><a href="#complexity">Complexity Analysis</a></li>
+<li><a href="#practice">Practice Problems</a></li>
+<li><a href="#summary">Cheat Sheet</a></li>
+</ul>
+</div>
+</nav>
+
+<main class="main-content">
+<section class="section-card" id="objectives">
+<h2>Learning Objectives</h2>
+<div class="obj-grid">
+<div class="obj-item"><div class="obj-icon">1</div><div>Understand heap property (max-heap/min-heap) and array representation</div></div>
+<div class="obj-item"><div class="obj-icon">2</div><div>Implement insert (sift up) and extract-max (sift down) from scratch</div></div>
+<div class="obj-item"><div class="obj-icon">3</div><div>Build a heap from an unordered array in O(n) using Floyd's algorithm</div></div>
+<div class="obj-item"><div class="obj-icon">4</div><div>Implement heap sort: O(n log n), in-place, not stable</div></div>
+<div class="obj-item"><div class="obj-icon">5</div><div>Solve kth largest element using a min-heap of size k</div></div>
+<div class="obj-item"><div class="obj-icon">6</div><div>Find running median using the two-heap technique (MedianFinder)</div></div>
+</div>
+</section>
+
+<!-- Heap Basics -->
+<section class="section-card" id="heap-basics">
+<h2>Heap Fundamentals</h2>
+<p>A <strong>heap</strong> is a <strong>complete binary tree</strong> stored as an array where every parent satisfies the heap property relative to its children:</p>
+<ul>
+<li><strong>Max-Heap</strong>: parent &ge; children (root = maximum element)</li>
+<li><strong>Min-Heap</strong>: parent &le; children (root = minimum element)</li>
+</ul>
+
+<h3>Array Representation (0-indexed)</h3>
+<p>Since a heap is a complete binary tree, it can be stored compactly in an array with no gaps:</p>
+<ul>
+<li><strong>Parent of i</strong>: <code>(i - 1) / 2</code></li>
+<li><strong>Left child of i</strong>: <code>2 * i + 1</code></li>
+<li><strong>Right child of i</strong>: <code>2 * i + 2</code></li>
+</ul>
+
+<!-- Heap Dual View -->
+<div class="viz">
+<div class="viz-title">Max-Heap: Tree View + Array View</div>
+<div class="heap-dual">
+<div>
+<div style="font-weight:600;text-align:center;margin-bottom:.5rem;font-size:.85rem;color:var(--accent-blue)">Tree View</div>
+<div class="heap-tree">
+<div class="heap-level"><div class="heap-node root">9</div></div>
+<div class="heap-edges">/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \</div>
+<div class="heap-level"><div class="heap-node">7</div><div style="width:20px"></div><div class="heap-node">8</div></div>
+<div class="heap-edges">/ &nbsp; \ &nbsp;&nbsp;&nbsp; / &nbsp; \</div>
+<div class="heap-level"><div class="heap-node">5</div><div class="heap-node">3</div><div style="width:4px"></div><div class="heap-node">2</div><div class="heap-node">1</div></div>
+</div>
+</div>
+<div>
+<div style="font-weight:600;text-align:center;margin-bottom:.5rem;font-size:.85rem;color:var(--accent-green)">Array View</div>
+<div class="heap-array">
+<div class="heap-arr-cell">9</div>
+<div class="heap-arr-cell">7</div>
+<div class="heap-arr-cell">8</div>
+<div class="heap-arr-cell">5</div>
+<div class="heap-arr-cell">3</div>
+<div class="heap-arr-cell">2</div>
+<div class="heap-arr-cell">1</div>
+</div>
+<div class="heap-arr-idx">
+<span>0</span><span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+</div>
+<div style="margin-top:.75rem;font-size:.8rem;color:var(--text-muted)">
+parent(3) = (3-1)/2 = 1 &rarr; arr[1] = 7<br>
+left(1) = 2*1+1 = 3 &rarr; arr[3] = 5<br>
+right(1) = 2*1+2 = 4 &rarr; arr[4] = 3
+</div>
+</div>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Why Arrays?</div>
+A complete binary tree has no gaps, so storing it in an array wastes no space and provides O(1) access to any node's parent or children via simple arithmetic. No pointers needed!
+</div>
+
+<h3>Core Operations</h3>
+<ul>
+<li><strong>Sift Up</strong> (after insert): New element placed at end, bubbled up by swapping with parent while larger</li>
+<li><strong>Sift Down</strong> (after extract): Root replaced by last element, pushed down by swapping with larger child</li>
+<li><strong>Build Heap</strong> (Floyd's algorithm): Start from last non-leaf, sift down each. O(n) &mdash; not O(n log n)!</li>
+</ul>
+</section>
+
+<!-- MaxHeap Implementation -->
+<section class="section-card" id="max-heap">
+<h2>MaxHeap Implementation</h2>
+
+<!-- Sift Up/Down Visualization -->
+<div class="viz">
+<div class="viz-title">Sift Up: Insert 10 into Max-Heap [9, 7, 8, 5, 3]</div>
+<div style="display:flex;gap:2rem;justify-content:center;flex-wrap:wrap;text-align:center">
+<div>
+<div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Step 1: Add at end</div>
+<div class="heap-array"><div class="heap-arr-cell">9</div><div class="heap-arr-cell">7</div><div class="heap-arr-cell">8</div><div class="heap-arr-cell">5</div><div class="heap-arr-cell">3</div><div class="heap-arr-cell" style="border-color:var(--orange);color:var(--orange)">10</div></div>
+</div>
+<div>
+<div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Step 2: Swap with parent (8)</div>
+<div class="heap-array"><div class="heap-arr-cell">9</div><div class="heap-arr-cell">7</div><div class="heap-arr-cell" style="border-color:var(--orange);color:var(--orange)">10</div><div class="heap-arr-cell">5</div><div class="heap-arr-cell">3</div><div class="heap-arr-cell">8</div></div>
+</div>
+<div>
+<div style="font-size:.8rem;color:var(--text-muted);margin-bottom:.5rem">Step 3: Swap with parent (9)</div>
+<div class="heap-array"><div class="heap-arr-cell" style="border-color:var(--accent-green);color:var(--accent-green)">10</div><div class="heap-arr-cell">7</div><div class="heap-arr-cell">9</div><div class="heap-arr-cell">5</div><div class="heap-arr-cell">3</div><div class="heap-arr-cell">8</div></div>
+</div>
+</div>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'mh')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'mh')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'mh')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'mh')">Rust</button>
+</div>
+<div class="code-panel active" id="mh-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="mh-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="mh-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="mh-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Build Heap is O(n), not O(n log n)</div>
+Floyd's build-heap algorithm sifts down from the last non-leaf to the root. Most nodes are near the bottom and sift down only a short distance. The total work sums to O(n) by a geometric series argument. This is important for heap sort's efficiency.
+</div>
+</section>
+
+<!-- Heap Sort -->
+<section class="section-card" id="heap-sort">
+<h2>Heap Sort</h2>
+<p>Heap sort uses a max-heap to sort an array in-place:</p>
+<ol>
+<li><strong>Phase 1: Build max-heap</strong> from the array &mdash; O(n)</li>
+<li><strong>Phase 2: Extract max repeatedly</strong>: Swap root (max) with last unsorted element, shrink heap by 1, sift down &mdash; O(n log n)</li>
+</ol>
+<p>Overall: <strong>O(n log n)</strong> time, <strong>O(1)</strong> extra space, <strong>not stable</strong>.</p>
+
+<div class="viz">
+<div class="viz-title">Heap Sort: Phase 2 &mdash; Extract Max Repeatedly</div>
+<div style="display:flex;gap:1rem;justify-content:center;flex-wrap:wrap;font-size:.82rem">
+<div style="text-align:center">
+<div style="color:var(--text-muted);margin-bottom:.3rem">Initial heap</div>
+<div class="heap-array"><div class="heap-arr-cell" style="border-color:var(--accent-green)">9</div><div class="heap-arr-cell">7</div><div class="heap-arr-cell">8</div><div class="heap-arr-cell">5</div><div class="heap-arr-cell">3</div></div>
+</div>
+<div style="display:flex;align-items:center;color:var(--text-muted)">&rarr;</div>
+<div style="text-align:center">
+<div style="color:var(--text-muted);margin-bottom:.3rem">Swap 9 &harr; 3, sift down</div>
+<div class="heap-array"><div class="heap-arr-cell" style="border-color:var(--accent-green)">8</div><div class="heap-arr-cell">7</div><div class="heap-arr-cell">3</div><div class="heap-arr-cell">5</div><div class="heap-arr-cell" style="opacity:.4">9</div></div>
+</div>
+<div style="display:flex;align-items:center;color:var(--text-muted)">&rarr;</div>
+<div style="text-align:center">
+<div style="color:var(--text-muted);margin-bottom:.3rem">Continue...</div>
+<div class="heap-array"><div class="heap-arr-cell">3</div><div class="heap-arr-cell">5</div><div class="heap-arr-cell" style="opacity:.4">7</div><div class="heap-arr-cell" style="opacity:.4">8</div><div class="heap-arr-cell" style="opacity:.4">9</div></div>
+</div>
+</div>
+<div style="text-align:center;margin-top:.5rem;font-size:.82rem;color:var(--text-muted)">Grayed elements are in their sorted position. Result: [3, 5, 7, 8, 9]</div>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'hs')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'hs')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'hs')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'hs')">Rust</button>
+</div>
+<div class="code-panel active" id="hs-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="hs-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="hs-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="hs-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Kth Largest -->
+<section class="section-card" id="kth-largest">
+<h2>Kth Largest Element</h2>
+<p>Find the kth largest element in an unsorted array. Strategy: maintain a <strong>min-heap of size k</strong>. After processing all elements, the root is the kth largest.</p>
+
+<h3>Algorithm</h3>
+<ol>
+<li>Push each element onto a min-heap</li>
+<li>If heap size exceeds k, pop the minimum (smallest of the k largest)</li>
+<li>After all elements, the root = kth largest</li>
+</ol>
+<p><strong>Time: O(n log k)</strong>, <strong>Space: O(k)</strong></p>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Min-Heap for Kth Largest</div>
+It seems counterintuitive to use a <em>min</em>-heap to find the kth <em>largest</em>. The trick: the min-heap holds the k largest elements seen so far. Its root (the minimum of those k elements) is exactly the kth largest overall. By evicting the smallest of the top-k candidates at each step, we guarantee correctness.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'kl')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'kl')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'kl')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'kl')">Rust</button>
+</div>
+<div class="code-panel active" id="kl-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="kl-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="kl-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="kl-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Median Finder -->
+<section class="section-card" id="median-finder">
+<h2>Median from Data Stream (Two-Heap Technique)</h2>
+<p>Efficiently find the median of a growing stream of numbers using two heaps:</p>
+<ul>
+<li><strong>Lower half</strong> (max-heap): stores the smaller half of numbers</li>
+<li><strong>Upper half</strong> (min-heap): stores the larger half of numbers</li>
+</ul>
+
+<h3>Invariants</h3>
+<ol>
+<li><code>|lower.size() - upper.size()| &le; 1</code></li>
+<li>Every element in lower &le; every element in upper</li>
+</ol>
+<p>Median = top of lower (odd count) or average of both tops (even count). <strong>Add: O(log n), Find median: O(1).</strong></p>
+
+<div class="viz">
+<div class="viz-title">Two-Heap MedianFinder: Stream = [5, 15, 1, 3, 2]</div>
+<table class="complexity-table" style="font-size:.82rem">
+<tr><th>Add</th><th>Lower (max-heap)</th><th>Upper (min-heap)</th><th>Median</th></tr>
+<tr><td>5</td><td>[5]</td><td>[]</td><td style="color:var(--accent-green);font-weight:700">5.0</td></tr>
+<tr><td>15</td><td>[5]</td><td>[15]</td><td style="color:var(--accent-green);font-weight:700">10.0</td></tr>
+<tr><td>1</td><td>[1, 5]</td><td>[15]</td><td style="color:var(--accent-green);font-weight:700">5.0</td></tr>
+<tr><td>3</td><td>[3, 5]</td><td>[5, 15] &rarr; rebalanced</td><td style="color:var(--accent-green);font-weight:700">4.0</td></tr>
+<tr><td>2</td><td>[1, 2, 3]</td><td>[5, 15]</td><td style="color:var(--accent-green);font-weight:700">3.0</td></tr>
+</table>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'mf')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'mf')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'mf')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'mf')">Rust</button>
+</div>
+<div class="code-panel active" id="mf-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="mf-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="mf-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="mf-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Python's heapq is a min-heap</div>
+Python only has a min-heap (heapq). To simulate a max-heap, negate all values before pushing and negate again when popping. This is the standard Python trick: <code>heappush(max_heap, -val)</code> and <code>-heappop(max_heap)</code>.
+</div>
+</section>
+
+<!-- Complexity -->
+<section class="section-card" id="complexity">
+<h2>Complexity Analysis</h2>
+<table class="complexity-table">
+<tr><th>Operation</th><th>Time</th><th>Space</th><th>Notes</th></tr>
+<tr><td>Heap Insert (sift up)</td><td>O(log n)</td><td>O(1)</td><td></td></tr>
+<tr><td>Heap Extract Max/Min</td><td>O(log n)</td><td>O(1)</td><td></td></tr>
+<tr><td>Heap Peek</td><td>O(1)</td><td>O(1)</td><td>Root element</td></tr>
+<tr><td>Build Heap (Floyd's)</td><td>O(n)</td><td>O(1)</td><td>Bottom-up sift down</td></tr>
+<tr><td>Heap Sort</td><td>O(n log n)</td><td>O(1)</td><td>In-place, not stable</td></tr>
+<tr><td>Kth Largest (min-heap)</td><td>O(n log k)</td><td>O(k)</td><td>Min-heap of size k</td></tr>
+<tr><td>Merge K Sorted Arrays</td><td>O(N log k)</td><td>O(N + k)</td><td>N = total elements</td></tr>
+<tr><td>MedianFinder Add</td><td>O(log n)</td><td>O(n)</td><td>Two heaps</td></tr>
+<tr><td>MedianFinder Find</td><td>O(1)</td><td>O(1)</td><td>Peek at root(s)</td></tr>
+</table>
+</section>
+
+<!-- Practice -->
+<section class="section-card" id="practice">
+<h2>Practice Problems</h2>
+<ul class="practice-list">
+<li><span>Kth Largest Element in Array (LC 215)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Find Median from Data Stream (LC 295)</span><span class="practice-diff diff-hard">Hard</span></li>
+<li><span>Merge K Sorted Lists (LC 23)</span><span class="practice-diff diff-hard">Hard</span></li>
+<li><span>Top K Frequent Elements (LC 347)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Sort an Array (using heap sort) (LC 912)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Last Stone Weight (LC 1046)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>K Closest Points to Origin (LC 973)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Task Scheduler (LC 621)</span><span class="practice-diff diff-med">Medium</span></li>
+</ul>
+</section>
+
+<!-- Summary -->
+<section class="section-card summary-card" id="summary">
+<h2>Week 15 Cheat Sheet</h2>
+<div class="summary-grid">
+<div class="summary-item"><h4>Heap Property</h4><p>Max-heap: parent &ge; children. Min-heap: parent &le; children. Stored as array.</p></div>
+<div class="summary-item"><h4>Index Formulas</h4><p>Parent: <code>(i-1)/2</code>. Left: <code>2i+1</code>. Right: <code>2i+2</code>.</p></div>
+<div class="summary-item"><h4>Heap Sort</h4><p>Build heap O(n) + extract n times O(n log n). In-place. Not stable.</p></div>
+<div class="summary-item"><h4>Kth Largest</h4><p>Min-heap of size k. Root = kth largest. O(n log k).</p></div>
+<div class="summary-item"><h4>Median Finder</h4><p>Max-heap (lower) + min-heap (upper). Add O(log n), find O(1).</p></div>
+<div class="summary-item"><h4>Language Tips</h4><p>Java: <code>PriorityQueue</code>. Python: <code>heapq</code> (min). C++: <code>priority_queue</code> (max). Rust: <code>BinaryHeap</code> (max).</p></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="../Week 14/index.html" class="nav-btn">&larr; Week 14: Trees</a>
+<a href="../Week 16/index.html" class="nav-btn">Week 16: Hashing &rarr;</a>
+</nav>
+</main>
+</div>
+</div>
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle contents">&#9776;</button>
+
+<script>
+const codeData={
+mh:[
+`// Java: MaxHeap from scratch (0-indexed)
+static class MaxHeap {
+    int[] data; int size;
+    MaxHeap(int capacity) { data = new int[capacity]; size = 0; }
+
+    int parent(int i) { return (i - 1) / 2; }
+    int left(int i)   { return 2 * i + 1; }
+    int right(int i)  { return 2 * i + 2; }
+    void swap(int i, int j) { int t=data[i]; data[i]=data[j]; data[j]=t; }
+
+    // Sift up: fix heap from node i upward (after insert)
+    void siftUp(int i) {
+        while (i > 0 && data[parent(i)] < data[i]) {
+            swap(i, parent(i));
+            i = parent(i);
+        }
+    }
+
+    // Sift down: fix heap from node i downward (after extract)
+    void siftDown(int i) {
+        int largest = i;
+        int l = left(i), r = right(i);
+        if (l < size && data[l] > data[largest]) largest = l;
+        if (r < size && data[r] > data[largest]) largest = r;
+        if (largest != i) { swap(i, largest); siftDown(largest); }
+    }
+
+    void insert(int x) { data[size++] = x; siftUp(size - 1); }
+    int extractMax() {
+        int max = data[0];
+        data[0] = data[--size];
+        siftDown(0);
+        return max;
+    }
+    int peekMax() { return data[0]; }
+    boolean isEmpty() { return size == 0; }
+}`,
+`// C++: MaxHeap class
+class MaxHeap {
+    vector<int> heap_;
+    static int parent(int i)     { return (i - 1) / 2; }
+    static int left_child(int i) { return 2 * i + 1; }
+    static int right_child(int i){ return 2 * i + 2; }
+
+    void sift_up(int i) {
+        while (i > 0 && heap_[parent(i)] < heap_[i]) {
+            swap(heap_[parent(i)], heap_[i]);
+            i = parent(i);
+        }
+    }
+    void sift_down(int i) {
+        int n = heap_.size();
+        while (true) {
+            int largest = i;
+            int l = left_child(i), r = right_child(i);
+            if (l < n && heap_[l] > heap_[largest]) largest = l;
+            if (r < n && heap_[r] > heap_[largest]) largest = r;
+            if (largest == i) break;
+            swap(heap_[i], heap_[largest]);
+            i = largest;
+        }
+    }
+public:
+    void insert(int val) {
+        heap_.push_back(val);
+        sift_up(heap_.size() - 1);
+    }
+    optional<int> extract_max() {
+        if (heap_.empty()) return nullopt;
+        int max_val = heap_.front();
+        heap_.front() = heap_.back();
+        heap_.pop_back();
+        if (!heap_.empty()) sift_down(0);
+        return max_val;
+    }
+    optional<int> peek() const {
+        return heap_.empty() ? nullopt : optional(heap_.front());
+    }
+    bool empty() const { return heap_.empty(); }
+};`,
+`class MaxHeap:
+    """Max-heap backed by a Python list."""
+    def __init__(self, items=None):
+        self._data = list(items) if items else []
+        if self._data:
+            self._build_heap()
+
+    def insert(self, value):
+        """Append and sift up. O(log n)."""
+        self._data.append(value)
+        self._sift_up(len(self._data) - 1)
+
+    def extract_max(self):
+        """Swap root with last, pop, sift down. O(log n)."""
+        if not self._data:
+            raise IndexError("empty heap")
+        self._data[0], self._data[-1] = self._data[-1], self._data[0]
+        max_val = self._data.pop()
+        if self._data:
+            self._sift_down(0)
+        return max_val
+
+    def peek(self): return self._data[0]
+
+    def _sift_up(self, idx):
+        while idx > 0:
+            parent = (idx - 1) // 2
+            if self._data[idx] > self._data[parent]:
+                self._data[idx], self._data[parent] = \\
+                    self._data[parent], self._data[idx]
+                idx = parent
+            else: break
+
+    def _sift_down(self, idx):
+        n = len(self._data)
+        while True:
+            largest, left, right = idx, 2*idx+1, 2*idx+2
+            if left < n and self._data[left] > self._data[largest]:
+                largest = left
+            if right < n and self._data[right] > self._data[largest]:
+                largest = right
+            if largest != idx:
+                self._data[idx], self._data[largest] = \\
+                    self._data[largest], self._data[idx]
+                idx = largest
+            else: break
+
+    def _build_heap(self):
+        """Floyd's algorithm: O(n)."""
+        for i in range(len(self._data)//2 - 1, -1, -1):
+            self._sift_down(i)`,
+`// Rust: MaxHeap
+struct MaxHeap { data: Vec<i32> }
+
+impl MaxHeap {
+    fn new() -> Self { MaxHeap { data: Vec::new() } }
+
+    fn insert(&mut self, val: i32) {
+        self.data.push(val);
+        let idx = self.data.len() - 1;
+        self.sift_up(idx);
+    }
+
+    fn extract_max(&mut self) -> Option<i32> {
+        if self.data.is_empty() { return None; }
+        let n = self.data.len();
+        self.data.swap(0, n - 1);
+        let max_val = self.data.pop();
+        if !self.data.is_empty() { self.sift_down(0); }
+        max_val
+    }
+
+    fn peek(&self) -> Option<i32> { self.data.first().copied() }
+
+    fn sift_up(&mut self, mut idx: usize) {
+        while idx > 0 {
+            let parent = (idx - 1) / 2;
+            if self.data[idx] > self.data[parent] {
+                self.data.swap(idx, parent);
+                idx = parent;
+            } else { break; }
+        }
+    }
+
+    fn sift_down(&mut self, mut idx: usize) {
+        let n = self.data.len();
+        loop {
+            let (left, right) = (2*idx+1, 2*idx+2);
+            let mut largest = idx;
+            if left < n && self.data[left] > self.data[largest] { largest = left; }
+            if right < n && self.data[right] > self.data[largest] { largest = right; }
+            if largest != idx { self.data.swap(idx, largest); idx = largest; }
+            else { break; }
+        }
+    }
+}`
+],
+hs:[
+`// Java: Heap Sort (in-place)
+static void heapSort(int[] arr) {
+    int n = arr.length;
+    // Build max-heap: O(n)
+    for (int i = n/2 - 1; i >= 0; i--)
+        siftDown(arr, n, i);
+    // Extract max one by one: O(n log n)
+    for (int i = n - 1; i > 0; i--) {
+        int t = arr[0]; arr[0] = arr[i]; arr[i] = t;
+        siftDown(arr, i, 0);
+    }
+}
+static void siftDown(int[] arr, int n, int i) {
+    int largest = i, l = 2*i+1, r = 2*i+2;
+    if (l < n && arr[l] > arr[largest]) largest = l;
+    if (r < n && arr[r] > arr[largest]) largest = r;
+    if (largest != i) {
+        int t = arr[i]; arr[i] = arr[largest]; arr[largest] = t;
+        siftDown(arr, n, largest);
+    }
+}`,
+`// C++: Heap Sort — in-place, O(n log n), O(1) space
+void heap_sort(vector<int>& arr) {
+    int n = arr.size();
+    auto sift_down = [&](int i, int size) {
+        while (true) {
+            int largest = i, l = 2*i+1, r = 2*i+2;
+            if (l < size && arr[l] > arr[largest]) largest = l;
+            if (r < size && arr[r] > arr[largest]) largest = r;
+            if (largest == i) break;
+            swap(arr[i], arr[largest]);
+            i = largest;
+        }
+    };
+    // Build max-heap: O(n)
+    for (int i = n/2 - 1; i >= 0; --i) sift_down(i, n);
+    // Extract max repeatedly: O(n log n)
+    for (int i = n - 1; i > 0; --i) {
+        swap(arr[0], arr[i]);
+        sift_down(0, i);
+    }
+}`,
+`def heap_sort(arr):
+    """Sort in-place using heap sort. O(n log n), O(1) space."""
+    n = len(arr)
+
+    def sift_down(start, end):
+        idx = start
+        while True:
+            largest, left, right = idx, 2*idx+1, 2*idx+2
+            if left <= end and arr[left] > arr[largest]:  largest = left
+            if right <= end and arr[right] > arr[largest]: largest = right
+            if largest != idx:
+                arr[idx], arr[largest] = arr[largest], arr[idx]
+                idx = largest
+            else: break
+
+    # Build max-heap: O(n)
+    for i in range(n // 2 - 1, -1, -1):
+        sift_down(i, n - 1)
+
+    # Extract max repeatedly: O(n log n)
+    for end in range(n - 1, 0, -1):
+        arr[0], arr[end] = arr[end], arr[0]
+        sift_down(0, end - 1)
+    return arr`,
+`// Rust: Heap Sort
+fn heap_sort(arr: &mut Vec<i32>) {
+    let n = arr.len();
+    if n <= 1 { return; }
+
+    // Build max-heap (bottom-up): O(n)
+    for i in (0..n / 2).rev() {
+        sift_down_range(arr, i, n);
+    }
+
+    // Extract max repeatedly: O(n log n)
+    for end in (1..n).rev() {
+        arr.swap(0, end);
+        sift_down_range(arr, 0, end);
+    }
+}
+
+fn sift_down_range(arr: &mut Vec<i32>, mut idx: usize, size: usize) {
+    loop {
+        let (left, right) = (2*idx+1, 2*idx+2);
+        let mut largest = idx;
+        if left < size && arr[left] > arr[largest] { largest = left; }
+        if right < size && arr[right] > arr[largest] { largest = right; }
+        if largest != idx { arr.swap(idx, largest); idx = largest; }
+        else { break; }
+    }
+}`
+],
+kl:[
+`// Java: Kth Largest — min-heap of size k
+// Time: O(n log k), Space: O(k)
+static int kthLargest(int[] arr, int k) {
+    PriorityQueue<Integer> minHeap = new PriorityQueue<>();
+    for (int x : arr) {
+        minHeap.offer(x);
+        if (minHeap.size() > k) minHeap.poll(); // remove smallest
+    }
+    return minHeap.peek(); // kth largest
+}
+// Example: kthLargest([3,2,1,5,6,4], 2) => 5`,
+`// C++: Kth Largest — min-heap of size k
+// Time: O(n log k), Space: O(k)
+int kth_largest(const vector<int>& nums, int k) {
+    // std::greater<> makes it a min-heap
+    priority_queue<int, vector<int>, greater<>> min_heap;
+    for (int num : nums) {
+        min_heap.push(num);
+        if ((int)min_heap.size() > k)
+            min_heap.pop();  // evict smallest, keep k largest
+    }
+    return min_heap.top();   // kth largest
+}
+// Example: kth_largest({3,2,1,5,6,4}, 2) => 5`,
+`import heapq
+
+def kth_largest(nums, k):
+    """Kth largest using min-heap of size k.
+    Time: O(n log k), Space: O(k)."""
+    min_heap = []
+    for num in nums:
+        heapq.heappush(min_heap, num)
+        if len(min_heap) > k:
+            heapq.heappop(min_heap)  # remove smallest
+    return min_heap[0]  # kth largest
+
+# Example: kth_largest([3,2,1,5,6,4], 2) => 5
+
+# Alternative using heapq.nlargest (Pythonic):
+# heapq.nlargest(k, nums)[-1]`,
+`// Rust: Kth Largest — BinaryHeap with Reverse for min-heap
+use std::collections::BinaryHeap;
+use std::cmp::Reverse;
+
+fn kth_largest(nums: &[i32], k: usize) -> Option<i32> {
+    if k == 0 || k > nums.len() { return None; }
+
+    // Reverse turns BinaryHeap (max-heap) into a min-heap
+    let mut min_heap: BinaryHeap<Reverse<i32>> = BinaryHeap::new();
+    for &num in nums {
+        min_heap.push(Reverse(num));
+        if min_heap.len() > k {
+            min_heap.pop(); // remove smallest, keep k largest
+        }
+    }
+    min_heap.peek().map(|&Reverse(val)| val)
+}
+// Example: kth_largest(&[3,2,1,5,6,4], 2) => Some(5)`
+],
+mf:[
+`// Java: MedianFinder — two heaps
+static class MedianFinder {
+    // max-heap for lower half
+    PriorityQueue<Integer> lower = new PriorityQueue<>(Collections.reverseOrder());
+    // min-heap for upper half
+    PriorityQueue<Integer> upper = new PriorityQueue<>();
+
+    void addNum(int num) {
+        lower.offer(num);
+        upper.offer(lower.poll());           // ensure ordering
+        if (upper.size() > lower.size())
+            lower.offer(upper.poll());       // balance sizes
+    }
+
+    double findMedian() {
+        if (lower.size() > upper.size())
+            return lower.peek();
+        return (lower.peek() + upper.peek()) / 2.0;
+    }
+}`,
+`// C++: MedianFinder — two heaps
+class MedianFinder {
+    priority_queue<int> lo_;                                   // max-heap
+    priority_queue<int, vector<int>, greater<>> hi_;           // min-heap
+public:
+    void add(int num) {
+        lo_.push(num);
+        hi_.push(lo_.top());     // ensure lo_ <= hi_
+        lo_.pop();
+        if (hi_.size() > lo_.size()) {
+            lo_.push(hi_.top()); // balance
+            hi_.pop();
+        }
+    }
+
+    double median() const {
+        if (lo_.size() > hi_.size())
+            return static_cast<double>(lo_.top());
+        return (lo_.top() + hi_.top()) / 2.0;
+    }
+};`,
+`class MedianFinder:
+    """Two-heap median finder. Add: O(log n), Find: O(1)."""
+    def __init__(self):
+        self._max_heap = []  # lower half (negated for min-heap)
+        self._min_heap = []  # upper half
+
+    def add_num(self, num):
+        import heapq
+        heapq.heappush(self._max_heap, -num)
+
+        # Ensure max of lower <= min of upper
+        if self._min_heap and (-self._max_heap[0] > self._min_heap[0]):
+            val = -heapq.heappop(self._max_heap)
+            heapq.heappush(self._min_heap, val)
+
+        # Balance sizes
+        if len(self._max_heap) > len(self._min_heap) + 1:
+            val = -heapq.heappop(self._max_heap)
+            heapq.heappush(self._min_heap, val)
+        elif len(self._min_heap) > len(self._max_heap):
+            val = heapq.heappop(self._min_heap)
+            heapq.heappush(self._max_heap, -val)
+
+    def find_median(self):
+        if len(self._max_heap) > len(self._min_heap):
+            return float(-self._max_heap[0])
+        return (-self._max_heap[0] + self._min_heap[0]) / 2.0`,
+`// Rust: MedianFinder
+use std::collections::BinaryHeap;
+use std::cmp::Reverse;
+
+struct MedianFinder {
+    lower: BinaryHeap<i32>,            // max-heap
+    upper: BinaryHeap<Reverse<i32>>,   // min-heap
+}
+
+impl MedianFinder {
+    fn new() -> Self {
+        MedianFinder {
+            lower: BinaryHeap::new(),
+            upper: BinaryHeap::new(),
+        }
+    }
+
+    fn add_num(&mut self, num: i32) {
+        self.lower.push(num);
+        if let Some(max_lower) = self.lower.pop() {
+            self.upper.push(Reverse(max_lower));
+        }
+        if self.upper.len() > self.lower.len() {
+            if let Some(Reverse(min_upper)) = self.upper.pop() {
+                self.lower.push(min_upper);
+            }
+        }
+    }
+
+    fn find_median(&self) -> f64 {
+        if self.lower.len() > self.upper.len() {
+            *self.lower.peek().unwrap() as f64
+        } else {
+            let lo = *self.lower.peek().unwrap() as f64;
+            let hi = self.upper.peek().unwrap().0 as f64;
+            (lo + hi) / 2.0
+        }
+    }
+}`
+]
+};
+
+function highlight(code,lang){
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  code=esc(code);
+  code=code.replace(/(\/\/.*)/g,'<span class="cmt">$1</span>');
+  code=code.replace(/(#[^!\[{].*)/g,'<span class="cmt">$1</span>');
+  code=code.replace(/(&quot;.*?&quot;|"[^"]*"|'[^']*')/g,'<span class="str">$1</span>');
+  code=code.replace(/\b(\d+\.?\d*)\b/g,'<span class="num">$1</span>');
+  let kws;
+  if(lang==='java'||lang==='cpp')kws=/\b(class|struct|public|private|static|void|int|boolean|bool|double|return|if|else|while|for|new|throw|const|auto|this|true|false|null|nullptr|optional)\b/g;
+  else if(lang==='python')kws=/\b(def|class|self|return|if|else|elif|while|for|in|not|and|or|from|import|raise|True|False|None|is|float|nonlocal)\b/g;
+  else kws=/\b(fn|let|mut|struct|impl|self|Self|pub|use|return|if|else|while|for|in|match|loop|break|true|false|None|Some|Ok|Err|vec|as)\b/g;
+  code=code.replace(kws,'<span class="kw">$1</span>');
+  code=code.replace(/\b(Vec|VecDeque|Option|Box|BinaryHeap|Reverse|PriorityQueue|Collections|MaxHeap|MedianFinder|vector|priority_queue|optional|greater|heapq|list|int|float)\b/g,'<span class="type">$1</span>');
+  code=code.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g,'<span class="fn">$1</span>');
+  return code.split('\n').map(l=>`<span class="line">${l}</span>`).join('\n');
+}
+
+const langMap=['java','cpp','python','rust'];
+Object.keys(codeData).forEach(g=>{codeData[g].forEach((src,i)=>{const el=document.getElementById(g+'-'+i);if(el)el.querySelector('pre').innerHTML=highlight(src,langMap[i]);});});
+
+function switchTab(btn,group){const tabs=btn.parentElement.querySelectorAll('.code-tab');const panels=btn.parentElement.parentElement.querySelectorAll('.code-panel');const idx=Array.from(tabs).indexOf(btn);tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));btn.classList.add('active');panels[idx].classList.add('active');}
+function copyCode(btn){navigator.clipboard.writeText(btn.nextElementSibling.textContent).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);});}
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});},{threshold:.08});
+document.querySelectorAll('.section-card').forEach(c=>obs.observe(c));
+document.getElementById('sidebarToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});
+document.querySelectorAll('.sidebar a').forEach(a=>{a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open'));});
+const sections=document.querySelectorAll('.section-card[id]');const sidebarLinks=document.querySelectorAll('.sidebar a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)current=s.id;});sidebarLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+current)l.classList.add('active');});});
+</script>
+</body>
+</html>
