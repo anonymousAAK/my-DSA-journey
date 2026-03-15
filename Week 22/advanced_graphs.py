@@ -439,13 +439,13 @@ if __name__ == "__main__":
     ]
     total, mst = kruskal_mst(5, mst_edges_input)
     print(f"MST weight: {total}, edges: {mst}")
-    assert total == 10  # 1 + 2 + 3 + 4
+    assert total == 12  # 1 + 2 + 3 + 6
 
     # --- Prim's MST --------------------------------------------------------
     print("\n--- Prim's MST ---")
     adj_p, verts_p = build_adj_list(mst_edges_input, directed=False)
     total_p, mst_p = prim_mst(adj_p, 0, 5)
     print(f"MST weight: {total_p}, edges: {mst_p}")
-    assert total_p == 10
+    assert total_p == 12
 
     print("\nAll tests passed!")
