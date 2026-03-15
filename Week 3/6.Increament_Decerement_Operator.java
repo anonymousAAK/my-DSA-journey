@@ -1,43 +1,59 @@
 /*
-Increment Decrement operator
+ * Increment & Decrement Operators
+ *
+ * PRE-INCREMENT (++a):
+ *   Increases value by 1 FIRST, then uses the new value in the expression.
+ *
+ * POST-INCREMENT (a++):
+ *   Uses the CURRENT value in the expression, then increases by 1.
+ *
+ * PRE-DECREMENT (--a):
+ *   Decreases value by 1 FIRST, then uses the new value.
+ *
+ * POST-DECREMENT (a--):
+ *   Uses the CURRENT value, then decreases by 1.
+ *
+ * IMPORTANT: In Java (unlike C/C++), the behavior of these operators is
+ * well-defined even in complex expressions — Java evaluates left to right.
+ */
 
-Explanation
+public class IncrementDecrementOperator {
+    public static void main(String[] args) {
+        int a = 5;
+        System.out.println("Initial a = " + a);
 
+        // Post-increment: use current value (5), then increment to 6
+        System.out.println("a++ = " + (a++));  // prints 5
+        System.out.println("a is now = " + a); // prints 6
 
-Pre-increment and pre-decrement operators’ increments or decrements the value of the object and returns a reference to the result.
+        // Pre-increment: increment to 7 first, then use
+        System.out.println("++a = " + (++a));  // prints 7
+        System.out.println("a is now = " + a); // prints 7
 
-Post-increment and post-decrement creates a copy of the object, increments or decrements the value of the object and returns the copy from before the
-increment or decrement.
-  
-  
-Post-increment(a++):
+        // Post-decrement: use current value (7), then decrement to 6
+        System.out.println("a-- = " + (a--));  // prints 7
+        System.out.println("a is now = " + a); // prints 6
 
-This increases value by 1, but uses old value of a in any statement.
+        // Pre-decrement: decrement to 5 first, then use
+        System.out.println("--a = " + (--a));  // prints 5
+        System.out.println("a is now = " + a); // prints 5
 
-  
-Pre-increment(++a):
+        // Common patterns in loops
+        System.out.println("\n--- In loops ---");
+        int[] arr = {10, 20, 30, 40, 50};
 
-This increases value by 1, and uses increased value of a in any statement.
-  
-  
-Post-decrement(a--):
-
-This decreases value by 1, but uses old value of a in any statement.
-
-  
-Pre-decrement(++a):
-
-
-This decreases value by 1, and uses decreased value of a in any statement.
-  
-*/
-public static void main(String[] args) {
-      int I=1, J=1, K=1, L=1;
-      cout<<I++<<' '<<J-- <<' '<<++K<<' '<< --L<<endl;
-      cout<<I<<' '<<J<<' '<<K<<' '<<L<<endl;
+        // Post-increment in loop (most common)
+        System.out.print("Using i++: ");
+        for (int i = 0; i < arr.length; i++) {
+            System.out.print(arr[i] + " ");
         }
-/*
-Output:
-1 1 2 0
-2 0 2 0
-*/
+        System.out.println();
+
+        // Pre-increment (same result in for loop)
+        System.out.print("Using ++i: ");
+        for (int i = 0; i < arr.length; ++i) {
+            System.out.print(arr[i] + " ");
+        }
+        System.out.println();
+    }
+}
