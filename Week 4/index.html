@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 4: Pattern Programming | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.easy{background:var(--accent-green)}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 4 of 12</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#approach">Pattern-Solving Approach</a>
+<a href="#square">Square Pattern</a>
+<a href="#triangle-star">Triangle Star Pattern</a>
+<a href="#triangle-num" class="sub">Triangle Number Pattern</a>
+<a href="#alpha">Alphabet Pattern</a>
+<a href="#char-pattern" class="sub">Character Pattern</a>
+<a href="#mirror">Mirror Image Pattern</a>
+<a href="#advanced">Advanced Patterns</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 4</span>
+<h1>Pattern Programming</h1>
+<p class="subtitle">Master nested loops by printing star, number, and alphabet patterns -- a fundamental skill for understanding loop control and building complex logic.</p>
+<div class="meta">
+<span><span class="dot easy"></span> Beginner</span>
+<span>~6 hours estimated</span>
+<span>8 patterns covered</span>
+</div>
+</section>
+
+<!-- Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand nested loop structure: outer loop for rows, inner loop(s) for columns</li>
+<li>Identify the relationship between row number and what gets printed</li>
+<li>Print square, triangular, and pyramid patterns with stars and numbers</li>
+<li>Use ASCII arithmetic to generate alphabet-based patterns</li>
+<li>Handle leading spaces for right-aligned and mirror-image patterns</li>
+<li>Recognize that ALL patterns follow the same outer-loop/inner-loop template</li>
+</ul>
+</div>
+
+<!-- Approach -->
+<div class="card" id="approach">
+<h2><span class="icon">&#128161;</span> The Pattern-Solving Approach</h2>
+<p>Every pattern problem follows the same template. The key is identifying <strong>three things</strong> for each row:</p>
+
+<div class="diagram">
+<span class="highlight">Step 1:</span> How many rows? &rarr; Outer loop: for i = 1 to N
+
+<span class="highlight">Step 2:</span> For each row, what is printed?
+   - How many leading spaces?  &rarr; First inner loop
+   - What characters/numbers?   &rarr; Second inner loop
+   - How many of them?          &rarr; Inner loop bound
+
+<span class="highlight">Step 3:</span> What depends on the row number (i)?
+   - Number of items per row
+   - The character or number printed
+   - The number of spaces before content
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+In most patterns, the inner loop bound depends on the outer loop variable <code>i</code>. This is what creates the triangular or pyramid shape. If the inner loop runs exactly <code>N</code> times regardless of <code>i</code>, you get a rectangle.
+</div>
+</div>
+
+<!-- Square Pattern -->
+<div class="card" id="square">
+<h2><span class="icon">&#11036;</span> Square Pattern</h2>
+<p>Print an N x N grid where every cell contains the value N. Both loops run exactly N times.</p>
+
+<h3>Output (N=4)</h3>
+<div class="diagram">
+<span class="sorted">4444</span>
+<span class="sorted">4444</span>
+<span class="sorted">4444</span>
+<span class="sorted">4444</span>
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Square_Pattern.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class Solution {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+
+        for (int i = 1; i <= n; i++) {       // rows
+            for (int j = 1; j <= n; j++) {   // columns (always N)
+                System.out.print(n);          // print N at every position
+            }
+            System.out.println();             // newline after each row
+        }
+    }
+}
+// Time: O(N^2), Space: O(1)</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Square pattern: N x N grid
+int n = 4;
+for (int i = 0; i < n; i++) {
+    for (int j = 0; j < n; j++) cout << n;
+    cout << endl;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def square_pattern(n: int):
+    for _ in range(n):
+        print(" ".join([str(n)] * n))
+
+square_pattern(4)
+# 4 4 4 4
+# 4 4 4 4
+# 4 4 4 4
+# 4 4 4 4</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">let n = 4;
+for _ in 0..n {
+    for _ in 0..n { print!("{}", n); }
+    println!();
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Triangle Star Pattern -->
+<div class="card" id="triangle-star">
+<h2><span class="icon">&#9733;</span> Triangle Star Pattern</h2>
+<p>Print a right-angled triangle of stars. Row i contains exactly i stars -- the inner loop bound is <code>i</code>, not <code>N</code>.</p>
+
+<h3>Output (N=4)</h3>
+<div class="diagram">
+<span class="sorted">*</span>
+<span class="sorted">**</span>
+<span class="sorted">***</span>
+<span class="sorted">****</span>
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Tri_Star_Pattern.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class Solution {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+
+        for (int i = 1; i <= n; i++) {       // rows: 1 to N
+            for (int j = 1; j <= i; j++) {   // columns: 1 to i (not N!)
+                System.out.print('*');
+            }
+            System.out.println();
+        }
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void rightTriangleStars(int n) {
+    for (int i = 1; i <= n; i++) {
+        for (int j = 0; j < i; j++) cout << "* ";
+        cout << endl;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def right_triangle_stars(n: int):
+    for i in range(1, n + 1):
+        print("* " * i)
+
+# One-liner: print("\n".join("*" * i for i in range(1, 6)))</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn right_triangle_stars(n: usize) {
+    for i in 1..=n {
+        for _ in 0..i { print!("* "); }
+        println!();
+    }
+}
+// Compact: println!("{}", "* ".repeat(i));</div></div>
+</div>
+</div>
+</div>
+
+<!-- Triangle Number Pattern -->
+<div class="card" id="triangle-num">
+<h2><span class="icon">&#128290;</span> Triangle Number Pattern</h2>
+<p>Row i prints the digit i repeated i times. The printed value depends on the <strong>row number</strong>, not the column.</p>
+
+<h3>Output (N=4)</h3>
+<div class="diagram">
+<span class="sorted">1</span>
+<span class="sorted">22</span>
+<span class="sorted">333</span>
+<span class="sorted">4444</span>
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Tri_No_pattern.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">for (int i = 1; i <= n; i++) {
+    for (int j = 1; j <= i; j++) {
+        System.out.print(i);   // print ROW number (not column)
+    }
+    System.out.println();
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">for (int i = 1; i <= n; i++) {
+    for (int j = 0; j < i; j++) cout << i;
+    cout << endl;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def right_triangle_numbers(n: int):
+    for i in range(1, n + 1):
+        print(f"{i} " * i)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">for i in 1..=n {
+    for _ in 0..i { print!("{}", i); }
+    println!();
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Alphabet Pattern -->
+<div class="card" id="alpha">
+<h2><span class="icon">&#127344;</span> Alphabet Pattern</h2>
+<p>Row i prints the i-th letter of the alphabet repeated i times. Uses ASCII arithmetic: <code>ch = 'A' + (row - 1)</code>.</p>
+
+<h3>Output (N=4)</h3>
+<div class="diagram">
+<span class="sorted">A</span>
+<span class="sorted">BB</span>
+<span class="sorted">CCC</span>
+<span class="sorted">DDDD</span>
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Alpha_Pattern.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">int currRow = 1;
+while (currRow <= n) {
+    int currCol = 1;
+    char ch = (char) ('A' + currRow - 1); // row 1->'A', 2->'B', etc.
+    while (currCol <= currRow) {
+        System.out.print(ch);              // same char across row
+        currCol += 1;
+    }
+    System.out.println();
+    currRow += 1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void alphabetTriangle(int n) {
+    for (int i = 0; i < n; i++) {
+        char ch = 'A' + i;
+        for (int j = 0; j <= i; j++) cout << ch << " ";
+        cout << endl;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def alphabet_triangle(n: int):
+    for i in range(n):
+        ch = chr(ord('A') + i)  # ASCII arithmetic
+        print(f"{ch} " * (i + 1))
+
+alphabet_triangle(4)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn alphabet_triangle(n: usize) {
+    for i in 0..n {
+        let ch = (b'A' + i as u8) as char;
+        for _ in 0..=i { print!("{} ", ch); }
+        println!();
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Character Pattern -->
+<div class="card" id="char-pattern">
+<h2><span class="icon">&#128289;</span> Character Pattern (Consecutive)</h2>
+<p>Unlike the Alphabet Pattern where each row repeats one letter, here each row prints <strong>consecutive letters</strong>. Row i starts at <code>'A' + (i-1)</code> and prints i consecutive characters.</p>
+
+<h3>Output (N=4)</h3>
+<div class="diagram">
+<span class="sorted">A</span>
+<span class="sorted">BC</span>
+<span class="sorted">CDE</span>
+<span class="sorted">DEFG</span>
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Char_Pattern.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">int currRow = 1;
+while (currRow <= n) {
+    int currCol = 1;
+    char ch = (char) ('A' + currRow - 1);    // starting char for this row
+    while (currCol <= currRow) {
+        System.out.print((char)(ch + currCol - 1)); // consecutive chars
+        currCol += 1;
+    }
+    System.out.println();
+    currRow += 1;
+}
+// Row 3 starts at 'C', prints: C D E</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">for (int i = 0; i < n; i++) {
+    char start = 'A' + i;
+    for (int j = 0; j <= i; j++) cout << (char)(start + j);
+    cout << endl;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">for i in range(n):
+    start = ord('A') + i
+    print("".join(chr(start + j) for j in range(i + 1)))</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">for i in 0..n {
+    let start = b'A' + i as u8;
+    for j in 0..=i { print!("{}", (start + j as u8) as char); }
+    println!();
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The difference between Alpha Pattern and Char Pattern is subtle but important: in the Alpha Pattern, the character depends <strong>only on the row</strong> (<code>'A' + row - 1</code>). In the Char Pattern, it depends on <strong>both row and column</strong> (<code>'A' + row - 1 + col - 1</code>).
+</div>
+</div>
+
+<!-- Mirror Image -->
+<div class="card" id="mirror">
+<h2><span class="icon">&#128220;</span> Mirror Image Pattern</h2>
+<p>A right-aligned triangle requires <strong>two inner loops</strong> per row: one for leading spaces and one for the numbers. The space count decreases as the row number increases.</p>
+
+<h3>Output (N=4)</h3>
+<div class="diagram">
+<span class="highlight">   </span><span class="sorted">1</span>
+<span class="highlight">  </span><span class="sorted">12</span>
+<span class="highlight"> </span><span class="sorted">123</span>
+<span class="sorted">1234</span>
+
+Spaces per row: (N - row) spaces, then numbers 1 to row
+Row 1: 3 spaces + "1"
+Row 2: 2 spaces + "12"
+Row 3: 1 space  + "123"
+Row 4: 0 spaces + "1234"
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Mirror_Image.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">int currRow = 1;
+while (currRow <= n) {
+    // First inner loop: print leading spaces
+    int spaces = 1;
+    while (spaces <= n - currRow) {
+        System.out.print(" ");
+        spaces += 1;
+    }
+    // Second inner loop: print numbers 1 to currRow
+    int currCol = 1;
+    while (currCol <= currRow) {
+        System.out.print(currCol);
+        currCol += 1;
+    }
+    System.out.println();
+    currRow += 1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void numberPyramid(int n) {
+    for (int i = 1; i <= n; i++) {
+        cout << string(n - i, ' ');  // leading spaces
+        for (int j = 1; j <= i; j++) cout << j << " ";
+        cout << endl;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def right_aligned_numbers(n: int):
+    for i in range(1, n + 1):
+        spaces = "  " * (n - i)
+        nums = " ".join(str(j) for j in range(1, i + 1))
+        print(spaces + nums)
+
+right_aligned_numbers(4)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn number_pyramid(n: usize) {
+    for i in 1..=n {
+        print!("{}", " ".repeat(n - i));  // leading spaces
+        for j in 1..=i { print!("{} ", j); }
+        println!();
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Advanced Patterns -->
+<div class="card" id="advanced">
+<h2><span class="icon">&#128142;</span> Advanced Patterns</h2>
+<p>Once you master the basic patterns, try these more challenging variations that combine multiple techniques.</p>
+
+<h3>Diamond Pattern (N=4)</h3>
+<div class="diagram">
+<span class="highlight">   </span><span class="sorted">*</span>
+<span class="highlight">  </span><span class="sorted">* *</span>
+<span class="highlight"> </span><span class="sorted">* * *</span>
+<span class="sorted">* * * *</span>
+<span class="highlight"> </span><span class="sorted">* * *</span>
+<span class="highlight">  </span><span class="sorted">* *</span>
+<span class="highlight">   </span><span class="sorted">*</span>
+</div>
+
+<h3>Butterfly Pattern (N=4)</h3>
+<div class="diagram">
+<span class="sorted">*             *</span>
+<span class="sorted">* *         * *</span>
+<span class="sorted">* * *     * * *</span>
+<span class="sorted">* * * * * * * *</span>
+<span class="sorted">* * * * * * * *</span>
+<span class="sorted">* * *     * * *</span>
+<span class="sorted">* *         * *</span>
+<span class="sorted">*             *</span>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Advanced Patterns</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Diamond: upper half + lower half
+static void diamond(int n) {
+    // Upper half (pyramid)
+    for (int i = 1; i <= n; i++) {
+        for (int s = 0; s < n - i; s++) System.out.print(" ");
+        for (int j = 0; j < i; j++) System.out.print("* ");
+        System.out.println();
+    }
+    // Lower half (inverted pyramid)
+    for (int i = n - 1; i >= 1; i--) {
+        for (int s = 0; s < n - i; s++) System.out.print(" ");
+        for (int j = 0; j < i; j++) System.out.print("* ");
+        System.out.println();
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>patterns.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void butterfly(int n) {
+    // Upper half
+    for (int i = 1; i <= n; i++) {
+        for (int j = 0; j < i; j++) cout << "* ";
+        for (int j = 0; j < 2*(n-i); j++) cout << "  ";
+        for (int j = 0; j < i; j++) cout << "* ";
+        cout << endl;
+    }
+    // Lower half (mirror)
+    for (int i = n; i >= 1; i--) {
+        for (int j = 0; j < i; j++) cout << "* ";
+        for (int j = 0; j < 2*(n-i); j++) cout << "  ";
+        for (int j = 0; j < i; j++) cout << "* ";
+        cout << endl;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>patterns.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def diamond(n: int):
+    for i in range(1, n + 1):
+        print(" " * (n - i) + "* " * i)
+    for i in range(n - 1, 0, -1):
+        print(" " * (n - i) + "* " * i)
+
+def butterfly(n: int):
+    for i in range(1, n + 1):
+        print("* " * i + "  " * (n - i) + "* " * i)
+    for i in range(n, 0, -1):
+        print("* " * i + "  " * (n - i) + "* " * i)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>patterns.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn diamond(n: usize) {
+    for i in 1..=n {
+        print!("{}", " ".repeat(n - i));
+        for _ in 0..i { print!("* "); }
+        println!();
+    }
+    for i in (1..n).rev() {
+        print!("{}", " ".repeat(n - i));
+        for _ in 0..i { print!("* "); }
+        println!();
+    }
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Pattern Strategy</div>
+For complex patterns like diamond and butterfly, split them into upper and lower halves. Each half is a simpler pattern you already know how to print. Compose simple patterns to build complex ones.
+</div>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128187;</span> Practice Problems</h2>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Square Pattern</h4>
+<p>Print an N x N grid of the number N. Start here to understand the basic nested loop template.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Right Triangle (Stars)</h4>
+<p>Print a right-angled triangle with i stars in row i. Understand how inner loop bound = outer variable creates triangles.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Reverse Number Triangle</h4>
+<p>Print a triangle where row i has numbers N down to (N-i+1). Row 1: N, Row 2: N (N-1), etc.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Interesting Alphabet</h4>
+<p>Print a unique alphabet pattern where characters change based on both row and column positions.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-red">Hard</span>
+<h4>Diamond Pattern</h4>
+<p>Combine a pyramid and an inverted pyramid to create a diamond shape with centered stars.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-red">Hard</span>
+<h4>Butterfly Pattern</h4>
+<p>Print a butterfly using three inner loops per row: left stars, middle spaces, right stars.</p>
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128640;</span> Week 4 Summary</h2>
+<ul>
+<li><strong>All patterns</strong> use the same template: outer loop for rows, inner loop(s) for columns</li>
+<li><strong>Square:</strong> inner loop bound = N (constant)</li>
+<li><strong>Triangle:</strong> inner loop bound = i (row number)</li>
+<li><strong>Right-aligned:</strong> requires two inner loops -- one for spaces, one for content</li>
+<li><strong>Alphabet patterns:</strong> use ASCII arithmetic: <code>'A' + offset</code></li>
+<li><strong>Complex patterns:</strong> decompose into simpler halves (upper/lower)</li>
+<li><strong>Key question:</strong> for each row, what depends on the row number i?</li>
+</ul>
+
+<div class="insight">
+<div class="label">Next Up</div>
+In <a href="../Week 5/index.html">Week 5</a>, you will dive into functions, arrays, and more advanced problem-solving techniques.
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 3/index.html">&larr; Week 3: Loops &amp; Number Theory</a>
+<a href="../Week 5/index.html">Week 5: Functions &amp; Arrays &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%';});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');});});});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});});});
+document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');});
+function highlight(code,lang){
+code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
+code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
+const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements|package|double|float|byte|short|char|String|Scanner)\b/g;
+const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false|cout|cin|endl|sizeof|double|float)\b/g;
+const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is|print|type|int|float|str|input|chr|ord|join)\b/g;
+const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|i64|u8|u32|u64|f64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum|println|String)\b/g;
+let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;
+code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
+code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
+return code;}
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.textContent.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);});
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang);});
+const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')});});
+</script>
+</body>
+</html>

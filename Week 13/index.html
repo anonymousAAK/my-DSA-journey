@@ -1,0 +1,1118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 13: Queues | DSA Learning Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#21262d;--text:#c9d1d9;--text-muted:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--accent-gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--orange:#ffa657;--red:#ff7b72;--yellow:#e3b341}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+/* Hero */
+.hero{padding:4rem 0 3rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 50%,rgba(88,166,255,.08) 0%,transparent 50%);pointer-events:none}
+.hero-week{display:inline-block;padding:.35rem 1rem;border-radius:999px;font-size:.85rem;font-weight:600;background:var(--accent-gradient);color:#0d1117;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;margin-bottom:.75rem;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1.15rem;color:var(--text-muted);max-width:700px;margin:0 auto 1.5rem}
+.badge-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.badge{padding:.3rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;border:1px solid var(--card-border)}
+.badge-diff{border-color:var(--accent-green);color:var(--accent-green)}
+.badge-time{border-color:var(--accent-blue);color:var(--accent-blue)}
+/* Layout */
+.page-layout{display:flex;gap:2rem;align-items:flex-start;padding:2rem 0 4rem}
+/* Sidebar */
+.sidebar{position:sticky;top:2rem;width:260px;flex-shrink:0}
+.sidebar-inner{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1.25rem;max-height:calc(100vh - 4rem);overflow-y:auto}
+.sidebar h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.75rem}
+.sidebar ul{list-style:none}
+.sidebar li{margin-bottom:.35rem}
+.sidebar a{display:block;padding:.35rem .65rem;border-radius:6px;font-size:.88rem;color:var(--text-muted);transition:all .2s}
+.sidebar a:hover,.sidebar a.active{background:rgba(88,166,255,.1);color:var(--accent-blue);text-decoration:none}
+.main-content{flex:1;min-width:0}
+/* Section cards */
+.section-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:2rem;margin-bottom:2rem;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.section-card.visible{opacity:1;transform:translateY(0)}
+.section-card h2{font-size:1.6rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--card-border)}
+.section-card h3{font-size:1.2rem;margin:1.5rem 0 .75rem;color:var(--accent-blue)}
+.section-card p,.section-card li{color:var(--text);margin-bottom:.5rem}
+.section-card ul,.section-card ol{padding-left:1.5rem;margin-bottom:1rem}
+/* Objectives */
+.obj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+.obj-item{background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.15);border-radius:8px;padding:1rem;display:flex;gap:.75rem;align-items:flex-start}
+.obj-icon{width:28px;height:28px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:#0d1117;font-weight:700}
+/* Code viewer */
+.code-viewer{background:var(--code-bg);border:1px solid var(--card-border);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.code-tabs{display:flex;background:#13171d;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:.6rem 1.2rem;font-size:.82rem;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue);background:rgba(88,166,255,.06)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;padding:.35rem .75rem;font-size:.75rem;background:rgba(255,255,255,.08);color:var(--text-muted);border:1px solid var(--card-border);border-radius:6px;cursor:pointer;z-index:2;transition:all .2s}
+.copy-btn:hover{background:rgba(255,255,255,.15);color:var(--text)}
+.code-panel pre{padding:1.25rem;overflow-x:auto;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:.85rem;line-height:1.65;counter-reset:line}
+.code-panel pre .line{display:block}
+.code-panel pre .line::before{counter-increment:line;content:counter(line);display:inline-block;width:3ch;margin-right:1.5ch;text-align:right;color:var(--text-muted);opacity:.4;font-size:.78rem;user-select:none}
+.kw{color:var(--kw)}.str{color:var(--str)}.cmt{color:var(--cmt);font-style:italic}.num{color:var(--num)}.fn{color:var(--fn)}.type{color:var(--orange)}
+/* Key insight */
+.insight{background:rgba(63,185,80,.06);border-left:3px solid var(--accent-green);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1.25rem 0}
+.insight-title{font-weight:700;color:var(--accent-green);margin-bottom:.35rem;font-size:.92rem}
+/* Complexity table */
+.complexity-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.complexity-table th{background:rgba(88,166,255,.1);padding:.6rem 1rem;text-align:left;font-weight:600;border-bottom:2px solid var(--card-border)}
+.complexity-table td{padding:.55rem 1rem;border-bottom:1px solid var(--card-border)}
+.complexity-table tr:last-child td{border-bottom:none}
+/* Visualization */
+.viz{margin:1.5rem 0;padding:1.5rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:10px;overflow-x:auto}
+.viz-title{font-weight:700;color:var(--accent-blue);margin-bottom:1rem;text-align:center;font-size:1rem}
+.queue-viz{display:flex;align-items:center;justify-content:center;gap:0;margin:1rem 0;flex-wrap:wrap}
+.queue-cell{width:56px;height:56px;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1.1rem;border:2px solid var(--accent-blue);background:rgba(88,166,255,.1);color:var(--accent-blue);transition:all .3s}
+.queue-cell:first-child{border-radius:8px 0 0 8px}
+.queue-cell:last-child{border-radius:0 8px 8px 0}
+.queue-cell.highlight{background:var(--accent-green);color:#0d1117;border-color:var(--accent-green)}
+.queue-cell.removed{background:rgba(255,123,114,.15);border-color:var(--red);color:var(--red);opacity:.6}
+.queue-label{text-align:center;font-size:.78rem;color:var(--text-muted);margin-top:.35rem}
+.arrow{font-size:1.5rem;margin:0 .5rem;color:var(--accent-green)}
+.circular-viz{display:flex;justify-content:center;align-items:center;gap:3rem;flex-wrap:wrap}
+.ring{position:relative;width:220px;height:220px}
+.ring-cell{position:absolute;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.95rem;border:2px solid var(--accent-blue);background:rgba(88,166,255,.1);color:var(--accent-blue)}
+.ring-cell.active{background:var(--accent-blue);color:#0d1117}
+.ring-cell.front-ptr{box-shadow:0 0 0 3px var(--accent-green)}
+.ring-cell.rear-ptr{box-shadow:0 0 0 3px var(--orange)}
+.ptr-legend{display:flex;gap:1.5rem;justify-content:center;margin-top:1rem;font-size:.82rem}
+.ptr-dot{width:12px;height:12px;border-radius:50%;display:inline-block;margin-right:.35rem;vertical-align:middle}
+/* Summary card */
+.summary-card{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(63,185,80,.08));border:1px solid rgba(88,166,255,.2);border-radius:12px;padding:2rem}
+.summary-card h2{background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.summary-item{background:rgba(0,0,0,.2);border-radius:8px;padding:1rem}
+.summary-item h4{color:var(--accent-blue);margin-bottom:.5rem;font-size:.92rem}
+.summary-item code{background:rgba(88,166,255,.1);padding:.15rem .4rem;border-radius:4px;font-size:.82rem;color:var(--accent-blue)}
+/* Nav */
+.page-nav{display:flex;justify-content:space-between;padding:2rem 0;border-top:1px solid var(--card-border);margin-top:2rem}
+.nav-btn{padding:.65rem 1.5rem;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-btn:hover{border-color:var(--accent-blue);color:var(--accent-blue);text-decoration:none}
+/* Practice */
+.practice-list{list-style:none;padding:0}
+.practice-list li{padding:.65rem 1rem;margin-bottom:.5rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.practice-diff{font-size:.72rem;padding:.2rem .6rem;border-radius:999px;font-weight:600}
+.diff-easy{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.diff-med{background:rgba(227,179,65,.15);color:var(--yellow)}
+.diff-hard{background:rgba(255,123,114,.15);color:var(--red)}
+/* Mobile toggle */
+.sidebar-toggle{display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;width:48px;height:48px;border-radius:50%;background:var(--accent-gradient);border:none;color:#0d1117;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+@media(max-width:900px){
+.sidebar{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99;padding:1rem;background:rgba(13,17,23,.95);backdrop-filter:blur(8px)}
+.sidebar.open{display:block}
+.sidebar-inner{max-height:calc(100vh - 2rem)}
+.sidebar-toggle{display:flex;align-items:center;justify-content:center}
+.page-layout{flex-direction:column}
+}
+</style>
+</head>
+<body>
+<!-- Hero -->
+<section class="hero">
+<div class="container">
+<span class="hero-week">WEEK 13</span>
+<h1>Queues</h1>
+<p class="hero-desc">Master the FIFO data structure: from simple queues to circular buffers, two-stack implementations, and the powerful sliding window maximum technique using monotonic deques.</p>
+<div class="badge-row">
+<span class="badge badge-diff">Intermediate</span>
+<span class="badge badge-time">~6 hours</span>
+<span class="badge" style="border-color:var(--orange);color:var(--orange)">4 Implementations</span>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="page-layout">
+<!-- Sidebar -->
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-inner">
+<h3>Contents</h3>
+<ul>
+<li><a href="#objectives">Learning Objectives</a></li>
+<li><a href="#queue-basics">Queue Fundamentals</a></li>
+<li><a href="#circular-queue">Circular Queue</a></li>
+<li><a href="#two-stack-queue">Queue Using Two Stacks</a></li>
+<li><a href="#sliding-window">Sliding Window Maximum</a></li>
+<li><a href="#complexity">Complexity Analysis</a></li>
+<li><a href="#practice">Practice Problems</a></li>
+<li><a href="#summary">Cheat Sheet</a></li>
+</ul>
+</div>
+</nav>
+
+<!-- Main -->
+<main class="main-content">
+<!-- Objectives -->
+<section class="section-card" id="objectives">
+<h2>Learning Objectives</h2>
+<div class="obj-grid">
+<div class="obj-item"><div class="obj-icon">1</div><div>Understand FIFO (First In, First Out) ordering and how queues differ from stacks</div></div>
+<div class="obj-item"><div class="obj-icon">2</div><div>Implement a circular queue (ring buffer) with wrap-around index arithmetic</div></div>
+<div class="obj-item"><div class="obj-icon">3</div><div>Build a queue using two stacks with amortized O(1) operations</div></div>
+<div class="obj-item"><div class="obj-icon">4</div><div>Solve the Sliding Window Maximum problem with a monotonic deque in O(n)</div></div>
+</div>
+</section>
+
+<!-- Queue Basics -->
+<section class="section-card" id="queue-basics">
+<h2>Queue Fundamentals</h2>
+<p>A <strong>queue</strong> is a linear data structure that follows the <strong>FIFO</strong> (First In, First Out) principle. Think of a line at a grocery store: the first person to join the line is the first to be served.</p>
+
+<h3>Core Operations (All O(1))</h3>
+<ul>
+<li><strong>enqueue(x)</strong> / offer(x) &mdash; Add an element to the rear</li>
+<li><strong>dequeue()</strong> / poll() &mdash; Remove and return the front element</li>
+<li><strong>peek()</strong> / front() &mdash; View the front element without removing</li>
+<li><strong>isEmpty()</strong> &mdash; Check if the queue is empty</li>
+</ul>
+
+<!-- FIFO Diagram -->
+<div class="viz">
+<div class="viz-title">FIFO: First In, First Out</div>
+<div style="text-align:center;margin-bottom:.5rem">
+<div style="display:inline-flex;align-items:center;gap:1rem">
+<div>
+<div style="color:var(--accent-green);font-weight:700;font-size:.85rem;margin-bottom:.4rem">FRONT (Dequeue)</div>
+<div style="font-size:1.5rem;color:var(--accent-green)">&larr;</div>
+</div>
+<div class="queue-viz">
+<div class="queue-cell removed">1</div>
+<div class="queue-cell">2</div>
+<div class="queue-cell">3</div>
+<div class="queue-cell">4</div>
+<div class="queue-cell highlight">5</div>
+</div>
+<div>
+<div style="color:var(--accent-blue);font-weight:700;font-size:.85rem;margin-bottom:.4rem">REAR (Enqueue)</div>
+<div style="font-size:1.5rem;color:var(--accent-blue)">&rarr;</div>
+</div>
+</div>
+</div>
+<div class="queue-label">Element 1 was first in, and will be first out. Element 5 was last in.</div>
+</div>
+
+<h3>Queue Variants</h3>
+<ul>
+<li><strong>Circular Queue</strong> &mdash; Array-based queue that wraps around using modular arithmetic</li>
+<li><strong>Deque (Double-Ended Queue)</strong> &mdash; Insert/delete at BOTH ends</li>
+<li><strong>Priority Queue</strong> &mdash; Elements dequeued by priority (covered in Week 15)</li>
+</ul>
+
+<h3>Common Applications</h3>
+<ul>
+<li>BFS (Breadth-First Search)</li>
+<li>Level-order tree traversal</li>
+<li>Task scheduling / job queues</li>
+<li>Sliding window problems</li>
+</ul>
+
+<div class="insight">
+<div class="insight-title">Key Insight</div>
+In Java, use <code>ArrayDeque</code> as your Queue implementation (not LinkedList). In Python, use <code>collections.deque</code>. In Rust, use <code>VecDeque</code>. In C++, use <code>std::queue</code> or <code>std::deque</code>. All provide O(1) amortized enqueue/dequeue.
+</div>
+
+<!-- Code: Simple Queue -->
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'sq')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'sq')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'sq')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'sq')">Rust</button>
+</div>
+<div class="code-panel active" id="sq-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="sq-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="sq-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="sq-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Circular Queue -->
+<section class="section-card" id="circular-queue">
+<h2>Circular Queue (Ring Buffer)</h2>
+<p>A regular array-based queue wastes space as elements are dequeued from the front. A <strong>circular queue</strong> solves this by wrapping the indices around using modular arithmetic: <code>index = (index + 1) % capacity</code>.</p>
+
+<h3>Why Circular?</h3>
+<p>In a naive array-based queue, after dequeuing many elements, the front of the array is wasted space. You would need to shift all elements left (O(n)) or eventually run out of space. A circular queue reuses freed positions by letting the rear pointer wrap around to the beginning of the array.</p>
+
+<!-- Circular Queue Visualization -->
+<div class="viz">
+<div class="viz-title">Circular Queue with Capacity 6</div>
+<div class="circular-viz">
+<div class="ring" id="circularRing">
+<div class="ring-cell active front-ptr" style="top:0;left:87px">10</div>
+<div class="ring-cell active" style="top:44px;left:160px">20</div>
+<div class="ring-cell active rear-ptr" style="top:132px;left:160px">30</div>
+<div class="ring-cell" style="top:176px;left:87px"></div>
+<div class="ring-cell" style="top:132px;left:14px"></div>
+<div class="ring-cell" style="top:44px;left:14px"></div>
+</div>
+<div>
+<div style="font-weight:600;margin-bottom:.75rem">Array Representation:</div>
+<div style="display:flex;gap:2px">
+<div class="queue-cell" style="width:48px;height:48px;border-radius:6px;border-color:var(--accent-green)">10</div>
+<div class="queue-cell" style="width:48px;height:48px;border-radius:6px">20</div>
+<div class="queue-cell" style="width:48px;height:48px;border-radius:6px;border-color:var(--orange)">30</div>
+<div class="queue-cell" style="width:48px;height:48px;border-radius:6px;opacity:.3">-</div>
+<div class="queue-cell" style="width:48px;height:48px;border-radius:6px;opacity:.3">-</div>
+<div class="queue-cell" style="width:48px;height:48px;border-radius:6px;opacity:.3">-</div>
+</div>
+<div style="display:flex;gap:2px;font-size:.7rem;color:var(--text-muted);margin-top:.25rem">
+<div style="width:48px;text-align:center">[0] F</div>
+<div style="width:48px;text-align:center">[1]</div>
+<div style="width:48px;text-align:center">[2] R</div>
+<div style="width:48px;text-align:center">[3]</div>
+<div style="width:48px;text-align:center">[4]</div>
+<div style="width:48px;text-align:center">[5]</div>
+</div>
+</div>
+</div>
+<div class="ptr-legend">
+<span><span class="ptr-dot" style="background:var(--accent-green)"></span>Front pointer</span>
+<span><span class="ptr-dot" style="background:var(--orange)"></span>Rear pointer</span>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight</div>
+The wrap-around formula <code>rear = (rear + 1) % capacity</code> is the heart of the circular queue. When the rear index reaches the end of the array, it wraps back to index 0, reusing freed space. The same formula applies to the front pointer on dequeue.
+</div>
+
+<!-- Code: Circular Queue -->
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'cq')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'cq')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'cq')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'cq')">Rust</button>
+</div>
+<div class="code-panel active" id="cq-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="cq-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="cq-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="cq-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+
+<h3>Edge Cases to Watch</h3>
+<ul>
+<li><strong>Queue full</strong>: <code>size == capacity</code>. Must check before enqueue.</li>
+<li><strong>Queue empty</strong>: <code>size == 0</code>. Must check before dequeue/peek.</li>
+<li><strong>Wrap-around</strong>: After the rear pointer passes the last index, it wraps to 0.</li>
+<li><strong>Single element</strong>: Front and rear point to the same slot.</li>
+</ul>
+</section>
+
+<!-- Queue Using Two Stacks -->
+<section class="section-card" id="two-stack-queue">
+<h2>Queue Using Two Stacks</h2>
+<p>This is a classic interview problem: implement a FIFO queue using only LIFO stacks. The trick is to use two stacks &mdash; an <strong>inbox</strong> for enqueue and an <strong>outbox</strong> for dequeue.</p>
+
+<h3>How It Works</h3>
+<ol>
+<li><strong>enqueue(x)</strong>: Push onto the inbox stack. O(1).</li>
+<li><strong>dequeue()</strong>: If the outbox is empty, pour ALL elements from inbox to outbox (this reverses the order, giving FIFO behavior). Pop from outbox.</li>
+<li>Each element is moved at most twice (once into inbox, once into outbox), so the <strong>amortized cost per operation is O(1)</strong>.</li>
+</ol>
+
+<!-- Two Stacks Visualization -->
+<div class="viz">
+<div class="viz-title">Queue Using Two Stacks &mdash; Step by Step</div>
+<div style="display:flex;justify-content:center;gap:3rem;flex-wrap:wrap;text-align:center">
+<div>
+<div style="font-weight:600;color:var(--accent-blue);margin-bottom:.5rem">Inbox (Push Stack)</div>
+<div style="display:flex;flex-direction:column-reverse;align-items:center;gap:2px;min-height:120px">
+<div class="queue-cell" style="width:60px;height:40px;border-radius:6px">1</div>
+<div class="queue-cell" style="width:60px;height:40px;border-radius:6px">2</div>
+<div class="queue-cell highlight" style="width:60px;height:40px;border-radius:6px">3</div>
+</div>
+<div style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">enqueue pushes here</div>
+</div>
+<div style="display:flex;flex-direction:column;align-items:center;justify-content:center">
+<div style="font-size:2rem;color:var(--orange)">&#8644;</div>
+<div style="font-size:.75rem;color:var(--orange);font-weight:600">Transfer when<br>outbox empty</div>
+</div>
+<div>
+<div style="font-weight:600;color:var(--accent-green);margin-bottom:.5rem">Outbox (Pop Stack)</div>
+<div style="display:flex;flex-direction:column-reverse;align-items:center;gap:2px;min-height:120px">
+<div class="queue-cell" style="width:60px;height:40px;border-radius:6px;border-color:var(--accent-green);background:rgba(63,185,80,.1);color:var(--accent-green)">3</div>
+<div class="queue-cell" style="width:60px;height:40px;border-radius:6px;border-color:var(--accent-green);background:rgba(63,185,80,.1);color:var(--accent-green)">2</div>
+<div class="queue-cell" style="width:60px;height:40px;border-radius:6px;border-color:var(--accent-green);background:var(--accent-green);color:#0d1117">1</div>
+</div>
+<div style="font-size:.75rem;color:var(--text-muted);margin-top:.25rem">dequeue pops from here (1 first = FIFO!)</div>
+</div>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Amortized O(1)</div>
+Even though a single dequeue can take O(n) when the transfer happens, each element is moved from inbox to outbox exactly once. Over a sequence of n operations, the total work is O(n), giving an amortized cost of O(1) per operation. This is similar to how dynamic array resizing gives amortized O(1) append.
+</div>
+
+<!-- Code: Queue Using Two Stacks -->
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'ts')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'ts')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'ts')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'ts')">Rust</button>
+</div>
+<div class="code-panel active" id="ts-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="ts-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="ts-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="ts-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Sliding Window Maximum -->
+<section class="section-card" id="sliding-window">
+<h2>Sliding Window Maximum (Monotonic Deque)</h2>
+<p>Given an array of n integers and a window size k, find the maximum in each window of size k as it slides across the array. This is a classic hard problem that can be solved optimally with a <strong>monotonic deque</strong>.</p>
+
+<h3>Naive Approach: O(n * k)</h3>
+<p>For each window position, scan all k elements to find the max. Too slow for large inputs.</p>
+
+<h3>Optimal Approach: O(n) with Monotonic Deque</h3>
+<p>Maintain a deque of <strong>indices</strong> where the corresponding values are in <strong>decreasing order</strong>. The front of the deque always holds the index of the maximum in the current window.</p>
+
+<h3>Algorithm</h3>
+<ol>
+<li>For each element <code>arr[i]</code>:</li>
+<li><strong>Remove expired</strong>: Remove indices from the front that are outside the current window</li>
+<li><strong>Maintain monotonicity</strong>: Remove indices from the back whose values are smaller than <code>arr[i]</code> (they can never be the window maximum while <code>arr[i]</code> is in the window)</li>
+<li><strong>Add current</strong>: Push index <code>i</code> to the back</li>
+<li><strong>Record result</strong>: Once <code>i >= k-1</code>, the front of the deque is the window maximum</li>
+</ol>
+
+<!-- Sliding Window Visualization -->
+<div class="viz">
+<div class="viz-title">Sliding Window Maximum: arr = [1, 3, -1, -3, 5, 3, 6, 7], k = 3</div>
+<table class="complexity-table" style="font-size:.82rem">
+<tr><th>Window</th><th>Elements</th><th>Deque (indices)</th><th>Max</th></tr>
+<tr><td>[0,1,2]</td><td>[<strong>1, 3, -1</strong>, -3, 5, 3, 6, 7]</td><td>[1, 2] (vals: 3, -1)</td><td style="color:var(--accent-green);font-weight:700">3</td></tr>
+<tr><td>[1,2,3]</td><td>[1, <strong>3, -1, -3</strong>, 5, 3, 6, 7]</td><td>[1, 2, 3] (vals: 3, -1, -3)</td><td style="color:var(--accent-green);font-weight:700">3</td></tr>
+<tr><td>[2,3,4]</td><td>[1, 3, <strong>-1, -3, 5</strong>, 3, 6, 7]</td><td>[4] (vals: 5)</td><td style="color:var(--accent-green);font-weight:700">5</td></tr>
+<tr><td>[3,4,5]</td><td>[1, 3, -1, <strong>-3, 5, 3</strong>, 6, 7]</td><td>[4, 5] (vals: 5, 3)</td><td style="color:var(--accent-green);font-weight:700">5</td></tr>
+<tr><td>[4,5,6]</td><td>[1, 3, -1, -3, <strong>5, 3, 6</strong>, 7]</td><td>[6] (vals: 6)</td><td style="color:var(--accent-green);font-weight:700">6</td></tr>
+<tr><td>[5,6,7]</td><td>[1, 3, -1, -3, 5, <strong>3, 6, 7</strong>]</td><td>[7] (vals: 7)</td><td style="color:var(--accent-green);font-weight:700">7</td></tr>
+</table>
+<div style="text-align:center;margin-top:.5rem;font-weight:600;color:var(--accent-green)">Result: [3, 3, 5, 5, 6, 7]</div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Why O(n)?</div>
+Each element is added to the deque at most once and removed at most once. So across all iterations, the total number of deque operations is at most 2n, giving O(n) overall. The deque stores at most k indices at any time, so space is O(k).
+</div>
+
+<!-- Code: Sliding Window Maximum -->
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'sw')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'sw')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'sw')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'sw')">Rust</button>
+</div>
+<div class="code-panel active" id="sw-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="sw-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="sw-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="sw-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+
+<h3>Common Mistakes</h3>
+<ul>
+<li>Storing <em>values</em> instead of <em>indices</em> in the deque &mdash; you need indices to check if elements are inside the window</li>
+<li>Forgetting to remove expired indices from the front of the deque</li>
+<li>Using <code>&lt;</code> instead of <code>&lt;=</code> when removing smaller elements (both work but affect how duplicates are handled)</li>
+</ul>
+</section>
+
+<!-- Complexity -->
+<section class="section-card" id="complexity">
+<h2>Complexity Analysis</h2>
+<table class="complexity-table">
+<tr><th>Operation / Structure</th><th>Time</th><th>Space</th><th>Notes</th></tr>
+<tr><td>Queue (enqueue/dequeue/peek)</td><td>O(1)</td><td>O(n)</td><td>Using deque or linked list</td></tr>
+<tr><td>Circular Queue (all ops)</td><td>O(1)</td><td>O(k)</td><td>k = fixed capacity</td></tr>
+<tr><td>Two-Stack Queue (enqueue)</td><td>O(1)</td><td>O(n)</td><td>Always O(1)</td></tr>
+<tr><td>Two-Stack Queue (dequeue)</td><td>O(1) amortized</td><td>O(n)</td><td>O(n) worst case for transfer</td></tr>
+<tr><td>Sliding Window Maximum</td><td>O(n)</td><td>O(k)</td><td>Each element enters/exits deque once</td></tr>
+<tr><td>Sliding Window Max (brute)</td><td>O(n * k)</td><td>O(1)</td><td>Scan k elements per window</td></tr>
+</table>
+</section>
+
+<!-- Practice -->
+<section class="section-card" id="practice">
+<h2>Practice Problems</h2>
+<ul class="practice-list">
+<li><span>Design Circular Queue (LeetCode 622)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Implement Queue using Stacks (LeetCode 232)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>Sliding Window Maximum (LeetCode 239)</span><span class="practice-diff diff-hard">Hard</span></li>
+<li><span>Moving Average from Data Stream (LeetCode 346)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>Design Circular Deque (LeetCode 641)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Shortest Subarray with Sum at Least K (LeetCode 862)</span><span class="practice-diff diff-hard">Hard</span></li>
+</ul>
+
+<h3>Interview Tips</h3>
+<ul>
+<li>If asked to implement a queue, clarify: fixed size (circular) or dynamic?</li>
+<li>The two-stack queue is a very common interview question &mdash; be ready to explain why it is amortized O(1)</li>
+<li>For sliding window problems, always consider whether a monotonic deque could help</li>
+<li>BFS problems almost always use a queue &mdash; this is the gateway to graph traversal (Week 17)</li>
+</ul>
+</section>
+
+<!-- Summary -->
+<section class="section-card summary-card" id="summary">
+<h2>Week 13 Cheat Sheet</h2>
+<div class="summary-grid">
+<div class="summary-item">
+<h4>Queue Basics</h4>
+<p>FIFO: first in, first out. <code>enqueue</code> at rear, <code>dequeue</code> from front. All O(1).</p>
+</div>
+<div class="summary-item">
+<h4>Circular Queue</h4>
+<p>Fixed-size ring buffer. <code>rear = (rear+1) % cap</code>. Reuses freed space.</p>
+</div>
+<div class="summary-item">
+<h4>Two-Stack Queue</h4>
+<p>Inbox + outbox. Transfer reverses order for FIFO. Amortized O(1).</p>
+</div>
+<div class="summary-item">
+<h4>Monotonic Deque</h4>
+<p>Decreasing deque of indices. Front = max. Each element enters/exits once &rarr; O(n).</p>
+</div>
+<div class="summary-item">
+<h4>Language Tips</h4>
+<p>Java: <code>ArrayDeque</code>. Python: <code>collections.deque</code>. C++: <code>std::deque</code>. Rust: <code>VecDeque</code>.</p>
+</div>
+<div class="summary-item">
+<h4>When to Use</h4>
+<p>BFS, level-order traversal, task scheduling, sliding window problems.</p>
+</div>
+</div>
+</section>
+
+<!-- Nav -->
+<nav class="page-nav">
+<a href="../Week 12/index.html" class="nav-btn">&larr; Week 12</a>
+<a href="../Week 14/index.html" class="nav-btn">Week 14: Trees &rarr;</a>
+</nav>
+</main>
+</div>
+</div>
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle contents">&#9776;</button>
+
+<script>
+// --- Code data ---
+const codeData = {
+sq: [
+// Java
+`// Java: Queue using LinkedList / ArrayDeque
+Queue<Integer> queue = new LinkedList<>();
+queue.offer(10);  // enqueue
+queue.offer(20);
+queue.offer(30);
+
+System.out.println(queue.peek());  // 10 (front)
+System.out.println(queue.poll());  // 10 (dequeue)
+System.out.println(queue.poll());  // 20
+
+// Prefer ArrayDeque over LinkedList for better performance
+Deque<Integer> q = new ArrayDeque<>();
+q.offer(1); q.offer(2); q.offer(3);
+q.poll(); // 1`,
+// C++
+`// C++: SimpleQueue using std::deque
+template <typename T>
+class SimpleQueue {
+    deque<T> data_;
+public:
+    void enqueue(const T& val) {
+        data_.push_back(val);   // O(1) amortized
+    }
+    T dequeue() {
+        if (data_.empty()) throw runtime_error("Queue underflow");
+        T val = data_.front();
+        data_.pop_front();      // O(1)
+        return val;
+    }
+    T front() const {
+        if (data_.empty()) throw runtime_error("Queue is empty");
+        return data_.front();   // O(1)
+    }
+    bool empty() const { return data_.empty(); }
+    size_t size() const { return data_.size(); }
+};`,
+// Python
+`# Python: Queue using collections.deque
+from collections import deque
+
+class Queue:
+    """FIFO queue backed by collections.deque. All operations O(1)."""
+    def __init__(self):
+        self._data = deque()
+
+    def enqueue(self, val):
+        self._data.append(val)      # O(1)
+
+    def dequeue(self):
+        if self.is_empty():
+            raise IndexError("dequeue from empty queue")
+        return self._data.popleft() # O(1)
+
+    def front(self):
+        if self.is_empty():
+            raise IndexError("front from empty queue")
+        return self._data[0]        # O(1)
+
+    def is_empty(self):
+        return len(self._data) == 0
+
+    def size(self):
+        return len(self._data)`,
+// Rust
+`// Rust: Queue using VecDeque
+use std::collections::VecDeque;
+
+struct Queue {
+    data: VecDeque<i32>,
+}
+
+impl Queue {
+    fn new() -> Self { Queue { data: VecDeque::new() } }
+
+    /// Enqueue at the back. O(1) amortized.
+    fn enqueue(&mut self, value: i32) {
+        self.data.push_back(value);
+    }
+
+    /// Dequeue from the front. O(1) amortized.
+    fn dequeue(&mut self) -> Option<i32> {
+        self.data.pop_front()
+    }
+
+    /// Peek at front without removing. O(1).
+    fn front(&self) -> Option<&i32> {
+        self.data.front()
+    }
+
+    fn is_empty(&self) -> bool { self.data.is_empty() }
+    fn len(&self) -> usize { self.data.len() }
+}`
+],
+cq: [
+// Java
+`// Circular Queue implementation (array-based, 0-indexed)
+static class CircularQueue {
+    int[] data;
+    int front, rear, size, capacity;
+
+    CircularQueue(int capacity) {
+        this.capacity = capacity;
+        data = new int[capacity];
+        front = rear = size = 0;
+    }
+
+    boolean enqueue(int x) {
+        if (size == capacity) return false; // full
+        data[rear] = x;
+        rear = (rear + 1) % capacity; // wrap around!
+        size++;
+        return true;
+    }
+
+    int dequeue() {
+        if (size == 0) throw new RuntimeException("Queue empty");
+        int val = data[front];
+        front = (front + 1) % capacity; // wrap around!
+        size--;
+        return val;
+    }
+
+    int peek() {
+        if (size == 0) throw new RuntimeException("Queue empty");
+        return data[front];
+    }
+
+    boolean isEmpty() { return size == 0; }
+    boolean isFull() { return size == capacity; }
+}`,
+// C++
+`// Circular Queue — Fixed-Size Ring Buffer
+// All operations: O(1), Space: O(k) where k = capacity
+class CircularQueue {
+    vector<int> buffer_;
+    int head_, tail_, size_, capacity_;
+public:
+    CircularQueue(int k)
+        : buffer_(k), head_(0), tail_(0), size_(0), capacity_(k) {}
+
+    bool enqueue(int val) {
+        if (isFull()) return false;
+        buffer_[tail_] = val;
+        tail_ = (tail_ + 1) % capacity_;  // wrap around
+        ++size_;
+        return true;
+    }
+
+    bool dequeue() {
+        if (isEmpty()) return false;
+        head_ = (head_ + 1) % capacity_;  // wrap around
+        --size_;
+        return true;
+    }
+
+    int front() const {
+        if (isEmpty()) return -1;
+        return buffer_[head_];
+    }
+
+    int rear() const {
+        if (isEmpty()) return -1;
+        return buffer_[(tail_ - 1 + capacity_) % capacity_];
+    }
+
+    bool isEmpty() const { return size_ == 0; }
+    bool isFull() const { return size_ == capacity_; }
+};`,
+// Python
+`class CircularQueue:
+    """Fixed-capacity circular queue using a list as a ring buffer.
+    All operations are O(1). Space: O(k) where k = capacity."""
+
+    def __init__(self, capacity: int):
+        self._buf = [None] * capacity
+        self._capacity = capacity
+        self._front = 0
+        self._rear = -1
+        self._size = 0
+
+    def enqueue(self, val: int) -> bool:
+        """Add val to the rear. Returns False if full."""
+        if self.is_full():
+            return False
+        self._rear = (self._rear + 1) % self._capacity  # wrap!
+        self._buf[self._rear] = val
+        self._size += 1
+        return True
+
+    def dequeue(self) -> int:
+        if self.is_empty():
+            raise IndexError("dequeue from empty circular queue")
+        val = self._buf[self._front]
+        self._front = (self._front + 1) % self._capacity  # wrap!
+        self._size -= 1
+        return val
+
+    def front(self) -> int:
+        if self.is_empty():
+            raise IndexError("front from empty circular queue")
+        return self._buf[self._front]
+
+    def is_empty(self) -> bool: return self._size == 0
+    def is_full(self) -> bool: return self._size == self._capacity`,
+// Rust
+`/// Fixed-capacity circular queue (ring buffer).
+struct CircularQueue {
+    buffer: Vec<Option<i32>>,
+    front: usize,
+    rear: usize,
+    size: usize,
+    capacity: usize,
+}
+
+impl CircularQueue {
+    fn new(capacity: usize) -> Self {
+        CircularQueue {
+            buffer: vec![None; capacity],
+            front: 0, rear: 0, size: 0, capacity,
+        }
+    }
+
+    /// Enqueues a value. Returns false if full.
+    fn enqueue(&mut self, value: i32) -> bool {
+        if self.is_full() { return false; }
+        self.buffer[self.rear] = Some(value);
+        self.rear = (self.rear + 1) % self.capacity; // wrap!
+        self.size += 1;
+        true
+    }
+
+    /// Dequeues and returns the front value.
+    fn dequeue(&mut self) -> Option<i32> {
+        if self.is_empty() { return None; }
+        let value = self.buffer[self.front].take();
+        self.front = (self.front + 1) % self.capacity; // wrap!
+        self.size -= 1;
+        value
+    }
+
+    fn front(&self) -> Option<i32> {
+        if self.is_empty() { None }
+        else { self.buffer[self.front] }
+    }
+
+    fn is_empty(&self) -> bool { self.size == 0 }
+    fn is_full(&self) -> bool { self.size == self.capacity }
+}`
+],
+ts: [
+// Java
+`// Queue using two stacks — amortized O(1) per operation
+static class QueueUsingStacks {
+    Deque<Integer> inbox = new ArrayDeque<>();   // for enqueue
+    Deque<Integer> outbox = new ArrayDeque<>();  // for dequeue
+
+    void enqueue(int x) {
+        inbox.push(x);   // O(1)
+    }
+
+    int dequeue() {
+        if (outbox.isEmpty()) {
+            // Transfer all from inbox to outbox (reverses order)
+            while (!inbox.isEmpty())
+                outbox.push(inbox.pop());
+        }
+        if (outbox.isEmpty())
+            throw new RuntimeException("Queue empty");
+        return outbox.pop();  // O(1) amortized
+    }
+
+    int peek() {
+        if (outbox.isEmpty())
+            while (!inbox.isEmpty())
+                outbox.push(inbox.pop());
+        return outbox.peek();
+    }
+
+    boolean isEmpty() {
+        return inbox.isEmpty() && outbox.isEmpty();
+    }
+}`,
+// C++
+`// Queue using two stacks — amortized O(1) per operation
+class QueueTwoStacks {
+    stack<int> pushStack_;  // for enqueue
+    stack<int> popStack_;   // for dequeue
+
+    void transfer() {
+        while (!pushStack_.empty()) {
+            popStack_.push(pushStack_.top());
+            pushStack_.pop();
+        }
+    }
+
+public:
+    void enqueue(int val) {
+        pushStack_.push(val);     // O(1)
+    }
+
+    int dequeue() {
+        if (popStack_.empty()) transfer();  // O(n) worst case
+        if (popStack_.empty()) throw runtime_error("Queue underflow");
+        int val = popStack_.top();
+        popStack_.pop();
+        return val;               // O(1) amortized
+    }
+
+    int front() {
+        if (popStack_.empty()) transfer();
+        if (popStack_.empty()) throw runtime_error("Queue is empty");
+        return popStack_.top();
+    }
+
+    bool empty() const {
+        return pushStack_.empty() && popStack_.empty();
+    }
+};`,
+// Python
+`class QueueTwoStacks:
+    """FIFO queue implemented with two stacks.
+    Amortized O(1) per operation."""
+
+    def __init__(self):
+        self._stack_in = []     # receives enqueue
+        self._stack_out = []    # serves dequeue
+
+    def enqueue(self, val: int):
+        self._stack_in.append(val)  # O(1)
+
+    def _transfer(self):
+        """Move all elements from stack_in to stack_out."""
+        while self._stack_in:
+            self._stack_out.append(self._stack_in.pop())
+
+    def dequeue(self) -> int:
+        """Amortized O(1)."""
+        if not self._stack_out:
+            self._transfer()
+        if not self._stack_out:
+            raise IndexError("dequeue from empty queue")
+        return self._stack_out.pop()
+
+    def front(self) -> int:
+        if not self._stack_out:
+            self._transfer()
+        if not self._stack_out:
+            raise IndexError("front from empty queue")
+        return self._stack_out[-1]
+
+    def is_empty(self) -> bool:
+        return not self._stack_in and not self._stack_out`,
+// Rust
+`/// Queue using two stacks (Vecs). Amortized O(1).
+struct QueueTwoStacks {
+    inbox: Vec<i32>,
+    outbox: Vec<i32>,
+}
+
+impl QueueTwoStacks {
+    fn new() -> Self {
+        QueueTwoStacks { inbox: Vec::new(), outbox: Vec::new() }
+    }
+
+    fn enqueue(&mut self, value: i32) {
+        self.inbox.push(value);  // O(1)
+    }
+
+    fn dequeue(&mut self) -> Option<i32> {
+        if self.outbox.is_empty() {
+            // Transfer: reverses order for FIFO behavior
+            while let Some(val) = self.inbox.pop() {
+                self.outbox.push(val);
+            }
+        }
+        self.outbox.pop()  // O(1) amortized
+    }
+
+    fn front(&mut self) -> Option<&i32> {
+        if self.outbox.is_empty() {
+            while let Some(val) = self.inbox.pop() {
+                self.outbox.push(val);
+            }
+        }
+        self.outbox.last()
+    }
+
+    fn is_empty(&self) -> bool {
+        self.inbox.is_empty() && self.outbox.is_empty()
+    }
+}`
+],
+sw: [
+// Java
+`// Sliding Window Maximum — Monotonic Deque
+// Time: O(n), Space: O(k)
+static int[] slidingWindowMax(int[] arr, int k) {
+    int n = arr.length;
+    if (n == 0 || k == 0) return new int[0];
+    int[] result = new int[n - k + 1];
+    Deque<Integer> deque = new ArrayDeque<>(); // stores INDICES
+
+    for (int i = 0; i < n; i++) {
+        // Remove indices outside the current window
+        while (!deque.isEmpty() && deque.peekFirst() < i - k + 1)
+            deque.pollFirst();
+
+        // Remove indices of smaller elements (can't be future maxima)
+        while (!deque.isEmpty() && arr[deque.peekLast()] < arr[i])
+            deque.pollLast();
+
+        deque.offerLast(i);
+
+        // Window is full starting at index k-1
+        if (i >= k - 1)
+            result[i - k + 1] = arr[deque.peekFirst()];
+    }
+    return result;
+}
+// Example: arr=[1,3,-1,-3,5,3,6,7], k=3 => [3,3,5,5,6,7]`,
+// C++
+`// Sliding Window Maximum — Monotonic Deque
+// Time: O(n), Space: O(k)
+vector<int> slidingWindowMax(const vector<int>& nums, int k) {
+    vector<int> result;
+    deque<int> dq;  // stores indices in decreasing value order
+
+    for (int i = 0; i < static_cast<int>(nums.size()); ++i) {
+        // Remove elements outside the current window
+        while (!dq.empty() && dq.front() <= i - k)
+            dq.pop_front();
+
+        // Remove elements smaller than current
+        while (!dq.empty() && nums[dq.back()] <= nums[i])
+            dq.pop_back();
+
+        dq.push_back(i);
+
+        // Window is fully formed once i >= k - 1
+        if (i >= k - 1)
+            result.push_back(nums[dq.front()]);
+    }
+    return result;
+}
+// Example: [1,3,-1,-3,5,3,6,7], k=3 => [3,3,5,5,6,7]`,
+// Python
+`def sliding_window_max(nums: list[int], k: int) -> list[int]:
+    """Return the max in every window of size k.
+
+    Uses a monotonic deque storing indices in decreasing
+    order of values. Front = index of current window max.
+
+    Time:  O(n) — each element added/removed at most once
+    Space: O(k) — deque holds at most k indices
+    """
+    from collections import deque
+
+    if not nums or k == 0:
+        return []
+
+    dq = deque()   # indices, values in decreasing order
+    result = []
+
+    for i, val in enumerate(nums):
+        # Remove indices that have left the window
+        while dq and dq[0] < i - k + 1:
+            dq.popleft()
+
+        # Remove indices whose values are <= current
+        while dq and nums[dq[-1]] <= val:
+            dq.pop()
+
+        dq.append(i)
+
+        # Record once we have a full window
+        if i >= k - 1:
+            result.append(nums[dq[0]])
+
+    return result
+# Example: [1,3,-1,-3,5,3,6,7], k=3 => [3,3,5,5,6,7]`,
+// Rust
+`/// Sliding window maximum using a monotonic deque.
+/// Time: O(n), Space: O(k)
+fn sliding_window_maximum(arr: &[i32], k: usize) -> Vec<i32> {
+    if arr.is_empty() || k == 0 || k > arr.len() {
+        return vec![];
+    }
+
+    let mut result = Vec::with_capacity(arr.len() - k + 1);
+    let mut deque: VecDeque<usize> = VecDeque::new();
+
+    for i in 0..arr.len() {
+        // Remove indices outside the current window
+        while let Some(&front) = deque.front() {
+            if front + k <= i { deque.pop_front(); }
+            else { break; }
+        }
+
+        // Remove indices whose values are <= arr[i]
+        while let Some(&back) = deque.back() {
+            if arr[back] <= arr[i] { deque.pop_back(); }
+            else { break; }
+        }
+
+        deque.push_back(i);
+
+        // Record the max once we have a full window
+        if i >= k - 1 {
+            result.push(arr[*deque.front().unwrap()]);
+        }
+    }
+    result
+}
+// Example: [1,3,-1,-3,5,3,6,7], k=3 => [3,3,5,5,6,7]`
+]
+};
+
+// --- Syntax highlighter ---
+function highlight(code, lang) {
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  code = esc(code);
+  // Comments
+  code = code.replace(/(\/\/.*)/g, '<span class="cmt">$1</span>');
+  code = code.replace(/(#[^!\[{].*)/g, '<span class="cmt">$1</span>');
+  // Strings
+  code = code.replace(/(&quot;.*?&quot;|"[^"]*"|'[^']*')/g, '<span class="str">$1</span>');
+  // Numbers
+  code = code.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  // Keywords by language
+  let kws;
+  if (lang === 'java' || lang === 'cpp')
+    kws = /\b(class|struct|public|private|static|void|int|boolean|bool|return|if|else|while|for|new|throw|throws|const|auto|template|typename|size_t|this|true|false|null|nullptr|override)\b/g;
+  else if (lang === 'python')
+    kws = /\b(def|class|self|return|if|else|elif|while|for|in|not|and|or|from|import|raise|True|False|None|is|with|as|try|except|yield|lambda|assert)\b/g;
+  else
+    kws = /\b(fn|let|mut|struct|impl|self|Self|pub|use|return|if|else|while|for|in|match|loop|break|continue|true|false|None|Some|Ok|Err|vec|mod|crate|where|type|trait|const|move|ref|as|unsafe)\b/g;
+  code = code.replace(kws, '<span class="kw">$1</span>');
+  // Types
+  code = code.replace(/\b(Vec|VecDeque|Option|Box|String|HashMap|HashSet|BinaryHeap|Reverse|Queue|Deque|ArrayDeque|LinkedList|PriorityQueue|Collections|Integer|Math|Arrays|List|ArrayList|Map|Set|deque|list|dict|set|int|float|str|bool|tuple|Optional|Tuple|Dict|Iterator)\b/g, '<span class="type">$1</span>');
+  // Functions
+  code = code.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g, '<span class="fn">$1</span>');
+  // Wrap lines
+  const lines = code.split('\n');
+  return lines.map(l => `<span class="line">${l}</span>`).join('\n');
+}
+
+// --- Populate code panels ---
+const langMap = ['java','cpp','python','rust'];
+Object.keys(codeData).forEach(group => {
+  codeData[group].forEach((src, i) => {
+    const el = document.getElementById(group + '-' + i);
+    if (el) el.querySelector('pre').innerHTML = highlight(src, langMap[i]);
+  });
+});
+
+// --- Tab switching ---
+function switchTab(btn, group) {
+  const tabs = btn.parentElement.querySelectorAll('.code-tab');
+  const panels = btn.parentElement.parentElement.querySelectorAll('.code-panel');
+  const idx = Array.from(tabs).indexOf(btn);
+  tabs.forEach(t => t.classList.remove('active'));
+  panels.forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+  panels[idx].classList.add('active');
+}
+
+// --- Copy ---
+function copyCode(btn) {
+  const text = btn.nextElementSibling.textContent;
+  navigator.clipboard.writeText(text).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 1500);
+  });
+}
+
+// --- Intersection Observer ---
+const obs = new IntersectionObserver(entries => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+document.querySelectorAll('.section-card').forEach(c => obs.observe(c));
+
+// --- Sidebar toggle ---
+document.getElementById('sidebarToggle').addEventListener('click', () => {
+  document.getElementById('sidebar').classList.toggle('open');
+});
+// Close sidebar on link click (mobile)
+document.querySelectorAll('.sidebar a').forEach(a => {
+  a.addEventListener('click', () => document.getElementById('sidebar').classList.remove('open'));
+});
+
+// --- Sidebar active link ---
+const sections = document.querySelectorAll('.section-card[id]');
+const sidebarLinks = document.querySelectorAll('.sidebar a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => { if (window.scrollY >= s.offsetTop - 120) current = s.id; });
+  sidebarLinks.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

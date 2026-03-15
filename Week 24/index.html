@@ -1,0 +1,855 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 24: Research-Level Topics | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}.sidebar nav a.sub{padding-left:40px;font-size:.82rem}.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}.hero .meta .dot{width:8px;height:8px;border-radius:50%}.hero .meta .dot.medium{background:var(--warning)}.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}.card.visible{opacity:1;transform:translateY(0)}.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}.card h2 .icon{font-size:1.3rem}.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}.code-panel{display:none;position:relative}.code-panel.active{display:block}.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}.code-header span{font-size:.75rem;color:var(--text-secondary)}.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}.copy-btn:hover{background:var(--accent-blue);color:#fff}.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}.line-numbers span{display:block;padding:0 12px 0 16px}.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}td{padding:10px 12px;border-bottom:1px solid var(--card-border)}tr:hover td{background:rgba(88,166,255,.03)}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}.diagram .highlight{color:var(--accent-green);font-weight:700}.diagram .swap{color:var(--danger);font-weight:700}.diagram .sorted{color:var(--accent-blue)}.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 24 of 24</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#amortized">Amortized Analysis</a>
+<a href="#amortized-example" class="sub">Dynamic Array Example</a>
+<a href="#skip-list">Skip List</a>
+<a href="#bloom-filter">Bloom Filter</a>
+<a href="#reservoir">Reservoir Sampling</a>
+<a href="#np-complete">NP-Completeness</a>
+<a href="#approximation">Approximation Algorithms</a>
+<a href="#vertex-cover" class="sub">Vertex Cover</a>
+<a href="#set-cover" class="sub">Greedy Set Cover</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 24</span>
+<h1>Research-Level Topics</h1>
+<p class="subtitle">Explore concepts at the boundary of competitive programming and theoretical CS: amortized analysis, probabilistic data structures, NP-completeness, and approximation algorithms.</p>
+<div class="meta">
+<span><span class="dot hard"></span> Advanced</span>
+<span>~12 hours estimated</span>
+<span>7 major topics</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand amortized analysis: aggregate, accounting, and potential methods</li>
+<li>Implement a Skip List with probabilistic O(log n) search, insert, and delete</li>
+<li>Build a Bloom Filter for space-efficient probabilistic set membership</li>
+<li>Apply Reservoir Sampling to uniformly sample from a stream of unknown size</li>
+<li>Grasp P vs NP and understand what makes a problem NP-Complete</li>
+<li>Implement approximation algorithms for Vertex Cover and Set Cover</li>
+</ul>
+</div>
+
+<div class="card" id="amortized">
+<h2><span class="icon">&#9201;</span> Amortized Analysis</h2>
+<p>Amortized analysis computes the <strong>average cost per operation</strong> over a sequence of operations, even when individual operations may be expensive. Unlike average-case analysis, it guarantees worst-case bounds for the entire sequence.</p>
+<h3>Three Methods</h3>
+<table>
+<thead><tr><th>Method</th><th>Approach</th><th>Key Idea</th></tr></thead>
+<tbody>
+<tr><td>Aggregate</td><td>Total cost / n operations</td><td>Sum all costs, divide by count</td></tr>
+<tr><td>Accounting</td><td>Prepay for future expensive ops</td><td>Charge extra on cheap ops, "save" credit</td></tr>
+<tr><td>Potential</td><td>&Phi;(state) = stored energy</td><td>Amortized = actual + &Delta;&Phi;</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card" id="amortized-example">
+<h2><span class="icon">&#128200;</span> Dynamic Array (Amortized O(1) Push)</h2>
+<p>Classic example: ArrayList doubling. Each push is O(1) unless the array is full, then it costs O(n) to resize. Amortized cost per push: <strong>O(1)</strong> because resize happens rarely.</p>
+<div class="diagram">
+Push sequence (capacity doubles at powers of 2):
+
+push 1: cost 1              capacity 1 &rarr; 2
+push 2: cost 1 + <span class="swap">2 (resize)</span>  capacity 2 &rarr; 4
+push 3: cost 1
+push 4: cost 1 + <span class="swap">4 (resize)</span>  capacity 4 &rarr; 8
+push 5-8: cost 1 each
+push 9: cost 1 + <span class="swap">8 (resize)</span>  capacity 8 &rarr; 16
+
+Total for n pushes: n + 1 + 2 + 4 + ... + n = <span class="highlight">n + (2n - 1) &lt; 3n</span>
+Amortized per push: <span class="highlight">3n/n = O(1)</span>
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ResearchLevelTopics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class DynamicArray {
+    int[] data;
+    int size, capacity;
+    DynamicArray() { data = new int[1]; size = 0; capacity = 1; }
+    void push(int val) {
+        if (size == capacity) {
+            capacity *= 2;
+            int[] newData = new int[capacity];
+            System.arraycopy(data, 0, newData, 0, size);
+            data = newData; // O(n) resize, but rare
+        }
+        data[size++] = val; // O(1)
+    }
+    int get(int index) { return data[index]; }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>research_level.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class DynamicArray {
+    int* data;
+    int sz, cap;
+public:
+    DynamicArray() : sz(0), cap(1) { data = new int[1]; }
+    ~DynamicArray() { delete[] data; }
+    void push(int val) {
+        if (sz == cap) {
+            cap *= 2;
+            int* newData = new int[cap];
+            std::copy(data, data + sz, newData);
+            delete[] data;
+            data = newData;
+        }
+        data[sz++] = val;
+    }
+    int get(int i) const { return data[i]; }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>research_level.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class DynamicArray:
+    def __init__(self):
+        self.data = [None]
+        self.size = 0
+        self.capacity = 1
+
+    def push(self, val):
+        if self.size == self.capacity:
+            self.capacity *= 2
+            new_data = [None] * self.capacity
+            for i in range(self.size):
+                new_data[i] = self.data[i]
+            self.data = new_data
+        self.data[self.size] = val
+        self.size += 1</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>research_level.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct DynamicArray {
+    data: Vec&lt;i32&gt;,
+}
+impl DynamicArray {
+    fn new() -&gt; Self { DynamicArray { data: Vec::new() } }
+    fn push(&amp;mut self, val: i32) {
+        self.data.push(val); // Vec handles amortized doubling internally
+    }
+    fn get(&amp;self, index: usize) -&gt; i32 { self.data[index] }
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="skip-list">
+<h2><span class="icon">&#128279;</span> Skip List</h2>
+<p>A probabilistic data structure: a sorted linked list with "express lanes." Each element is promoted to higher levels with probability p (typically 1/2). Expected <strong>O(log n)</strong> for search, insert, and delete &mdash; simpler to implement than balanced BSTs.</p>
+<div class="diagram">
+Level 3:  HEAD ──────────────────────────── 50 ── NIL
+Level 2:  HEAD ──────── 20 ──────────────── 50 ── NIL
+Level 1:  HEAD ── 10 ── 20 ──── 35 ──────── 50 ── NIL
+Level 0:  HEAD ── 10 ── 20 ── 25 ── 35 ── 42 ── 50 ── NIL
+
+<span class="highlight">Search 35: Start at top level, skip forward, drop down</span>
+</div>
+<div class="insight">
+<div class="label">Where It's Used</div>
+Redis sorted sets, LevelDB, Java's ConcurrentSkipListMap. Skip lists offer simpler concurrent implementations than balanced BSTs since they don't require complex tree rotations.
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ResearchLevelTopics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class SkipList {
+    static final int MAX_LEVEL = 16;
+    static final double P = 0.5;
+    int level;
+    Node head;
+
+    static class Node {
+        int val;
+        Node[] next;
+        Node(int v, int lvl) { val = v; next = new Node[lvl + 1]; }
+    }
+
+    SkipList() { head = new Node(Integer.MIN_VALUE, MAX_LEVEL); level = 0; }
+
+    int randomLevel() {
+        int lvl = 0;
+        while (Math.random() &lt; P &amp;&amp; lvl &lt; MAX_LEVEL) lvl++;
+        return lvl;
+    }
+
+    boolean search(int target) {
+        Node curr = head;
+        for (int i = level; i &gt;= 0; i--)
+            while (curr.next[i] != null &amp;&amp; curr.next[i].val &lt; target)
+                curr = curr.next[i];
+        curr = curr.next[0];
+        return curr != null &amp;&amp; curr.val == target;
+    }
+
+    void insert(int val) {
+        Node[] update = new Node[MAX_LEVEL + 1];
+        Node curr = head;
+        for (int i = level; i &gt;= 0; i--) {
+            while (curr.next[i] != null &amp;&amp; curr.next[i].val &lt; val)
+                curr = curr.next[i];
+            update[i] = curr;
+        }
+        int newLvl = randomLevel();
+        if (newLvl &gt; level) {
+            for (int i = level + 1; i &lt;= newLvl; i++) update[i] = head;
+            level = newLvl;
+        }
+        Node node = new Node(val, newLvl);
+        for (int i = 0; i &lt;= newLvl; i++) {
+            node.next[i] = update[i].next[i];
+            update[i].next[i] = node;
+        }
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>research_level.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class SkipList {
+    static constexpr int MAX_LVL = 16;
+    static constexpr double P = 0.5;
+    struct Node {
+        int val;
+        std::vector&lt;Node*&gt; next;
+        Node(int v, int lvl) : val(v), next(lvl + 1, nullptr) {}
+    };
+    Node* head;
+    int level;
+    int randomLevel() {
+        int lvl = 0;
+        while ((double)rand() / RAND_MAX &lt; P &amp;&amp; lvl &lt; MAX_LVL) lvl++;
+        return lvl;
+    }
+public:
+    SkipList() : level(0) { head = new Node(INT_MIN, MAX_LVL); }
+    bool search(int target) {
+        Node* curr = head;
+        for (int i = level; i &gt;= 0; --i)
+            while (curr-&gt;next[i] &amp;&amp; curr-&gt;next[i]-&gt;val &lt; target)
+                curr = curr-&gt;next[i];
+        curr = curr-&gt;next[0];
+        return curr &amp;&amp; curr-&gt;val == target;
+    }
+    void insert(int val) {
+        std::vector&lt;Node*&gt; update(MAX_LVL + 1);
+        Node* curr = head;
+        for (int i = level; i &gt;= 0; --i) {
+            while (curr-&gt;next[i] &amp;&amp; curr-&gt;next[i]-&gt;val &lt; val)
+                curr = curr-&gt;next[i];
+            update[i] = curr;
+        }
+        int newLvl = randomLevel();
+        if (newLvl &gt; level) {
+            for (int i = level + 1; i &lt;= newLvl; ++i) update[i] = head;
+            level = newLvl;
+        }
+        Node* node = new Node(val, newLvl);
+        for (int i = 0; i &lt;= newLvl; ++i) {
+            node-&gt;next[i] = update[i]-&gt;next[i];
+            update[i]-&gt;next[i] = node;
+        }
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>research_level.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">import random
+
+class SkipListNode:
+    def __init__(self, val, level):
+        self.val = val
+        self.next = [None] * (level + 1)
+
+class SkipList:
+    MAX_LEVEL = 16
+    P = 0.5
+
+    def __init__(self):
+        self.head = SkipListNode(float('-inf'), self.MAX_LEVEL)
+        self.level = 0
+
+    def _random_level(self):
+        lvl = 0
+        while random.random() &lt; self.P and lvl &lt; self.MAX_LEVEL:
+            lvl += 1
+        return lvl
+
+    def search(self, target):
+        curr = self.head
+        for i in range(self.level, -1, -1):
+            while curr.next[i] and curr.next[i].val &lt; target:
+                curr = curr.next[i]
+        curr = curr.next[0]
+        return curr is not None and curr.val == target
+
+    def insert(self, val):
+        update = [None] * (self.MAX_LEVEL + 1)
+        curr = self.head
+        for i in range(self.level, -1, -1):
+            while curr.next[i] and curr.next[i].val &lt; val:
+                curr = curr.next[i]
+            update[i] = curr
+        new_lvl = self._random_level()
+        if new_lvl &gt; self.level:
+            for i in range(self.level + 1, new_lvl + 1):
+                update[i] = self.head
+            self.level = new_lvl
+        node = SkipListNode(val, new_lvl)
+        for i in range(new_lvl + 1):
+            node.next[i] = update[i].next[i]
+            update[i].next[i] = node</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>research_level.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use rand::Rng;
+
+struct SkipNode {
+    val: i32,
+    next: Vec&lt;Option&lt;usize&gt;&gt;, // indices into arena
+}
+
+struct SkipList {
+    arena: Vec&lt;SkipNode&gt;,
+    head: usize,
+    level: usize,
+}
+
+impl SkipList {
+    const MAX_LEVEL: usize = 16;
+    fn new() -&gt; Self {
+        let head = SkipNode { val: i32::MIN, next: vec![None; Self::MAX_LEVEL + 1] };
+        SkipList { arena: vec![head], head: 0, level: 0 }
+    }
+    fn random_level() -&gt; usize {
+        let mut rng = rand::thread_rng();
+        let mut lvl = 0;
+        while rng.gen::&lt;f64&gt;() &lt; 0.5 &amp;&amp; lvl &lt; Self::MAX_LEVEL { lvl += 1; }
+        lvl
+    }
+    fn search(&amp;self, target: i32) -&gt; bool {
+        let mut curr = self.head;
+        for i in (0..=self.level).rev() {
+            while let Some(next) = self.arena[curr].next[i] {
+                if self.arena[next].val &lt; target { curr = next; }
+                else { break; }
+            }
+        }
+        if let Some(next) = self.arena[curr].next[0] {
+            self.arena[next].val == target
+        } else { false }
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="bloom-filter">
+<h2><span class="icon">&#127800;</span> Bloom Filter</h2>
+<p>A space-efficient probabilistic set. Supports <code>add(x)</code> and <code>mightContain(x)</code>. <strong>False positives</strong> are possible (says "yes" when element is not present), but <strong>no false negatives</strong> (if it says "no", element is definitely absent).</p>
+<div class="diagram">
+add("cat"):  hash1("cat") = 2, hash2("cat") = 5, hash3("cat") = 9
+             Bit array: [0 0 <span class="highlight">1</span> 0 0 <span class="highlight">1</span> 0 0 0 <span class="highlight">1</span> 0 0]
+
+check("dog"): hash1("dog") = 2, hash2("dog") = 7, hash3("dog") = 9
+              Positions: 2=<span class="highlight">1</span>, 7=<span class="swap">0</span>, 9=<span class="highlight">1</span>
+              Result: <span class="swap">NOT in set</span> (bit 7 is 0)
+
+check("fox"): hash1("fox") = 2, hash2("fox") = 5, hash3("fox") = 9
+              All bits set! Result: <span class="pivot">MAYBE in set</span> (false positive possible)
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ResearchLevelTopics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class BloomFilter {
+    boolean[] bits;
+    int size, numHashes;
+
+    BloomFilter(int size, int numHashes) {
+        this.bits = new boolean[size];
+        this.size = size;
+        this.numHashes = numHashes;
+    }
+
+    void add(String item) {
+        for (int i = 0; i &lt; numHashes; i++)
+            bits[hash(item, i)] = true;
+    }
+
+    boolean mightContain(String item) {
+        for (int i = 0; i &lt; numHashes; i++)
+            if (!bits[hash(item, i)]) return false;
+        return true; // might be false positive
+    }
+
+    private int hash(String item, int seed) {
+        int h = item.hashCode() + seed * 31;
+        return Math.abs(h) % size;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>research_level.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class BloomFilter {
+    std::vector&lt;bool&gt; bits;
+    int m, k;
+    size_t hash_fn(const std::string&amp; s, int seed) {
+        size_t h = std::hash&lt;std::string&gt;{}(s) + seed * 0x9e3779b9;
+        return h % m;
+    }
+public:
+    BloomFilter(int size, int numHashes) : m(size), k(numHashes), bits(size, false) {}
+    void add(const std::string&amp; item) {
+        for (int i = 0; i &lt; k; ++i) bits[hash_fn(item, i)] = true;
+    }
+    bool might_contain(const std::string&amp; item) {
+        for (int i = 0; i &lt; k; ++i)
+            if (!bits[hash_fn(item, i)]) return false;
+        return true;
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>research_level.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class BloomFilter:
+    def __init__(self, size, num_hashes):
+        self.bits = [False] * size
+        self.size = size
+        self.num_hashes = num_hashes
+
+    def _hash(self, item, seed):
+        return abs(hash(item) + seed * 31) % self.size
+
+    def add(self, item):
+        for i in range(self.num_hashes):
+            self.bits[self._hash(item, i)] = True
+
+    def might_contain(self, item):
+        return all(self.bits[self._hash(item, i)]
+                   for i in range(self.num_hashes))</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>research_level.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
+struct BloomFilter {
+    bits: Vec&lt;bool&gt;,
+    size: usize,
+    num_hashes: usize,
+}
+
+impl BloomFilter {
+    fn new(size: usize, num_hashes: usize) -&gt; Self {
+        BloomFilter { bits: vec![false; size], size, num_hashes }
+    }
+    fn hash_item(&amp;self, item: &amp;str, seed: usize) -&gt; usize {
+        let mut hasher = DefaultHasher::new();
+        item.hash(&amp;mut hasher);
+        seed.hash(&amp;mut hasher);
+        hasher.finish() as usize % self.size
+    }
+    fn add(&amp;mut self, item: &amp;str) {
+        for i in 0..self.num_hashes {
+            let idx = self.hash_item(item, i);
+            self.bits[idx] = true;
+        }
+    }
+    fn might_contain(&amp;self, item: &amp;str) -&gt; bool {
+        (0..self.num_hashes).all(|i| self.bits[self.hash_item(item, i)])
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="reservoir">
+<h2><span class="icon">&#127754;</span> Reservoir Sampling</h2>
+<p>Uniformly sample k items from a stream of unknown size N. Each item ends up in the sample with equal probability k/N. <strong>Time: O(N), Space: O(k)</strong> &mdash; single pass!</p>
+<div class="insight">
+<div class="label">Algorithm (k=1)</div>
+Keep the first element. For the i-th element (1-indexed), replace the kept element with probability 1/i. After seeing all N elements, each element has exactly 1/N probability of being chosen.
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ResearchLevelTopics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int[] reservoirSample(int[] stream, int k) {
+    int[] reservoir = new int[k];
+    Random rand = new Random();
+    for (int i = 0; i &lt; stream.length; i++) {
+        if (i &lt; k) {
+            reservoir[i] = stream[i];
+        } else {
+            int j = rand.nextInt(i + 1);
+            if (j &lt; k) reservoir[j] = stream[i];
+        }
+    }
+    return reservoir;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>research_level.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::vector&lt;int&gt; reservoir_sample(const std::vector&lt;int&gt;&amp; stream, int k) {
+    std::vector&lt;int&gt; reservoir(stream.begin(), stream.begin() + k);
+    std::mt19937 rng(42);
+    for (int i = k; i &lt; (int)stream.size(); ++i) {
+        int j = std::uniform_int_distribution&lt;int&gt;(0, i)(rng);
+        if (j &lt; k) reservoir[j] = stream[i];
+    }
+    return reservoir;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>research_level.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def reservoir_sample(stream, k):
+    reservoir = list(stream[:k])
+    for i in range(k, len(stream)):
+        j = random.randint(0, i)
+        if j &lt; k:
+            reservoir[j] = stream[i]
+    return reservoir</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>research_level.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn reservoir_sample(stream: &amp;[i32], k: usize) -&gt; Vec&lt;i32&gt; {
+    let mut rng = rand::thread_rng();
+    let mut reservoir: Vec&lt;i32&gt; = stream[..k].to_vec();
+    for i in k..stream.len() {
+        let j = rng.gen_range(0..=i);
+        if j &lt; k { reservoir[j] = stream[i]; }
+    }
+    reservoir
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="np-complete">
+<h2><span class="icon">&#129504;</span> NP-Completeness</h2>
+<p>The most fundamental open question in computer science: <strong>does P = NP?</strong></p>
+<table>
+<thead><tr><th>Class</th><th>Definition</th><th>Examples</th></tr></thead>
+<tbody>
+<tr><td><span class="badge badge-green">P</span></td><td>Solvable in polynomial time O(n<sup>k</sup>)</td><td>Sorting, shortest path, MST</td></tr>
+<tr><td><span class="badge badge-blue">NP</span></td><td>Solution verifiable in polynomial time</td><td>All of P, plus SAT, TSP, etc.</td></tr>
+<tr><td><span class="badge badge-red">NP-Complete</span></td><td>In NP &amp; every NP problem reduces to it</td><td>3-SAT, Vertex Cover, Subset Sum</td></tr>
+<tr><td><span class="badge badge-yellow">NP-Hard</span></td><td>At least as hard as NP-Complete</td><td>Halting problem, TSP optimization</td></tr>
+</tbody>
+</table>
+<h3>Famous NP-Complete Problems</h3>
+<ul class="objectives">
+<li><strong>3-SAT:</strong> Boolean satisfiability with clauses of exactly 3 literals</li>
+<li><strong>Traveling Salesman (decision):</strong> Is there a tour of length &le; k?</li>
+<li><strong>Vertex Cover:</strong> Can we cover all edges with &le; k vertices?</li>
+<li><strong>Hamiltonian Cycle:</strong> Does a cycle visiting every vertex exactly once exist?</li>
+<li><strong>Subset Sum:</strong> Does a subset summing to exactly S exist?</li>
+<li><strong>Graph Coloring:</strong> Can we color with &le; k colors so no adjacent vertices match?</li>
+</ul>
+<div class="warning-box">
+<div class="label">Key Implication</div>
+If you can solve ANY NP-Complete problem in polynomial time, you can solve ALL of them (P = NP). Most experts believe P &ne; NP, meaning no efficient exact algorithms exist for these problems.
+</div>
+</div>
+
+<div class="card" id="approximation">
+<h2><span class="icon">&#127919;</span> Approximation Algorithms</h2>
+<p>When exact solutions are intractable (NP-Complete), find solutions guaranteed to be within a factor of optimal. The <strong>approximation ratio &rho;</strong> bounds how far the solution can be from OPT.</p>
+<table>
+<thead><tr><th>Problem</th><th>Approximation Ratio</th><th>Algorithm</th></tr></thead>
+<tbody>
+<tr><td>Vertex Cover</td><td><span class="badge badge-green">2</span></td><td>Take both endpoints of maximal matching</td></tr>
+<tr><td>Set Cover</td><td><span class="badge badge-yellow">O(log n)</span></td><td>Greedy: pick set covering most uncovered</td></tr>
+<tr><td>TSP (metric)</td><td><span class="badge badge-green">3/2</span></td><td>Christofides algorithm (MST-based)</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card" id="vertex-cover">
+<h2><span class="icon">&#128165;</span> 2-Approximation Vertex Cover</h2>
+<p>Find a vertex cover (set of vertices touching all edges) at most <strong>2&times;</strong> the optimal size. Pick any uncovered edge, add both endpoints, repeat.</p>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>NPCompletenessAndApproximation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static Set&lt;Integer&gt; vertexCover2Approx(int V, int[][] edges) {
+    Set&lt;Integer&gt; cover = new HashSet&lt;&gt;();
+    boolean[] edgeCovered = new boolean[edges.length];
+    for (int i = 0; i &lt; edges.length; i++) {
+        if (!edgeCovered[i]) {
+            int u = edges[i][0], v = edges[i][1];
+            if (!cover.contains(u) &amp;&amp; !cover.contains(v)) {
+                cover.add(u);
+                cover.add(v);
+                // Mark all edges incident to u or v
+                for (int j = i; j &lt; edges.length; j++)
+                    if (edges[j][0] == u || edges[j][0] == v ||
+                        edges[j][1] == u || edges[j][1] == v)
+                        edgeCovered[j] = true;
+            }
+        }
+    }
+    return cover; // size &lt;= 2 * OPT
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>research_level.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::set&lt;int&gt; vertex_cover_2approx(
+    int V, const std::vector&lt;std::pair&lt;int,int&gt;&gt;&amp; edges) {
+    std::set&lt;int&gt; cover;
+    std::vector&lt;bool&gt; covered(edges.size(), false);
+    for (size_t i = 0; i &lt; edges.size(); ++i) {
+        auto [u, v] = edges[i];
+        if (cover.count(u) == 0 &amp;&amp; cover.count(v) == 0) {
+            cover.insert(u);
+            cover.insert(v);
+            for (size_t j = i; j &lt; edges.size(); ++j) {
+                auto [a, b] = edges[j];
+                if (a == u || a == v || b == u || b == v)
+                    covered[j] = true;
+            }
+        }
+    }
+    return cover;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>research_level.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def vertex_cover_2approx(V, edges):
+    cover = set()
+    for u, v in edges:
+        if u not in cover and v not in cover:
+            cover.add(u)
+            cover.add(v)
+    return cover  # size &lt;= 2 * OPT</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>research_level.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::HashSet;
+
+fn vertex_cover_2approx(edges: &amp;[(usize, usize)]) -&gt; HashSet&lt;usize&gt; {
+    let mut cover = HashSet::new();
+    for &amp;(u, v) in edges {
+        if !cover.contains(&amp;u) &amp;&amp; !cover.contains(&amp;v) {
+            cover.insert(u);
+            cover.insert(v);
+        }
+    }
+    cover
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="set-cover">
+<h2><span class="icon">&#128230;</span> Greedy Set Cover</h2>
+<p>Given a universe U and collection of sets, find minimum sets whose union covers U. NP-Complete for exact solution, but greedy achieves <strong>O(log n)</strong> approximation.</p>
+<div class="insight">
+<div class="label">Greedy Strategy</div>
+Always pick the set that covers the most currently-uncovered elements. Repeat until everything is covered. Approximation ratio: H(n) &asymp; ln(n) where n = |U|.
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>NPCompletenessAndApproximation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static List&lt;Set&lt;Integer&gt;&gt; greedySetCover(
+        Set&lt;Integer&gt; universe, List&lt;Set&lt;Integer&gt;&gt; sets) {
+    Set&lt;Integer&gt; uncovered = new HashSet&lt;&gt;(universe);
+    List&lt;Set&lt;Integer&gt;&gt; chosen = new ArrayList&lt;&gt;();
+    while (!uncovered.isEmpty()) {
+        // Pick set that covers the most uncovered elements
+        Set&lt;Integer&gt; best = null;
+        int bestCount = 0;
+        for (Set&lt;Integer&gt; s : sets) {
+            int count = 0;
+            for (int e : s) if (uncovered.contains(e)) count++;
+            if (count &gt; bestCount) { bestCount = count; best = s; }
+        }
+        if (best == null) break;
+        chosen.add(best);
+        uncovered.removeAll(best);
+    }
+    return chosen;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>research_level.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::vector&lt;int&gt; greedy_set_cover(
+    const std::set&lt;int&gt;&amp; universe,
+    const std::vector&lt;std::set&lt;int&gt;&gt;&amp; sets) {
+    std::set&lt;int&gt; uncovered = universe;
+    std::vector&lt;int&gt; chosen;
+    while (!uncovered.empty()) {
+        int best = -1, bestCount = 0;
+        for (int i = 0; i &lt; (int)sets.size(); ++i) {
+            int count = 0;
+            for (int e : sets[i])
+                if (uncovered.count(e)) ++count;
+            if (count &gt; bestCount) { bestCount = count; best = i; }
+        }
+        if (best == -1) break;
+        chosen.push_back(best);
+        for (int e : sets[best]) uncovered.erase(e);
+    }
+    return chosen;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>research_level.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def greedy_set_cover(universe, sets):
+    uncovered = set(universe)
+    chosen = []
+    while uncovered:
+        best = max(sets, key=lambda s: len(s &amp; uncovered))
+        chosen.append(best)
+        uncovered -= best
+    return chosen</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>research_level.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn greedy_set_cover(
+    universe: &amp;HashSet&lt;usize&gt;,
+    sets: &amp;[HashSet&lt;usize&gt;],
+) -&gt; Vec&lt;usize&gt; {
+    let mut uncovered = universe.clone();
+    let mut chosen = Vec::new();
+    while !uncovered.is_empty() {
+        let best = (0..sets.len())
+            .max_by_key(|&amp;i| sets[i].intersection(&amp;uncovered).count())
+            .unwrap();
+        chosen.push(best);
+        for &amp;e in &amp;sets[best] { uncovered.remove(&amp;e); }
+    }
+    chosen
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Summary</h2>
+<table>
+<thead><tr><th>Data Structure / Algorithm</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Dynamic Array (push)</td><td><span class="badge badge-green">O(1) amortized</span></td><td>O(n)</td><td>O(n) worst case for resize</td></tr>
+<tr><td>Skip List (search/insert)</td><td><span class="badge badge-green">O(log n) expected</span></td><td>O(n)</td><td>Probabilistic; simpler than BSTs</td></tr>
+<tr><td>Bloom Filter (add/query)</td><td><span class="badge badge-green">O(k)</span></td><td>O(m) bits</td><td>k hash functions, m bits</td></tr>
+<tr><td>Reservoir Sampling</td><td><span class="badge badge-blue">O(N)</span></td><td>O(k)</td><td>Single pass over stream</td></tr>
+<tr><td>Vertex Cover (2-approx)</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>&le; 2&times; optimal</td></tr>
+<tr><td>Greedy Set Cover</td><td><span class="badge badge-yellow">O(|U| &middot; |S|)</span></td><td>O(|U|)</td><td>&le; ln(n)&times; optimal</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Linked List Random Node</strong> &mdash; LeetCode 382. Reservoir Sampling for k=1.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Design Add and Search Words</strong> &mdash; LeetCode 211. Probabilistic matching concepts.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Random Pick with Blacklist</strong> &mdash; LeetCode 710. Sampling with constraints.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Minimum Number of Work Sessions</strong> &mdash; LeetCode 1986. NP-hard scheduling variant.</div>
+</div>
+
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary</h2>
+<h3>When to Use What</h3>
+<table>
+<thead><tr><th>Scenario</th><th>Technique</th><th>Key Insight</th></tr></thead>
+<tbody>
+<tr><td>Analyzing dynamic array costs</td><td>Amortized Analysis</td><td>Expensive ops amortize over cheap ones</td></tr>
+<tr><td>Need sorted structure, simple code</td><td>Skip List</td><td>Probabilistic balancing via random levels</td></tr>
+<tr><td>Cheap "is X in the set?" check</td><td>Bloom Filter</td><td>Accept false positives for huge space savings</td></tr>
+<tr><td>Sample from unknown-size stream</td><td>Reservoir Sampling</td><td>Replace with decreasing probability</td></tr>
+<tr><td>Problem is NP-Complete</td><td>Approximation Alg</td><td>Settle for guaranteed near-optimal</td></tr>
+</tbody>
+</table>
+<div class="warning-box">
+<div class="label">Congratulations!</div>
+You've completed the entire 24-week DSA Journey! From Java fundamentals in Week 1 to research-level topics here in Week 24, you've built a comprehensive foundation in data structures and algorithms. Keep practicing and exploring!
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 23/index.html">&larr; Week 23: Advanced Trees</a>
+<a href="../Week 1/index.html">Back to Week 1 &rarr;</a>
+</div>
+</main>
+</div>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});const progressBar=document.getElementById('progressBar');window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%'});const backToTop=document.getElementById('backToTop');window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});document.querySelectorAll('.card').forEach(c=>obs.observe(c));document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})})});document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});function highlight(code,lang){code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');return code}document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';const raw=block.textContent;block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang)});document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>

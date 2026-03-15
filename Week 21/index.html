@@ -1,0 +1,949 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 21: Advanced Trees | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#21262d;--text:#c9d1d9;--text-secondary:#8b949e;--accent:#58a6ff;--accent2:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--code-border:#30363d;--warning:#d29922;--error:#f85149;--font-mono:'SF Mono','Cascadia Code','Fira Code','Consolas',monospace;--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}
+a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+/* Hero */
+.hero{position:relative;padding:5rem 0 4rem;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(88,166,255,.15) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;background:var(--gradient);color:#fff;font-weight:700;font-size:.75rem;padding:.35rem .9rem;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+.hero .subtitle{font-size:1.2rem;color:var(--text-secondary);max-width:700px;margin:0 auto 1.5rem}
+.hero-meta{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;color:var(--text-secondary);font-size:.9rem}
+.hero-meta span{display:flex;align-items:center;gap:.4rem}
+/* Layout */
+.page-layout{display:grid;grid-template-columns:260px 1fr;gap:2rem;align-items:start;padding:2rem 0 4rem}
+@media(max-width:900px){.page-layout{grid-template-columns:1fr}}
+/* Sidebar */
+.sidebar{position:sticky;top:2rem}
+@media(max-width:900px){.sidebar{position:static}}
+.sidebar-toggle{display:none;width:100%;padding:.8rem;background:var(--card);border:1px solid var(--card-border);color:var(--text);border-radius:8px;font-size:1rem;cursor:pointer}
+@media(max-width:900px){.sidebar-toggle{display:block}.sidebar-nav{display:none}.sidebar-nav.open{display:block}}
+.sidebar-nav{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1rem 0;margin-top:.5rem}
+.sidebar-nav a{display:block;padding:.5rem 1.2rem;color:var(--text-secondary);font-size:.85rem;transition:all .2s}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--accent);background:rgba(88,166,255,.08);text-decoration:none;border-right:2px solid var(--accent)}
+/* Content */
+.content{min-width:0}
+.section{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:2rem;margin-bottom:2rem;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.section.visible{opacity:1;transform:translateY(0)}
+.section h2{font-size:1.6rem;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--card-border)}
+.section h3{font-size:1.2rem;color:var(--accent);margin:1.5rem 0 .75rem}
+.section p,.section li{color:var(--text-secondary);margin-bottom:.5rem}
+.section ul,.section ol{padding-left:1.5rem;margin-bottom:1rem}
+.section li{margin-bottom:.4rem}
+/* Objectives */
+.objectives{display:grid;gap:.5rem}
+.objective{display:flex;align-items:baseline;gap:.5rem;padding:.5rem .75rem;background:rgba(88,166,255,.05);border-radius:6px;border-left:3px solid var(--accent)}
+.objective::before{content:'';display:inline-block;width:8px;height:8px;background:var(--gradient);border-radius:50%;flex-shrink:0;margin-top:6px}
+/* Code viewer */
+.code-viewer{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--code-border);overflow-x:auto}
+.code-tab{padding:.6rem 1.2rem;color:var(--text-secondary);font-size:.8rem;font-family:var(--font-mono);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(88,166,255,.08)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;background:var(--card);border:1px solid var(--code-border);color:var(--text-secondary);padding:.3rem .6rem;border-radius:6px;font-size:.75rem;cursor:pointer;z-index:2;transition:all .2s}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent)}
+.code-panel pre{margin:0;padding:1rem;overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6;counter-reset:line}
+.code-panel code{color:var(--text)}
+.line-num{display:inline-block;width:3em;text-align:right;padding-right:1em;color:var(--text-secondary);opacity:.4;user-select:none}
+/* Key insight */
+.key-insight{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:1rem 1.2rem;margin:1rem 0}
+.key-insight-title{font-weight:700;color:var(--accent);font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.key-insight-title::before{content:'';display:inline-block;width:18px;height:18px;background:var(--gradient);border-radius:50%;flex-shrink:0}
+.key-insight p{color:var(--text-secondary);font-size:.9rem;margin:0}
+/* Complexity */
+.complexity-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+.complexity-table th{background:rgba(88,166,255,.1);color:var(--accent);padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--card-border)}
+.complexity-table td{padding:.5rem .8rem;border-bottom:1px solid rgba(48,54,61,.5);color:var(--text-secondary)}
+.complexity-table tr:hover td{background:rgba(88,166,255,.04)}
+/* Diagram */
+.diagram{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;padding:1.5rem;margin:1.5rem 0;text-align:center;overflow-x:auto}
+.diagram pre{font-family:var(--font-mono);font-size:.78rem;color:var(--accent);display:inline-block;text-align:left;line-height:1.5}
+.diagram-caption{font-size:.8rem;color:var(--text-secondary);margin-top:.75rem;font-style:italic}
+/* Practice */
+.practice-list{display:grid;gap:.75rem;margin:1rem 0}
+.practice-item{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:8px;font-size:.9rem}
+.practice-item .diff{font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase}
+.diff-easy{background:rgba(63,185,80,.15);color:var(--accent2)}
+.diff-medium{background:rgba(210,153,34,.15);color:var(--warning)}
+.diff-hard{background:rgba(248,81,73,.15);color:var(--error)}
+/* Summary */
+.summary-card{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(63,185,80,.08));border:1px solid rgba(88,166,255,.2);border-radius:12px;padding:2rem}
+.summary-card h2{border-bottom-color:rgba(88,166,255,.2)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.summary-item{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1rem}
+.summary-item h4{color:var(--accent);font-size:.9rem;margin-bottom:.4rem}
+.summary-item p{font-size:.8rem;color:var(--text-secondary);margin:0}
+/* Navigation */
+.nav-footer{display:flex;justify-content:space-between;margin:2rem 0;gap:1rem;flex-wrap:wrap}
+.nav-btn{flex:1;min-width:200px;padding:1rem 1.5rem;background:var(--card);border:1px solid var(--card-border);border-radius:10px;color:var(--text);transition:all .3s;display:flex;flex-direction:column}
+.nav-btn:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none}
+.nav-btn .label{font-size:.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.nav-btn .title{font-weight:600;color:var(--accent)}
+.nav-btn.next{text-align:right;align-items:flex-end}
+/* Keyword highlighting for code */
+.kw{color:#ff7b72}.typ{color:#79c0ff}.str{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.num{color:#79c0ff}.op{color:#ff7b72}
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+<div class="container">
+<span class="hero-badge">Advanced</span>
+<h1>Week 21: Advanced Trees</h1>
+<p class="subtitle">Master Segment Trees for range queries, Fenwick Trees for prefix sums, and Tries for string operations -- the backbone of competitive programming.</p>
+<div class="hero-meta">
+<span>Week 21 of 24</span>
+<span>Estimated: 12-15 hours</span>
+<span>3 Data Structures</span>
+<span>4 Languages</span>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="page-layout">
+
+<!-- Sidebar -->
+<aside class="sidebar">
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('open')">Table of Contents</button>
+<nav class="sidebar-nav">
+<a href="#objectives">Learning Objectives</a>
+<a href="#segment-tree">Segment Tree</a>
+<a href="#fenwick-tree">Fenwick Tree (BIT)</a>
+<a href="#trie">Trie (Prefix Tree)</a>
+<a href="#xor-trie">Binary Trie (Max XOR)</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary &amp; Cheat Sheet</a>
+</nav>
+</aside>
+
+<!-- Main Content -->
+<main class="content">
+
+<!-- Learning Objectives -->
+<div id="objectives" class="section">
+<h2>Learning Objectives</h2>
+<div class="objectives">
+<div class="objective">Understand Segment Tree construction, range queries, and point updates in O(log n)</div>
+<div class="objective">Implement Binary Indexed Trees (Fenwick Trees) for efficient prefix sum computation</div>
+<div class="objective">Compare Segment Trees vs BITs: when to use which data structure</div>
+<div class="objective">Build a Trie with insert, search, prefix search, autocomplete, and delete</div>
+<div class="objective">Apply binary Trie for maximum XOR queries</div>
+<div class="objective">Recognize real-world applications: databases, IP routing, spell checkers</div>
+</div>
+</div>
+
+<!-- Segment Tree -->
+<div id="segment-tree" class="section">
+<h2>Segment Tree</h2>
+<p>A Segment Tree is a binary tree where each node stores aggregate information (sum, min, max) about a range of the underlying array. Leaf nodes correspond to individual elements, and internal nodes store the merged result of their children. This allows both <strong>range queries</strong> and <strong>point updates</strong> in O(log n).</p>
+
+<h3>How It Works: An Analogy</h3>
+<p>Think of a corporate hierarchy. Each manager (internal node) knows the total sales (sum) of their division. If one salesperson updates their numbers, the change ripples up through their chain of managers -- but only their chain, not the entire company. This is why updates are O(log n): only O(log n) nodes on the path from leaf to root need updating.</p>
+
+<div class="diagram">
+<pre>
+              [36]                  Array: [1, 3, 5, 7, 9, 11]
+            /      \
+         [9]        [27]            Node stores sum of its range
+        /    \      /    \
+      [4]   [5]  [16]   [11]       Leaf nodes = array elements
+      / \    |    / \      |
+    [1] [3] [5] [7] [9]  [11]
+
+    Query sum(1,3) = ?
+    Navigate tree: [9].right + [16].left = 5 + 7 = ...
+    Actually: recurse, get 3+5+7 = 15   O(log n)
+</pre>
+<p class="diagram-caption">Segment Tree for range sum queries. Each node stores the sum of its children.</p>
+</div>
+
+<h3>Key Operations</h3>
+<p><strong>Build:</strong> Recursively build bottom-up. Each leaf gets an array value; each internal node sums its two children. Time: O(n).</p>
+<p><strong>Query(l, r):</strong> Three cases at each node: (1) no overlap -- return identity, (2) full overlap -- return stored value, (3) partial overlap -- recurse on both children. Time: O(log n).</p>
+<p><strong>Update(idx, val):</strong> Walk from root to the leaf at idx, update the leaf, then recalculate sums back up. Time: O(log n).</p>
+
+<table class="complexity-table">
+<tr><th>Operation</th><th>Time</th><th>Space</th></tr>
+<tr><td>Build</td><td>O(n)</td><td>O(4n)</td></tr>
+<tr><td>Range Query</td><td>O(log n)</td><td>--</td></tr>
+<tr><td>Point Update</td><td>O(log n)</td><td>--</td></tr>
+</table>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>The tree is stored in a flat array of size 4n. Node i has children at 2i+1 and 2i+2 (0-indexed) or 2i and 2i+1 (1-indexed). This avoids pointer overhead and enables cache-friendly traversal. The 4n size guarantees enough space for all levels even when n is not a power of 2.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'seg')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'seg')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'seg')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'seg')">Rust</button>
+</div>
+<div class="code-panel active" data-group="seg">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Segment Tree for range sum queries (Java)</span>
+<span class="kw">static class</span> <span class="typ">SegmentTree</span> {
+    <span class="typ">int</span>[] tree;
+    <span class="typ">int</span> n;
+
+    <span class="fn">SegmentTree</span>(<span class="typ">int</span>[] arr) {
+        n = arr.length;
+        tree = <span class="kw">new</span> <span class="typ">int</span>[<span class="num">4</span> * n];
+        build(arr, <span class="num">0</span>, <span class="num">0</span>, n - <span class="num">1</span>);
+    }
+
+    <span class="kw">void</span> <span class="fn">build</span>(<span class="typ">int</span>[] arr, <span class="typ">int</span> node, <span class="typ">int</span> start, <span class="typ">int</span> end) {
+        <span class="kw">if</span> (start == end) { tree[node] = arr[start]; <span class="kw">return</span>; }
+        <span class="typ">int</span> mid = (start + end) / <span class="num">2</span>;
+        build(arr, <span class="num">2</span>*node+<span class="num">1</span>, start, mid);
+        build(arr, <span class="num">2</span>*node+<span class="num">2</span>, mid+<span class="num">1</span>, end);
+        tree[node] = tree[<span class="num">2</span>*node+<span class="num">1</span>] + tree[<span class="num">2</span>*node+<span class="num">2</span>];
+    }
+
+    <span class="cm">// Range sum query [l, r]</span>
+    <span class="typ">int</span> <span class="fn">query</span>(<span class="typ">int</span> node, <span class="typ">int</span> start, <span class="typ">int</span> end, <span class="typ">int</span> l, <span class="typ">int</span> r) {
+        <span class="kw">if</span> (r &lt; start || end &lt; l) <span class="kw">return</span> <span class="num">0</span>;           <span class="cm">// no overlap</span>
+        <span class="kw">if</span> (l &lt;= start &amp;&amp; end &lt;= r) <span class="kw">return</span> tree[node]; <span class="cm">// full overlap</span>
+        <span class="typ">int</span> mid = (start + end) / <span class="num">2</span>;
+        <span class="kw">return</span> query(<span class="num">2</span>*node+<span class="num">1</span>, start, mid, l, r)
+             + query(<span class="num">2</span>*node+<span class="num">2</span>, mid+<span class="num">1</span>, end, l, r);
+    }
+
+    <span class="cm">// Point update: set arr[idx] = val</span>
+    <span class="kw">void</span> <span class="fn">update</span>(<span class="typ">int</span> node, <span class="typ">int</span> start, <span class="typ">int</span> end, <span class="typ">int</span> idx, <span class="typ">int</span> val) {
+        <span class="kw">if</span> (start == end) { tree[node] = val; <span class="kw">return</span>; }
+        <span class="typ">int</span> mid = (start + end) / <span class="num">2</span>;
+        <span class="kw">if</span> (idx &lt;= mid) update(<span class="num">2</span>*node+<span class="num">1</span>, start, mid, idx, val);
+        <span class="kw">else</span> update(<span class="num">2</span>*node+<span class="num">2</span>, mid+<span class="num">1</span>, end, idx, val);
+        tree[node] = tree[<span class="num">2</span>*node+<span class="num">1</span>] + tree[<span class="num">2</span>*node+<span class="num">2</span>];
+    }
+}</code></pre>
+</div>
+<div class="code-panel" data-group="seg">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Segment Tree — range sum queries + point updates (C++17)</span>
+<span class="kw">class</span> <span class="typ">SegmentTree</span> {
+<span class="kw">public</span>:
+    <span class="kw">explicit</span> <span class="fn">SegmentTree</span>(<span class="kw">const</span> std::vector&lt;<span class="typ">int</span>&gt;&amp; data)
+        : n_(data.size()), tree_(<span class="num">4</span> * data.size(), <span class="num">0</span>) {
+        <span class="kw">if</span> (n_ &gt; <span class="num">0</span>) build(data, <span class="num">1</span>, <span class="num">0</span>, n_ - <span class="num">1</span>);
+    }
+
+    <span class="typ">long long</span> <span class="fn">range_query</span>(<span class="typ">int</span> l, <span class="typ">int</span> r) <span class="kw">const</span> {
+        <span class="kw">return</span> query(<span class="num">1</span>, <span class="num">0</span>, n_ - <span class="num">1</span>, l, r);
+    }
+
+    <span class="kw">void</span> <span class="fn">point_update</span>(<span class="typ">int</span> idx, <span class="typ">int</span> delta) {
+        update(<span class="num">1</span>, <span class="num">0</span>, n_ - <span class="num">1</span>, idx, delta);
+    }
+
+<span class="kw">private</span>:
+    <span class="typ">int</span> n_;
+    std::vector&lt;<span class="typ">long long</span>&gt; tree_;
+
+    <span class="kw">void</span> <span class="fn">build</span>(<span class="kw">const</span> std::vector&lt;<span class="typ">int</span>&gt;&amp; data, <span class="typ">int</span> node, <span class="typ">int</span> s, <span class="typ">int</span> e) {
+        <span class="kw">if</span> (s == e) { tree_[node] = data[s]; <span class="kw">return</span>; }
+        <span class="typ">int</span> mid = (s + e) / <span class="num">2</span>;
+        build(data, <span class="num">2</span>*node, s, mid);
+        build(data, <span class="num">2</span>*node+<span class="num">1</span>, mid+<span class="num">1</span>, e);
+        tree_[node] = tree_[<span class="num">2</span>*node] + tree_[<span class="num">2</span>*node+<span class="num">1</span>];
+    }
+
+    <span class="typ">long long</span> <span class="fn">query</span>(<span class="typ">int</span> node, <span class="typ">int</span> s, <span class="typ">int</span> e, <span class="typ">int</span> l, <span class="typ">int</span> r) <span class="kw">const</span> {
+        <span class="kw">if</span> (r &lt; s || e &lt; l) <span class="kw">return</span> <span class="num">0</span>;
+        <span class="kw">if</span> (l &lt;= s &amp;&amp; e &lt;= r) <span class="kw">return</span> tree_[node];
+        <span class="typ">int</span> mid = (s + e) / <span class="num">2</span>;
+        <span class="kw">return</span> query(<span class="num">2</span>*node, s, mid, l, r)
+             + query(<span class="num">2</span>*node+<span class="num">1</span>, mid+<span class="num">1</span>, e, l, r);
+    }
+
+    <span class="kw">void</span> <span class="fn">update</span>(<span class="typ">int</span> node, <span class="typ">int</span> s, <span class="typ">int</span> e, <span class="typ">int</span> idx, <span class="typ">int</span> delta) {
+        <span class="kw">if</span> (s == e) { tree_[node] += delta; <span class="kw">return</span>; }
+        <span class="typ">int</span> mid = (s + e) / <span class="num">2</span>;
+        <span class="kw">if</span> (idx &lt;= mid) update(<span class="num">2</span>*node, s, mid, idx, delta);
+        <span class="kw">else</span>            update(<span class="num">2</span>*node+<span class="num">1</span>, mid+<span class="num">1</span>, e, idx, delta);
+        tree_[node] = tree_[<span class="num">2</span>*node] + tree_[<span class="num">2</span>*node+<span class="num">1</span>];
+    }
+};</code></pre>
+</div>
+<div class="code-panel" data-group="seg">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Segment Tree — range sum query + point update (Python)</span>
+<span class="kw">class</span> <span class="typ">SegmentTree</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, arr):
+        self._n = <span class="fn">len</span>(arr)
+        self._tree = [<span class="num">0</span>] * (<span class="num">4</span> * self._n)
+        self._arr = arr[:]
+        <span class="kw">if</span> self._n &gt; <span class="num">0</span>:
+            self._build(<span class="num">1</span>, <span class="num">0</span>, self._n - <span class="num">1</span>)
+
+    <span class="kw">def</span> <span class="fn">_build</span>(self, node, start, end):
+        <span class="kw">if</span> start == end:
+            self._tree[node] = self._arr[start]; <span class="kw">return</span>
+        mid = (start + end) // <span class="num">2</span>
+        self._build(<span class="num">2</span> * node, start, mid)
+        self._build(<span class="num">2</span> * node + <span class="num">1</span>, mid + <span class="num">1</span>, end)
+        self._tree[node] = self._tree[<span class="num">2</span>*node] + self._tree[<span class="num">2</span>*node+<span class="num">1</span>]
+
+    <span class="kw">def</span> <span class="fn">query</span>(self, l, r):
+        <span class="kw">return</span> self._query(<span class="num">1</span>, <span class="num">0</span>, self._n - <span class="num">1</span>, l, r)
+
+    <span class="kw">def</span> <span class="fn">_query</span>(self, node, start, end, l, r):
+        <span class="kw">if</span> r &lt; start <span class="kw">or</span> end &lt; l: <span class="kw">return</span> <span class="num">0</span>
+        <span class="kw">if</span> l &lt;= start <span class="kw">and</span> end &lt;= r: <span class="kw">return</span> self._tree[node]
+        mid = (start + end) // <span class="num">2</span>
+        <span class="kw">return</span> (self._query(<span class="num">2</span>*node, start, mid, l, r)
+              + self._query(<span class="num">2</span>*node+<span class="num">1</span>, mid+<span class="num">1</span>, end, l, r))
+
+    <span class="kw">def</span> <span class="fn">update</span>(self, idx, val):
+        self._arr[idx] = val
+        self._update(<span class="num">1</span>, <span class="num">0</span>, self._n - <span class="num">1</span>, idx, val)
+
+    <span class="kw">def</span> <span class="fn">_update</span>(self, node, start, end, idx, val):
+        <span class="kw">if</span> start == end:
+            self._tree[node] = val; <span class="kw">return</span>
+        mid = (start + end) // <span class="num">2</span>
+        <span class="kw">if</span> idx &lt;= mid: self._update(<span class="num">2</span>*node, start, mid, idx, val)
+        <span class="kw">else</span>: self._update(<span class="num">2</span>*node+<span class="num">1</span>, mid+<span class="num">1</span>, end, idx, val)
+        self._tree[node] = self._tree[<span class="num">2</span>*node] + self._tree[<span class="num">2</span>*node+<span class="num">1</span>]</code></pre>
+</div>
+<div class="code-panel" data-group="seg">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Segment Tree — Rust</span>
+<span class="kw">struct</span> <span class="typ">SegmentTree</span> {
+    tree: Vec&lt;<span class="typ">i64</span>&gt;,
+    n: <span class="typ">usize</span>,
+}
+
+<span class="kw">impl</span> <span class="typ">SegmentTree</span> {
+    <span class="kw">fn</span> <span class="fn">build</span>(data: &amp;[<span class="typ">i64</span>]) -&gt; Self {
+        <span class="kw">let</span> n = data.len();
+        <span class="kw">let mut</span> tree = <span class="fn">vec!</span>[<span class="num">0i64</span>; <span class="num">4</span> * n];
+        <span class="kw">if</span> n &gt; <span class="num">0</span> { Self::build_helper(&amp;<span class="kw">mut</span> tree, data, <span class="num">0</span>, <span class="num">0</span>, n-<span class="num">1</span>); }
+        SegmentTree { tree, n }
+    }
+
+    <span class="kw">fn</span> <span class="fn">query</span>(&amp;self, ql: <span class="typ">usize</span>, qr: <span class="typ">usize</span>) -&gt; <span class="typ">i64</span> {
+        self.query_helper(<span class="num">0</span>, <span class="num">0</span>, self.n - <span class="num">1</span>, ql, qr)
+    }
+
+    <span class="kw">fn</span> <span class="fn">update</span>(&amp;<span class="kw">mut</span> self, idx: <span class="typ">usize</span>, val: <span class="typ">i64</span>) {
+        self.update_helper(<span class="num">0</span>, <span class="num">0</span>, self.n - <span class="num">1</span>, idx, val);
+    }
+
+    <span class="kw">fn</span> <span class="fn">query_helper</span>(&amp;self, node: <span class="typ">usize</span>, lo: <span class="typ">usize</span>, hi: <span class="typ">usize</span>,
+                     ql: <span class="typ">usize</span>, qr: <span class="typ">usize</span>) -&gt; <span class="typ">i64</span> {
+        <span class="kw">if</span> qr &lt; lo || hi &lt; ql { <span class="kw">return</span> <span class="num">0</span>; }
+        <span class="kw">if</span> ql &lt;= lo &amp;&amp; hi &lt;= qr { <span class="kw">return</span> self.tree[node]; }
+        <span class="kw">let</span> mid = lo + (hi - lo) / <span class="num">2</span>;
+        self.query_helper(<span class="num">2</span>*node+<span class="num">1</span>, lo, mid, ql, qr)
+          + self.query_helper(<span class="num">2</span>*node+<span class="num">2</span>, mid+<span class="num">1</span>, hi, ql, qr)
+    }
+}</code></pre>
+</div>
+</div>
+
+<h3>Real-World Applications</h3>
+<ul>
+<li><strong>Databases:</strong> Range aggregate queries (SUM, MIN, MAX over a column range) in columnar stores</li>
+<li><strong>Computational Geometry:</strong> Rectangle intersection counting, sweepline algorithms</li>
+<li><strong>Competitive Programming:</strong> The most frequently used advanced data structure in contests</li>
+</ul>
+</div>
+
+<!-- Fenwick Tree -->
+<div id="fenwick-tree" class="section">
+<h2>Fenwick Tree (Binary Indexed Tree)</h2>
+<p>A Fenwick Tree (BIT) is a simpler, more space-efficient alternative to Segment Trees for <strong>prefix sum queries</strong> and <strong>point updates</strong>. It exploits binary representation of indices -- each index i is responsible for a range of elements determined by its lowest set bit.</p>
+
+<h3>The Bit Trick: i &amp; (-i)</h3>
+<p>The expression <code>i &amp; (-i)</code> isolates the lowest set bit of i. This single operation drives both traversal directions:</p>
+<ul>
+<li><strong>Query (walk down):</strong> Subtract the lowest set bit: <code>i -= i &amp; (-i)</code></li>
+<li><strong>Update (walk up):</strong> Add the lowest set bit: <code>i += i &amp; (-i)</code></li>
+</ul>
+
+<div class="diagram">
+<pre>
+Index (1-based):  1    2    3    4    5    6    7    8
+Binary:          001  010  011  100  101  110  111  1000
+Lowest set bit:   1    2    1    4    1    2    1    8
+Responsibility:  [1]  [1-2] [3] [1-4] [5] [5-6] [7] [1-8]
+
+                    BIT[8]: covers [1..8]
+                   /
+            BIT[4]: [1..4]      BIT[6]: [5..6]
+           /           \          |
+     BIT[2]: [1..2]  BIT[3]: [3]  BIT[5]: [5]  BIT[7]: [7]
+        |
+     BIT[1]: [1]
+
+prefix_sum(7): BIT[7] + BIT[6] + BIT[4] = walk: 111->110->100
+update(3):     BIT[3] -> BIT[4] -> BIT[8] = walk: 011->100->1000
+</pre>
+<p class="diagram-caption">Each BIT index stores the sum of a range determined by its lowest set bit. Queries and updates follow bit patterns.</p>
+</div>
+
+<table class="complexity-table">
+<tr><th>Operation</th><th>Time</th><th>Space</th></tr>
+<tr><td>Build from array</td><td>O(n log n) naive / O(n) optimized</td><td>O(n)</td></tr>
+<tr><td>Prefix Sum</td><td>O(log n)</td><td>--</td></tr>
+<tr><td>Point Update</td><td>O(log n)</td><td>--</td></tr>
+<tr><td>Range Sum [l, r]</td><td>O(log n)</td><td>--</td></tr>
+</table>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>BIT uses half the space of a Segment Tree (O(n) vs O(4n)) and has smaller constants. Use BIT when you only need prefix sums + point updates. Use Segment Tree when you need range min/max, lazy propagation, or more complex operations.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'bit')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'bit')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'bit')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'bit')">Rust</button>
+</div>
+<div class="code-panel active" data-group="bit">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Binary Indexed Tree / Fenwick Tree (Java)</span>
+<span class="kw">static class</span> <span class="typ">BIT</span> {
+    <span class="typ">int</span>[] bit;
+    <span class="typ">int</span> n;
+
+    <span class="fn">BIT</span>(<span class="typ">int</span> n) { <span class="kw">this</span>.n = n; bit = <span class="kw">new</span> <span class="typ">int</span>[n + <span class="num">1</span>]; } <span class="cm">// 1-indexed</span>
+
+    <span class="fn">BIT</span>(<span class="typ">int</span>[] arr) {
+        n = arr.length;
+        bit = <span class="kw">new</span> <span class="typ">int</span>[n + <span class="num">1</span>];
+        <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; n; i++) update(i + <span class="num">1</span>, arr[i]);
+    }
+
+    <span class="cm">// Add delta to index i (1-indexed)</span>
+    <span class="kw">void</span> <span class="fn">update</span>(<span class="typ">int</span> i, <span class="typ">int</span> delta) {
+        <span class="kw">for</span> (; i &lt;= n; i += i &amp; (-i)) bit[i] += delta;
+    }
+
+    <span class="cm">// Prefix sum [1..i]</span>
+    <span class="typ">int</span> <span class="fn">prefixSum</span>(<span class="typ">int</span> i) {
+        <span class="typ">int</span> sum = <span class="num">0</span>;
+        <span class="kw">for</span> (; i &gt; <span class="num">0</span>; i -= i &amp; (-i)) sum += bit[i];
+        <span class="kw">return</span> sum;
+    }
+
+    <span class="cm">// Range sum [l, r] (1-indexed)</span>
+    <span class="typ">int</span> <span class="fn">rangeSum</span>(<span class="typ">int</span> l, <span class="typ">int</span> r) {
+        <span class="kw">return</span> prefixSum(r) - prefixSum(l - <span class="num">1</span>);
+    }
+}</code></pre>
+</div>
+<div class="code-panel" data-group="bit">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Fenwick Tree (BIT) — 1-indexed (C++17)</span>
+<span class="kw">class</span> <span class="typ">FenwickTree</span> {
+<span class="kw">public</span>:
+    <span class="kw">explicit</span> <span class="fn">FenwickTree</span>(<span class="typ">int</span> n) : n_(n), tree_(n + <span class="num">1</span>, <span class="num">0</span>) {}
+
+    <span class="kw">explicit</span> <span class="fn">FenwickTree</span>(<span class="kw">const</span> std::vector&lt;<span class="typ">int</span>&gt;&amp; data)
+        : n_(data.size()), tree_(data.size() + <span class="num">1</span>, <span class="num">0</span>) {
+        <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt; n_; ++i) update(i + <span class="num">1</span>, data[i]);
+    }
+
+    <span class="kw">void</span> <span class="fn">update</span>(<span class="typ">int</span> i, <span class="typ">int</span> delta) {
+        <span class="kw">for</span> (; i &lt;= n_; i += i &amp; (-i)) tree_[i] += delta;
+    }
+
+    <span class="typ">long long</span> <span class="fn">prefix_sum</span>(<span class="typ">int</span> i) <span class="kw">const</span> {
+        <span class="typ">long long</span> s = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="typ">int</span> x = i; x &gt; <span class="num">0</span>; x -= x &amp; (-x)) s += tree_[x];
+        <span class="kw">return</span> s;
+    }
+
+    <span class="typ">long long</span> <span class="fn">range_sum</span>(<span class="typ">int</span> l, <span class="typ">int</span> r) <span class="kw">const</span> {
+        <span class="kw">return</span> prefix_sum(r) - prefix_sum(l - <span class="num">1</span>);
+    }
+};</code></pre>
+</div>
+<div class="code-panel" data-group="bit">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Fenwick Tree / Binary Indexed Tree (Python)</span>
+<span class="kw">class</span> <span class="typ">FenwickTree</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self, n):
+        self._n = n
+        self._tree = [<span class="num">0</span>] * (n + <span class="num">1</span>)  <span class="cm"># 1-indexed</span>
+
+    @<span class="fn">classmethod</span>
+    <span class="kw">def</span> <span class="fn">from_array</span>(cls, arr):
+        <span class="str">"""Build Fenwick tree from array in O(n)."""</span>
+        bit = cls(<span class="fn">len</span>(arr))
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="fn">len</span>(arr)):
+            bit._tree[i + <span class="num">1</span>] = arr[i]
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, <span class="fn">len</span>(arr) + <span class="num">1</span>):
+            j = i + (i &amp; -i)
+            <span class="kw">if</span> j &lt;= <span class="fn">len</span>(arr):
+                bit._tree[j] += bit._tree[i]
+        <span class="kw">return</span> bit
+
+    <span class="kw">def</span> <span class="fn">update</span>(self, idx, delta):
+        i = idx + <span class="num">1</span>
+        <span class="kw">while</span> i &lt;= self._n:
+            self._tree[i] += delta
+            i += i &amp; (-i)
+
+    <span class="kw">def</span> <span class="fn">prefix_sum</span>(self, idx):
+        s, i = <span class="num">0</span>, idx + <span class="num">1</span>
+        <span class="kw">while</span> i &gt; <span class="num">0</span>:
+            s += self._tree[i]
+            i -= i &amp; (-i)
+        <span class="kw">return</span> s
+
+    <span class="kw">def</span> <span class="fn">range_sum</span>(self, l, r):
+        <span class="kw">if</span> l == <span class="num">0</span>: <span class="kw">return</span> self.prefix_sum(r)
+        <span class="kw">return</span> self.prefix_sum(r) - self.prefix_sum(l - <span class="num">1</span>)</code></pre>
+</div>
+<div class="code-panel" data-group="bit">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Fenwick Tree (Rust) — 0-indexed user API, 1-indexed internally</span>
+<span class="kw">struct</span> <span class="typ">FenwickTree</span> {
+    tree: Vec&lt;<span class="typ">i64</span>&gt;,
+    n: <span class="typ">usize</span>,
+}
+
+<span class="kw">impl</span> <span class="typ">FenwickTree</span> {
+    <span class="kw">fn</span> <span class="fn">new</span>(n: <span class="typ">usize</span>) -&gt; Self {
+        FenwickTree { tree: <span class="fn">vec!</span>[<span class="num">0i64</span>; n + <span class="num">1</span>], n }
+    }
+
+    <span class="kw">fn</span> <span class="fn">update</span>(&amp;<span class="kw">mut</span> self, idx: <span class="typ">usize</span>, delta: <span class="typ">i64</span>) {
+        <span class="kw">let mut</span> i = idx + <span class="num">1</span>;
+        <span class="kw">while</span> i &lt;= self.n {
+            self.tree[i] += delta;
+            i += i &amp; i.wrapping_neg();
+        }
+    }
+
+    <span class="kw">fn</span> <span class="fn">prefix_sum</span>(&amp;self, idx: <span class="typ">usize</span>) -&gt; <span class="typ">i64</span> {
+        <span class="kw">let mut</span> sum = <span class="num">0i64</span>;
+        <span class="kw">let mut</span> i = idx + <span class="num">1</span>;
+        <span class="kw">while</span> i &gt; <span class="num">0</span> {
+            sum += self.tree[i];
+            i -= i &amp; i.wrapping_neg();
+        }
+        sum
+    }
+
+    <span class="kw">fn</span> <span class="fn">range_sum</span>(&amp;self, l: <span class="typ">usize</span>, r: <span class="typ">usize</span>) -&gt; <span class="typ">i64</span> {
+        <span class="kw">if</span> l == <span class="num">0</span> { self.prefix_sum(r) }
+        <span class="kw">else</span> { self.prefix_sum(r) - self.prefix_sum(l - <span class="num">1</span>) }
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Trie -->
+<div id="trie" class="section">
+<h2>Trie (Prefix Tree)</h2>
+<p>A Trie is a tree-shaped data structure for storing strings where each node represents a single character. A path from root to a marked node spells a complete word. Tries excel at prefix-based operations: autocomplete, spell checking, and IP routing (longest prefix match).</p>
+
+<div class="diagram">
+<pre>
+           (root)
+          /   |   \
+        a     b     ...
+       /      |
+      p       a
+     / \      |
+    p   r     n
+    |   |    / \
+    l   i   a   d
+    |   |   |
+    e   c   n
+    |   |   |
+   [*]  o   a
+   app  |  [*]
+    |   t   banana
+    l  [*]
+    |  apricot
+    e
+   [*]
+   apple
+    |
+    ...application
+
+[*] marks isEnd = true (complete word)
+</pre>
+<p class="diagram-caption">Trie storing words: "apple", "app", "apricot", "banana", "band". Shared prefixes save space.</p>
+</div>
+
+<table class="complexity-table">
+<tr><th>Operation</th><th>Time</th><th>Space</th></tr>
+<tr><td>Insert</td><td>O(L) where L = word length</td><td>O(L * alphabet)</td></tr>
+<tr><td>Search</td><td>O(L)</td><td>--</td></tr>
+<tr><td>Prefix Search</td><td>O(L)</td><td>--</td></tr>
+<tr><td>Autocomplete</td><td>O(L + matches)</td><td>--</td></tr>
+<tr><td>Delete</td><td>O(L)</td><td>--</td></tr>
+</table>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>Tries trade space for time. For English lowercase letters, each node has up to 26 children (array-based) or uses a hash map (more flexible, slightly slower). The choice between array vs. hash map depends on alphabet size and density. For competitive programming with lowercase English, array is preferred for speed.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'trie')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'trie')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'trie')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'trie')">Rust</button>
+</div>
+<div class="code-panel active" data-group="trie">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Trie with insert, search, prefix, autocomplete, delete (Java)</span>
+<span class="kw">static class</span> <span class="typ">TrieNode</span> {
+    <span class="typ">TrieNode</span>[] children = <span class="kw">new</span> <span class="typ">TrieNode</span>[<span class="num">26</span>];
+    <span class="typ">boolean</span> isEnd = <span class="kw">false</span>;
+    <span class="typ">int</span> wordCount = <span class="num">0</span>;
+}
+
+<span class="kw">static class</span> <span class="typ">TrieImpl</span> {
+    <span class="typ">TrieNode</span> root = <span class="kw">new</span> <span class="typ">TrieNode</span>();
+
+    <span class="kw">void</span> <span class="fn">insert</span>(String word) {
+        <span class="typ">TrieNode</span> curr = root;
+        <span class="kw">for</span> (<span class="typ">char</span> c : word.toCharArray()) {
+            <span class="typ">int</span> idx = c - <span class="str">'a'</span>;
+            <span class="kw">if</span> (curr.children[idx] == <span class="kw">null</span>)
+                curr.children[idx] = <span class="kw">new</span> <span class="typ">TrieNode</span>();
+            curr = curr.children[idx];
+            curr.wordCount++;
+        }
+        curr.isEnd = <span class="kw">true</span>;
+    }
+
+    <span class="typ">boolean</span> <span class="fn">search</span>(String word) {
+        <span class="typ">TrieNode</span> curr = root;
+        <span class="kw">for</span> (<span class="typ">char</span> c : word.toCharArray()) {
+            <span class="typ">int</span> idx = c - <span class="str">'a'</span>;
+            <span class="kw">if</span> (curr.children[idx] == <span class="kw">null</span>) <span class="kw">return false</span>;
+            curr = curr.children[idx];
+        }
+        <span class="kw">return</span> curr.isEnd;
+    }
+
+    <span class="typ">boolean</span> <span class="fn">startsWith</span>(String prefix) {
+        <span class="typ">TrieNode</span> curr = root;
+        <span class="kw">for</span> (<span class="typ">char</span> c : prefix.toCharArray()) {
+            <span class="typ">int</span> idx = c - <span class="str">'a'</span>;
+            <span class="kw">if</span> (curr.children[idx] == <span class="kw">null</span>) <span class="kw">return false</span>;
+            curr = curr.children[idx];
+        }
+        <span class="kw">return true</span>;
+    }
+
+    List&lt;String&gt; <span class="fn">autocomplete</span>(String prefix) {
+        List&lt;String&gt; result = <span class="kw">new</span> ArrayList&lt;&gt;();
+        <span class="typ">TrieNode</span> curr = root;
+        <span class="kw">for</span> (<span class="typ">char</span> c : prefix.toCharArray()) {
+            <span class="kw">if</span> (curr.children[c-<span class="str">'a'</span>] == <span class="kw">null</span>) <span class="kw">return</span> result;
+            curr = curr.children[c-<span class="str">'a'</span>];
+        }
+        dfsCollect(curr, <span class="kw">new</span> StringBuilder(prefix), result);
+        <span class="kw">return</span> result;
+    }
+}</code></pre>
+</div>
+<div class="code-panel" data-group="trie">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Trie — prefix tree for lowercase English letters (C++17)</span>
+<span class="kw">class</span> <span class="typ">Trie</span> {
+<span class="kw">public</span>:
+    <span class="fn">Trie</span>() : root_(std::make_unique&lt;Node&gt;()) {}
+
+    <span class="kw">void</span> <span class="fn">insert</span>(<span class="kw">const</span> std::string&amp; word) {
+        Node* cur = root_.get();
+        <span class="kw">for</span> (<span class="typ">char</span> ch : word) {
+            <span class="typ">int</span> idx = ch - <span class="str">'a'</span>;
+            <span class="kw">if</span> (!cur-&gt;children[idx])
+                cur-&gt;children[idx] = std::make_unique&lt;Node&gt;();
+            cur = cur-&gt;children[idx].get();
+        }
+        cur-&gt;is_end = <span class="kw">true</span>;
+    }
+
+    <span class="typ">bool</span> <span class="fn">search</span>(<span class="kw">const</span> std::string&amp; word) <span class="kw">const</span> {
+        <span class="kw">const</span> Node* node = find_node(word);
+        <span class="kw">return</span> node != <span class="kw">nullptr</span> &amp;&amp; node-&gt;is_end;
+    }
+
+    <span class="typ">bool</span> <span class="fn">starts_with</span>(<span class="kw">const</span> std::string&amp; prefix) <span class="kw">const</span> {
+        <span class="kw">return</span> find_node(prefix) != <span class="kw">nullptr</span>;
+    }
+
+<span class="kw">private</span>:
+    <span class="kw">static constexpr int</span> ALPHA = <span class="num">26</span>;
+    <span class="kw">struct</span> <span class="typ">Node</span> {
+        std::unique_ptr&lt;Node&gt; children[ALPHA]{};
+        <span class="typ">bool</span> is_end = <span class="kw">false</span>;
+    };
+    std::unique_ptr&lt;Node&gt; root_;
+
+    <span class="kw">const</span> Node* <span class="fn">find_node</span>(<span class="kw">const</span> std::string&amp; s) <span class="kw">const</span> {
+        <span class="kw">const</span> Node* cur = root_.get();
+        <span class="kw">for</span> (<span class="typ">char</span> ch : s) {
+            <span class="typ">int</span> idx = ch - <span class="str">'a'</span>;
+            <span class="kw">if</span> (!cur-&gt;children[idx]) <span class="kw">return nullptr</span>;
+            cur = cur-&gt;children[idx].get();
+        }
+        <span class="kw">return</span> cur;
+    }
+};</code></pre>
+</div>
+<div class="code-panel" data-group="trie">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Trie with insert, search, prefix, autocomplete, delete (Python)</span>
+<span class="kw">class</span> <span class="typ">_TrieNode</span>:
+    __slots__ = (<span class="str">"children"</span>, <span class="str">"is_end"</span>)
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self.children = {}
+        self.is_end = <span class="kw">False</span>
+
+<span class="kw">class</span> <span class="typ">Trie</span>:
+    <span class="kw">def</span> <span class="fn">__init__</span>(self):
+        self._root = _TrieNode()
+
+    <span class="kw">def</span> <span class="fn">insert</span>(self, word):
+        node = self._root
+        <span class="kw">for</span> ch <span class="kw">in</span> word:
+            <span class="kw">if</span> ch <span class="kw">not in</span> node.children:
+                node.children[ch] = _TrieNode()
+            node = node.children[ch]
+        node.is_end = <span class="kw">True</span>
+
+    <span class="kw">def</span> <span class="fn">search</span>(self, word):
+        node = self._find_node(word)
+        <span class="kw">return</span> node <span class="kw">is not None and</span> node.is_end
+
+    <span class="kw">def</span> <span class="fn">starts_with</span>(self, prefix):
+        <span class="kw">return</span> self._find_node(prefix) <span class="kw">is not None</span>
+
+    <span class="kw">def</span> <span class="fn">autocomplete</span>(self, prefix):
+        node = self._find_node(prefix)
+        <span class="kw">if</span> node <span class="kw">is None</span>: <span class="kw">return</span> []
+        results = []
+        self._collect(node, <span class="fn">list</span>(prefix), results)
+        <span class="kw">return</span> results
+
+    <span class="kw">def</span> <span class="fn">delete</span>(self, word):
+        <span class="kw">return</span> self._delete(self._root, word, <span class="num">0</span>)
+
+    <span class="kw">def</span> <span class="fn">_find_node</span>(self, prefix):
+        node = self._root
+        <span class="kw">for</span> ch <span class="kw">in</span> prefix:
+            <span class="kw">if</span> ch <span class="kw">not in</span> node.children: <span class="kw">return None</span>
+            node = node.children[ch]
+        <span class="kw">return</span> node</code></pre>
+</div>
+<div class="code-panel" data-group="trie">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Trie using HashMap for children (Rust)</span>
+<span class="kw">use</span> std::collections::HashMap;
+
+<span class="kw">struct</span> <span class="typ">TrieNode</span> {
+    children: HashMap&lt;<span class="typ">char</span>, TrieNode&gt;,
+    is_end: <span class="typ">bool</span>,
+}
+
+<span class="kw">struct</span> <span class="typ">Trie</span> { root: <span class="typ">TrieNode</span> }
+
+<span class="kw">impl</span> <span class="typ">Trie</span> {
+    <span class="kw">fn</span> <span class="fn">new</span>() -&gt; Self {
+        Trie { root: TrieNode {
+            children: HashMap::new(), is_end: <span class="kw">false</span>
+        }}
+    }
+
+    <span class="kw">fn</span> <span class="fn">insert</span>(&amp;<span class="kw">mut</span> self, word: &amp;<span class="typ">str</span>) {
+        <span class="kw">let mut</span> node = &amp;<span class="kw">mut</span> self.root;
+        <span class="kw">for</span> ch <span class="kw">in</span> word.chars() {
+            node = node.children
+                .entry(ch)
+                .or_insert_with(|| TrieNode {
+                    children: HashMap::new(),
+                    is_end: <span class="kw">false</span>,
+                });
+        }
+        node.is_end = <span class="kw">true</span>;
+    }
+
+    <span class="kw">fn</span> <span class="fn">search</span>(&amp;self, word: &amp;<span class="typ">str</span>) -&gt; <span class="typ">bool</span> {
+        <span class="kw">match</span> self.find_node(word) {
+            Some(node) =&gt; node.is_end,
+            None =&gt; <span class="kw">false</span>,
+        }
+    }
+
+    <span class="kw">fn</span> <span class="fn">starts_with</span>(&amp;self, prefix: &amp;<span class="typ">str</span>) -&gt; <span class="typ">bool</span> {
+        self.find_node(prefix).is_some()
+    }
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Binary Trie for XOR -->
+<div id="xor-trie" class="section">
+<h2>Bonus: Binary Trie (Maximum XOR)</h2>
+<p>A binary Trie stores numbers bit by bit (MSB to LSB). For each query number, we greedily choose the opposite bit at each level to maximize XOR. This yields the maximum XOR pair in O(n * log(max_val)).</p>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>To maximize XOR, at each bit position choose the path that gives the opposite bit. If we want bit b to be 1 in the XOR result, we need the two numbers to differ at that position. Walking from MSB to LSB greedily ensures we maximize the highest-order bits first.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'xor')">Java</button>
+</div>
+<div class="code-panel active" data-group="xor">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Maximum XOR of two elements using binary Trie</span>
+<span class="kw">static int</span> <span class="fn">maxXOR</span>(<span class="typ">int</span>[] nums) {
+    <span class="typ">int</span> max = Arrays.stream(nums).max().getAsInt();
+    <span class="typ">int</span> bits = <span class="num">32</span> - Integer.numberOfLeadingZeros(max);
+    <span class="typ">int</span>[][] trie = <span class="kw">new</span> <span class="typ">int</span>[<span class="num">32</span> * nums.length][<span class="num">2</span>];
+    <span class="typ">int</span> size = <span class="num">1</span>;
+    <span class="cm">// Build binary trie</span>
+    <span class="kw">for</span> (<span class="typ">int</span> x : nums) {
+        <span class="typ">int</span> node = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="typ">int</span> b = bits - <span class="num">1</span>; b &gt;= <span class="num">0</span>; b--) {
+            <span class="typ">int</span> bit = (x &gt;&gt; b) &amp; <span class="num">1</span>;
+            <span class="kw">if</span> (trie[node][bit] == <span class="num">0</span>) trie[node][bit] = size++;
+            node = trie[node][bit];
+        }
+    }
+    <span class="cm">// Query: for each number, try to pick opposite bits</span>
+    <span class="typ">int</span> result = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="typ">int</span> x : nums) {
+        <span class="typ">int</span> node = <span class="num">0</span>, cur = <span class="num">0</span>;
+        <span class="kw">for</span> (<span class="typ">int</span> b = bits - <span class="num">1</span>; b &gt;= <span class="num">0</span>; b--) {
+            <span class="typ">int</span> bit = (x &gt;&gt; b) &amp; <span class="num">1</span>;
+            <span class="typ">int</span> want = <span class="num">1</span> - bit; <span class="cm">// opposite bit</span>
+            <span class="kw">if</span> (trie[node][want] != <span class="num">0</span>) {
+                cur |= (<span class="num">1</span> &lt;&lt; b);
+                node = trie[node][want];
+            } <span class="kw">else</span> node = trie[node][bit];
+        }
+        result = Math.max(result, cur);
+    }
+    <span class="kw">return</span> result;
+}
+<span class="cm">// maxXOR([3,10,5,25,2,8]) = 28  (5 XOR 25)</span></code></pre>
+</div>
+</div>
+</div>
+
+<!-- Practice -->
+<div id="practice" class="section">
+<h2>Practice Problems</h2>
+<div class="practice-list">
+<div class="practice-item"><span>Range Sum Query - Mutable (LeetCode 307)</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Count of Smaller Numbers After Self (LeetCode 315)</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Implement Trie (LeetCode 208)</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Word Search II (LeetCode 212)</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Maximum XOR of Two Numbers (LeetCode 421)</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Design Add and Search Words (LeetCode 211)</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Range Sum Query 2D - Mutable (LeetCode 308)</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Longest Word in Dictionary (LeetCode 720)</span><span class="diff diff-medium">Medium</span></div>
+</div>
+</div>
+
+<!-- Summary -->
+<div id="summary" class="section summary-card">
+<h2>Summary &amp; Cheat Sheet</h2>
+<div class="summary-grid">
+<div class="summary-item"><h4>Segment Tree</h4><p>Build O(n), Query/Update O(log n). Stores aggregates in binary tree. Supports range queries (sum/min/max) + point updates. Space: O(4n).</p></div>
+<div class="summary-item"><h4>Fenwick Tree</h4><p>Uses i &amp; (-i) bit trick. Simpler than Segment Tree. Best for prefix sum + point update. Space: O(n). Not suitable for range min/max.</p></div>
+<div class="summary-item"><h4>Trie</h4><p>Tree where paths spell words. O(L) insert/search/prefix. Applications: autocomplete, spell check, IP routing, XOR queries.</p></div>
+<div class="summary-item"><h4>When to Use What</h4><p>BIT: prefix sums only. Segment Tree: range min/max, lazy propagation. Trie: string prefix operations. Binary Trie: XOR optimization.</p></div>
+</div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-footer">
+<a href="../Week 20/index.html" class="nav-btn">
+<span class="label">Previous</span>
+<span class="title">Week 20</span>
+</a>
+<a href="../Week 22/index.html" class="nav-btn next">
+<span class="label">Next</span>
+<span class="title">Week 22: Advanced Graphs</span>
+</a>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+function switchTab(btn, group) {
+  const viewer = btn.closest('.code-viewer');
+  viewer.querySelectorAll('.code-tab').forEach(t => t.classList.remove('active'));
+  btn.classList.add('active');
+  const panels = viewer.querySelectorAll('.code-panel');
+  panels.forEach(p => p.classList.remove('active'));
+  const idx = Array.from(btn.parentElement.children).indexOf(btn);
+  panels[idx].classList.add('active');
+}
+
+function copyCode(btn) {
+  const code = btn.nextElementSibling.textContent;
+  navigator.clipboard.writeText(code).then(() => {
+    btn.textContent = 'Copied!';
+    setTimeout(() => btn.textContent = 'Copy', 2000);
+  });
+}
+
+// IntersectionObserver for animations
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('visible');
+    }
+  });
+}, { threshold: 0.1 });
+
+document.querySelectorAll('.section').forEach(s => observer.observe(s));
+
+// Sidebar active tracking
+const sections = document.querySelectorAll('.section[id]');
+const navLinks = document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll', () => {
+  let current = '';
+  sections.forEach(s => {
+    if (window.scrollY >= s.offsetTop - 120) current = s.id;
+  });
+  navLinks.forEach(l => {
+    l.classList.remove('active');
+    if (l.getAttribute('href') === '#' + current) l.classList.add('active');
+  });
+});
+</script>
+</body>
+</html>

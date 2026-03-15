@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 7: Strings | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 7 of 12</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#string-basics">String Basics</a>
+<a href="#palindrome">Palindrome Check</a>
+<a href="#anagram" class="sub">Anagram Check</a>
+<a href="#kmp">KMP Algorithm</a>
+<a href="#lps" class="sub">LPS Array</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 7</span>
+<h1>Strings</h1>
+<p class="subtitle">Explore string manipulation, palindrome and anagram detection, and the powerful KMP pattern matching algorithm that runs in linear time.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~6 hours estimated</span>
+<span>5 topics covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand Java String immutability and when to use StringBuilder</li>
+<li>Check palindromes using the two-pointer technique, including ignoring non-alphanumeric characters</li>
+<li>Detect anagrams via sorting, frequency arrays, and hash maps</li>
+<li>Build the LPS (Longest Proper Prefix which is also Suffix) array for KMP</li>
+<li>Implement the KMP string search algorithm for O(n+m) pattern matching</li>
+<li>Compare naive O(n*m) search with KMP's linear-time approach</li>
+</ul>
+</div>
+
+<!-- String Basics -->
+<div class="card" id="string-basics">
+<h2><span class="icon">&#128221;</span> String Basics</h2>
+<p>In Java, strings are <strong>immutable</strong> -- every modification creates a new object. Use <code>StringBuilder</code> for efficient repeated modifications.</p>
+
+<h3>Common Operations &amp; Time Complexity</h3>
+<table>
+<tr><th>Operation</th><th>Time</th><th>Notes</th></tr>
+<tr><td><code>charAt(i)</code></td><td><span class="badge badge-green">O(1)</span></td><td>Direct index access</td></tr>
+<tr><td><code>substring(l, r)</code></td><td>O(r-l)</td><td>Creates a new string</td></tr>
+<tr><td><code>indexOf()</code></td><td>O(n*m)</td><td>Naive search; O(n) with KMP</td></tr>
+<tr><td><code>concat (+)</code></td><td>O(n)</td><td>Creates new string each time!</td></tr>
+<tr><td><code>StringBuilder.append()</code></td><td><span class="badge badge-green">O(1) amortized</span></td><td>Efficient for loops</td></tr>
+</table>
+
+<div class="warning-box">
+<div class="label">Golden Rule</div>
+<p>Never concatenate strings inside a loop with <code>+</code>. Use <code>StringBuilder</code> instead. The difference is O(n) vs O(n^2) for building a string of length n.</p>
+</div>
+
+<div class="code-viewer" data-viewer="string-basics">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringBasics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">String s = "Hello, World!";
+s.length();              // 13
+s.charAt(7);             // 'W'
+s.substring(7, 12);      // "World"
+s.indexOf('o');           // 4
+s.contains("World");     // true
+s.toLowerCase();         // "hello, world!"
+
+// Comparison: use .equals(), not ==
+String a = "apple";
+String c = new String("apple");
+a == c;         // false (different objects)
+a.equals(c);    // true  (same content)
+
+// StringBuilder -- efficient string building
+StringBuilder sb = new StringBuilder();
+for (int i = 1; i &lt;= 5; i++) {
+    sb.append(i);
+    if (i &lt; 5) sb.append("-");
+}
+sb.toString(); // "1-2-3-4-5"
+sb.reverse();  // "5-4-3-2-1"</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>strings.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// C++ strings are mutable (unlike Java)
+string s = "Hello, World!";
+s.size();       // 13
+s[7];           // 'W'
+s.substr(7, 5); // "World"
+s.find('o');    // 4
+
+// String comparison with == works in C++
+string a = "apple";
+string b = "apple";
+a == b;         // true (value comparison)
+
+// Reverse words in a string
+string reverseWords(const string&amp; s) {
+    istringstream iss(s);
+    vector&lt;string&gt; words;
+    string word;
+    while (iss &gt;&gt; word) words.push_back(move(word));
+    reverse(words.begin(), words.end());
+    string result;
+    for (size_t i = 0; i &lt; words.size(); ++i) {
+        if (i &gt; 0) result += ' ';
+        result += words[i];
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>strings.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text"># Python strings are immutable (like Java)
+s = "Hello, World!"
+len(s)          # 13
+s[7]            # 'W'
+s[7:12]         # "World"
+s.find('o')     # 4
+"World" in s    # True
+s.lower()       # "hello, world!"
+
+# Reverse words
+def reverse_words(s):
+    return " ".join(s.split()[::-1])
+
+# String compression (run-length encoding)
+def compress(s):
+    parts = []
+    count = 1
+    for i in range(1, len(s)):
+        if s[i] == s[i - 1]:
+            count += 1
+        else:
+            parts.append(f"{s[i-1]}{count}")
+            count = 1
+    parts.append(f"{s[-1]}{count}")
+    compressed = "".join(parts)
+    return compressed if len(compressed) &lt; len(s) else s</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>strings.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Rust: &amp;str is borrowed, String is owned
+// Strings are UTF-8 encoded -- no O(1) char indexing
+// Use .as_bytes() for ASCII or .chars() for Unicode
+
+fn reverse_words(s: &amp;str) -&gt; String {
+    let words: Vec&lt;&amp;str&gt; = s.split_whitespace().collect();
+    words.into_iter().rev().collect::&lt;Vec&lt;&amp;str&gt;&gt;().join(" ")
+}
+
+// Run-length encoding
+fn run_length_encode(s: &amp;str) -&gt; String {
+    if s.is_empty() { return String::new(); }
+    let mut result = String::new();
+    let mut chars = s.chars();
+    let mut current = chars.next().unwrap();
+    let mut count = 1u32;
+    for ch in chars {
+        if ch == current { count += 1; }
+        else {
+            result.push(current);
+            result.push_str(&amp;count.to_string());
+            current = ch;
+            count = 1;
+        }
+    }
+    result.push(current);
+    result.push_str(&amp;count.to_string());
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Palindrome -->
+<div class="card" id="palindrome">
+<h2><span class="icon">&#128260;</span> Palindrome Check</h2>
+<p>A palindrome reads the same forwards and backwards: "racecar", "madam", "level".</p>
+<p>The <strong>two-pointer technique</strong> is the optimal approach: one pointer from the start, one from the end, moving inward.</p>
+
+<div class="code-viewer" data-viewer="palindrome">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>PalindromeAndAnagram.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Simple palindrome -- O(n) time, O(1) space
+static boolean isPalindrome(String s) {
+    int left = 0, right = s.length() - 1;
+    while (left &lt; right) {
+        if (s.charAt(left) != s.charAt(right)) return false;
+        left++; right--;
+    }
+    return true;
+}
+
+// Ignoring non-alphanumeric characters and case
+// "A man, a plan, a canal: Panama" --> true
+static boolean isPalindromeIgnoreNonAlpha(String s) {
+    int left = 0, right = s.length() - 1;
+    while (left &lt; right) {
+        while (left &lt; right &amp;&amp; !Character.isLetterOrDigit(s.charAt(left))) left++;
+        while (left &lt; right &amp;&amp; !Character.isLetterOrDigit(s.charAt(right))) right--;
+        if (Character.toLowerCase(s.charAt(left)) !=
+            Character.toLowerCase(s.charAt(right)))
+            return false;
+        left++; right--;
+    }
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>strings.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Alphanumeric palindrome -- O(n) time, O(1) space
+bool isPalindromeAlphanumeric(const string&amp; s) {
+    int left = 0, right = (int)s.size() - 1;
+    while (left &lt; right) {
+        while (left &lt; right &amp;&amp; !isalnum(s[left])) ++left;
+        while (left &lt; right &amp;&amp; !isalnum(s[right])) --right;
+        if (tolower(s[left]) != tolower(s[right])) return false;
+        ++left; --right;
+    }
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>strings.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def is_palindrome(s: str) -&gt; bool:
+    """Alphanumeric palindrome check. Time: O(n), Space: O(1)"""
+    left, right = 0, len(s) - 1
+    while left &lt; right:
+        while left &lt; right and not s[left].isalnum():
+            left += 1
+        while left &lt; right and not s[right].isalnum():
+            right -= 1
+        if s[left].lower() != s[right].lower():
+            return False
+        left += 1
+        right -= 1
+    return True</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>strings.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Alphanumeric palindrome check. Time: O(n), Space: O(n)
+fn is_palindrome_alphanumeric(s: &amp;str) -&gt; bool {
+    let cleaned: Vec&lt;char&gt; = s.chars()
+        .filter(|c| c.is_alphanumeric())
+        .map(|c| c.to_ascii_lowercase())
+        .collect();
+    cleaned.iter().eq(cleaned.iter().rev())
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Anagram -->
+<div class="card" id="anagram">
+<h2><span class="icon">&#128256;</span> Anagram Check</h2>
+<p>Two strings are anagrams if one is a rearrangement of the other: "listen" and "silent", "eat" and "tea".</p>
+
+<h3>Three Approaches</h3>
+<table>
+<tr><th>Approach</th><th>Time</th><th>Space</th></tr>
+<tr><td>Sort both, compare</td><td><span class="badge badge-yellow">O(n log n)</span></td><td>O(n) or O(1)</td></tr>
+<tr><td>Frequency count (26-char array)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td>HashMap (unicode support)</td><td><span class="badge badge-green">O(n)</span></td><td>O(k) unique chars</td></tr>
+</table>
+
+<div class="code-viewer" data-viewer="anagram">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>PalindromeAndAnagram.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Approach 1: Sort and compare -- O(n log n)
+static boolean isAnagramSort(String a, String b) {
+    if (a.length() != b.length()) return false;
+    char[] ca = a.toCharArray(), cb = b.toCharArray();
+    Arrays.sort(ca);
+    Arrays.sort(cb);
+    return Arrays.equals(ca, cb);
+}
+
+// Approach 2: Frequency count -- O(n), O(1) space
+static boolean isAnagramFreq(String a, String b) {
+    if (a.length() != b.length()) return false;
+    int[] freq = new int[26];
+    for (char c : a.toCharArray()) freq[c - 'a']++;
+    for (char c : b.toCharArray()) {
+        freq[c - 'a']--;
+        if (freq[c - 'a'] &lt; 0) return false;
+    }
+    return true;
+}
+
+// Approach 3: HashMap -- works for any characters
+static boolean isAnagramMap(String a, String b) {
+    if (a.length() != b.length()) return false;
+    Map&lt;Character, Integer&gt; map = new HashMap&lt;&gt;();
+    for (char c : a.toCharArray()) map.merge(c, 1, Integer::sum);
+    for (char c : b.toCharArray()) {
+        if (!map.containsKey(c) || map.get(c) == 0) return false;
+        map.merge(c, -1, Integer::sum);
+    }
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>strings.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Frequency array -- O(n) time, O(1) space
+bool isAnagramFreq(const string&amp; a, const string&amp; b) {
+    if (a.size() != b.size()) return false;
+    array&lt;int, 26&gt; freq{};
+    for (char c : a) freq[c - 'a']++;
+    for (char c : b) freq[c - 'a']--;
+    return all_of(freq.begin(), freq.end(), [](int f){ return f == 0; });
+}
+
+// General (unicode) -- O(n) time, O(k) space
+bool isAnagramGeneral(const string&amp; a, const string&amp; b) {
+    if (a.size() != b.size()) return false;
+    unordered_map&lt;char, int&gt; freq;
+    for (char c : a) freq[c]++;
+    for (char c : b) { if (--freq[c] &lt; 0) return false; }
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>strings.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">from collections import Counter
+
+def is_anagram_sort(s, t):
+    return sorted(s.lower()) == sorted(t.lower())
+
+def is_anagram_freq(s, t):
+    """O(n) time using Counter."""
+    return Counter(s.lower()) == Counter(t.lower())</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>strings.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">use std::collections::HashMap;
+
+fn is_anagram_freq(a: &amp;str, b: &amp;str) -&gt; bool {
+    if a.len() != b.len() { return false; }
+    let mut freq: HashMap&lt;char, i32&gt; = HashMap::new();
+    for ch in a.chars() { *freq.entry(ch).or_insert(0) += 1; }
+    for ch in b.chars() { *freq.entry(ch).or_insert(0) -= 1; }
+    freq.values().all(|&amp;count| count == 0)
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- KMP -->
+<div class="card" id="kmp">
+<h2><span class="icon">&#128269;</span> KMP String Search Algorithm</h2>
+<p>Find all occurrences of a pattern P in text T. The naive approach is O(n*m); KMP (Knuth-Morris-Pratt) achieves <strong>O(n+m)</strong> by avoiding redundant comparisons.</p>
+
+<h3>Key Insight</h3>
+<p>When a mismatch occurs, we already know some characters of the text that we have matched. The <strong>LPS array</strong> tells us exactly where to resume, skipping re-examination of characters we already know match.</p>
+
+<div id="lps"></div>
+<h3>LPS Array (Failure Function)</h3>
+<p>LPS[i] = length of the longest proper prefix of pattern[0..i] that is also a suffix of pattern[0..i].</p>
+<div class="diagram">
+Pattern: A A A C A A A A
+Index:   0 1 2 3 4 5 6 7
+LPS:     <span class="highlight">0 1 2 0 1 2 3 3</span>
+
+Example:
+  i=2: "AAA"  &rarr; prefix "AA" = suffix "AA" &rarr; lps[2] = <span class="sorted">2</span>
+  i=3: "AAAC" &rarr; no prefix matches suffix &rarr; lps[3] = <span class="swap">0</span>
+  i=6: "AAACAAA" &rarr; prefix "AAA" = suffix "AAA" &rarr; lps[6] = <span class="sorted">3</span>
+</div>
+
+<div class="code-viewer" data-viewer="kmp">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>KMPSearch.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Build LPS array -- O(m) time, O(m) space
+static int[] buildLPS(String pattern) {
+    int m = pattern.length();
+    int[] lps = new int[m];
+    int len = 0, i = 1;
+    while (i &lt; m) {
+        if (pattern.charAt(i) == pattern.charAt(len)) {
+            len++;
+            lps[i] = len;
+            i++;
+        } else {
+            if (len != 0) {
+                len = lps[len - 1]; // try shorter prefix-suffix
+            } else {
+                lps[i] = 0;
+                i++;
+            }
+        }
+    }
+    return lps;
+}
+
+// KMP search -- O(n + m) time, O(m) space
+static List&lt;Integer&gt; kmpSearch(String text, String pattern) {
+    List&lt;Integer&gt; positions = new ArrayList&lt;&gt;();
+    int n = text.length(), m = pattern.length();
+    if (m == 0 || m &gt; n) return positions;
+    int[] lps = buildLPS(pattern);
+    int i = 0, j = 0;
+    while (i &lt; n) {
+        if (text.charAt(i) == pattern.charAt(j)) {
+            i++; j++;
+        }
+        if (j == m) {
+            positions.add(i - j);  // found match!
+            j = lps[j - 1];       // look for next occurrence
+        } else if (i &lt; n &amp;&amp; text.charAt(i) != pattern.charAt(j)) {
+            if (j != 0) {
+                j = lps[j - 1];   // skip using LPS
+            } else {
+                i++;
+            }
+        }
+    }
+    return positions;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>strings.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Build LPS array -- O(m) time
+vector&lt;int&gt; buildLPS(const string&amp; pattern) {
+    int m = pattern.size();
+    vector&lt;int&gt; lps(m, 0);
+    int len = 0, i = 1;
+    while (i &lt; m) {
+        if (pattern[i] == pattern[len]) {
+            lps[i++] = ++len;
+        } else {
+            if (len != 0) len = lps[len - 1];
+            else lps[i++] = 0;
+        }
+    }
+    return lps;
+}
+
+// KMP search -- O(n + m) time
+vector&lt;int&gt; kmpSearch(const string&amp; text, const string&amp; pattern) {
+    vector&lt;int&gt; result;
+    if (pattern.empty()) return result;
+    int n = text.size(), m = pattern.size();
+    vector&lt;int&gt; lps = buildLPS(pattern);
+    int i = 0, j = 0;
+    while (i &lt; n) {
+        if (text[i] == pattern[j]) { ++i; ++j; }
+        if (j == m) {
+            result.push_back(i - j);
+            j = lps[j - 1];
+        } else if (i &lt; n &amp;&amp; text[i] != pattern[j]) {
+            if (j != 0) j = lps[j - 1];
+            else ++i;
+        }
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>strings.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def build_lps(pattern):
+    """Build LPS array. Time: O(m), Space: O(m)"""
+    m = len(pattern)
+    lps = [0] * m
+    length = 0
+    i = 1
+    while i &lt; m:
+        if pattern[i] == pattern[length]:
+            length += 1
+            lps[i] = length
+            i += 1
+        else:
+            if length != 0:
+                length = lps[length - 1]
+            else:
+                lps[i] = 0
+                i += 1
+    return lps
+
+def kmp_search(text, pattern):
+    """KMP search. Time: O(n + m), Space: O(m)"""
+    if not pattern:
+        return list(range(len(text) + 1))
+    n, m = len(text), len(pattern)
+    lps = build_lps(pattern)
+    matches = []
+    i = j = 0
+    while i &lt; n:
+        if text[i] == pattern[j]:
+            i += 1; j += 1
+        if j == m:
+            matches.append(i - j)
+            j = lps[j - 1]
+        elif i &lt; n and text[i] != pattern[j]:
+            if j != 0: j = lps[j - 1]
+            else: i += 1
+    return matches</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>strings.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn build_lps(pattern: &amp;[u8]) -&gt; Vec&lt;usize&gt; {
+    let m = pattern.len();
+    let mut lps = vec![0usize; m];
+    let mut length = 0;
+    let mut i = 1;
+    while i &lt; m {
+        if pattern[i] == pattern[length] {
+            length += 1;
+            lps[i] = length;
+            i += 1;
+        } else if length != 0 {
+            length = lps[length - 1];
+        } else {
+            lps[i] = 0;
+            i += 1;
+        }
+    }
+    lps
+}
+
+fn kmp_search(text: &amp;str, pattern: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let mut matches = Vec::new();
+    if pattern.is_empty() { return matches; }
+    let text = text.as_bytes();
+    let pattern = pattern.as_bytes();
+    let (n, m) = (text.len(), pattern.len());
+    if m &gt; n { return matches; }
+    let lps = build_lps(pattern);
+    let (mut i, mut j) = (0, 0);
+    while i &lt; n {
+        if text[i] == pattern[j] { i += 1; j += 1; }
+        if j == m {
+            matches.push(i - j);
+            j = lps[j - 1];
+        } else if i &lt; n &amp;&amp; text[i] != pattern[j] {
+            if j != 0 { j = lps[j - 1]; }
+            else { i += 1; }
+        }
+    }
+    matches
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Why KMP Matters</div>
+<p>For a text of length 1,000,000 and a pattern of length 1,000, naive search may perform up to 1 billion comparisons. KMP guarantees at most ~1,001,000 comparisons. This matters in text editors, DNA sequence analysis, and log processing.</p>
+</div>
+</div>
+
+<!-- Complexity Table -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Comparison</h2>
+<table>
+<tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Notes</th></tr>
+<tr><td>Palindrome (two-pointer)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Optimal</td></tr>
+<tr><td>Anagram (sort)</td><td><span class="badge badge-yellow">O(n log n)</span></td><td>O(n)</td><td>Simple but slower</td></tr>
+<tr><td>Anagram (frequency)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>26-char array for lowercase</td></tr>
+<tr><td>Naive String Search</td><td><span class="badge badge-red">O(n * m)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Worst case with many partial matches</td></tr>
+<tr><td>KMP Search</td><td><span class="badge badge-green">O(n + m)</span></td><td>O(m)</td><td>LPS array preprocessing</td></tr>
+<tr><td>LPS Array Build</td><td><span class="badge badge-green">O(m)</span></td><td>O(m)</td><td>One-time preprocessing</td></tr>
+</table>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#127947;</span> Practice Problems</h2>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Valid Palindrome</strong> -- Check if a string is a palindrome, considering only alphanumeric characters and ignoring cases.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Valid Anagram</strong> -- Given two strings, determine if they are anagrams of each other.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Longest Palindromic Substring</strong> -- Find the longest substring which is a palindrome (expand-around-center approach).
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Group Anagrams</strong> -- Group strings that are anagrams of each other.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--danger)">Hard</div>
+<strong>Minimum Window Substring</strong> -- Find the smallest substring of S that contains all characters of T (sliding window).
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128218;</span> Summary</h2>
+<ul>
+<li><strong>String immutability</strong> in Java/Python means every modification creates a new object. Use StringBuilder/list for loops.</li>
+<li><strong>Two-pointer technique</strong> solves palindrome checking in O(n) time and O(1) space.</li>
+<li><strong>Frequency counting</strong> with a 26-element array is the optimal approach for anagram detection.</li>
+<li><strong>KMP algorithm</strong> achieves O(n+m) pattern matching by precomputing the LPS (failure function) array.</li>
+<li>The LPS array captures the structure of the pattern itself -- how its prefixes relate to its suffixes.</li>
+<li>String algorithms are foundational for text processing, bioinformatics, search engines, and compiler design.</li>
+</ul>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 6/index.html">&larr; Week 6: Arrays</a>
+<a href="../Week 8/index.html">Week 8: Searching &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+<script>
+(function(){
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const pb=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement;const st=h.scrollTop||document.body.scrollTop;const sh=h.scrollHeight-h.clientHeight;pb.style.width=(st/sh*100)+'%'});
+const btt=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{btt.classList.toggle('visible',window.scrollY>400)});
+btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+const sections=document.querySelectorAll('.card, .hero');
+const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id});navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');
+const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{tab.addEventListener('click',()=>{
+const lang=tab.dataset.lang;
+tabs.forEach(t=>t.classList.remove('active'));
+panels.forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');
+})});
+});
+document.querySelectorAll('.code-content').forEach(block=>{
+const code=block.querySelector('.code-text');
+const nums=block.querySelector('.line-numbers');
+if(!code||!nums)return;
+const lines=code.textContent.split('\n');
+nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
+});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{
+const code=btn.closest('.code-panel').querySelector('.code-text').textContent;
+navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});
+})});
+})();
+</script>
+</body>
+</html>

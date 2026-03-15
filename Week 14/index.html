@@ -1,0 +1,1146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 14: Trees | DSA Learning Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#21262d;--text:#c9d1d9;--text-muted:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--accent-gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--orange:#ffa657;--red:#ff7b72;--yellow:#e3b341}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.hero{padding:4rem 0 3rem;text-align:center;position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;top:-50%;left:-50%;width:200%;height:200%;background:radial-gradient(circle at 50% 50%,rgba(88,166,255,.08) 0%,transparent 50%);pointer-events:none}
+.hero-week{display:inline-block;padding:.35rem 1rem;border-radius:999px;font-size:.85rem;font-weight:600;background:var(--accent-gradient);color:#0d1117;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.2rem);font-weight:800;margin-bottom:.75rem;background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-desc{font-size:1.15rem;color:var(--text-muted);max-width:700px;margin:0 auto 1.5rem}
+.badge-row{display:flex;gap:.75rem;justify-content:center;flex-wrap:wrap}
+.badge{padding:.3rem .85rem;border-radius:999px;font-size:.8rem;font-weight:600;border:1px solid var(--card-border)}
+.badge-diff{border-color:var(--orange);color:var(--orange)}
+.badge-time{border-color:var(--accent-blue);color:var(--accent-blue)}
+.page-layout{display:flex;gap:2rem;align-items:flex-start;padding:2rem 0 4rem}
+.sidebar{position:sticky;top:2rem;width:260px;flex-shrink:0}
+.sidebar-inner{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1.25rem;max-height:calc(100vh - 4rem);overflow-y:auto}
+.sidebar h3{font-size:.85rem;text-transform:uppercase;letter-spacing:.08em;color:var(--text-muted);margin-bottom:.75rem}
+.sidebar ul{list-style:none}.sidebar li{margin-bottom:.35rem}
+.sidebar a{display:block;padding:.35rem .65rem;border-radius:6px;font-size:.88rem;color:var(--text-muted);transition:all .2s}
+.sidebar a:hover,.sidebar a.active{background:rgba(88,166,255,.1);color:var(--accent-blue);text-decoration:none}
+.main-content{flex:1;min-width:0}
+.section-card{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:2rem;margin-bottom:2rem;opacity:0;transform:translateY(24px);transition:opacity .6s ease,transform .6s ease}
+.section-card.visible{opacity:1;transform:translateY(0)}
+.section-card h2{font-size:1.6rem;margin-bottom:1rem;padding-bottom:.75rem;border-bottom:1px solid var(--card-border)}
+.section-card h3{font-size:1.2rem;margin:1.5rem 0 .75rem;color:var(--accent-blue)}
+.section-card p,.section-card li{margin-bottom:.5rem}
+.section-card ul,.section-card ol{padding-left:1.5rem;margin-bottom:1rem}
+.obj-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:1rem;margin-top:1rem}
+.obj-item{background:rgba(88,166,255,.06);border:1px solid rgba(88,166,255,.15);border-radius:8px;padding:1rem;display:flex;gap:.75rem;align-items:flex-start}
+.obj-icon{width:28px;height:28px;border-radius:50%;background:var(--accent-gradient);display:flex;align-items:center;justify-content:center;font-size:.8rem;flex-shrink:0;color:#0d1117;font-weight:700}
+.code-viewer{background:var(--code-bg);border:1px solid var(--card-border);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.code-tabs{display:flex;background:#13171d;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:.6rem 1.2rem;font-size:.82rem;font-weight:600;color:var(--text-muted);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue);background:rgba(88,166,255,.06)}
+.code-panel{display:none;position:relative}.code-panel.active{display:block}
+.copy-btn{position:absolute;top:.6rem;right:.6rem;padding:.35rem .75rem;font-size:.75rem;background:rgba(255,255,255,.08);color:var(--text-muted);border:1px solid var(--card-border);border-radius:6px;cursor:pointer;z-index:2;transition:all .2s}
+.copy-btn:hover{background:rgba(255,255,255,.15);color:var(--text)}
+.code-panel pre{padding:1.25rem;overflow-x:auto;font-family:'JetBrains Mono','Fira Code',Consolas,monospace;font-size:.85rem;line-height:1.65;counter-reset:line}
+.code-panel pre .line{display:block}
+.code-panel pre .line::before{counter-increment:line;content:counter(line);display:inline-block;width:3ch;margin-right:1.5ch;text-align:right;color:var(--text-muted);opacity:.4;font-size:.78rem;user-select:none}
+.kw{color:var(--kw)}.str{color:var(--str)}.cmt{color:var(--cmt);font-style:italic}.num{color:var(--num)}.fn{color:var(--fn)}.type{color:var(--orange)}
+.insight{background:rgba(63,185,80,.06);border-left:3px solid var(--accent-green);border-radius:0 8px 8px 0;padding:1rem 1.25rem;margin:1.25rem 0}
+.insight-title{font-weight:700;color:var(--accent-green);margin-bottom:.35rem;font-size:.92rem}
+.complexity-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.9rem}
+.complexity-table th{background:rgba(88,166,255,.1);padding:.6rem 1rem;text-align:left;font-weight:600;border-bottom:2px solid var(--card-border)}
+.complexity-table td{padding:.55rem 1rem;border-bottom:1px solid var(--card-border)}
+.complexity-table tr:last-child td{border-bottom:none}
+/* Tree visualization */
+.viz{margin:1.5rem 0;padding:1.5rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:10px;overflow-x:auto}
+.viz-title{font-weight:700;color:var(--accent-blue);margin-bottom:1rem;text-align:center;font-size:1rem}
+.tree-viz{display:flex;flex-direction:column;align-items:center;gap:0;margin:1rem auto}
+.tree-level{display:flex;justify-content:center;gap:0;position:relative}
+.tree-node{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:1rem;border:2px solid var(--accent-blue);background:rgba(88,166,255,.12);color:var(--accent-blue);position:relative;z-index:2;margin:0 .5rem}
+.tree-node.highlight{background:var(--accent-green);color:#0d1117;border-color:var(--accent-green)}
+.tree-node.visited{background:var(--orange);color:#0d1117;border-color:var(--orange)}
+.tree-node.bst{border-color:var(--fn);color:var(--fn);background:rgba(210,168,255,.12)}
+.tree-edges{text-align:center;color:var(--text-muted);font-size:.7rem;margin:.15rem 0}
+.traversal-order{display:flex;gap:.5rem;justify-content:center;flex-wrap:wrap;margin:.75rem 0}
+.trav-item{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.85rem;border:2px solid var(--card-border);color:var(--text)}
+.trav-item.active{border-color:var(--accent-green);color:var(--accent-green);background:rgba(63,185,80,.12)}
+.trav-arrow{display:flex;align-items:center;color:var(--text-muted);font-size:.85rem}
+.summary-card{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(63,185,80,.08));border:1px solid rgba(88,166,255,.2);border-radius:12px;padding:2rem}
+.summary-card h2{background:var(--accent-gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1rem;margin-top:1rem}
+.summary-item{background:rgba(0,0,0,.2);border-radius:8px;padding:1rem}
+.summary-item h4{color:var(--accent-blue);margin-bottom:.5rem;font-size:.92rem}
+.summary-item code{background:rgba(88,166,255,.1);padding:.15rem .4rem;border-radius:4px;font-size:.82rem;color:var(--accent-blue)}
+.page-nav{display:flex;justify-content:space-between;padding:2rem 0;border-top:1px solid var(--card-border);margin-top:2rem}
+.nav-btn{padding:.65rem 1.5rem;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;cursor:pointer;transition:all .2s;text-decoration:none}
+.nav-btn:hover{border-color:var(--accent-blue);color:var(--accent-blue);text-decoration:none}
+.practice-list{list-style:none;padding:0}
+.practice-list li{padding:.65rem 1rem;margin-bottom:.5rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:8px;display:flex;justify-content:space-between;align-items:center}
+.practice-diff{font-size:.72rem;padding:.2rem .6rem;border-radius:999px;font-weight:600}
+.diff-easy{background:rgba(63,185,80,.15);color:var(--accent-green)}.diff-med{background:rgba(227,179,65,.15);color:var(--yellow)}.diff-hard{background:rgba(255,123,114,.15);color:var(--red)}
+.sidebar-toggle{display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;width:48px;height:48px;border-radius:50%;background:var(--accent-gradient);border:none;color:#0d1117;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
+@media(max-width:900px){.sidebar{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99;padding:1rem;background:rgba(13,17,23,.95);backdrop-filter:blur(8px)}.sidebar.open{display:block}.sidebar-inner{max-height:calc(100vh - 2rem)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.page-layout{flex-direction:column}}
+</style>
+</head>
+<body>
+<section class="hero">
+<div class="container">
+<span class="hero-week">WEEK 14</span>
+<h1>Trees</h1>
+<p class="hero-desc">Explore hierarchical data structures: binary trees, traversals (inorder, preorder, postorder, level-order), BST operations, and essential tree properties like height, diameter, and LCA.</p>
+<div class="badge-row">
+<span class="badge badge-diff">Intermediate-Advanced</span>
+<span class="badge badge-time">~8 hours</span>
+<span class="badge" style="border-color:var(--fn);color:var(--fn)">11 Concepts</span>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="page-layout">
+<nav class="sidebar" id="sidebar">
+<div class="sidebar-inner">
+<h3>Contents</h3>
+<ul>
+<li><a href="#objectives">Learning Objectives</a></li>
+<li><a href="#tree-basics">Tree Fundamentals</a></li>
+<li><a href="#traversals">Traversals</a></li>
+<li><a href="#tree-props">Height, Diameter, Mirror</a></li>
+<li><a href="#bst">Binary Search Trees</a></li>
+<li><a href="#bst-ops">BST Operations</a></li>
+<li><a href="#validate-lca">Validate BST & LCA</a></li>
+<li><a href="#complexity">Complexity Analysis</a></li>
+<li><a href="#practice">Practice Problems</a></li>
+<li><a href="#summary">Cheat Sheet</a></li>
+</ul>
+</div>
+</nav>
+
+<main class="main-content">
+<!-- Objectives -->
+<section class="section-card" id="objectives">
+<h2>Learning Objectives</h2>
+<div class="obj-grid">
+<div class="obj-item"><div class="obj-icon">1</div><div>Understand binary tree structure, terminology (root, leaf, height, depth)</div></div>
+<div class="obj-item"><div class="obj-icon">2</div><div>Implement all four traversals: inorder, preorder, postorder, level-order</div></div>
+<div class="obj-item"><div class="obj-icon">3</div><div>Calculate tree properties: height, node count, diameter</div></div>
+<div class="obj-item"><div class="obj-icon">4</div><div>Build and manipulate Binary Search Trees (insert, search, delete)</div></div>
+<div class="obj-item"><div class="obj-icon">5</div><div>Validate BST property and find Lowest Common Ancestor</div></div>
+<div class="obj-item"><div class="obj-icon">6</div><div>Find kth smallest element in BST using inorder traversal</div></div>
+</div>
+</section>
+
+<!-- Tree Basics -->
+<section class="section-card" id="tree-basics">
+<h2>Tree Fundamentals</h2>
+<p>A <strong>tree</strong> is a hierarchical data structure consisting of nodes connected by edges. A <strong>binary tree</strong> is a tree where each node has at most 2 children: left and right.</p>
+
+<h3>Terminology</h3>
+<ul>
+<li><strong>Root</strong> &mdash; Top node with no parent</li>
+<li><strong>Leaf</strong> &mdash; Node with no children</li>
+<li><strong>Height</strong> &mdash; Longest path from root to any leaf</li>
+<li><strong>Depth</strong> &mdash; Distance from root to a node</li>
+<li><strong>Level</strong> = Depth + 1</li>
+</ul>
+
+<!-- Tree Diagram -->
+<div class="viz">
+<div class="viz-title">Sample Binary Tree</div>
+<div class="tree-viz">
+<div class="tree-level"><div class="tree-node highlight">1</div></div>
+<div class="tree-edges">/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \</div>
+<div class="tree-level"><div class="tree-node">2</div><div style="width:60px"></div><div class="tree-node">3</div></div>
+<div class="tree-edges">/ &nbsp; \ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; / &nbsp; \</div>
+<div class="tree-level"><div class="tree-node">4</div><div class="tree-node">5</div><div style="width:20px"></div><div class="tree-node">6</div><div class="tree-node">7</div></div>
+</div>
+<div style="text-align:center;font-size:.82rem;color:var(--text-muted);margin-top:.75rem">
+Root = 1 | Leaves = 4, 5, 6, 7 | Height = 3 | Nodes = 7
+</div>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'nd')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'nd')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'nd')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'nd')">Rust</button>
+</div>
+<div class="code-panel active" id="nd-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="nd-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="nd-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="nd-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Traversals -->
+<section class="section-card" id="traversals">
+<h2>Tree Traversals</h2>
+<p>Traversals visit every node exactly once. The four types differ in the order they visit nodes.</p>
+
+<!-- Traversal order visualization -->
+<div class="viz">
+<div class="viz-title">Traversal Orders on Tree: [1, 2, 3, 4, 5, 6, 7]</div>
+<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.5rem">
+<div>
+<div style="font-weight:600;color:var(--accent-green);margin-bottom:.5rem">Inorder (L &rarr; Root &rarr; R)</div>
+<div class="traversal-order">
+<div class="trav-item active">4</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active">2</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active">5</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active">1</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active">6</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active">3</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active">7</div>
+</div>
+<div style="font-size:.78rem;color:var(--text-muted)">For BST: gives sorted order</div>
+</div>
+<div>
+<div style="font-weight:600;color:var(--accent-blue);margin-bottom:.5rem">Preorder (Root &rarr; L &rarr; R)</div>
+<div class="traversal-order">
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">1</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">2</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">4</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">5</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">3</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">6</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--accent-blue);color:var(--accent-blue)">7</div>
+</div>
+<div style="font-size:.78rem;color:var(--text-muted)">Used for serialization / tree copying</div>
+</div>
+<div>
+<div style="font-weight:600;color:var(--orange);margin-bottom:.5rem">Postorder (L &rarr; R &rarr; Root)</div>
+<div class="traversal-order">
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">4</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">5</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">2</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">6</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">7</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">3</div><div class="trav-arrow">&rarr;</div>
+<div class="trav-item active" style="border-color:var(--orange);color:var(--orange)">1</div>
+</div>
+<div style="font-size:.78rem;color:var(--text-muted)">Used for deletion / expression eval</div>
+</div>
+<div>
+<div style="font-weight:600;color:var(--fn);margin-bottom:.5rem">Level-Order (BFS)</div>
+<div class="traversal-order">
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">1</div><div class="trav-arrow">|</div>
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">2</div>
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">3</div><div class="trav-arrow">|</div>
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">4</div>
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">5</div>
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">6</div>
+<div class="trav-item active" style="border-color:var(--fn);color:var(--fn)">7</div>
+</div>
+<div style="font-size:.78rem;color:var(--text-muted)">Uses a queue. Level by level.</div>
+</div>
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight &mdash; Recursive Template</div>
+All three DFS traversals share the same recursive structure. The only difference is <em>when</em> you process the current node: <strong>pre</strong>order = before children, <strong>in</strong>order = between children, <strong>post</strong>order = after children. For iterative versions, use an explicit stack.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'tv')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'tv')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'tv')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'tv')">Rust</button>
+</div>
+<div class="code-panel active" id="tv-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="tv-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="tv-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="tv-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Tree Properties -->
+<section class="section-card" id="tree-props">
+<h2>Tree Properties: Height, Diameter, Mirror</h2>
+
+<h3>Height</h3>
+<p><strong>Height</strong> = number of nodes on the longest root-to-leaf path. Empty tree has height 0. Computed recursively: <code>height(node) = 1 + max(height(left), height(right))</code>. Time: O(n), Space: O(h).</p>
+
+<h3>Diameter</h3>
+<p>The <strong>diameter</strong> is the longest path between any two nodes (measured in edges). This path may or may not pass through the root. At each node, the diameter through that node is <code>leftHeight + rightHeight</code>. Track the global maximum.</p>
+
+<div class="viz">
+<div class="viz-title">Diameter = Longest Path Between Any Two Nodes</div>
+<div class="tree-viz">
+<div class="tree-level"><div class="tree-node">1</div></div>
+<div class="tree-edges">/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \</div>
+<div class="tree-level"><div class="tree-node visited">2</div><div style="width:60px"></div><div class="tree-node visited">3</div></div>
+<div class="tree-edges">/ &nbsp; \ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \</div>
+<div class="tree-level"><div class="tree-node visited">4</div><div class="tree-node visited">5</div><div style="width:60px"></div><div class="tree-node visited">7</div></div>
+</div>
+<div style="text-align:center;font-size:.85rem;margin-top:.5rem">
+<span style="color:var(--orange);font-weight:600">Diameter = 4</span> (path: 4 &rarr; 2 &rarr; 1 &rarr; 3 &rarr; 7)
+</div>
+</div>
+
+<h3>Mirror / Invert</h3>
+<p>Swap left and right children at every node. A simple recursive swap. This is the famous "invert a binary tree" interview question.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'tp')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'tp')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'tp')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'tp')">Rust</button>
+</div>
+<div class="code-panel active" id="tp-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="tp-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="tp-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="tp-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- BST -->
+<section class="section-card" id="bst">
+<h2>Binary Search Trees (BST)</h2>
+<p>A <strong>BST</strong> is a binary tree where for every node: all values in the <strong>left subtree are smaller</strong>, and all values in the <strong>right subtree are larger</strong>. This property enables O(h) search, insert, and delete.</p>
+
+<div class="viz">
+<div class="viz-title">Binary Search Tree</div>
+<div class="tree-viz">
+<div class="tree-level"><div class="tree-node bst">5</div></div>
+<div class="tree-edges">/ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; \</div>
+<div class="tree-level"><div class="tree-node bst">3</div><div style="width:60px"></div><div class="tree-node bst">7</div></div>
+<div class="tree-edges">/ &nbsp; \ &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; / &nbsp; \</div>
+<div class="tree-level"><div class="tree-node bst">1</div><div class="tree-node bst">4</div><div style="width:20px"></div><div class="tree-node bst">6</div><div class="tree-node bst">8</div></div>
+</div>
+<div style="text-align:center;font-size:.82rem;color:var(--text-muted);margin-top:.5rem">
+Inorder traversal gives sorted order: 1, 3, 4, 5, 6, 7, 8<br>
+Balanced: h = O(log n) | Skewed: h = O(n)
+</div>
+</div>
+
+<div class="insight">
+<div class="insight-title">Key Insight</div>
+The BST property means <strong>inorder traversal always produces sorted output</strong>. This is the key to many BST algorithms: validate BST, find kth smallest, find successor/predecessor.
+</div>
+</section>
+
+<!-- BST Operations -->
+<section class="section-card" id="bst-ops">
+<h2>BST Operations: Insert, Search, Delete</h2>
+
+<h3>Insert &mdash; O(h)</h3>
+<p>Search for the correct leaf position and add the new node. Compare with each node: go left if smaller, right if larger.</p>
+
+<h3>Search &mdash; O(h)</h3>
+<p>Compare target with current node. If equal, found. If smaller, search left. If larger, search right.</p>
+
+<h3>Delete &mdash; O(h)</h3>
+<p>Three cases:</p>
+<ol>
+<li><strong>Leaf node</strong>: Simply remove it</li>
+<li><strong>One child</strong>: Replace with the child</li>
+<li><strong>Two children</strong>: Replace with the <strong>inorder successor</strong> (smallest node in right subtree), then delete the successor</li>
+</ol>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'bo')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'bo')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'bo')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'bo')">Rust</button>
+</div>
+<div class="code-panel active" id="bo-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="bo-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="bo-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="bo-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Validate BST & LCA -->
+<section class="section-card" id="validate-lca">
+<h2>Validate BST & Lowest Common Ancestor</h2>
+
+<h3>Validate BST</h3>
+<p>A tree is a valid BST if every node's value falls within a valid range. Pass min/max bounds down: the left child must be less than the current node, the right child must be greater.</p>
+
+<h3>LCA in BST &mdash; O(h)</h3>
+<p>The <strong>Lowest Common Ancestor</strong> of nodes p and q in a BST:</p>
+<ul>
+<li>If both p, q &lt; root: LCA is in the left subtree</li>
+<li>If both p, q &gt; root: LCA is in the right subtree</li>
+<li>Otherwise: root is the LCA (the split point)</li>
+</ul>
+
+<h3>Kth Smallest in BST</h3>
+<p>Use inorder traversal (which gives sorted order) and stop at the kth element. Time: O(h + k).</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'vl')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'vl')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'vl')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'vl')">Rust</button>
+</div>
+<div class="code-panel active" id="vl-0"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="vl-1"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="vl-2"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+<div class="code-panel" id="vl-3"><button class="copy-btn" onclick="copyCode(this)">Copy</button><pre></pre></div>
+</div>
+</section>
+
+<!-- Complexity -->
+<section class="section-card" id="complexity">
+<h2>Complexity Analysis</h2>
+<table class="complexity-table">
+<tr><th>Operation</th><th>Time</th><th>Space</th><th>Notes</th></tr>
+<tr><td>DFS Traversals</td><td>O(n)</td><td>O(h)</td><td>h = height, recursion stack</td></tr>
+<tr><td>Level-Order (BFS)</td><td>O(n)</td><td>O(w)</td><td>w = max width (queue size)</td></tr>
+<tr><td>Height / Node Count</td><td>O(n)</td><td>O(h)</td><td>Visit every node</td></tr>
+<tr><td>Diameter</td><td>O(n)</td><td>O(h)</td><td>Single pass with height</td></tr>
+<tr><td>BST Search/Insert/Delete</td><td>O(h)</td><td>O(h)</td><td>O(log n) balanced, O(n) skewed</td></tr>
+<tr><td>Validate BST</td><td>O(n)</td><td>O(h)</td><td>Check every node</td></tr>
+<tr><td>LCA in BST</td><td>O(h)</td><td>O(1) iter</td><td>Follow the split point</td></tr>
+<tr><td>Kth Smallest in BST</td><td>O(h + k)</td><td>O(h)</td><td>Inorder traversal, stop at k</td></tr>
+</table>
+</section>
+
+<!-- Practice -->
+<section class="section-card" id="practice">
+<h2>Practice Problems</h2>
+<ul class="practice-list">
+<li><span>Binary Tree Inorder Traversal (LC 94)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>Maximum Depth of Binary Tree (LC 104)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>Invert Binary Tree (LC 226)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>Validate BST (LC 98)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>LCA of BST (LC 235)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Kth Smallest Element in BST (LC 230)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Diameter of Binary Tree (LC 543)</span><span class="practice-diff diff-easy">Easy</span></li>
+<li><span>Binary Tree Level Order Traversal (LC 102)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Delete Node in BST (LC 450)</span><span class="practice-diff diff-med">Medium</span></li>
+<li><span>Serialize and Deserialize Binary Tree (LC 297)</span><span class="practice-diff diff-hard">Hard</span></li>
+</ul>
+</section>
+
+<!-- Summary -->
+<section class="section-card summary-card" id="summary">
+<h2>Week 14 Cheat Sheet</h2>
+<div class="summary-grid">
+<div class="summary-item"><h4>Traversals</h4><p>Inorder: L-Root-R (sorted for BST). Preorder: Root-L-R. Postorder: L-R-Root. Level: BFS with queue.</p></div>
+<div class="summary-item"><h4>BST Property</h4><p>Left subtree &lt; node &lt; right subtree. Enables O(h) search, insert, delete.</p></div>
+<div class="summary-item"><h4>Height & Diameter</h4><p>Height: <code>1 + max(L, R)</code>. Diameter: max of <code>leftH + rightH</code> at each node.</p></div>
+<div class="summary-item"><h4>BST Delete</h4><p>Leaf: remove. One child: replace. Two children: replace with inorder successor.</p></div>
+<div class="summary-item"><h4>Validate BST</h4><p>Pass min/max bounds or check inorder is strictly increasing.</p></div>
+<div class="summary-item"><h4>LCA in BST</h4><p>Follow split point: both left &rarr; go left, both right &rarr; go right, else found. O(h).</p></div>
+</div>
+</section>
+
+<nav class="page-nav">
+<a href="../Week 13/index.html" class="nav-btn">&larr; Week 13: Queues</a>
+<a href="../Week 15/index.html" class="nav-btn">Week 15: Heaps &rarr;</a>
+</nav>
+</main>
+</div>
+</div>
+
+<button class="sidebar-toggle" id="sidebarToggle" aria-label="Toggle contents">&#9776;</button>
+
+<script>
+const codeData = {
+nd: [
+`// Java: TreeNode definition
+static class Node {
+    int val;
+    Node left, right;
+    Node(int val) { this.val = val; }
+}
+
+// Build sample tree:
+//         1
+//       /   \\
+//      2     3
+//     / \\   / \\
+//    4   5 6   7
+static Node buildSampleTree() {
+    Node root = new Node(1);
+    root.left = new Node(2);
+    root.right = new Node(3);
+    root.left.left = new Node(4);
+    root.left.right = new Node(5);
+    root.right.left = new Node(6);
+    root.right.right = new Node(7);
+    return root;
+}`,
+`// C++: TreeNode definition
+struct TreeNode {
+    int val;
+    TreeNode* left;
+    TreeNode* right;
+    TreeNode(int v) : val(v), left(nullptr), right(nullptr) {}
+    TreeNode(int v, TreeNode* l, TreeNode* r)
+        : val(v), left(l), right(r) {}
+};
+
+// Build tree from level-order array (-1 = null)
+TreeNode* buildTree(const vector<int>& vals) {
+    if (vals.empty() || vals[0] == -1) return nullptr;
+    TreeNode* root = new TreeNode(vals[0]);
+    queue<TreeNode*> q;
+    q.push(root);
+    int i = 1;
+    while (!q.empty() && i < (int)vals.size()) {
+        TreeNode* node = q.front(); q.pop();
+        if (i < (int)vals.size() && vals[i] != -1) {
+            node->left = new TreeNode(vals[i]);
+            q.push(node->left);
+        }
+        ++i;
+        if (i < (int)vals.size() && vals[i] != -1) {
+            node->right = new TreeNode(vals[i]);
+            q.push(node->right);
+        }
+        ++i;
+    }
+    return root;
+}`,
+`# Python: TreeNode definition
+class TreeNode:
+    __slots__ = ("val", "left", "right")
+
+    def __init__(self, val=0, left=None, right=None):
+        self.val = val
+        self.left = left
+        self.right = right
+
+    def __repr__(self):
+        return f"TreeNode({self.val})"
+
+# Build sample tree
+root = TreeNode(1,
+    TreeNode(2, TreeNode(4), TreeNode(5)),
+    TreeNode(3, TreeNode(6), TreeNode(7))
+)`,
+`// Rust: TreeNode definition
+#[derive(Debug, PartialEq)]
+struct TreeNode {
+    val: i32,
+    left: Option<Box<TreeNode>>,
+    right: Option<Box<TreeNode>>,
+}
+
+impl TreeNode {
+    fn new(val: i32) -> Self {
+        TreeNode { val, left: None, right: None }
+    }
+
+    /// Convenience: wrap in Some(Box<...>)
+    fn boxed(val: i32) -> Option<Box<Self>> {
+        Some(Box::new(Self::new(val)))
+    }
+
+    fn with_children(
+        val: i32,
+        left: Option<Box<TreeNode>>,
+        right: Option<Box<TreeNode>>,
+    ) -> Option<Box<Self>> {
+        Some(Box::new(TreeNode { val, left, right }))
+    }
+}`
+],
+tv: [
+`// Java: All four traversals
+static void inorderHelper(Node node, List<Integer> result) {
+    if (node == null) return;
+    inorderHelper(node.left, result);     // L
+    result.add(node.val);                 // Root
+    inorderHelper(node.right, result);    // R
+}
+
+static void preorderHelper(Node node, List<Integer> result) {
+    if (node == null) return;
+    result.add(node.val);                 // Root
+    preorderHelper(node.left, result);    // L
+    preorderHelper(node.right, result);   // R
+}
+
+static void postorderHelper(Node node, List<Integer> result) {
+    if (node == null) return;
+    postorderHelper(node.left, result);   // L
+    postorderHelper(node.right, result);  // R
+    result.add(node.val);                 // Root
+}
+
+// Level-order (BFS) using a Queue
+static List<List<Integer>> levelOrder(Node root) {
+    List<List<Integer>> result = new ArrayList<>();
+    if (root == null) return result;
+    Queue<Node> queue = new LinkedList<>();
+    queue.offer(root);
+    while (!queue.isEmpty()) {
+        int levelSize = queue.size();
+        List<Integer> level = new ArrayList<>();
+        for (int i = 0; i < levelSize; i++) {
+            Node node = queue.poll();
+            level.add(node.val);
+            if (node.left != null) queue.offer(node.left);
+            if (node.right != null) queue.offer(node.right);
+        }
+        result.add(level);
+    }
+    return result;
+}`,
+`// C++: Traversals (recursive + iterative inorder)
+void inorderRecursive(TreeNode* root, vector<int>& result) {
+    if (!root) return;
+    inorderRecursive(root->left, result);
+    result.push_back(root->val);
+    inorderRecursive(root->right, result);
+}
+
+void preorderRecursive(TreeNode* root, vector<int>& result) {
+    if (!root) return;
+    result.push_back(root->val);
+    preorderRecursive(root->left, result);
+    preorderRecursive(root->right, result);
+}
+
+void postorderRecursive(TreeNode* root, vector<int>& result) {
+    if (!root) return;
+    postorderRecursive(root->left, result);
+    postorderRecursive(root->right, result);
+    result.push_back(root->val);
+}
+
+// Level-order (BFS)
+vector<vector<int>> levelOrder(TreeNode* root) {
+    vector<vector<int>> result;
+    if (!root) return result;
+    queue<TreeNode*> q;
+    q.push(root);
+    while (!q.empty()) {
+        int size = q.size();
+        vector<int> level;
+        for (int i = 0; i < size; ++i) {
+            TreeNode* node = q.front(); q.pop();
+            level.push_back(node->val);
+            if (node->left) q.push(node->left);
+            if (node->right) q.push(node->right);
+        }
+        result.push_back(move(level));
+    }
+    return result;
+}`,
+`# Python: Traversals
+def inorder_recursive(root):
+    if not root: return []
+    return inorder_recursive(root.left) + [root.val] + inorder_recursive(root.right)
+
+def preorder_recursive(root):
+    if not root: return []
+    return [root.val] + preorder_recursive(root.left) + preorder_recursive(root.right)
+
+def postorder_recursive(root):
+    if not root: return []
+    return postorder_recursive(root.left) + postorder_recursive(root.right) + [root.val]
+
+def level_order(root):
+    """BFS level-order, returns values grouped by level."""
+    if not root: return []
+    from collections import deque
+    result, queue = [], deque([root])
+    while queue:
+        level_size = len(queue)
+        level_vals = []
+        for _ in range(level_size):
+            node = queue.popleft()
+            level_vals.append(node.val)
+            if node.left:  queue.append(node.left)
+            if node.right: queue.append(node.right)
+        result.append(level_vals)
+    return result
+
+# Iterative inorder (explicit stack)
+def inorder_iterative(root):
+    result, stack, curr = [], [], root
+    while curr or stack:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        result.append(curr.val)
+        curr = curr.right
+    return result`,
+`// Rust: Traversals
+fn inorder(node: &Option<Box<TreeNode>>) -> Vec<i32> {
+    match node {
+        None => vec![],
+        Some(n) => {
+            let mut result = inorder(&n.left);
+            result.push(n.val);
+            result.extend(inorder(&n.right));
+            result
+        }
+    }
+}
+
+fn preorder(node: &Option<Box<TreeNode>>) -> Vec<i32> {
+    match node {
+        None => vec![],
+        Some(n) => {
+            let mut result = vec![n.val];
+            result.extend(preorder(&n.left));
+            result.extend(preorder(&n.right));
+            result
+        }
+    }
+}
+
+fn postorder(node: &Option<Box<TreeNode>>) -> Vec<i32> {
+    match node {
+        None => vec![],
+        Some(n) => {
+            let mut result = postorder(&n.left);
+            result.extend(postorder(&n.right));
+            result.push(n.val);
+            result
+        }
+    }
+}
+
+// Level-order using VecDeque
+fn level_order(root: &Option<Box<TreeNode>>) -> Vec<Vec<i32>> {
+    let mut result = Vec::new();
+    if root.is_none() { return result; }
+    let mut queue: VecDeque<&Box<TreeNode>> = VecDeque::new();
+    if let Some(ref node) = root { queue.push_back(node); }
+    while !queue.is_empty() {
+        let size = queue.len();
+        let mut level = Vec::with_capacity(size);
+        for _ in 0..size {
+            let node = queue.pop_front().unwrap();
+            level.push(node.val);
+            if let Some(ref l) = node.left { queue.push_back(l); }
+            if let Some(ref r) = node.right { queue.push_back(r); }
+        }
+        result.push(level);
+    }
+    result
+}`
+],
+tp: [
+`// Java: Height, Diameter, Mirror
+static int height(Node root) {
+    if (root == null) return 0;
+    return 1 + Math.max(height(root.left), height(root.right));
+}
+
+// Diameter: longest path between any two nodes
+static int diameterResult = 0;
+static int diameterHelper(Node root) {
+    if (root == null) return 0;
+    int leftH = diameterHelper(root.left);
+    int rightH = diameterHelper(root.right);
+    diameterResult = Math.max(diameterResult, leftH + rightH);
+    return 1 + Math.max(leftH, rightH);
+}
+static int diameter(Node root) {
+    diameterResult = 0;
+    diameterHelper(root);
+    return diameterResult;
+}
+
+// Mirror / Invert binary tree
+static void mirror(Node root) {
+    if (root == null) return;
+    Node temp = root.left;
+    root.left = root.right;
+    root.right = temp;
+    mirror(root.left);
+    mirror(root.right);
+}`,
+`// C++: Height, Diameter, Mirror
+int height(TreeNode* root) {
+    if (!root) return 0;
+    return 1 + max(height(root->left), height(root->right));
+}
+
+int diameterHelper(TreeNode* root, int& maxDia) {
+    if (!root) return 0;
+    int leftH = diameterHelper(root->left, maxDia);
+    int rightH = diameterHelper(root->right, maxDia);
+    maxDia = max(maxDia, leftH + rightH);
+    return 1 + max(leftH, rightH);
+}
+
+int diameter(TreeNode* root) {
+    int maxDia = 0;
+    diameterHelper(root, maxDia);
+    return maxDia;
+}
+
+TreeNode* mirror(TreeNode* root) {
+    if (!root) return nullptr;
+    swap(root->left, root->right);
+    mirror(root->left);
+    mirror(root->right);
+    return root;
+}`,
+`# Python: Height, Diameter, Mirror
+def height(root):
+    if not root: return 0
+    return 1 + max(height(root.left), height(root.right))
+
+def diameter(root):
+    best = 0
+    def _depth(node):
+        nonlocal best
+        if not node: return 0
+        left_d = _depth(node.left)
+        right_d = _depth(node.right)
+        best = max(best, left_d + right_d)
+        return 1 + max(left_d, right_d)
+    _depth(root)
+    return best
+
+def mirror(root):
+    """Invert a binary tree."""
+    if not root: return None
+    root.left, root.right = mirror(root.right), mirror(root.left)
+    return root`,
+`// Rust: Height, Diameter
+fn height(node: &Option<Box<TreeNode>>) -> i32 {
+    match node {
+        None => 0,
+        Some(n) => 1 + height(&n.left).max(height(&n.right)),
+    }
+}
+
+fn diameter(node: &Option<Box<TreeNode>>) -> i32 {
+    fn helper(node: &Option<Box<TreeNode>>, max_d: &mut i32) -> i32 {
+        match node {
+            None => 0,
+            Some(n) => {
+                let lh = helper(&n.left, max_d);
+                let rh = helper(&n.right, max_d);
+                *max_d = (*max_d).max(lh + rh);
+                1 + lh.max(rh)
+            }
+        }
+    }
+    let mut max_d = 0;
+    helper(node, &mut max_d);
+    max_d
+}
+
+fn node_count(node: &Option<Box<TreeNode>>) -> i32 {
+    match node {
+        None => 0,
+        Some(n) => 1 + node_count(&n.left) + node_count(&n.right),
+    }
+}`
+],
+bo: [
+`// Java: BST Insert, Search, Delete
+Node insert(Node node, int val) {
+    if (node == null) return new Node(val);
+    if (val < node.val) node.left = insert(node.left, val);
+    else if (val > node.val) node.right = insert(node.right, val);
+    return node;
+}
+
+boolean search(Node node, int val) {
+    if (node == null) return false;
+    if (val == node.val) return true;
+    return val < node.val ? search(node.left, val) : search(node.right, val);
+}
+
+Node minNode(Node node) {
+    while (node.left != null) node = node.left;
+    return node;
+}
+
+Node delete(Node node, int val) {
+    if (node == null) return null;
+    if (val < node.val) node.left = delete(node.left, val);
+    else if (val > node.val) node.right = delete(node.right, val);
+    else {
+        if (node.left == null) return node.right;  // 0 or 1 child
+        if (node.right == null) return node.left;
+        // Two children: replace with inorder successor
+        Node successor = minNode(node.right);
+        node.val = successor.val;
+        node.right = delete(node.right, successor.val);
+    }
+    return node;
+}`,
+`// C++: BST Insert, Search, Delete
+TreeNode* bstInsert(TreeNode* root, int val) {
+    if (!root) return new TreeNode(val);
+    if (val < root->val)
+        root->left = bstInsert(root->left, val);
+    else if (val > root->val)
+        root->right = bstInsert(root->right, val);
+    return root;
+}
+
+TreeNode* bstSearch(TreeNode* root, int val) {
+    while (root) {
+        if (val == root->val) return root;
+        root = (val < root->val) ? root->left : root->right;
+    }
+    return nullptr;
+}
+
+TreeNode* findMin(TreeNode* root) {
+    while (root->left) root = root->left;
+    return root;
+}
+
+TreeNode* bstDelete(TreeNode* root, int val) {
+    if (!root) return nullptr;
+    if (val < root->val)      root->left = bstDelete(root->left, val);
+    else if (val > root->val) root->right = bstDelete(root->right, val);
+    else {
+        if (!root->left) { auto t = root->right; delete root; return t; }
+        if (!root->right) { auto t = root->left; delete root; return t; }
+        TreeNode* succ = findMin(root->right);
+        root->val = succ->val;
+        root->right = bstDelete(root->right, succ->val);
+    }
+    return root;
+}`,
+`# Python: BST Insert, Search, Delete
+def bst_insert(root, val):
+    if not root: return TreeNode(val)
+    if val < root.val:   root.left = bst_insert(root.left, val)
+    elif val > root.val: root.right = bst_insert(root.right, val)
+    return root
+
+def bst_search(root, val):
+    while root:
+        if val == root.val: return root
+        elif val < root.val: root = root.left
+        else: root = root.right
+    return None
+
+def bst_delete(root, val):
+    if not root: return None
+    if val < root.val:   root.left = bst_delete(root.left, val)
+    elif val > root.val: root.right = bst_delete(root.right, val)
+    else:
+        if not root.left:  return root.right
+        if not root.right: return root.left
+        # Two children: find inorder successor
+        successor = root.right
+        while successor.left:
+            successor = successor.left
+        root.val = successor.val
+        root.right = bst_delete(root.right, successor.val)
+    return root`,
+`// Rust: BST Insert and Search
+fn bst_insert(node: Option<Box<TreeNode>>, val: i32) -> Option<Box<TreeNode>> {
+    match node {
+        None => TreeNode::boxed(val),
+        Some(mut n) => {
+            if val < n.val {
+                n.left = bst_insert(n.left, val);
+            } else if val > n.val {
+                n.right = bst_insert(n.right, val);
+            }
+            Some(n) // duplicates ignored
+        }
+    }
+}
+
+fn bst_search(node: &Option<Box<TreeNode>>, val: i32) -> bool {
+    match node {
+        None => false,
+        Some(n) => match val.cmp(&n.val) {
+            std::cmp::Ordering::Equal => true,
+            std::cmp::Ordering::Less => bst_search(&n.left, val),
+            std::cmp::Ordering::Greater => bst_search(&n.right, val),
+        }
+    }
+}`
+],
+vl: [
+`// Java: Validate BST, LCA, Kth Smallest
+boolean isValidBST(Node node, long min, long max) {
+    if (node == null) return true;
+    if (node.val <= min || node.val >= max) return false;
+    return isValidBST(node.left, min, node.val)
+        && isValidBST(node.right, node.val, max);
+}
+
+// LCA in BST — O(h)
+Node lca(Node node, int p, int q) {
+    if (node == null) return null;
+    if (p < node.val && q < node.val) return lca(node.left, p, q);
+    if (p > node.val && q > node.val) return lca(node.right, p, q);
+    return node; // split point = LCA
+}
+
+// Kth smallest via inorder traversal
+int kthSmallest(int k) {
+    int[] count = {0}, result = {-1};
+    kthHelper(root, k, count, result);
+    return result[0];
+}
+void kthHelper(Node node, int k, int[] count, int[] result) {
+    if (node == null) return;
+    kthHelper(node.left, k, count, result);
+    count[0]++;
+    if (count[0] == k) { result[0] = node.val; return; }
+    kthHelper(node.right, k, count, result);
+}`,
+`// C++: Validate BST, LCA, Kth Smallest
+bool isValidBSTHelper(TreeNode* root, long long minVal, long long maxVal) {
+    if (!root) return true;
+    if (root->val <= minVal || root->val >= maxVal) return false;
+    return isValidBSTHelper(root->left, minVal, root->val) &&
+           isValidBSTHelper(root->right, root->val, maxVal);
+}
+bool isValidBST(TreeNode* root) {
+    return isValidBSTHelper(root, LLONG_MIN, LLONG_MAX);
+}
+
+// LCA in BST — iterative O(h)
+TreeNode* lcaBST(TreeNode* root, int p, int q) {
+    while (root) {
+        if (p < root->val && q < root->val) root = root->left;
+        else if (p > root->val && q > root->val) root = root->right;
+        else return root;  // split point
+    }
+    return nullptr;
+}
+
+// Kth smallest — iterative inorder, O(h + k)
+int kthSmallest(TreeNode* root, int k) {
+    stack<TreeNode*> st;
+    TreeNode* curr = root;
+    int count = 0;
+    while (curr || !st.empty()) {
+        while (curr) { st.push(curr); curr = curr->left; }
+        curr = st.top(); st.pop();
+        if (++count == k) return curr->val;
+        curr = curr->right;
+    }
+    return -1;
+}`,
+`# Python: Validate BST, LCA, Kth Smallest
+def is_valid_bst(root):
+    def _validate(node, lo, hi):
+        if not node: return True
+        if not (lo < node.val < hi): return False
+        return _validate(node.left, lo, node.val) \\
+           and _validate(node.right, node.val, hi)
+    return _validate(root, float("-inf"), float("inf"))
+
+def bst_lca(root, p, q):
+    """LCA in BST — O(h), O(1) space."""
+    while root:
+        if p < root.val and q < root.val:   root = root.left
+        elif p > root.val and q > root.val: root = root.right
+        else: return root
+    return None
+
+def kth_smallest(root, k):
+    """Kth smallest via iterative inorder. O(h+k)."""
+    stack, curr, count = [], root, 0
+    while curr or stack:
+        while curr:
+            stack.append(curr)
+            curr = curr.left
+        curr = stack.pop()
+        count += 1
+        if count == k: return curr.val
+        curr = curr.right
+    raise ValueError("k out of range")`,
+`// Rust: Validate BST
+fn is_valid_bst(node: &Option<Box<TreeNode>>, min: i64, max: i64) -> bool {
+    match node {
+        None => true,
+        Some(n) => {
+            let val = n.val as i64;
+            if val <= min || val >= max { return false; }
+            is_valid_bst(&n.left, min, val) &&
+            is_valid_bst(&n.right, val, max)
+        }
+    }
+}
+
+// Alternative: inorder validation
+fn is_valid_bst_inorder(
+    node: &Option<Box<TreeNode>>,
+    prev: &mut Option<i32>,
+) -> bool {
+    match node {
+        None => true,
+        Some(n) => {
+            if !is_valid_bst_inorder(&n.left, prev) { return false; }
+            if let Some(p) = prev {
+                if n.val <= *p { return false; }
+            }
+            *prev = Some(n.val);
+            is_valid_bst_inorder(&n.right, prev)
+        }
+    }
+}`
+]
+};
+
+function highlight(code, lang) {
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  code = esc(code);
+  code = code.replace(/(\/\/.*)/g, '<span class="cmt">$1</span>');
+  code = code.replace(/(#[^!\[{].*)/g, '<span class="cmt">$1</span>');
+  code = code.replace(/(&quot;.*?&quot;|"[^"]*"|'[^']*')/g, '<span class="str">$1</span>');
+  code = code.replace(/\b(\d+\.?\d*)\b/g, '<span class="num">$1</span>');
+  let kws;
+  if (lang==='java'||lang==='cpp') kws=/\b(class|struct|public|private|static|void|int|boolean|bool|long|return|if|else|while|for|new|throw|const|auto|template|typename|this|true|false|null|nullptr|override)\b/g;
+  else if (lang==='python') kws=/\b(def|class|self|return|if|else|elif|while|for|in|not|and|or|from|import|raise|True|False|None|is|nonlocal|float)\b/g;
+  else kws=/\b(fn|let|mut|struct|impl|self|Self|pub|use|return|if|else|while|for|in|match|loop|break|true|false|None|Some|Ok|Err|vec|mod|ref|as|where)\b/g;
+  code = code.replace(kws, '<span class="kw">$1</span>');
+  code = code.replace(/\b(Vec|VecDeque|Option|Box|String|HashMap|TreeNode|Node|BST|Queue|Deque|ArrayDeque|LinkedList|List|ArrayList|Map|Integer|Math|deque|list|stack)\b/g, '<span class="type">$1</span>');
+  code = code.replace(/\b([a-zA-Z_]\w*)\s*(?=\()/g, '<span class="fn">$1</span>');
+  return code.split('\n').map(l=>`<span class="line">${l}</span>`).join('\n');
+}
+
+const langMap=['java','cpp','python','rust'];
+Object.keys(codeData).forEach(g=>{
+  codeData[g].forEach((src,i)=>{
+    const el=document.getElementById(g+'-'+i);
+    if(el) el.querySelector('pre').innerHTML=highlight(src,langMap[i]);
+  });
+});
+
+function switchTab(btn,group){
+  const tabs=btn.parentElement.querySelectorAll('.code-tab');
+  const panels=btn.parentElement.parentElement.querySelectorAll('.code-panel');
+  const idx=Array.from(tabs).indexOf(btn);
+  tabs.forEach(t=>t.classList.remove('active'));
+  panels.forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  panels[idx].classList.add('active');
+}
+function copyCode(btn){
+  navigator.clipboard.writeText(btn.nextElementSibling.textContent).then(()=>{
+    btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',1500);
+  });
+}
+const obs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible');});
+},{threshold:.08});
+document.querySelectorAll('.section-card').forEach(c=>obs.observe(c));
+document.getElementById('sidebarToggle').addEventListener('click',()=>{document.getElementById('sidebar').classList.toggle('open');});
+document.querySelectorAll('.sidebar a').forEach(a=>{a.addEventListener('click',()=>document.getElementById('sidebar').classList.remove('open'));});
+const sections=document.querySelectorAll('.section-card[id]');
+const sidebarLinks=document.querySelectorAll('.sidebar a');
+window.addEventListener('scroll',()=>{
+  let current='';
+  sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)current=s.id;});
+  sidebarLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+current)l.classList.add('active');});
+});
+</script>
+</body>
+</html>

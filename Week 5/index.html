@@ -1,0 +1,995 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 5: Methods &amp; Recursion | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.hero .meta .dot.easy{background:var(--accent-green)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 5 of 12</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#method-basics">Method Basics</a>
+<a href="#method-overloading" class="sub">Method Overloading</a>
+<a href="#recursion-basics">Recursion Basics</a>
+<a href="#fibonacci" class="sub">Fibonacci</a>
+<a href="#tower-of-hanoi">Tower of Hanoi</a>
+<a href="#recursion-patterns">Recursion Patterns</a>
+<a href="#comparison">Complexity Comparison</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 5</span>
+<h1>Methods &amp; Recursion</h1>
+<p class="subtitle">Learn how to decompose problems into reusable methods and master recursion -- the elegant technique where functions call themselves to solve progressively smaller subproblems.</p>
+<div class="meta">
+<span><span class="dot easy"></span> Beginner-Intermediate</span>
+<span>~6 hours estimated</span>
+<span>6 topics covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand method syntax: parameters, return types, and scope</li>
+<li>Learn method overloading and compile-time polymorphism</li>
+<li>Master the two pillars of recursion: base case and recursive case</li>
+<li>Implement classic recursion problems: factorial, Fibonacci, Tower of Hanoi</li>
+<li>Compare naive recursion vs memoization vs iteration for Fibonacci</li>
+<li>Recognize common recursion patterns: linear, binary, tail, and mutual recursion</li>
+<li>Understand the call stack and how recursion uses memory</li>
+</ul>
+</div>
+
+<!-- Method Basics -->
+<div class="card" id="method-basics">
+<h2><span class="icon">&#128295;</span> Method Basics</h2>
+<p>A method (function) is a named, reusable block of code. Methods promote <strong>reusability</strong>, <strong>readability</strong>, and <strong>maintainability</strong>. In Java, every method has a return type, a name, and an optional parameter list.</p>
+
+<h3>Key Concepts</h3>
+<ul>
+<li><code>void</code> means the method returns nothing</li>
+<li><code>return</code> exits a method and optionally passes a value back</li>
+<li>Each method call creates a new <strong>stack frame</strong> on the call stack</li>
+<li>Java passes primitives <strong>by value</strong> -- the original variable is never modified</li>
+</ul>
+
+<div class="insight">
+<div class="label">Call Stack</div>
+<p>Each method call pushes a frame onto the stack. When the method returns, its frame is popped. This LIFO (Last-In, First-Out) behavior is what makes recursion possible.</p>
+</div>
+
+<div class="code-viewer" data-viewer="method-basics">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>MethodBasics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Method with no parameters and no return value
+static void greet() {
+    System.out.println("Hello from a method!");
+}
+
+// Method with parameters AND a return value
+static int add(int a, int b) {
+    return a + b;
+}
+
+// Pass-by-value demo: original is unaffected
+static void tryToChange(int n) {
+    n = 999; // Only changes the LOCAL copy
+    System.out.println("Inside tryToChange: n = " + n);
+}
+
+public static void main(String[] args) {
+    greet();              // Output: Hello from a method!
+    int result = add(5, 6);
+    System.out.println("add(5, 6) = " + result); // 11
+
+    int x = 42;
+    tryToChange(x);
+    System.out.println("After tryToChange: x = " + x); // Still 42
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>recursion.cpp (functions)</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Recursive factorial
+// Time: O(n)   Space: O(n) call stack
+long long factorialRecursive(int n) {
+    if (n &lt;= 1) return 1;
+    return static_cast&lt;long long&gt;(n) * factorialRecursive(n - 1);
+}
+
+// Iterative factorial
+// Time: O(n)   Space: O(1)
+long long factorialIterative(int n) {
+    long long result = 1;
+    for (int i = 2; i &lt;= n; ++i) {
+        result *= i;
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>recursion.py (functions)</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def factorial_iterative(n: int) -&gt; int:
+    """Return n! using a simple loop. Time: O(n), Space: O(1)"""
+    result = 1
+    for i in range(2, n + 1):
+        result *= i
+    return result
+
+def factorial_recursive(n: int) -&gt; int:
+    """Return n! using head recursion. Time: O(n), Space: O(n)"""
+    if n &lt;= 1:
+        return 1
+    return n * factorial_recursive(n - 1)
+
+def factorial_tail(n: int, accumulator: int = 1) -&gt; int:
+    """Return n! using tail recursion via an accumulator."""
+    if n &lt;= 1:
+        return accumulator
+    return factorial_tail(n - 1, n * accumulator)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>recursion.rs (functions)</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Computes `n!` iteratively.  Time: O(n), Space: O(1)
+fn factorial_iterative(n: u64) -&gt; u64 {
+    (1..=n).fold(1u64, |acc, x| acc * x)
+}
+
+/// Computes `n!` recursively.  Time: O(n), Space: O(n)
+fn factorial_recursive(n: u64) -&gt; u64 {
+    match n {
+        0 | 1 =&gt; 1,
+        _ =&gt; n * factorial_recursive(n - 1),
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Method Overloading -->
+<div class="card" id="method-overloading">
+<h2><span class="icon">&#128260;</span> Method Overloading</h2>
+<p>Method overloading means multiple methods with the <strong>same name</strong> but <strong>different parameter lists</strong> (different number, type, or order of parameters). The compiler picks the right version at compile time -- this is called <strong>compile-time polymorphism</strong> or <strong>static dispatch</strong>.</p>
+
+<h3>Rules</h3>
+<ul>
+<li>Different parameter count OR different parameter types</li>
+<li>Return type alone does NOT distinguish overloaded methods</li>
+</ul>
+
+<div class="code-viewer" data-viewer="overloading">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>MethodOverloading.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Version 1: two ints
+static int add(int a, int b) {
+    return a + b;
+}
+
+// Version 2: three ints
+static int add(int a, int b, int c) {
+    return a + b + c;
+}
+
+// Version 3: two doubles
+static double add(double a, double b) {
+    return a + b;
+}
+
+// Overloaded print utility for different array types
+static void printArray(int[] arr) {
+    System.out.print("int[]: ");
+    for (int x : arr) System.out.print(x + " ");
+    System.out.println();
+}
+
+static void printArray(double[] arr) {
+    System.out.print("double[]: ");
+    for (double x : arr) System.out.print(x + " ");
+    System.out.println();
+}
+
+public static void main(String[] args) {
+    System.out.println(add(2, 3));       // calls version 1
+    System.out.println(add(1, 2, 3));    // calls version 2
+    System.out.println(add(1.5, 2.5));   // calls version 3
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">DSA Relevance</div>
+<p>Many utility methods (print, compare, swap) benefit from overloading to handle different data types without renaming. Java's <code>Arrays.sort()</code> is itself overloaded for int[], double[], Object[], etc.</p>
+</div>
+</div>
+
+<!-- Recursion Basics -->
+<div class="card" id="recursion-basics">
+<h2><span class="icon">&#128257;</span> Recursion Basics</h2>
+<p>A recursive function calls itself to solve a smaller version of the same problem. Every recursive function needs two things:</p>
+<ol>
+<li><strong>Base Case</strong> -- the condition that stops recursion (prevents infinite loop)</li>
+<li><strong>Recursive Case</strong> -- the function calling itself with a smaller/simpler input</li>
+</ol>
+
+<div class="warning-box">
+<div class="label">Common Mistake</div>
+<p>Forgetting the base case leads to infinite recursion and a <code>StackOverflowError</code>. Always define your stopping condition first!</p>
+</div>
+
+<h3>Step-by-Step: Factorial</h3>
+<div class="diagram">
+<span class="highlight">factorial(5)</span>
+  = 5 * factorial(4)
+  = 5 * 4 * factorial(3)
+  = 5 * 4 * 3 * factorial(2)
+  = 5 * 4 * 3 * 2 * factorial(1)
+  = 5 * 4 * 3 * 2 * <span class="sorted">1</span>       &larr; base case reached!
+  = <span class="highlight">120</span>
+</div>
+
+<div class="code-viewer" data-viewer="recursion-basics">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>RecursionBasics.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Print N down to 1
+static void printDesc(int n) {
+    if (n == 0) return;       // base case
+    System.out.print(n + " ");
+    printDesc(n - 1);         // recursive call with smaller n
+}
+
+// Factorial: N! = N * (N-1)!
+// Time: O(n), Space: O(n) call stack
+static long factorial(int n) {
+    if (n &lt;= 1) return 1;     // base case
+    return n * factorial(n - 1);
+}
+
+// Sum of first N natural numbers
+static int sum(int n) {
+    if (n == 0) return 0;
+    return n + sum(n - 1);
+}
+
+// Fast Power: O(log exp)
+// If exp is even: base^exp = (base^(exp/2))^2
+// If exp is odd:  base^exp = base * base^(exp-1)
+static long fastPower(long base, int exp) {
+    if (exp == 0) return 1;
+    if (exp % 2 == 0) {
+        long half = fastPower(base, exp / 2);
+        return half * half;
+    } else {
+        return base * fastPower(base, exp - 1);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>recursion.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Recursive fast power
+// Time: O(log n)   Space: O(log n) call stack
+long long fastPowRecursive(long long base, long long exp, long long mod) {
+    if (exp == 0) return 1;
+    long long half = fastPowRecursive(base, exp / 2, mod);
+    half = (half * half) % mod;
+    if (exp % 2 == 1) {
+        half = (half * (base % mod)) % mod;
+    }
+    return half;
+}
+
+// Iterative fast power
+// Time: O(log n)   Space: O(1)
+long long fastPowIterative(long long base, long long exp, long long mod) {
+    long long result = 1;
+    base %= mod;
+    while (exp &gt; 0) {
+        if (exp &amp; 1) {
+            result = (result * base) % mod;
+        }
+        exp &gt;&gt;= 1;
+        base = (base * base) % mod;
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>recursion.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def power_fast(base: float, exp: int) -&gt; float:
+    """Compute base^exp via fast (binary) exponentiation.
+    Time: O(log n), Space: O(log n)"""
+    if exp &lt; 0:
+        return 1.0 / power_fast(base, -exp)
+    if exp == 0:
+        return 1.0
+    if exp % 2 == 0:
+        half = power_fast(base, exp // 2)
+        return half * half
+    return base * power_fast(base, exp - 1)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>recursion.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Recursive fast power. Time: O(log exp), Space: O(log exp)
+fn fast_power_recursive(base: i64, exp: u32) -&gt; i64 {
+    match exp {
+        0 =&gt; 1,
+        _ if exp % 2 == 0 =&gt; {
+            let half = fast_power_recursive(base, exp / 2);
+            half * half
+        }
+        _ =&gt; {
+            let half = fast_power_recursive(base, exp / 2);
+            base * half * half
+        }
+    }
+}
+
+/// Iterative fast power. Time: O(log exp), Space: O(1)
+fn fast_power(mut base: i64, mut exp: u32) -&gt; i64 {
+    let mut result: i64 = 1;
+    while exp &gt; 0 {
+        if exp % 2 == 1 { result *= base; }
+        base *= base;
+        exp /= 2;
+    }
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Fibonacci -->
+<div class="card" id="fibonacci">
+<h2><span class="icon">&#127808;</span> Fibonacci: Recursion vs Memoization vs Iteration</h2>
+<p>The Fibonacci sequence (0, 1, 1, 2, 3, 5, 8, 13, 21, ...) is defined as <code>fib(n) = fib(n-1) + fib(n-2)</code>. It is the classic introduction to <strong>Dynamic Programming</strong> thinking.</p>
+
+<h3>Three Approaches</h3>
+<table>
+<tr><th>Approach</th><th>Time</th><th>Space</th><th>Notes</th></tr>
+<tr><td>Naive Recursion</td><td><span class="badge badge-red">O(2^n)</span></td><td>O(n)</td><td>Recomputes same values many times</td></tr>
+<tr><td>Memoization (Top-Down DP)</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>Cache results of subproblems</td></tr>
+<tr><td>Iterative (Bottom-Up DP)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Most efficient approach</td></tr>
+</table>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+<p>fibNaive(5) makes <strong>15</strong> recursive calls. With memoization, it makes only <strong>9</strong> calls. For fib(45), naive recursion takes ~30 seconds while memoization is instant. Always think about <strong>overlapping subproblems</strong>!</p>
+</div>
+
+<div class="code-viewer" data-viewer="fibonacci">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>FibonacciRecursion.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// APPROACH 1: Naive recursion -- O(2^n) time
+static long fibNaive(int n) {
+    if (n &lt;= 1) return n;
+    return fibNaive(n - 1) + fibNaive(n - 2);
+}
+
+// APPROACH 2: Memoization -- O(n) time, O(n) space
+static long[] memo = new long[100];
+static long fibMemo(int n) {
+    if (n &lt;= 1) return n;
+    if (memo[n] != -1) return memo[n]; // already computed
+    memo[n] = fibMemo(n - 1) + fibMemo(n - 2);
+    return memo[n];
+}
+
+// APPROACH 3: Iterative -- O(n) time, O(1) space
+static long fibIterative(int n) {
+    if (n &lt;= 1) return n;
+    long prev2 = 0, prev1 = 1;
+    for (int i = 2; i &lt;= n; i++) {
+        long curr = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>recursion.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Memoized fibonacci (top-down DP)
+// Time: O(n)   Space: O(n) memo table + O(n) call stack
+long long fibMemo(int n, unordered_map&lt;int, long long&gt;&amp; memo) {
+    if (n &lt;= 1) return n;
+    if (auto it = memo.find(n); it != memo.end()) {
+        return it-&gt;second;  // C++17 init-statement in if
+    }
+    memo[n] = fibMemo(n - 1, memo) + fibMemo(n - 2, memo);
+    return memo[n];
+}
+
+// Iterative fibonacci (bottom-up)
+// Time: O(n)   Space: O(1)
+long long fibIterative(int n) {
+    if (n &lt;= 1) return n;
+    long long prev2 = 0, prev1 = 1;
+    for (int i = 2; i &lt;= n; ++i) {
+        long long curr = prev1 + prev2;
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>recursion.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">from functools import lru_cache
+
+@lru_cache(maxsize=None)
+def fibonacci_memo(n: int) -&gt; int:
+    """Return fib(n) with automatic memoization via @lru_cache.
+    Time: O(n), Space: O(n)"""
+    if n &lt;= 1:
+        return n
+    return fibonacci_memo(n - 1) + fibonacci_memo(n - 2)
+
+def fibonacci_iterative(n: int) -&gt; int:
+    """Return fib(n) iteratively. Time: O(n), Space: O(1)"""
+    if n &lt;= 1:
+        return n
+    a, b = 0, 1
+    for _ in range(2, n + 1):
+        a, b = b, a + b
+    return b</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>recursion.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">use std::collections::HashMap;
+
+/// Memoized Fibonacci using a HashMap.
+/// Time: O(n), Space: O(n)
+fn fib_memo(n: u32, memo: &amp;mut HashMap&lt;u32, u64&gt;) -&gt; u64 {
+    if let Some(&amp;val) = memo.get(&amp;n) {
+        return val;
+    }
+    let result = match n {
+        0 =&gt; 0,
+        1 =&gt; 1,
+        _ =&gt; fib_memo(n - 1, memo) + fib_memo(n - 2, memo),
+    };
+    memo.insert(n, result);
+    result
+}
+
+/// Iterative Fibonacci. Time: O(n), Space: O(1)
+fn fib_iterative(n: u32) -&gt; u64 {
+    if n == 0 { return 0; }
+    let (mut a, mut b) = (0u64, 1u64);
+    for _ in 2..=n {
+        let temp = a + b;
+        a = b;
+        b = temp;
+    }
+    b
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Tower of Hanoi -->
+<div class="card" id="tower-of-hanoi">
+<h2><span class="icon">&#127960;</span> Tower of Hanoi</h2>
+<p>Given 3 rods (Source, Auxiliary, Destination) and N disks stacked on Source (largest at bottom), move all disks to Destination following these rules:</p>
+<ol>
+<li>Move only <strong>one disk</strong> at a time</li>
+<li>A larger disk can <strong>never</strong> be placed on a smaller disk</li>
+</ol>
+
+<h3>Recursive Insight</h3>
+<div class="diagram">
+To move N disks from Source to Destination using Auxiliary:
+
+  <span class="highlight">Step 1:</span> Move top (N-1) disks: Source &rarr; Auxiliary  (using Dest as helper)
+  <span class="highlight">Step 2:</span> Move the Nth (largest) disk: Source &rarr; Destination
+  <span class="highlight">Step 3:</span> Move (N-1) disks: Auxiliary &rarr; Destination  (using Source as helper)
+
+Base case: N == 0 &rarr; do nothing
+
+<span class="pivot">Minimum moves = 2^n - 1</span>
+  n=3:  7 moves
+  n=4:  15 moves
+  n=10: 1,023 moves
+  n=64: 18.4 quintillion moves (585 years at 1 billion/sec!)
+</div>
+
+<div class="code-viewer" data-viewer="hanoi">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TowerOfHanoi.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Time: O(2^n)   Space: O(n) recursion depth
+static void hanoi(int n, char source, char auxiliary, char destination) {
+    if (n == 0) return; // base case
+
+    // Step 1: Move n-1 disks from source to auxiliary
+    hanoi(n - 1, source, destination, auxiliary);
+
+    // Step 2: Move the nth disk from source to destination
+    System.out.println("Move disk " + n + ": " + source + " -&gt; " + destination);
+
+    // Step 3: Move n-1 disks from auxiliary to destination
+    hanoi(n - 1, auxiliary, source, destination);
+}
+
+public static void main(String[] args) {
+    hanoi(3, 'A', 'B', 'C');
+    // Output: 7 moves (2^3 - 1)
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>recursion.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Time: O(2^n)   Space: O(n) call stack
+void towerOfHanoi(int n, char source, char target, char auxiliary,
+                  vector&lt;string&gt;&amp; moves) {
+    if (n == 0) return;
+    towerOfHanoi(n - 1, source, auxiliary, target, moves);
+    moves.push_back(string(1, source) + " -&gt; " + string(1, target));
+    towerOfHanoi(n - 1, auxiliary, target, source, moves);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>recursion.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def tower_of_hanoi(n, source="A", auxiliary="B", destination="C", moves=None):
+    """Solve Tower of Hanoi. Time: O(2^n - 1) moves, Space: O(n)"""
+    if moves is None:
+        moves = []
+    if n == 1:
+        moves.append(f"Move disk 1 from {source} to {destination}")
+        return moves
+    tower_of_hanoi(n - 1, source, destination, auxiliary, moves)
+    moves.append(f"Move disk {n} from {source} to {destination}")
+    tower_of_hanoi(n - 1, auxiliary, source, destination, moves)
+    return moves</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>recursion.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Solves Tower of Hanoi. Time: O(2^n), Space: O(n) call stack
+fn tower_of_hanoi(n: u32, source: &amp;str, target: &amp;str,
+                  auxiliary: &amp;str, moves: &amp;mut Vec&lt;String&gt;) {
+    if n == 0 { return; }
+    tower_of_hanoi(n - 1, source, auxiliary, target, moves);
+    moves.push(format!("Move disk {} from {} to {}", n, source, target));
+    tower_of_hanoi(n - 1, auxiliary, target, source, moves);
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Exponential is Optimal</div>
+<p>Tower of Hanoi <strong>cannot</strong> be solved in fewer than 2^n - 1 moves. It is a beautiful example of a problem where exponential time complexity is the best possible!</p>
+</div>
+</div>
+
+<!-- Recursion Patterns -->
+<div class="card" id="recursion-patterns">
+<h2><span class="icon">&#127922;</span> Recursion Patterns</h2>
+<p>Master these five patterns and you can solve the vast majority of recursive problems:</p>
+
+<h3>Pattern 1: Linear Recursion</h3>
+<p>One recursive call per invocation. Examples: factorial, sum, reverse string.</p>
+
+<h3>Pattern 2: Binary Recursion</h3>
+<p>Two recursive calls per invocation. Examples: Fibonacci, merge sort, binary search tree traversal.</p>
+
+<h3>Pattern 3: Tail Recursion</h3>
+<p>The recursive call is the <strong>last operation</strong>. Can be optimized by the compiler to use O(1) stack space (though Java does not optimize this).</p>
+
+<h3>Pattern 4: Mutual Recursion</h3>
+<p>Function A calls B, function B calls A. Example: isEven/isOdd check.</p>
+
+<h3>Pattern 5: Helper / Accumulator Pattern</h3>
+<p>Carry state in extra parameters to avoid redundant computation.</p>
+
+<div class="code-viewer" data-viewer="patterns">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>RecursionPatterns.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// PATTERN 1: Linear Recursion -- Reverse a string
+static String reverse(String s) {
+    if (s.isEmpty()) return "";
+    return reverse(s.substring(1)) + s.charAt(0);
+}
+
+// PATTERN 3: Tail Recursion -- Factorial with accumulator
+static long factTail(int n, long acc) {
+    if (n &lt;= 1) return acc;
+    return factTail(n - 1, n * acc);
+}
+
+// PATTERN 4: Mutual Recursion
+static boolean isEven(int n) {
+    if (n == 0) return true;
+    return isOdd(n - 1);
+}
+static boolean isOdd(int n) {
+    if (n == 0) return false;
+    return isEven(n - 1);
+}
+
+// PATTERN 5: Digit Sum
+static int digitSum(int n) {
+    if (n == 0) return 0;
+    return (n % 10) + digitSum(n / 10);
+}
+
+// BONUS: Generate all subsets (power set) -- foundation of backtracking
+static void subsets(int[] arr, int idx, String current) {
+    if (idx == arr.length) {
+        System.out.println("{" + current + "}");
+        return;
+    }
+    subsets(arr, idx + 1, current);  // Exclude
+    String sep = current.isEmpty() ? "" : ",";
+    subsets(arr, idx + 1, current + sep + arr[idx]);  // Include
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>recursion.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Reverse a string recursively
+string reverseStringRecursive(const string&amp; s) {
+    if (s.size() &lt;= 1) return s;
+    return reverseStringRecursive(s.substr(1)) + s[0];
+}
+
+// Digit sum -- O(log10(n)) time
+int digitSum(int n) {
+    if (n &lt; 0) n = -n;
+    if (n &lt; 10) return n;
+    return (n % 10) + digitSum(n / 10);
+}
+
+// Palindrome check (recursive)
+bool isPalindromeRecursive(const string&amp; s, int left, int right) {
+    if (left &gt;= right) return true;
+    if (s[left] != s[right]) return false;
+    return isPalindromeRecursive(s, left + 1, right - 1);
+}
+
+// Generate all subsets using backtracking
+void generateSubsets(const vector&lt;int&gt;&amp; nums, int index,
+                     vector&lt;int&gt;&amp; current, vector&lt;vector&lt;int&gt;&gt;&amp; result) {
+    if (index == static_cast&lt;int&gt;(nums.size())) {
+        result.push_back(current);
+        return;
+    }
+    generateSubsets(nums, index + 1, current, result);  // Exclude
+    current.push_back(nums[index]);                      // Include
+    generateSubsets(nums, index + 1, current, result);
+    current.pop_back();  // backtrack
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>recursion.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def reverse_string(s: str) -&gt; str:
+    """Reverse a string recursively. Time: O(n), Space: O(n)"""
+    if len(s) &lt;= 1:
+        return s
+    return reverse_string(s[1:]) + s[0]
+
+def is_palindrome(s: str) -&gt; bool:
+    """Check if s is a palindrome recursively."""
+    if len(s) &lt;= 1:
+        return True
+    if s[0] != s[-1]:
+        return False
+    return is_palindrome(s[1:-1])
+
+def generate_subsets(nums):
+    """Generate all subsets using backtracking. Time: O(n * 2^n)"""
+    result = []
+    def backtrack(index, current):
+        if index == len(nums):
+            result.append(current[:])
+            return
+        backtrack(index + 1, current)           # Exclude
+        current.append(nums[index])              # Include
+        backtrack(index + 1, current)
+        current.pop()                            # Backtrack
+    backtrack(0, [])
+    return result</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>recursion.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn reverse_string(s: &amp;str) -&gt; String {
+    if s.is_empty() { return String::new(); }
+    let mut chars = s.chars();
+    let first = chars.next().unwrap();
+    let rest: String = chars.collect();
+    let mut reversed = reverse_string(&amp;rest);
+    reversed.push(first);
+    reversed
+}
+
+fn digit_sum(n: u64) -&gt; u64 {
+    if n &lt; 10 { return n; }
+    (n % 10) + digit_sum(n / 10)
+}
+
+fn is_palindrome(s: &amp;str) -&gt; bool {
+    let bytes = s.as_bytes();
+    if bytes.len() &lt;= 1 { return true; }
+    if bytes[0] != bytes[bytes.len() - 1] { return false; }
+    is_palindrome(&amp;s[1..s.len() - 1])
+}
+
+/// Generate all subsets using backtracking
+fn generate_subsets(nums: &amp;[i32]) -&gt; Vec&lt;Vec&lt;i32&gt;&gt; {
+    let mut result = Vec::new();
+    let mut current = Vec::new();
+    fn backtrack(nums: &amp;[i32], idx: usize, cur: &amp;mut Vec&lt;i32&gt;,
+                 res: &amp;mut Vec&lt;Vec&lt;i32&gt;&gt;) {
+        if idx == nums.len() { res.push(cur.clone()); return; }
+        cur.push(nums[idx]);
+        backtrack(nums, idx + 1, cur, res);
+        cur.pop();
+        backtrack(nums, idx + 1, cur, res);
+    }
+    backtrack(nums, 0, &amp;mut current, &amp;mut result);
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Complexity Comparison -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Comparison</h2>
+<table>
+<tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Pattern</th></tr>
+<tr><td>Factorial (recursive)</td><td><span class="badge badge-green">O(n)</span></td><td>O(n) stack</td><td>Linear</td></tr>
+<tr><td>Factorial (iterative)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Loop</td></tr>
+<tr><td>Fibonacci (naive)</td><td><span class="badge badge-red">O(2^n)</span></td><td>O(n) stack</td><td>Binary</td></tr>
+<tr><td>Fibonacci (memoized)</td><td><span class="badge badge-green">O(n)</span></td><td>O(n) memo + stack</td><td>Top-Down DP</td></tr>
+<tr><td>Fibonacci (iterative)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Bottom-Up DP</td></tr>
+<tr><td>Tower of Hanoi</td><td><span class="badge badge-red">O(2^n)</span></td><td>O(n) stack</td><td>Binary (optimal)</td></tr>
+<tr><td>Fast Power</td><td><span class="badge badge-green">O(log n)</span></td><td>O(log n) stack</td><td>Divide &amp; Conquer</td></tr>
+<tr><td>Subsets Generation</td><td><span class="badge badge-red">O(n * 2^n)</span></td><td>O(n * 2^n)</td><td>Backtracking</td></tr>
+</table>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#127947;</span> Practice Problems</h2>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Power of Two</strong> -- Determine if a given integer is a power of two using recursion.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Sum of Digits</strong> -- Find the sum of digits of a number recursively until you get a single digit.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Climbing Stairs</strong> -- You can climb 1 or 2 steps at a time. In how many ways can you reach the top of n steps?
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Generate Parentheses</strong> -- Generate all combinations of well-formed parentheses for n pairs.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--danger)">Hard</div>
+<strong>N-Queens</strong> -- Place N queens on an N x N chessboard so no two queens threaten each other (backtracking).
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128218;</span> Summary</h2>
+<ul>
+<li><strong>Methods</strong> break problems into reusable, testable pieces. Use overloading for multiple parameter types.</li>
+<li><strong>Recursion</strong> requires a base case and a recursive case. Always check for stack depth limits.</li>
+<li><strong>Fibonacci</strong> teaches the critical lesson of overlapping subproblems -- memoization turns O(2^n) into O(n).</li>
+<li><strong>Tower of Hanoi</strong> is the classic example where exponential time is inherently optimal.</li>
+<li><strong>Recursion patterns</strong> (linear, binary, tail, mutual, backtracking) are building blocks for trees, graphs, and dynamic programming.</li>
+<li>When recursion depth is a concern, consider converting to an <strong>iterative</strong> approach with an explicit stack.</li>
+</ul>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 4/index.html">&larr; Week 4</a>
+<a href="../Week 6/index.html">Week 6 &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+<script>
+(function(){
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+
+/* progress bar */
+const pb=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement;const st=h.scrollTop||document.body.scrollTop;const sh=h.scrollHeight-h.clientHeight;pb.style.width=(st/sh*100)+'%'});
+
+/* back to top */
+const btt=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{btt.classList.toggle('visible',window.scrollY>400)});
+btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+/* reveal cards */
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+
+/* sidebar active link */
+const sections=document.querySelectorAll('.card, .hero');
+const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id});navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
+
+/* code tabs */
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');
+const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{tab.addEventListener('click',()=>{
+const lang=tab.dataset.lang;
+tabs.forEach(t=>t.classList.remove('active'));
+panels.forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');
+})});
+});
+
+/* line numbers */
+document.querySelectorAll('.code-content').forEach(block=>{
+const code=block.querySelector('.code-text');
+const nums=block.querySelector('.line-numbers');
+if(!code||!nums)return;
+const lines=code.textContent.split('\n');
+nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
+});
+
+/* copy button */
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{
+const code=btn.closest('.code-panel').querySelector('.code-text').textContent;
+navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});
+})});
+})();
+</script>
+</body>
+</html>

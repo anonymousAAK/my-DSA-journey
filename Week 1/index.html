@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 1: Java Fundamentals | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.easy{background:var(--accent-green)}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 1 of 12</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#hello-world">Hello World</a>
+<a href="#variables" class="sub">Variables &amp; Addition</a>
+<a href="#arithmetic" class="sub">Arithmetic Operations</a>
+<a href="#data-types">Data Types</a>
+<a href="#input">Taking Input</a>
+<a href="#typecasting">Typecasting</a>
+<a href="#operators">Operators</a>
+<a href="#data-types-table">Type Reference Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 1</span>
+<h1>Java Fundamentals</h1>
+<p class="subtitle">Begin your DSA journey by mastering the building blocks of Java -- from Hello World to data types, variables, input/output, and operators.</p>
+<div class="meta">
+<span><span class="dot easy"></span> Beginner</span>
+<span>~6 hours estimated</span>
+<span>12 topics covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand the structure of a Java program (class, main method, statements)</li>
+<li>Declare and initialize variables with appropriate data types</li>
+<li>Perform arithmetic operations and understand operator precedence</li>
+<li>Know all 8 primitive data types and their memory sizes</li>
+<li>Read user input using the Scanner class</li>
+<li>Understand widening (automatic) and narrowing (explicit) type casting</li>
+<li>Use arithmetic, relational, logical, and assignment operators</li>
+<li>Distinguish between print() and println() for output</li>
+</ul>
+</div>
+
+<!-- Hello World -->
+<div class="card" id="hello-world">
+<h2><span class="icon">&#128075;</span> Hello World -- Your First Program</h2>
+<p>Every Java program must have at least one class and a <code>main()</code> method, which serves as the entry point for execution. The classic "Hello World" program introduces this basic structure.</p>
+
+<h3>Key Concepts</h3>
+<ul>
+<li>Every Java file must contain a class definition</li>
+<li>The <code>main()</code> method is the entry point: <code>public static void main(String args[])</code></li>
+<li><code>System.out.println()</code> prints text followed by a newline</li>
+<li>Java is case-sensitive: <code>System</code> is not the same as <code>system</code></li>
+<li>Every statement ends with a semicolon (<code>;</code>)</li>
+</ul>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>hello_world.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">package fundamentals;
+public class HelloWorld {
+    public static void main(String args[]) {
+        System.out.println("Hello World");
+    }
+}
+
+// public static void main(String[] args)
+// 1. This is the line at which the program will begin executing.
+// 2. The curly braces {} indicate start and end of main.</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    cout &lt;&lt; "Hello, World!" &lt;&lt; endl;
+    return 0;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Python: no class or main method required!
+print("Hello, World!")</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn main() {
+    println!("Hello, World!");
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+In Java, the file name should match the public class name. The <code>main</code> method signature must be exactly <code>public static void main(String[] args)</code> for the JVM to find and execute it.
+</div>
+</div>
+
+<!-- Variables & Addition -->
+<div class="card" id="variables">
+<h2><span class="icon">&#128230;</span> Variables &amp; Addition</h2>
+<p>A variable is the basic unit of storage in Java. Variables must be declared with a type before use, and local variables are <strong>not</strong> assigned default values by the compiler.</p>
+
+<h3>Variable Naming Rules</h3>
+<ul>
+<li>May contain letters (a-z, A-Z), digits (0-9), underscore (_), and dollar sign ($)</li>
+<li>Must not begin with a digit</li>
+<li>Java is case-sensitive: <code>myVar</code> and <code>MyVar</code> are different</li>
+<li>Cannot be a reserved keyword (e.g., <code>int</code>, <code>class</code>, <code>void</code>)</li>
+</ul>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Add_two_numbers.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">package fundamentals;
+public class AddTwoNumbers {
+    public static void main(String args[]) {
+        int a = 10;   // Declare and initialize first operand
+        int b = 25;   // Declare and initialize second operand
+        int c = a + b; // Store the sum in a new variable
+        System.out.println(c); // Output: 35
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int main() {
+    int a = 10;
+    int b = 25;
+    int c = a + b;
+    cout &lt;&lt; c &lt;&lt; endl; // 35
+
+    // C++ also has 'auto' for type inference
+    auto score = 95.5; // compiler deduces: double
+    return 0;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Python: no type declaration needed (dynamically typed)
+a = 10
+b = 25
+c = a + b
+print(c)  # 35
+
+# Variables can change type at any time
+a = "now I'm a string"</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn main() {
+    let a = 10;         // immutable by default
+    let b = 25;
+    let c = a + b;
+    println!("{}", c);  // 35
+
+    let mut x = 5;      // mut = mutable
+    x += 1;             // allowed because x is mut
+    println!("x = {}", x);
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Arithmetic Operations -->
+<div class="card" id="arithmetic">
+<h2><span class="icon">&#128290;</span> Arithmetic Operations</h2>
+<p>Java supports standard arithmetic operators. A critical pitfall: <strong>integer division truncates</strong> the result -- <code>10/6</code> gives <code>1</code>, not <code>1.666</code>.</p>
+
+<h3>Operators</h3>
+<table>
+<tr><th>Operator</th><th>Operation</th><th>Example</th><th>Result</th></tr>
+<tr><td><code>+</code></td><td>Addition</td><td>10 + 3</td><td>13</td></tr>
+<tr><td><code>-</code></td><td>Subtraction</td><td>10 - 3</td><td>7</td></tr>
+<tr><td><code>*</code></td><td>Multiplication</td><td>10 * 3</td><td>30</td></tr>
+<tr><td><code>/</code></td><td>Division</td><td>10 / 3</td><td>3 (integer!)</td></tr>
+<tr><td><code>%</code></td><td>Modulus</td><td>10 % 3</td><td>1</td></tr>
+</table>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Arthemetic_Operation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">package fundamentals;
+public class ArithematicOperators {
+    public static void main(String args[]) {
+        int a = 3;
+        int b = 10;
+        int c = b / (2 * a);  // 10/6 = 1 (integer division truncates)
+        System.out.println(c); // Output: 1
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int a = 17, b = 5;
+cout &lt;&lt; "a + b  = " &lt;&lt; (a + b)  &lt;&lt; endl;  // 22
+cout &lt;&lt; "a - b  = " &lt;&lt; (a - b)  &lt;&lt; endl;  // 12
+cout &lt;&lt; "a * b  = " &lt;&lt; (a * b)  &lt;&lt; endl;  // 85
+cout &lt;&lt; "a / b  = " &lt;&lt; (a / b)  &lt;&lt; endl;  // 3 (integer division!)
+cout &lt;&lt; "a % b  = " &lt;&lt; (a % b)  &lt;&lt; endl;  // 2</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">a, b = 17, 5
+print(f"a / b  = {a / b}")     # 3.4  (true division -- always float!)
+print(f"a // b = {a // b}")    # 3    (floor division -- integer result)
+print(f"a % b  = {a % b}")     # 2    (modulo)
+print(f"a ** b = {a ** b}")    # 1419857 (power -- no Math.pow needed)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">let a = 17_i32;
+let b = 5_i32;
+println!("a + b  = {}", a + b);   // 22
+println!("a / b  = {}", a / b);   // 3 (integer division)
+println!("a % b  = {}", a % b);   // 2
+// Rust has no ** operator; use .pow() or f64::powi()
+println!("a^b    = {}", (a as f64).powi(b)); // 1419857</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Common Pitfall</div>
+Integer division in Java, C++, and Rust truncates the decimal part. To get a precise result, cast one operand to <code>double</code>/<code>float</code>: <code>(double)a / b</code> or use <code>3.0</code> instead of <code>3</code>.
+</div>
+</div>
+
+<!-- Data Types -->
+<div class="card" id="data-types">
+<h2><span class="icon">&#128202;</span> Data Types</h2>
+<p>Java has <strong>8 primitive data types</strong>. The OS allocates memory based on the declared type, and each type determines what values can be stored.</p>
+
+<h3>Primitive Types Overview</h3>
+<div class="diagram">
+<span class="highlight">Integer Types:</span>
+  byte    1 byte    [-128, 127]
+  short   2 bytes   [-32,768, 32,767]
+  int     4 bytes   [-2^31, 2^31 - 1]     (~2.1 billion)
+  long    8 bytes   [-2^63, 2^63 - 1]
+
+<span class="highlight">Floating Point:</span>
+  float   4 bytes   ~7 decimal digits     (suffix 'f' required: 3.14f)
+  double  8 bytes   ~15 decimal digits    (default for decimals)
+
+<span class="highlight">Other:</span>
+  char    2 bytes   Unicode character      (Java uses Unicode, not ASCII!)
+  boolean ?         true / false           (size not precisely defined)
+
+<span class="swap">Note:</span> String is NOT a primitive -- it is a reference type (class).
+</div>
+
+<h3>Reading Different Types with Scanner</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Data_Types.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class DataTypes {
+    public static void main(String args[]) {
+        Scanner s = new Scanner(System.in);
+
+        String str = s.next();     // Read a single word/token
+        System.out.print(str);     // print() -- no newline
+        // vs System.out.println() -- adds newline
+
+        s.nextInt();      // Read int
+        s.nextDouble();   // Read double
+        s.nextLong();     // Read long
+        s.nextLine();     // Read entire line
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">cout &lt;&lt; "char:      " &lt;&lt; sizeof(char)      &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 1
+cout &lt;&lt; "short:     " &lt;&lt; sizeof(short)     &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 2
+cout &lt;&lt; "int:       " &lt;&lt; sizeof(int)       &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 4
+cout &lt;&lt; "long long: " &lt;&lt; sizeof(long long) &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 8
+cout &lt;&lt; "float:     " &lt;&lt; sizeof(float)     &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 4
+cout &lt;&lt; "double:    " &lt;&lt; sizeof(double)    &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 8
+cout &lt;&lt; "bool:      " &lt;&lt; sizeof(bool)      &lt;&lt; " byte(s)"  &lt;&lt; endl;  // 1</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Python: dynamically typed -- no byte, short, long
+# int handles ALL integer sizes (arbitrary precision!)
+big = 2 ** 100  # Works! Java would overflow with int/long.
+
+print(f"Type of 42:    {type(42)}")      # &lt;class 'int'&gt;
+print(f"Type of 3.14:  {type(3.14)}")    # &lt;class 'float'&gt;
+print(f"Type of 'hi':  {type('hi')}")    # &lt;class 'str'&gt;
+print(f"Type of True:  {type(True)}")    # &lt;class 'bool'&gt;</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// Rust has explicit signed/unsigned integer types
+println!("i8 range:   [{}, {}]", i8::MIN, i8::MAX);
+println!("i32 range:  [{}, {}]", i32::MIN, i32::MAX);
+println!("i64 range:  [{}, {}]", i64::MIN, i64::MAX);
+println!("f64 max:    {}", f64::MAX);
+println!("char size:  {} bytes", std::mem::size_of::&lt;char&gt;()); // 4 bytes!
+// Rust char is 4 bytes (full Unicode scalar value)</div></div>
+</div>
+</div>
+</div>
+
+<!-- Taking Input -->
+<div class="card" id="input">
+<h2><span class="icon">&#9000;</span> Taking User Input</h2>
+<p>The <code>Scanner</code> class reads user input from the console. It breaks input into tokens using whitespace as a delimiter and provides methods to parse various primitive types.</p>
+
+<h3>Scanner Methods</h3>
+<table>
+<tr><th>Method</th><th>Reads</th><th>Notes</th></tr>
+<tr><td><code>nextInt()</code></td><td>Integer</td><td>Reads next token as int</td></tr>
+<tr><td><code>nextDouble()</code></td><td>Double</td><td>Reads next token as double</td></tr>
+<tr><td><code>nextLong()</code></td><td>Long</td><td>Reads next token as long</td></tr>
+<tr><td><code>next()</code></td><td>String (word)</td><td>Stops at whitespace</td></tr>
+<tr><td><code>nextLine()</code></td><td>String (line)</td><td>Reads entire remaining line</td></tr>
+</table>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Taking_Input.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class TakingInput {
+    public static void main(String args[]) {
+        Scanner s = new Scanner(System.in);
+        int a = s.nextInt();      // Read first integer
+        int b = s.nextInt();      // Read second integer
+        int c = a + b;
+
+        String str = s.nextLine();   // Read remaining text on line
+        char ch = str.charAt(0);     // Extract first character
+        System.out.println(ch);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">#include &lt;iostream&gt;
+using namespace std;
+
+int main() {
+    int num;
+    cout &lt;&lt; "Enter a number: ";
+    cin &gt;&gt; num;
+    cout &lt;&lt; "Double of " &lt;&lt; num &lt;&lt; " is " &lt;&lt; num * 2 &lt;&lt; endl;
+    return 0;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># input() always returns a string -- cast as needed
+name = input("Enter your name: ")
+print(f"Hello, {name}!")
+
+num = int(input("Enter a number: "))
+print(f"Double of {num} is {num * 2}")</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::io;
+
+fn main() {
+    println!("Enter a number:");
+    let mut input = String::new();
+    io::stdin().read_line(&amp;mut input).unwrap();
+    let num: i32 = input.trim().parse().unwrap();
+    println!("Double of {} is {}", num, num * 2);
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Common Pitfall</div>
+Calling <code>nextLine()</code> after <code>nextInt()</code> may read the leftover newline character from the integer input. Solution: add an extra <code>s.nextLine()</code> call to consume the dangling newline before reading the actual line.
+</div>
+</div>
+
+<!-- Typecasting -->
+<div class="card" id="typecasting">
+<h2><span class="icon">&#128260;</span> Typecasting</h2>
+<p>Typecasting converts a value from one data type to another. Java supports two kinds: <strong>widening</strong> (automatic) and <strong>narrowing</strong> (explicit).</p>
+
+<h3>Conversion Hierarchy</h3>
+<div class="diagram">
+<span class="highlight">Widening (Automatic):</span>  smaller type &rarr; larger type, NO data loss
+  byte &rarr; short &rarr; int &rarr; long &rarr; float &rarr; double
+
+<span class="swap">Narrowing (Explicit):</span>  larger type &rarr; smaller type, MAY lose data
+  Requires cast operator: (targetType) value
+  Example: (long) 100.99 = 100  (truncates, does NOT round!)
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Typecasting.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">public static void main(String[] args) {
+    int i = 100;
+    long l1 = i;           // Widening: int -&gt; long (automatic)
+    double d = 100.04;
+    long l2 = (long) d;    // Narrowing: double -&gt; long (explicit, truncates)
+    System.out.println(i);    // 100
+    System.out.println(l1);   // 100
+    System.out.println(d);    // 100.04
+    System.out.println(l2);   // 100 (decimal part lost!)
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">double pi = 3.14159;
+int truncated = (int)pi;                // C-style cast: 3
+int truncated2 = static_cast&lt;int&gt;(pi);  // C++ style (preferred)
+double promoted = (double)25;           // int -&gt; double
+
+cout &lt;&lt; "(int)3.14159 = " &lt;&lt; truncated &lt;&lt; endl;  // 3
+cout &lt;&lt; "5 / 2   = " &lt;&lt; (5 / 2)   &lt;&lt; endl;       // 2 (int division)
+cout &lt;&lt; "5.0 / 2 = " &lt;&lt; (5.0 / 2) &lt;&lt; endl;       // 2.5 (float division)</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Python: explicit casting with type constructors
+x = int(3.7)       # 3 (truncates, not rounds)
+y = float(5)       # 5.0
+z = str(42)        # "42"
+w = int("123")     # 123
+
+print(f"int(3.7) = {x}, float(5) = {y}")</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">let pi: f64 = 3.14159;
+let truncated = pi as i32;       // 3 (truncation, not rounding)
+let promoted = 25_i32 as f64;    // 25.0
+
+println!("3.14159 as i32 = {}", truncated);  // 3
+println!("5 / 2   = {}", 5 / 2);            // 2 (integer division)
+println!("5.0 / 2.0 = {}", 5.0_f64 / 2.0); // 2.5</div></div>
+</div>
+</div>
+</div>
+
+<!-- Operators -->
+<div class="card" id="operators">
+<h2><span class="icon">&#9881;</span> Operators in Java</h2>
+<p>Java provides a rich set of operators for performing operations on variables and values.</p>
+
+<h3>Average of Two Numbers -- Practical Example</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Average_of_two_numbers.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class Average {
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+        String name = sc.next();       // Read the user's name
+        int a = sc.nextInt();          // Read first number
+        int b = sc.nextInt();          // Read second number
+        int c = sc.nextInt();          // Read third number
+        System.out.println(name);
+        System.out.println((a + b + c) / 3);
+        // Integer division: result is truncated, not rounded
+        // Use /3.0 for precise average
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fundamentals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Comparison operators
+cout &lt;&lt; boolalpha;  // print true/false instead of 1/0
+cout &lt;&lt; "5 == 5: " &lt;&lt; (5 == 5) &lt;&lt; endl;  // true
+cout &lt;&lt; "5 != 3: " &lt;&lt; (5 != 3) &lt;&lt; endl;  // true
+cout &lt;&lt; "5 &gt; 3:  " &lt;&lt; (5 &gt; 3)  &lt;&lt; endl;  // true
+
+// Logical operators
+cout &lt;&lt; "true &amp;&amp; false: " &lt;&lt; (true &amp;&amp; false) &lt;&lt; endl; // false
+cout &lt;&lt; "true || false: " &lt;&lt; (true || false) &lt;&lt; endl; // true
+cout &lt;&lt; "!true:         " &lt;&lt; (!true) &lt;&lt; endl;         // false</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>fundamentals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Comparison
+print(f"5 == 5: {5 == 5}")   # True
+print(f"5 != 3: {5 != 3}")   # True
+
+# Logical -- Python uses words, not symbols
+print(f"True and False: {True and False}")  # False
+print(f"True or False:  {True or False}")   # True
+print(f"not True:       {not True}")        # False</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fundamentals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">println!("5 == 5: {}", 5 == 5);           // true
+println!("5 != 3: {}", 5 != 3);           // true
+println!("true &amp;&amp; false: {}", true &amp;&amp; false); // false
+println!("true || false: {}", true || false); // true
+println!("!true:         {}", !true);      // false</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Parentheses around <code>(a + b + c)</code> are essential for the average calculation. Without them, only <code>c</code> would be divided by 3 due to operator precedence (multiplication/division before addition).
+</div>
+</div>
+
+<!-- Data Types Reference Table -->
+<div class="card" id="data-types-table">
+<h2><span class="icon">&#128218;</span> Data Types Reference Table</h2>
+<table>
+<tr><th>Type</th><th>Size</th><th>Default</th><th>Range / Description</th></tr>
+<tr><td><code>byte</code></td><td>1 byte</td><td>0</td><td>-128 to 127</td></tr>
+<tr><td><code>short</code></td><td>2 bytes</td><td>0</td><td>-32,768 to 32,767</td></tr>
+<tr><td><code>int</code></td><td>4 bytes</td><td>0</td><td>-2,147,483,648 to 2,147,483,647</td></tr>
+<tr><td><code>long</code></td><td>8 bytes</td><td>0L</td><td>-9.2 x 10^18 to 9.2 x 10^18</td></tr>
+<tr><td><code>float</code></td><td>4 bytes</td><td>0.0f</td><td>~7 decimal digits precision</td></tr>
+<tr><td><code>double</code></td><td>8 bytes</td><td>0.0d</td><td>~15 decimal digits precision</td></tr>
+<tr><td><code>char</code></td><td>2 bytes</td><td>'\0'</td><td>Unicode character (0 to 65,535)</td></tr>
+<tr><td><code>boolean</code></td><td>~1 bit</td><td>false</td><td>true or false</td></tr>
+</table>
+
+<div class="insight">
+<div class="label">Language Comparison</div>
+<strong>C++:</strong> uses <code>sizeof()</code> to check sizes; has <code>auto</code> for type inference.<br>
+<strong>Python:</strong> has arbitrary-precision integers (no overflow!); uses <code>type()</code> to inspect types.<br>
+<strong>Rust:</strong> has explicit signed/unsigned types (i8, u8, i32, u32, etc.); char is 4 bytes (full Unicode).
+</div>
+</div>
+
+<!-- Practice Problems -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128187;</span> Practice Problems</h2>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Hello World</h4>
+<p>Write a program that prints "Hello World" to the console. Understand the basic structure of a Java program.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Add Two Numbers</h4>
+<p>Read two integers from user input and print their sum. Practice variable declaration and Scanner usage.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Average of Three Numbers</h4>
+<p>Read three integers and compute their average. Be careful with integer division -- try both <code>/3</code> and <code>/3.0</code>.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Type Casting Explorer</h4>
+<p>Experiment with widening and narrowing conversions. What happens when you cast <code>300</code> to a <code>byte</code>? Predict the output before running.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Integer Storage Investigation</h4>
+<p>Investigate how integers are stored in memory (two's complement). What is the result of <code>Integer.MAX_VALUE + 1</code>?</p>
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128640;</span> Week 1 Summary</h2>
+<p>This week covered the essential building blocks of Java programming:</p>
+<ul>
+<li><strong>Program Structure:</strong> Every Java program needs a class and a <code>main()</code> method</li>
+<li><strong>Variables:</strong> Must declare type before use; follow naming conventions</li>
+<li><strong>Data Types:</strong> 8 primitives (byte, short, int, long, float, double, char, boolean) + String (reference type)</li>
+<li><strong>Input/Output:</strong> <code>Scanner</code> for input; <code>System.out.println()</code> for output</li>
+<li><strong>Arithmetic:</strong> Watch out for integer division truncation</li>
+<li><strong>Typecasting:</strong> Widening is automatic; narrowing requires explicit cast and may lose data</li>
+<li><strong>Operators:</strong> Arithmetic, relational, logical, and assignment operators</li>
+</ul>
+
+<div class="insight">
+<div class="label">Next Up</div>
+In <a href="../Week 2/index.html">Week 2</a>, you will learn about control flow -- if-else statements, while loops, and problem-solving with conditional logic.
+</div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-footer">
+<span></span>
+<a href="../Week 2/index.html">Week 2: Control Flow &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+// Sidebar toggle
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+
+// Progress bar
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{
+const h=document.documentElement,b=document.body;
+const st=h.scrollTop||b.scrollTop;
+const sh=h.scrollHeight||b.scrollHeight;
+const p=(st/(sh-h.clientHeight))*100;
+progressBar.style.width=p+'%';
+});
+
+// Back to top
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+// Scroll reveal
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+
+// Code tabs
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');
+const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{
+tab.addEventListener('click',()=>{
+const lang=tab.dataset.lang;
+tabs.forEach(t=>t.classList.remove('active'));
+panels.forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');
+});
+});
+});
+
+// Copy button
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+const code=btn.closest('.code-panel').querySelector('.code-text').textContent;
+navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});
+});
+});
+
+// Line numbers
+document.querySelectorAll('.code-text').forEach(block=>{
+const lines=block.textContent.split('\n');
+const nums=block.previousElementSibling;
+nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
+});
+
+// Syntax highlighting
+function highlight(code,lang){
+code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
+code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
+const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements|package|double|float|byte|short|char|String|Scanner)\b/g;
+const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false|cout|cin|endl|sizeof|double|float)\b/g;
+const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is|print|type|int|float|str|input|f)\b/g;
+const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|i64|u8|u64|f64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum|println|String)\b/g;
+let kw=kwJava;
+if(lang==='cpp')kw=kwCpp;
+if(lang==='python')kw=kwPy;
+if(lang==='rust')kw=kwRs;
+code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
+code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
+return code;
+}
+document.querySelectorAll('.code-text').forEach(block=>{
+const lang=block.dataset.code||'';
+const raw=block.textContent;
+block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);
+});
+document.querySelectorAll('.code-text').forEach(block=>{
+const lang=block.dataset.code||'';
+const raw=block.textContent;
+block.innerHTML=highlight(block.innerHTML,lang);
+});
+
+// Active sidebar link on scroll
+const sections=document.querySelectorAll('[id]');
+const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{
+let current='';
+sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});
+navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')});
+});
+</script>
+</body>
+</html>

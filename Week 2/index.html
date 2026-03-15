@@ -1,0 +1,725 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 2: Control Flow | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.easy{background:var(--accent-green)}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 2 of 12</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#if-else">If-Else Statements</a>
+<a href="#while-loop">While Loop</a>
+<a href="#fahrenheit" class="sub">Fahrenheit to Celsius</a>
+<a href="#multiplication" class="sub">Multiplication Table</a>
+<a href="#even-odd">Sum of Even &amp; Odd Digits</a>
+<a href="#factors">Finding Factors</a>
+<a href="#power">Find Power (x^n)</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 2</span>
+<h1>Control Flow</h1>
+<p class="subtitle">Learn to make decisions and repeat actions with if-else conditionals and while loops -- the foundation of all programming logic.</p>
+<div class="meta">
+<span><span class="dot easy"></span> Beginner</span>
+<span>~7 hours estimated</span>
+<span>11 topics covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Use if, else, and else-if to branch program logic based on conditions</li>
+<li>Apply relational operators (&lt;, &gt;, &lt;=, &gt;=, ==, !=) to form boolean conditions</li>
+<li>Understand the while loop and its execution flow</li>
+<li>Recognize and avoid infinite loops</li>
+<li>Solve practical problems: temperature conversion, multiplication tables, digit extraction</li>
+<li>Use the modulo operator (%) for divisibility tests and digit extraction</li>
+<li>Compute factors of a number and understand power calculations</li>
+</ul>
+</div>
+
+<!-- If-Else -->
+<div class="card" id="if-else">
+<h2><span class="icon">&#128268;</span> If-Else Conditional Statements</h2>
+<p>Conditional statements allow your program to make decisions. The <code>if</code> block executes when the condition is true; the <code>else</code> block runs when it is false.</p>
+
+<h3>Relational Operators</h3>
+<table>
+<tr><th>Operator</th><th>Meaning</th><th>Example</th></tr>
+<tr><td><code>&lt;</code></td><td>Less than</td><td>a &lt; b</td></tr>
+<tr><td><code>&gt;</code></td><td>Greater than</td><td>a &gt; b</td></tr>
+<tr><td><code>==</code></td><td>Equal to</td><td>a == b</td></tr>
+<tr><td><code>!=</code></td><td>Not equal to</td><td>a != b</td></tr>
+<tr><td><code>&lt;=</code></td><td>Less than or equal</td><td>a &lt;= b</td></tr>
+<tr><td><code>&gt;=</code></td><td>Greater than or equal</td><td>a &gt;= b</td></tr>
+</table>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>If_else.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">public static void main(String args[]) {
+    int a = 10, b = 15;
+    if (a > b) {
+        System.out.print("a ");    // Skipped: 10 is not > 15
+    } else {
+        System.out.print("b ");    // Executes: a is NOT greater
+    }
+    System.out.print("is greater"); // Always executes (outside if-else)
+}
+// Output: b is greater</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>control_flow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int x = 42;
+if (x > 100) cout << "Big" << endl;
+else if (x > 10) cout << "Medium" << endl;  // this runs
+else cout << "Small" << endl;
+
+// Ternary operator (compact if-else)
+string status = (x % 2 == 0) ? "even" : "odd";
+cout << x << " is " << status << endl;</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>control_flow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Python uses elif (not else if), indentation defines blocks
+x = 42
+if x > 100:
+    print("Big")
+elif x > 10:
+    print("Medium")  # this runs
+else:
+    print("Small")
+
+# Ternary expression
+status = "even" if x % 2 == 0 else "odd"
+print(f"{x} is {status}")</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>control_flow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// In Rust, if/else is an EXPRESSION (returns a value!)
+let x = 42;
+let category = if x > 100 { "Big" }
+               else if x > 10 { "Medium" }
+               else { "Small" };
+println!("{} is {}", x, category);
+
+let status = if x % 2 == 0 { "even" } else { "odd" };
+println!("{} is {}", x, status);</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Code written <strong>outside</strong> the if-else block always executes regardless of the condition. Be mindful of what is inside vs. outside the braces.
+</div>
+</div>
+
+<!-- While Loop -->
+<div class="card" id="while-loop">
+<h2><span class="icon">&#128260;</span> While Loop</h2>
+<p>The while loop repeats a block of code as long as a specified condition remains true. Be careful with the condition -- using assignment (<code>=</code>) instead of comparison (<code>==</code>) leads to subtle bugs.</p>
+
+<h3>Tricky Example: Assignment vs Comparison</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>While_Loop.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">public static void main(String[] args) {
+    int x = 5;
+    int y = 5;
+    while ((x = 5) == y) {   // Assignment! x is reset to 5 each time
+        System.out.println("Hello");
+        x++;  // x becomes 6, but resets to 5 on next check
+        y++;  // y becomes 6, so (5 == 6) is false
+    }
+}
+// Output: prints "Hello" exactly ONCE
+// After 1st iteration: y=6, condition (x=5)==6 is false</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>control_flow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// While loop: Multiplication Table
+int n = 7, i = 1;
+while (i <= 10) {
+    cout << n << " x " << i << " = " << n * i << endl;
+    i++;
+}
+
+// Do-while: executes at least once
+int count = 0;
+do {
+    cout << "Count: " << count << endl;
+    count++;
+} while (count < 3);</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>control_flow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># While loop: Multiplication Table
+n, i = 7, 1
+while i <= 10:
+    print(f"{n} x {i} = {n * i}")
+    i += 1  # Python has no ++ operator
+
+# Python has no do-while; use while True + break instead
+count = 0
+while True:
+    print(f"Count: {count}")
+    count += 1
+    if count >= 3:
+        break</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>control_flow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// While loop
+let n = 7;
+let mut i = 1;
+while i <= 10 {
+    println!("{} x {} = {}", n, i, n * i);
+    i += 1; // Rust has no ++ operator
+}
+
+// Rust's 'loop' keyword = infinite loop with break
+let mut count = 0;
+let result = loop {
+    count += 1;
+    if count == 5 { break count * 10; } // returns value!
+};
+println!("Loop returned: {}", result); // 50</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Common Pitfall</div>
+Using <code>=</code> (assignment) instead of <code>==</code> (comparison) inside a loop condition can create hard-to-find bugs. Java allows assignment in conditions, which resets the variable every iteration.
+</div>
+</div>
+
+<!-- Fahrenheit to Celsius -->
+<div class="card" id="fahrenheit">
+<h2><span class="icon">&#127777;</span> Fahrenheit to Celsius Table</h2>
+<p>A practical while loop example: generate a temperature conversion table using the formula <code>C = (F - 32) * 5 / 9</code>.</p>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Fahrenheit_to_Celsius_Table.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class F_C_Table {
+    public static void main(String[] args) {
+        int S, E, W;         // Start, End, Step (Fahrenheit)
+        Scanner p = new Scanner(System.in);
+        S = p.nextInt();     // Read start value
+        E = p.nextInt();     // Read end value
+        W = p.nextInt();     // Read step size
+
+        while (E >= S) {
+            int a = ((S - 32) * 5) / 9;  // Convert F to C (integer math)
+            System.out.println(S + " " + a);
+            S = S + W;       // Move to next Fahrenheit value
+        }
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>control_flow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// F to C table with formatted output
+printf("%5s | %8s\n", "F", "C");
+for (int f = 32; f <= 212; f += 20) {
+    double c = (f - 32) * 5.0 / 9.0;
+    printf("%5d | %8.2f\n", f, c);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>control_flow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">print(f"{'F':>5} | {'C':>8}")
+print("-" * 16)
+for f in range(32, 213, 20):
+    c = (f - 32) * 5 / 9
+    print(f"{f:>5} | {c:>8.2f}")</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>control_flow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">println!("{:>5} | {:>8}", "F", "C");
+let mut f = 32;
+while f <= 212 {
+    let c = (f as f64 - 32.0) * 5.0 / 9.0;
+    println!("{:>5} | {:>8.2}", f, c);
+    f += 20;
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Sum of Even & Odd Digits -->
+<div class="card" id="even-odd">
+<h2><span class="icon">&#128290;</span> Sum of Even &amp; Odd Digits</h2>
+<p>A classic digit-extraction problem: separate the digits of a number into even and odd categories, then compute their sums. This technique uses <code>num % 10</code> to extract the last digit and <code>num / 10</code> to remove it.</p>
+
+<h3>Step-by-Step Visualization</h3>
+<div class="diagram">
+Number: <span class="highlight">13245</span>
+
+<span class="highlight">Step 1:</span> last = 13245 % 10 = <span class="sorted">5</span> (odd)   &rarr; oddSum = 5,  num = 1324
+<span class="highlight">Step 2:</span> last = 1324 % 10  = <span class="swap">4</span> (even)  &rarr; evenSum = 4, num = 132
+<span class="highlight">Step 3:</span> last = 132 % 10   = <span class="swap">2</span> (even)  &rarr; evenSum = 6, num = 13
+<span class="highlight">Step 4:</span> last = 13 % 10    = <span class="sorted">3</span> (odd)   &rarr; oddSum = 8,  num = 1
+<span class="highlight">Step 5:</span> last = 1 % 10     = <span class="sorted">1</span> (odd)   &rarr; oddSum = 9,  num = 0
+
+Result: evenSum = <span class="swap">6</span>, oddSum = <span class="sorted">9</span>
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Sum_of_Even_Odd.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class Main {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int num = s.nextInt();
+        int evenSum = 0, oddSum = 0;
+        while (num > 0) {
+            int last = num % 10;       // Extract last digit
+            if (last % 2 == 0)
+                evenSum += last;       // Even digit
+            else
+                oddSum += last;        // Odd digit
+            num = num / 10;            // Remove last digit
+        }
+        System.out.println(evenSum + " " + oddSum);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>control_flow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">pair<int, int> sumEvenOddDigits(int n) {
+    int evenSum = 0, oddSum = 0;
+    n = abs(n);
+    while (n > 0) {
+        int digit = n % 10;
+        if (digit % 2 == 0) evenSum += digit;
+        else oddSum += digit;
+        n /= 10;
+    }
+    return {evenSum, oddSum};
+}
+
+auto [e, o] = sumEvenOddDigits(1234); // C++17 structured bindings</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>control_flow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def sum_even_odd_digits(n: int) -> tuple[int, int]:
+    even_sum, odd_sum = 0, 0
+    n = abs(n)
+    while n > 0:
+        digit = n % 10
+        if digit % 2 == 0:
+            even_sum += digit
+        else:
+            odd_sum += digit
+        n //= 10  # integer division
+    return even_sum, odd_sum
+
+e, o = sum_even_odd_digits(1234)
+print(f"even={e}, odd={o}")  # even=6, odd=4</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>control_flow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn sum_even_odd_digits(mut n: i32) -> (i32, i32) {
+    let (mut even_sum, mut odd_sum) = (0, 0);
+    n = n.abs();
+    while n > 0 {
+        let digit = n % 10;
+        if digit % 2 == 0 { even_sum += digit; }
+        else { odd_sum += digit; }
+        n /= 10;
+    }
+    (even_sum, odd_sum)
+}
+
+let (e, o) = sum_even_odd_digits(1234);</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The pattern <code>num % 10</code> (extract last digit) + <code>num / 10</code> (remove last digit) is a fundamental technique used in dozens of number-theory problems. Master this pattern early.
+</div>
+</div>
+
+<!-- Factors -->
+<div class="card" id="factors">
+<h2><span class="icon">&#128270;</span> Finding Factors</h2>
+<p>A factor of n is any integer i where <code>n % i == 0</code>. We only need to check up to n/2 since no factor (other than n itself) can exceed n/2.</p>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Factors.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class Solution {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int n = s.nextInt();
+        int i = 2;                // Start from 2 (excluding 1)
+        while (i <= n / 2) {      // No factor > n/2 exists (except n)
+            if (n % i == 0) {
+                System.out.print(i + " ");
+            }
+            i += 1;
+        }
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>control_flow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Optimized: O(sqrt(n)) instead of O(n)
+vector<int> factors(int n) {
+    vector<int> result;
+    for (int i = 1; i * i <= n; i++) {
+        if (n % i == 0) {
+            result.push_back(i);
+            if (i != n / i) result.push_back(n / i);
+        }
+    }
+    sort(result.begin(), result.end());
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>control_flow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def factors(n: int) -> list[int]:
+    """Find all factors of n. Time: O(sqrt(n))"""
+    result = []
+    for i in range(1, int(n**0.5) + 1):
+        if n % i == 0:
+            result.append(i)
+            if i != n // i:
+                result.append(n // i)
+    return sorted(result)
+
+print(f"Factors of 12: {factors(12)}")  # [1, 2, 3, 4, 6, 12]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>control_flow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn factors(n: i32) -> Vec<i32> {
+    let mut result = Vec::new();
+    let mut i = 1;
+    while i * i <= n {
+        if n % i == 0 {
+            result.push(i);
+            if i != n / i { result.push(n / i); }
+        }
+        i += 1;
+    }
+    result.sort();
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Find Power -->
+<div class="card" id="power">
+<h2><span class="icon">&#9889;</span> Find Power (x^n)</h2>
+<p>Compute x raised to the power n through repeated multiplication. This brute-force O(n) approach multiplies x by itself n times.</p>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>Find_Power.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">import java.util.Scanner;
+public class FindPower {
+    public static void main(String[] args) {
+        Scanner s = new Scanner(System.in);
+        int x = s.nextInt();    // base
+        int n = s.nextInt();    // exponent
+
+        long ans = 1;                  // Start with 1 (x^0 = 1)
+        for (int i = 0; i < n; i++) {  // Multiply x, n times
+            ans *= x;
+        }
+        System.out.println(x + "^" + n + " = " + ans);
+    }
+}
+// Time: O(n) -- See Week 5 for O(log n) fast exponentiation</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>control_flow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">long long power(int x, int n) {
+    long long result = 1;
+    for (int i = 0; i < n; i++) result *= x;
+    return result;
+}
+
+cout << "2^10 = " << power(2, 10) << endl;  // 1024
+cout << "3^5 = " << power(3, 5) << endl;    // 243</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>control_flow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def power(x: int, n: int) -> int:
+    result = 1
+    for _ in range(n):
+        result *= x
+    return result
+
+print(f"2^10 = {power(2, 10)}")  # 1024
+# Python also has built-in: 2**10 = 1024</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>control_flow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn power(x: i64, n: u32) -> i64 {
+    let mut result: i64 = 1;
+    for _ in 0..n {
+        result *= x;
+    }
+    result
+}
+
+println!("2^10 = {}", power(2, 10)); // 1024
+// Rust also has: 2_i64.pow(10)</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The result uses <code>long</code> (not <code>int</code>) because exponentiation grows very quickly -- <code>2^31</code> already exceeds the int range. Always consider overflow when dealing with repeated multiplication.
+</div>
+</div>
+
+<!-- Practice Problems -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128187;</span> Practice Problems</h2>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Find Character Case</h4>
+<p>Given a character, determine if it is uppercase, lowercase, or a digit using if-else and ASCII values.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<h4>Multiplication Table</h4>
+<p>Print the multiplication table for a given number N from 1 to 10 using a while loop.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Total Salary Calculator</h4>
+<p>Given basic salary and allowances, compute the total salary with conditional bonuses based on performance.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Sum of Even &amp; Odd Digits</h4>
+<p>Extract each digit from an integer and compute separate sums for even and odd digits.</p>
+</div>
+
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<h4>Find All Factors</h4>
+<p>Print all factors of a number N (excluding 1 and N). Optimize to check only up to N/2.</p>
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128640;</span> Week 2 Summary</h2>
+<p>This week introduced the tools for decision-making and repetition in your programs:</p>
+<ul>
+<li><strong>If-Else:</strong> Branch execution based on boolean conditions using relational operators</li>
+<li><strong>While Loop:</strong> Repeat code while a condition holds true; watch for assignment vs. comparison bugs</li>
+<li><strong>Digit Extraction:</strong> Use <code>% 10</code> to get the last digit and <code>/ 10</code> to remove it -- a pattern used everywhere</li>
+<li><strong>Factors:</strong> Test divisibility with modulo; optimize by checking up to n/2 or sqrt(n)</li>
+<li><strong>Power:</strong> Iterative O(n) exponentiation using repeated multiplication</li>
+</ul>
+
+<div class="insight">
+<div class="label">Next Up</div>
+In <a href="../Week 3/index.html">Week 3</a>, you will master for loops, number theory (Fibonacci, primes, binary conversion), and bitwise operators.
+</div>
+</div>
+
+<!-- Navigation -->
+<div class="nav-footer">
+<a href="../Week 1/index.html">&larr; Week 1: Java Fundamentals</a>
+<a href="../Week 3/index.html">Week 3: Loops &amp; Number Theory &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%';});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');});});});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});});});
+document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');});
+function highlight(code,lang){
+code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
+code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
+const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements|package|double|float|byte|short|char|String|Scanner)\b/g;
+const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false|cout|cin|endl|sizeof|double|float|pair|sort)\b/g;
+const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is|print|type|int|float|str|input|abs|sorted|tuple|list)\b/g;
+const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|i64|u32|u64|f64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum|println|String)\b/g;
+let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;
+code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
+code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
+return code;}
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.textContent.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);});
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang);});
+const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')});});
+</script>
+</body>
+</html>

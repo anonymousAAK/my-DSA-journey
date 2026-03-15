@@ -1,0 +1,758 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 23: Advanced DP | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#21262d;--text:#c9d1d9;--text-secondary:#8b949e;--accent:#58a6ff;--accent2:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--code-border:#30363d;--warning:#d29922;--error:#f85149;--font-mono:'SF Mono','Cascadia Code','Fira Code','Consolas',monospace;--font-sans:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif}
+html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:var(--font-sans);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
+.container{max-width:1200px;margin:0 auto;padding:0 1.5rem}
+.hero{position:relative;padding:5rem 0 4rem;overflow:hidden;text-align:center}
+.hero::before{content:'';position:absolute;top:0;left:0;right:0;bottom:0;background:radial-gradient(ellipse at 50% 0%,rgba(88,166,255,.12) 0%,transparent 70%);pointer-events:none}
+.hero-badge{display:inline-block;background:linear-gradient(135deg,#f85149,#d29922);color:#fff;font-weight:700;font-size:.75rem;padding:.35rem .9rem;border-radius:999px;text-transform:uppercase;letter-spacing:.05em;margin-bottom:1rem}
+.hero h1{font-size:clamp(2rem,5vw,3.5rem);font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;margin-bottom:.5rem}
+.hero .subtitle{font-size:1.2rem;color:var(--text-secondary);max-width:700px;margin:0 auto 1.5rem}
+.hero-meta{display:flex;gap:1.5rem;justify-content:center;flex-wrap:wrap;color:var(--text-secondary);font-size:.9rem}
+.page-layout{display:grid;grid-template-columns:260px 1fr;gap:2rem;align-items:start;padding:2rem 0 4rem}
+@media(max-width:900px){.page-layout{grid-template-columns:1fr}}
+.sidebar{position:sticky;top:2rem}
+@media(max-width:900px){.sidebar{position:static}}
+.sidebar-toggle{display:none;width:100%;padding:.8rem;background:var(--card);border:1px solid var(--card-border);color:var(--text);border-radius:8px;font-size:1rem;cursor:pointer}
+@media(max-width:900px){.sidebar-toggle{display:block}.sidebar-nav{display:none}.sidebar-nav.open{display:block}}
+.sidebar-nav{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:1rem 0;margin-top:.5rem}
+.sidebar-nav a{display:block;padding:.5rem 1.2rem;color:var(--text-secondary);font-size:.85rem;transition:all .2s}
+.sidebar-nav a:hover,.sidebar-nav a.active{color:var(--accent);background:rgba(88,166,255,.08);text-decoration:none;border-right:2px solid var(--accent)}
+.content{min-width:0}
+.section{background:var(--card);border:1px solid var(--card-border);border-radius:12px;padding:2rem;margin-bottom:2rem;opacity:0;transform:translateY(20px);transition:opacity .6s,transform .6s}
+.section.visible{opacity:1;transform:translateY(0)}
+.section h2{font-size:1.6rem;margin-bottom:1rem;padding-bottom:.5rem;border-bottom:1px solid var(--card-border)}
+.section h3{font-size:1.2rem;color:var(--accent);margin:1.5rem 0 .75rem}
+.section p,.section li{color:var(--text-secondary);margin-bottom:.5rem}
+.section ul,.section ol{padding-left:1.5rem;margin-bottom:1rem}
+.objectives{display:grid;gap:.5rem}
+.objective{display:flex;align-items:baseline;gap:.5rem;padding:.5rem .75rem;background:rgba(88,166,255,.05);border-radius:6px;border-left:3px solid var(--accent)}
+.objective::before{content:'';display:inline-block;width:8px;height:8px;background:var(--gradient);border-radius:50%;flex-shrink:0;margin-top:6px}
+.code-viewer{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;overflow:hidden;margin:1.5rem 0}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--code-border);overflow-x:auto}
+.code-tab{padding:.6rem 1.2rem;color:var(--text-secondary);font-size:.8rem;font-family:var(--font-mono);cursor:pointer;border:none;background:none;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent);border-bottom-color:var(--accent);background:rgba(88,166,255,.08)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.copy-btn{position:absolute;top:.5rem;right:.5rem;background:var(--card);border:1px solid var(--code-border);color:var(--text-secondary);padding:.3rem .6rem;border-radius:6px;font-size:.75rem;cursor:pointer;z-index:2;transition:all .2s}
+.copy-btn:hover{color:var(--accent);border-color:var(--accent)}
+.code-panel pre{margin:0;padding:1rem;overflow-x:auto;font-family:var(--font-mono);font-size:.82rem;line-height:1.6}
+.code-panel code{color:var(--text)}
+.key-insight{background:rgba(88,166,255,.08);border:1px solid rgba(88,166,255,.2);border-radius:8px;padding:1rem 1.2rem;margin:1rem 0}
+.key-insight-title{font-weight:700;color:var(--accent);font-size:.85rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.4rem;display:flex;align-items:center;gap:.5rem}
+.key-insight-title::before{content:'';display:inline-block;width:18px;height:18px;background:var(--gradient);border-radius:50%;flex-shrink:0}
+.key-insight p{color:var(--text-secondary);font-size:.9rem;margin:0}
+.complexity-table{width:100%;border-collapse:collapse;margin:1rem 0;font-size:.85rem}
+.complexity-table th{background:rgba(88,166,255,.1);color:var(--accent);padding:.6rem .8rem;text-align:left;border-bottom:1px solid var(--card-border)}
+.complexity-table td{padding:.5rem .8rem;border-bottom:1px solid rgba(48,54,61,.5);color:var(--text-secondary)}
+.complexity-table tr:hover td{background:rgba(88,166,255,.04)}
+.diagram{background:var(--code-bg);border:1px solid var(--code-border);border-radius:10px;padding:1.5rem;margin:1.5rem 0;text-align:center;overflow-x:auto}
+.diagram pre{font-family:var(--font-mono);font-size:.78rem;color:var(--accent);display:inline-block;text-align:left;line-height:1.5}
+.diagram-caption{font-size:.8rem;color:var(--text-secondary);margin-top:.75rem;font-style:italic}
+.practice-list{display:grid;gap:.75rem;margin:1rem 0}
+.practice-item{display:flex;justify-content:space-between;align-items:center;padding:.75rem 1rem;background:rgba(88,166,255,.04);border:1px solid var(--card-border);border-radius:8px;font-size:.9rem}
+.practice-item .diff{font-size:.7rem;font-weight:700;padding:.2rem .6rem;border-radius:999px;text-transform:uppercase}
+.diff-medium{background:rgba(210,153,34,.15);color:var(--warning)}
+.diff-hard{background:rgba(248,81,73,.15);color:var(--error)}
+.summary-card{background:linear-gradient(135deg,rgba(88,166,255,.08),rgba(63,185,80,.08));border:1px solid rgba(88,166,255,.2);border-radius:12px;padding:2rem}
+.summary-card h2{border-bottom-color:rgba(88,166,255,.2)}
+.summary-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem;margin-top:1rem}
+.summary-item{background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:1rem}
+.summary-item h4{color:var(--accent);font-size:.9rem;margin-bottom:.4rem}
+.summary-item p{font-size:.8rem;color:var(--text-secondary);margin:0}
+.nav-footer{display:flex;justify-content:space-between;margin:2rem 0;gap:1rem;flex-wrap:wrap}
+.nav-btn{flex:1;min-width:200px;padding:1rem 1.5rem;background:var(--card);border:1px solid var(--card-border);border-radius:10px;color:var(--text);transition:all .3s;display:flex;flex-direction:column}
+.nav-btn:hover{border-color:var(--accent);transform:translateY(-2px);text-decoration:none}
+.nav-btn .label{font-size:.75rem;color:var(--text-secondary);text-transform:uppercase;letter-spacing:.05em}
+.nav-btn .title{font-weight:600;color:var(--accent)}
+.nav-btn.next{text-align:right;align-items:flex-end}
+.kw{color:#ff7b72}.typ{color:#79c0ff}.str{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.num{color:#79c0ff}
+.math{background:rgba(88,166,255,.06);border:1px solid var(--code-border);border-radius:6px;padding:.8rem 1rem;margin:.75rem 0;font-family:var(--font-mono);font-size:.85rem;color:var(--accent);overflow-x:auto}
+</style>
+</head>
+<body>
+
+<section class="hero">
+<div class="container">
+<span class="hero-badge">Expert</span>
+<h1>Week 23: Advanced DP</h1>
+<p class="subtitle">Bitmask DP for the Traveling Salesman Problem, optimal LIS in O(n log n), Matrix Chain Multiplication, Digit DP, and DP on trees -- the most powerful algorithmic paradigm pushed to its limits.</p>
+<div class="hero-meta">
+<span>Week 23 of 24</span>
+<span>Estimated: 15-20 hours</span>
+<span>5 Techniques</span>
+<span>4 Languages</span>
+</div>
+</div>
+</section>
+
+<div class="container">
+<div class="page-layout">
+
+<aside class="sidebar">
+<button class="sidebar-toggle" onclick="document.querySelector('.sidebar-nav').classList.toggle('open')">Table of Contents</button>
+<nav class="sidebar-nav">
+<a href="#objectives">Learning Objectives</a>
+<a href="#tsp">TSP Bitmask DP</a>
+<a href="#lis">Optimal LIS O(n log n)</a>
+<a href="#mcm">Matrix Chain Multiplication</a>
+<a href="#digit-dp">Digit DP</a>
+<a href="#tree-dp">DP on Trees</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="content">
+
+<div id="objectives" class="section">
+<h2>Learning Objectives</h2>
+<div class="objectives">
+<div class="objective">Represent subsets as bitmasks and solve TSP in O(n^2 * 2^n)</div>
+<div class="objective">Compute LIS in O(n log n) using patience sorting with binary search</div>
+<div class="objective">Solve Matrix Chain Multiplication with interval DP in O(n^3)</div>
+<div class="objective">Apply Digit DP to count numbers with constraints in a range</div>
+<div class="objective">Implement DP on trees using post-order DFS (Maximum Independent Set)</div>
+<div class="objective">Recognize which DP technique applies to a given problem</div>
+</div>
+</div>
+
+<!-- TSP Bitmask DP -->
+<div id="tsp" class="section">
+<h2>TSP with Bitmask DP</h2>
+<p>The Traveling Salesman Problem asks for the shortest tour visiting all cities exactly once and returning to the start. The brute-force approach checks n! permutations, but bitmask DP reduces this to O(n^2 * 2^n) by representing visited cities as bits in an integer.</p>
+
+<h3>State Representation</h3>
+<div class="math">dp[mask][i] = minimum cost to reach city i having visited exactly the cities in mask</div>
+<p>Where <code>mask</code> is a bitmask: bit j is set if city j has been visited. For n=4 cities, mask=0b1011 means cities 0, 1, and 3 have been visited.</p>
+
+<div class="diagram">
+<pre>
+Bitmask State Space for n=4 cities:
+
+mask=0001 (city 0 only)     mask=0011 (cities 0,1)
+  dp[0001][0] = 0             dp[0011][1] = dist[0][1]
+
+mask=0101 (cities 0,2)      mask=0111 (cities 0,1,2)
+  dp[0101][2] = dist[0][2]    dp[0111][1] = min of paths ending at 1
+                                dp[0111][2] = min of paths ending at 2
+
+mask=1111 (all cities)       Answer: min(dp[1111][i] + dist[i][0])
+  dp[1111][1] = best tour       for all i != 0
+  dp[1111][2] = ending at 2
+  dp[1111][3] = ending at 3
+
+Total states: 2^n * n = 2^4 * 4 = 64 (vs 4! = 24 permutations)
+For n=20: 2^20 * 20 ~ 20M states (vs 20! ~ 2.4 * 10^18)
+</pre>
+<p class="diagram-caption">Bitmask DP trades permutation enumeration (n!) for subset enumeration (2^n), enabling practical solutions for n up to ~20.</p>
+</div>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>The key observation is that the optimal tour through a set of cities depends only on <strong>which</strong> cities have been visited and <strong>where</strong> we currently are -- not the order in which previous cities were visited. This "optimal substructure over subsets" is what makes bitmask DP work. The same principle applies to the Hamiltonian Path problem, assignment problems, and scheduling with dependencies.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'tsp')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'tsp')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'tsp')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'tsp')">Rust</button>
+</div>
+<div class="code-panel active" data-group="tsp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// TSP with Bitmask DP (Java)</span>
+<span class="kw">static int</span> <span class="fn">tspMinCost</span>(<span class="typ">int</span>[][] dist) {
+    <span class="typ">int</span> n = dist.length;
+    <span class="typ">int</span> FULL = (<span class="num">1</span> &lt;&lt; n) - <span class="num">1</span>;
+    <span class="typ">int</span>[][] dp = <span class="kw">new int</span>[<span class="num">1</span> &lt;&lt; n][n];
+    <span class="kw">for</span> (<span class="typ">int</span>[] row : dp) Arrays.fill(row, Integer.MAX_VALUE / <span class="num">2</span>);
+    dp[<span class="num">1</span>][<span class="num">0</span>] = <span class="num">0</span>; <span class="cm">// start at city 0</span>
+
+    <span class="kw">for</span> (<span class="typ">int</span> mask = <span class="num">1</span>; mask &lt;= FULL; mask++) {
+        <span class="kw">for</span> (<span class="typ">int</span> u = <span class="num">0</span>; u &lt; n; u++) {
+            <span class="kw">if</span> ((mask &amp; (<span class="num">1</span> &lt;&lt; u)) == <span class="num">0</span> ||
+                dp[mask][u] == Integer.MAX_VALUE / <span class="num">2</span>) <span class="kw">continue</span>;
+            <span class="kw">for</span> (<span class="typ">int</span> v = <span class="num">0</span>; v &lt; n; v++) {
+                <span class="kw">if</span> ((mask &amp; (<span class="num">1</span> &lt;&lt; v)) != <span class="num">0</span>) <span class="kw">continue</span>;
+                <span class="typ">int</span> newMask = mask | (<span class="num">1</span> &lt;&lt; v);
+                dp[newMask][v] = Math.min(dp[newMask][v],
+                    dp[mask][u] + dist[u][v]);
+            }
+        }
+    }
+    <span class="typ">int</span> ans = Integer.MAX_VALUE;
+    <span class="kw">for</span> (<span class="typ">int</span> u = <span class="num">1</span>; u &lt; n; u++)
+        <span class="kw">if</span> (dp[FULL][u] != Integer.MAX_VALUE / <span class="num">2</span>)
+            ans = Math.min(ans, dp[FULL][u] + dist[u][<span class="num">0</span>]);
+    <span class="kw">return</span> ans;
+}
+<span class="cm">// tspMinCost(4-city symmetric) = 80</span></code></pre>
+</div>
+<div class="code-panel" data-group="tsp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// TSP — bitmask DP (C++17)</span>
+<span class="typ">int</span> <span class="fn">tsp_bitmask</span>(<span class="kw">const</span> std::vector&lt;std::vector&lt;<span class="typ">int</span>&gt;&gt;&amp; dist) {
+    <span class="typ">int</span> n = dist.size();
+    <span class="typ">int</span> full = (<span class="num">1</span> &lt;&lt; n) - <span class="num">1</span>;
+    std::vector dp(<span class="num">1</span> &lt;&lt; n, std::vector&lt;<span class="typ">int</span>&gt;(n, INT_MAX));
+    dp[<span class="num">1</span>][<span class="num">0</span>] = <span class="num">0</span>;
+
+    <span class="kw">for</span> (<span class="typ">int</span> mask = <span class="num">1</span>; mask &lt;= full; ++mask)
+        <span class="kw">for</span> (<span class="typ">int</span> u = <span class="num">0</span>; u &lt; n; ++u) {
+            <span class="kw">if</span> (dp[mask][u] == INT_MAX) <span class="kw">continue</span>;
+            <span class="kw">if</span> (!(mask &amp; (<span class="num">1</span> &lt;&lt; u))) <span class="kw">continue</span>;
+            <span class="kw">for</span> (<span class="typ">int</span> v = <span class="num">0</span>; v &lt; n; ++v) {
+                <span class="kw">if</span> (mask &amp; (<span class="num">1</span> &lt;&lt; v)) <span class="kw">continue</span>;
+                <span class="typ">int</span> nm = mask | (<span class="num">1</span> &lt;&lt; v);
+                dp[nm][v] = std::min(dp[nm][v],
+                    dp[mask][u] + dist[u][v]);
+            }
+        }
+    <span class="typ">int</span> ans = INT_MAX;
+    <span class="kw">for</span> (<span class="typ">int</span> u = <span class="num">1</span>; u &lt; n; ++u)
+        <span class="kw">if</span> (dp[full][u] != INT_MAX)
+            ans = std::min(ans, dp[full][u] + dist[u][<span class="num">0</span>]);
+    <span class="kw">return</span> ans;
+}</code></pre>
+</div>
+<div class="code-panel" data-group="tsp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># TSP with Bitmask DP + path reconstruction (Python)</span>
+<span class="kw">def</span> <span class="fn">tsp_bitmask</span>(dist):
+    n = <span class="fn">len</span>(dist)
+    full = (<span class="num">1</span> &lt;&lt; n) - <span class="num">1</span>
+    INF = <span class="fn">float</span>(<span class="str">'inf'</span>)
+    dp = [[INF] * n <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span> &lt;&lt; n)]
+    parent = [[-<span class="num">1</span>] * n <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span> &lt;&lt; n)]
+    dp[<span class="num">1</span>][<span class="num">0</span>] = <span class="num">0</span>
+
+    <span class="kw">for</span> mask <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span> &lt;&lt; n):
+        <span class="kw">for</span> u <span class="kw">in</span> <span class="fn">range</span>(n):
+            <span class="kw">if</span> dp[mask][u] == INF: <span class="kw">continue</span>
+            <span class="kw">if not</span> (mask &amp; (<span class="num">1</span> &lt;&lt; u)): <span class="kw">continue</span>
+            <span class="kw">for</span> v <span class="kw">in</span> <span class="fn">range</span>(n):
+                <span class="kw">if</span> mask &amp; (<span class="num">1</span> &lt;&lt; v): <span class="kw">continue</span>
+                new_mask = mask | (<span class="num">1</span> &lt;&lt; v)
+                new_cost = dp[mask][u] + dist[u][v]
+                <span class="kw">if</span> new_cost &lt; dp[new_mask][v]:
+                    dp[new_mask][v] = new_cost
+                    parent[new_mask][v] = u
+
+    min_cost = INF
+    last_city = -<span class="num">1</span>
+    <span class="kw">for</span> u <span class="kw">in</span> <span class="fn">range</span>(n):
+        total = dp[full][u] + dist[u][<span class="num">0</span>]
+        <span class="kw">if</span> total &lt; min_cost:
+            min_cost = total
+            last_city = u
+    <span class="kw">return</span> min_cost</code></pre>
+</div>
+<div class="code-panel" data-group="tsp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// TSP Bitmask DP (Rust)</span>
+<span class="kw">fn</span> <span class="fn">tsp_bitmask</span>(dist: &amp;[Vec&lt;<span class="typ">i64</span>&gt;]) -&gt; <span class="typ">i64</span> {
+    <span class="kw">let</span> n = dist.len();
+    <span class="kw">let</span> full = (<span class="num">1</span> &lt;&lt; n) - <span class="num">1</span>;
+    <span class="kw">let</span> inf = <span class="typ">i64</span>::MAX / <span class="num">2</span>;
+    <span class="kw">let mut</span> dp = <span class="fn">vec!</span>[<span class="fn">vec!</span>[inf; n]; <span class="num">1</span> &lt;&lt; n];
+    dp[<span class="num">1</span>][<span class="num">0</span>] = <span class="num">0</span>;
+
+    <span class="kw">for</span> mask <span class="kw">in</span> <span class="num">1</span>..(<span class="num">1</span> &lt;&lt; n) {
+        <span class="kw">for</span> u <span class="kw">in</span> <span class="num">0</span>..n {
+            <span class="kw">if</span> dp[mask][u] &gt;= inf { <span class="kw">continue</span>; }
+            <span class="kw">if</span> mask &amp; (<span class="num">1</span> &lt;&lt; u) == <span class="num">0</span> { <span class="kw">continue</span>; }
+            <span class="kw">for</span> v <span class="kw">in</span> <span class="num">0</span>..n {
+                <span class="kw">if</span> mask &amp; (<span class="num">1</span> &lt;&lt; v) != <span class="num">0</span> { <span class="kw">continue</span>; }
+                <span class="kw">let</span> nm = mask | (<span class="num">1</span> &lt;&lt; v);
+                <span class="kw">let</span> cost = dp[mask][u] + dist[u][v];
+                <span class="kw">if</span> cost &lt; dp[nm][v] { dp[nm][v] = cost; }
+            }
+        }
+    }
+    (<span class="num">0</span>..n).map(|u| dp[full][u] + dist[u][<span class="num">0</span>])
+          .min().unwrap_or(inf)
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- LIS -->
+<div id="lis" class="section">
+<h2>Optimal LIS: O(n log n)</h2>
+<p>The classic O(n^2) LIS algorithm checks all previous elements. The optimal approach uses <strong>patience sorting</strong>: maintain an array <code>tails</code> where tails[i] is the smallest tail element of any increasing subsequence of length i+1. Binary search on this sorted array gives O(n log n).</p>
+
+<h3>Why "Patience Sorting"?</h3>
+<p>Named after the card game Patience (Solitaire). Imagine placing cards left to right: each card goes on the leftmost pile whose top card is >= the current card, or starts a new pile. The number of piles equals the LIS length.</p>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>The tails array is always sorted. For each new element, use binary search (lower_bound) to find where it fits. If it extends the longest subsequence (goes past the end), append it. Otherwise, replace the first tail >= it. This keeps tails as small as possible, maximizing future extension potential.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'lis')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'lis')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'lis')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'lis')">Rust</button>
+</div>
+<div class="code-panel active" data-group="lis">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// LIS O(n log n) — patience sorting (Java)</span>
+<span class="kw">static int</span> <span class="fn">lisOptimal</span>(<span class="typ">int</span>[] nums) {
+    <span class="typ">int</span>[] tails = <span class="kw">new int</span>[nums.length];
+    <span class="typ">int</span> size = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="typ">int</span> x : nums) {
+        <span class="typ">int</span> lo = <span class="num">0</span>, hi = size;
+        <span class="kw">while</span> (lo &lt; hi) {
+            <span class="typ">int</span> mid = (lo + hi) / <span class="num">2</span>;
+            <span class="kw">if</span> (tails[mid] &lt; x) lo = mid + <span class="num">1</span>;
+            <span class="kw">else</span> hi = mid;
+        }
+        tails[lo] = x;
+        <span class="kw">if</span> (lo == size) size++;
+    }
+    <span class="kw">return</span> size;
+}
+<span class="cm">// [10,9,2,5,3,7,101,18] -> LIS = 4</span></code></pre>
+</div>
+<div class="code-panel" data-group="lis">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// LIS O(n log n) with lower_bound (C++17)</span>
+<span class="typ">int</span> <span class="fn">lis_nlogn</span>(<span class="kw">const</span> std::vector&lt;<span class="typ">int</span>&gt;&amp; nums) {
+    std::vector&lt;<span class="typ">int</span>&gt; tails;
+    <span class="kw">for</span> (<span class="typ">int</span> x : nums) {
+        <span class="kw">auto</span> it = std::lower_bound(
+            tails.begin(), tails.end(), x);
+        <span class="kw">if</span> (it == tails.end()) tails.push_back(x);
+        <span class="kw">else</span> *it = x;
+    }
+    <span class="kw">return</span> tails.size();
+}</code></pre>
+</div>
+<div class="code-panel" data-group="lis">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># LIS O(n log n) with path reconstruction (Python)</span>
+<span class="kw">def</span> <span class="fn">lis_with_reconstruction</span>(nums):
+    <span class="kw">if not</span> nums: <span class="kw">return</span> []
+    tails, tails_idx = [], []
+    predecessor = [-<span class="num">1</span>] * <span class="fn">len</span>(nums)
+
+    <span class="kw">for</span> i, num <span class="kw">in</span> <span class="fn">enumerate</span>(nums):
+        pos = bisect.bisect_left(tails, num)
+        <span class="kw">if</span> pos == <span class="fn">len</span>(tails):
+            tails.append(num)
+            tails_idx.append(i)
+        <span class="kw">else</span>:
+            tails[pos] = num
+            tails_idx[pos] = i
+        <span class="kw">if</span> pos &gt; <span class="num">0</span>:
+            predecessor[i] = tails_idx[pos - <span class="num">1</span>]
+
+    <span class="cm"># Reconstruct the actual LIS</span>
+    lis = []
+    idx = tails_idx[-<span class="num">1</span>]
+    <span class="kw">while</span> idx != -<span class="num">1</span>:
+        lis.append(nums[idx])
+        idx = predecessor[idx]
+    lis.reverse()
+    <span class="kw">return</span> lis</code></pre>
+</div>
+<div class="code-panel" data-group="lis">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// LIS O(n log n) — patience sorting (Rust)</span>
+<span class="kw">fn</span> <span class="fn">lis_optimal</span>(nums: &amp;[<span class="typ">i32</span>]) -&gt; <span class="typ">usize</span> {
+    <span class="kw">let mut</span> tails: Vec&lt;<span class="typ">i32</span>&gt; = Vec::new();
+    <span class="kw">for</span> &amp;num <span class="kw">in</span> nums {
+        <span class="kw">let</span> pos = tails.partition_point(|&amp;x| x &lt; num);
+        <span class="kw">if</span> pos == tails.len() {
+            tails.push(num);
+        } <span class="kw">else</span> {
+            tails[pos] = num;
+        }
+    }
+    tails.len()
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Matrix Chain Multiplication -->
+<div id="mcm" class="section">
+<h2>Matrix Chain Multiplication</h2>
+<p>Given matrices A1 (p0 x p1), A2 (p1 x p2), ..., An (p(n-1) x pn), find the parenthesization that minimizes total scalar multiplications. This is an <strong>interval DP</strong> problem.</p>
+
+<div class="math">dp[i][j] = min cost to multiply matrices i through j<br>
+dp[i][j] = min over k in [i, j-1] of: dp[i][k] + dp[k+1][j] + p[i-1] * p[k] * p[j]</div>
+
+<div class="diagram">
+<pre>
+Example: dims = [10, 30, 5, 60]  (3 matrices)
+  A1: 10x30,  A2: 30x5,  A3: 5x60
+
+Option 1: (A1*A2)*A3 = 10*30*5 + 10*5*60 = 1500 + 3000 = 4500
+Option 2: A1*(A2*A3) = 30*5*60 + 10*30*60 = 9000 + 18000 = 27000
+
+DP Table:         j=1    j=2    j=3
+           i=1  [  0    1500   4500 ]
+           i=2  [  -      0    9000 ]
+           i=3  [  -      -       0 ]
+
+Optimal: 4500 with parenthesization (A1 x A2) x A3
+</pre>
+<p class="diagram-caption">The order of multiplication matters enormously: 4500 vs 27000 scalar multiplications.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'mcm')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'mcm')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'mcm')">Rust</button>
+</div>
+<div class="code-panel active" data-group="mcm">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Matrix Chain Multiplication (C++17)</span>
+<span class="typ">long long</span> <span class="fn">matrix_chain_mult</span>(<span class="kw">const</span> std::vector&lt;<span class="typ">int</span>&gt;&amp; p) {
+    <span class="typ">int</span> n = p.size() - <span class="num">1</span>;
+    <span class="kw">if</span> (n &lt;= <span class="num">1</span>) <span class="kw">return</span> <span class="num">0</span>;
+    std::vector dp(n, std::vector&lt;<span class="typ">long long</span>&gt;(n, <span class="num">0</span>));
+
+    <span class="kw">for</span> (<span class="typ">int</span> l = <span class="num">2</span>; l &lt;= n; ++l)         <span class="cm">// chain length</span>
+        <span class="kw">for</span> (<span class="typ">int</span> i = <span class="num">0</span>; i &lt;= n - l; ++i) {
+            <span class="typ">int</span> j = i + l - <span class="num">1</span>;
+            dp[i][j] = LLONG_MAX;
+            <span class="kw">for</span> (<span class="typ">int</span> k = i; k &lt; j; ++k) {
+                <span class="typ">long long</span> cost = dp[i][k] + dp[k+<span class="num">1</span>][j]
+                    + (<span class="typ">long long</span>)p[i] * p[k+<span class="num">1</span>] * p[j+<span class="num">1</span>];
+                dp[i][j] = std::min(dp[i][j], cost);
+            }
+        }
+    <span class="kw">return</span> dp[<span class="num">0</span>][n - <span class="num">1</span>];
+}
+<span class="cm">// dims=[10,30,5,60] -> 4500</span>
+<span class="cm">// dims=[40,20,30,10,30] -> 26000</span></code></pre>
+</div>
+<div class="code-panel" data-group="mcm">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Matrix Chain with optimal parenthesization (Python)</span>
+<span class="kw">def</span> <span class="fn">matrix_chain_multiplication</span>(dims):
+    n = <span class="fn">len</span>(dims) - <span class="num">1</span>
+    <span class="kw">if</span> n &lt;= <span class="num">0</span>: <span class="kw">return</span> <span class="num">0</span>, <span class="str">""</span>
+    dp = [[<span class="num">0</span>] * (n + <span class="num">1</span>) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n + <span class="num">1</span>)]
+    split = [[<span class="num">0</span>] * (n + <span class="num">1</span>) <span class="kw">for</span> _ <span class="kw">in</span> <span class="fn">range</span>(n + <span class="num">1</span>)]
+
+    <span class="kw">for</span> length <span class="kw">in</span> <span class="fn">range</span>(<span class="num">2</span>, n + <span class="num">1</span>):
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="fn">range</span>(<span class="num">1</span>, n - length + <span class="num">2</span>):
+            j = i + length - <span class="num">1</span>
+            dp[i][j] = <span class="fn">float</span>(<span class="str">'inf'</span>)
+            <span class="kw">for</span> k <span class="kw">in</span> <span class="fn">range</span>(i, j):
+                cost = (dp[i][k] + dp[k+<span class="num">1</span>][j]
+                      + dims[i-<span class="num">1</span>] * dims[k] * dims[j])
+                <span class="kw">if</span> cost &lt; dp[i][j]:
+                    dp[i][j] = cost
+                    split[i][j] = k
+
+    <span class="kw">def</span> <span class="fn">build_parens</span>(i, j):
+        <span class="kw">if</span> i == j: <span class="kw">return</span> <span class="str">f"A{i}"</span>
+        k = split[i][j]
+        <span class="kw">return</span> <span class="str">f"({build_parens(i,k)} x {build_parens(k+1,j)})"</span>
+
+    <span class="kw">return</span> dp[<span class="num">1</span>][n], build_parens(<span class="num">1</span>, n)
+<span class="cm"># dims=[30,35,15,5,10,20,25] -> 15125</span></code></pre>
+</div>
+<div class="code-panel" data-group="mcm">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Matrix Chain Multiplication (Rust)</span>
+<span class="kw">fn</span> <span class="fn">matrix_chain_multiplication</span>(dims: &amp;[<span class="typ">i64</span>]) -&gt; <span class="typ">i64</span> {
+    <span class="kw">let</span> n = dims.len() - <span class="num">1</span>;
+    <span class="kw">if</span> n &lt;= <span class="num">1</span> { <span class="kw">return</span> <span class="num">0</span>; }
+    <span class="kw">let mut</span> dp = <span class="fn">vec!</span>[<span class="fn">vec!</span>[<span class="num">0i64</span>; n + <span class="num">1</span>]; n + <span class="num">1</span>];
+
+    <span class="kw">for</span> l <span class="kw">in</span> <span class="num">2</span>..=n {
+        <span class="kw">for</span> i <span class="kw">in</span> <span class="num">1</span>..=n - l + <span class="num">1</span> {
+            <span class="kw">let</span> j = i + l - <span class="num">1</span>;
+            dp[i][j] = <span class="typ">i64</span>::MAX;
+            <span class="kw">for</span> k <span class="kw">in</span> i..j {
+                <span class="kw">let</span> cost = dp[i][k] + dp[k+<span class="num">1</span>][j]
+                    + dims[i-<span class="num">1</span>] * dims[k] * dims[j];
+                <span class="kw">if</span> cost &lt; dp[i][j] { dp[i][j] = cost; }
+            }
+        }
+    }
+    dp[<span class="num">1</span>][n]
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Digit DP -->
+<div id="digit-dp" class="section">
+<h2>Digit DP</h2>
+<p>Digit DP counts numbers in a range [1, N] that satisfy some digit-level constraint. It processes digits from most significant to least, maintaining a <code>tight</code> flag that indicates whether we're still bounded by N's prefix.</p>
+
+<h3>The "Tight" Constraint</h3>
+<p>When building a number digit by digit: if all digits so far exactly match N's prefix, the next digit is bounded by N's next digit (tight=true). Otherwise, any digit 0-9 is allowed (tight=false). Once tight becomes false, it stays false.</p>
+
+<div class="diagram">
+<pre>
+Digit DP State Transitions for N=352, counting numbers without digit 4:
+
+Position 0 (hundreds):
+  tight=true:  d can be 0..3
+    d=0: tight=false (leading zero)
+    d=1: tight=false, started
+    d=2: tight=false, started
+    d=3: tight=true, started   (matches N's digit)
+
+Position 1 (tens), after d=3 (tight=true):
+  d can be 0..5  (bounded by N[1]=5)
+    d=4: SKIP (contains digit 4)
+    d=0,1,2,3,5: valid
+
+Position 1, after d=1 (tight=false):
+  d can be 0..9  (any digit)
+    d=4: SKIP
+    d=0..3,5..9: valid
+
+Memoize on: (position, tight)
+Total states: D * 2 where D = number of digits
+</pre>
+<p class="diagram-caption">Digit DP processes each digit position with a tight constraint, branching into all valid choices.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'ddp')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'ddp')">Python</button>
+<button class="code-tab" onclick="switchTab(this,'ddp')">Rust</button>
+</div>
+<div class="code-panel active" data-group="ddp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Digit DP: Count numbers in [1..N] without digit 4 (Java)</span>
+<span class="kw">static int</span> <span class="fn">digitDP</span>(String num, <span class="typ">int</span> pos,
+                    <span class="typ">boolean</span> tight, <span class="typ">boolean</span> started) {
+    <span class="kw">if</span> (pos == num.length())
+        <span class="kw">return</span> started ? <span class="num">1</span> : <span class="num">0</span>;
+
+    <span class="typ">int</span> limit = tight ? (num.charAt(pos) - <span class="str">'0'</span>) : <span class="num">9</span>;
+    <span class="typ">int</span> count = <span class="num">0</span>;
+    <span class="kw">for</span> (<span class="typ">int</span> d = <span class="num">0</span>; d &lt;= limit; d++) {
+        <span class="kw">if</span> (d == <span class="num">4</span>) <span class="kw">continue</span>; <span class="cm">// skip digit 4</span>
+        count += digitDP(num, pos + <span class="num">1</span>,
+            tight &amp;&amp; (d == limit),
+            started || (d != <span class="num">0</span>));
+    }
+    <span class="kw">return</span> count;
+}
+<span class="cm">// countNoFour(10) = 9, countNoFour(100) = 81</span></code></pre>
+</div>
+<div class="code-panel" data-group="ddp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Digit DP: count without digit 4 (Python)</span>
+<span class="kw">def</span> <span class="fn">count_without_digit_4</span>(n):
+    <span class="kw">if</span> n &lt;= <span class="num">0</span>: <span class="kw">return</span> <span class="num">0</span>
+    digits = [<span class="fn">int</span>(c) <span class="kw">for</span> c <span class="kw">in</span> <span class="fn">str</span>(n)]
+
+    @lru_cache(maxsize=<span class="kw">None</span>)
+    <span class="kw">def</span> <span class="fn">dp</span>(pos, tight, started):
+        <span class="kw">if</span> pos == <span class="fn">len</span>(digits):
+            <span class="kw">return</span> <span class="num">1</span> <span class="kw">if</span> started <span class="kw">else</span> <span class="num">0</span>
+        upper = digits[pos] <span class="kw">if</span> tight <span class="kw">else</span> <span class="num">9</span>
+        count = <span class="num">0</span>
+        <span class="kw">for</span> d <span class="kw">in</span> <span class="fn">range</span>(<span class="num">0</span>, upper + <span class="num">1</span>):
+            <span class="kw">if</span> d == <span class="num">4</span>: <span class="kw">continue</span>
+            count += dp(pos + <span class="num">1</span>,
+                       tight <span class="kw">and</span> (d == upper),
+                       started <span class="kw">or</span> (d != <span class="num">0</span>))
+        <span class="kw">return</span> count
+
+    <span class="kw">return</span> dp(<span class="num">0</span>, <span class="kw">True</span>, <span class="kw">False</span>)</code></pre>
+</div>
+<div class="code-panel" data-group="ddp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Digit DP: no digit 4 in [1, N] (Rust)</span>
+<span class="kw">fn</span> <span class="fn">digit_dp_no_four</span>(n: <span class="typ">u64</span>) -&gt; <span class="typ">u64</span> {
+    <span class="kw">if</span> n == <span class="num">0</span> { <span class="kw">return</span> <span class="num">0</span>; }
+    <span class="kw">let</span> digits: Vec&lt;<span class="typ">u32</span>&gt; = n.to_string()
+        .chars().map(|c| c.to_digit(<span class="num">10</span>).unwrap())
+        .collect();
+    <span class="kw">let</span> len = digits.len();
+    <span class="kw">let mut</span> memo = <span class="fn">vec!</span>[<span class="fn">vec!</span>[-<span class="num">1i64</span>; <span class="num">2</span>]; len];
+
+    <span class="kw">fn</span> <span class="fn">solve</span>(pos: <span class="typ">usize</span>, tight: <span class="typ">bool</span>,
+             digits: &amp;[<span class="typ">u32</span>],
+             memo: &amp;<span class="kw">mut</span> Vec&lt;Vec&lt;<span class="typ">i64</span>&gt;&gt;) -&gt; <span class="typ">i64</span> {
+        <span class="kw">if</span> pos == digits.len() { <span class="kw">return</span> <span class="num">1</span>; }
+        <span class="kw">let</span> ti = <span class="kw">if</span> tight { <span class="num">1</span> } <span class="kw">else</span> { <span class="num">0</span> };
+        <span class="kw">if</span> memo[pos][ti] != -<span class="num">1</span> { <span class="kw">return</span> memo[pos][ti]; }
+        <span class="kw">let</span> upper = <span class="kw">if</span> tight { digits[pos] } <span class="kw">else</span> { <span class="num">9</span> };
+        <span class="kw">let mut</span> count = <span class="num">0i64</span>;
+        <span class="kw">for</span> d <span class="kw">in</span> <span class="num">0</span>..=upper {
+            <span class="kw">if</span> d == <span class="num">4</span> { <span class="kw">continue</span>; }
+            count += solve(pos+<span class="num">1</span>, tight &amp;&amp; d==upper,
+                          digits, memo);
+        }
+        memo[pos][ti] = count;
+        count
+    }
+    (solve(<span class="num">0</span>, <span class="kw">true</span>, &amp;digits, &amp;<span class="kw">mut</span> memo) - <span class="num">1</span>) <span class="kw">as</span> <span class="typ">u64</span>
+}</code></pre>
+</div>
+</div>
+</div>
+
+<!-- Tree DP -->
+<div id="tree-dp" class="section">
+<h2>DP on Trees: Maximum Independent Set</h2>
+<p>A Maximum Independent Set on a tree selects vertices with maximum total weight such that no two selected vertices are adjacent. This uses <strong>post-order DFS</strong> to compute DP values bottom-up.</p>
+
+<div class="math">dp[v][0] = max weight if v is NOT selected = sum(max(dp[child][0], dp[child][1]))<br>
+dp[v][1] = max weight if v IS selected = weight[v] + sum(dp[child][0])</div>
+
+<div class="key-insight">
+<div class="key-insight-title">Key Insight</div>
+<p>Tree DP always follows the same pattern: process children first (post-order), then combine results at the parent. The tree structure guarantees no cycles, so each node's state depends only on its subtree. This makes tree DP O(n) -- each edge is traversed once.</p>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" onclick="switchTab(this,'tdp')">Java</button>
+<button class="code-tab" onclick="switchTab(this,'tdp')">C++</button>
+<button class="code-tab" onclick="switchTab(this,'tdp')">Python</button>
+</div>
+<div class="code-panel active" data-group="tdp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Max Independent Set on Tree (Java)</span>
+<span class="kw">static void</span> <span class="fn">dfsTree</span>(<span class="typ">int</span> node, <span class="typ">int</span>[] weight,
+    <span class="typ">int</span>[][] children, <span class="typ">int</span>[][] dp, <span class="typ">boolean</span>[] visited) {
+    visited[node] = <span class="kw">true</span>;
+    dp[node][<span class="num">1</span>] = weight[node]; <span class="cm">// take this node</span>
+    dp[node][<span class="num">0</span>] = <span class="num">0</span>;             <span class="cm">// don't take</span>
+    <span class="kw">for</span> (<span class="typ">int</span> child : children[node]) {
+        <span class="kw">if</span> (!visited[child]) {
+            dfsTree(child, weight, children, dp, visited);
+            <span class="cm">// if we take node, children can't be taken</span>
+            dp[node][<span class="num">1</span>] += dp[child][<span class="num">0</span>];
+            <span class="cm">// if we don't take, children go either way</span>
+            dp[node][<span class="num">0</span>] += Math.max(
+                dp[child][<span class="num">0</span>], dp[child][<span class="num">1</span>]);
+        }
+    }
+}
+<span class="cm">// Answer: max(dp[root][0], dp[root][1])</span></code></pre>
+</div>
+<div class="code-panel" data-group="tdp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm">// Max Independent Set on Tree (C++17)</span>
+<span class="typ">int</span> <span class="fn">max_independent_set</span>(
+    <span class="kw">const</span> std::vector&lt;std::vector&lt;<span class="typ">int</span>&gt;&gt;&amp; adj,
+    <span class="kw">const</span> std::vector&lt;<span class="typ">int</span>&gt;&amp; weights) {
+    <span class="typ">int</span> n = adj.size();
+    std::vector&lt;std::array&lt;<span class="typ">int</span>, <span class="num">2</span>&gt;&gt; dp(n, {<span class="num">0</span>, <span class="num">0</span>});
+    std::vector&lt;<span class="typ">bool</span>&gt; visited(n, <span class="kw">false</span>);
+
+    std::function&lt;<span class="kw">void</span>(<span class="typ">int</span>)&gt; dfs = [&amp;](<span class="typ">int</span> u) {
+        visited[u] = <span class="kw">true</span>;
+        dp[u][<span class="num">1</span>] = weights[u];
+        <span class="kw">for</span> (<span class="typ">int</span> v : adj[u]) {
+            <span class="kw">if</span> (visited[v]) <span class="kw">continue</span>;
+            dfs(v);
+            dp[u][<span class="num">0</span>] += std::max(dp[v][<span class="num">0</span>], dp[v][<span class="num">1</span>]);
+            dp[u][<span class="num">1</span>] += dp[v][<span class="num">0</span>];
+        }
+    };
+    dfs(<span class="num">0</span>);
+    <span class="kw">return</span> std::max(dp[<span class="num">0</span>][<span class="num">0</span>], dp[<span class="num">0</span>][<span class="num">1</span>]);
+}</code></pre>
+</div>
+<div class="code-panel" data-group="tdp">
+<button class="copy-btn" onclick="copyCode(this)">Copy</button>
+<pre><code><span class="cm"># Max Independent Set — iterative post-order (Python)</span>
+<span class="kw">def</span> <span class="fn">max_independent_set_tree</span>(n, edges, weights):
+    adj = defaultdict(<span class="fn">list</span>)
+    <span class="kw">for</span> u, v <span class="kw">in</span> edges:
+        adj[u].append(v)
+        adj[v].append(u)
+
+    visited = [<span class="kw">False</span>] * n
+    parent_map = [-<span class="num">1</span>] * n
+    order = []
+    stack = [<span class="num">0</span>]
+    visited[<span class="num">0</span>] = <span class="kw">True</span>
+    <span class="kw">while</span> stack:
+        node = stack.pop()
+        order.append(node)
+        <span class="kw">for</span> nb <span class="kw">in</span> adj[node]:
+            <span class="kw">if not</span> visited[nb]:
+                visited[nb] = <span class="kw">True</span>
+                parent_map[nb] = node
+                stack.append(nb)
+
+    dp_not = [<span class="num">0</span>] * n
+    dp_sel = [<span class="num">0</span>] * n
+    <span class="kw">for</span> v <span class="kw">in</span> <span class="fn">reversed</span>(order):
+        dp_sel[v] = weights[v]
+        <span class="kw">for</span> child <span class="kw">in</span> adj[v]:
+            <span class="kw">if</span> child == parent_map[v]: <span class="kw">continue</span>
+            dp_sel[v] += dp_not[child]
+            dp_not[v] += <span class="fn">max</span>(dp_not[child], dp_sel[child])
+    <span class="kw">return</span> <span class="fn">max</span>(dp_not[<span class="num">0</span>], dp_sel[<span class="num">0</span>])</code></pre>
+</div>
+</div>
+</div>
+
+<div id="practice" class="section">
+<h2>Practice Problems</h2>
+<div class="practice-list">
+<div class="practice-item"><span>Shortest Superstring (LeetCode 943) - Bitmask DP</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Longest Increasing Subsequence (LeetCode 300)</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Russian Doll Envelopes (LeetCode 354) - LIS variant</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Burst Balloons (LeetCode 312) - Interval DP</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Numbers At Most N Given Digit Set (LeetCode 902) - Digit DP</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>House Robber III (LeetCode 337) - Tree DP</span><span class="diff diff-medium">Medium</span></div>
+<div class="practice-item"><span>Minimum Cost to Merge Stones (LeetCode 1000) - Interval DP</span><span class="diff diff-hard">Hard</span></div>
+<div class="practice-item"><span>Partition to K Equal Sum Subsets (LeetCode 698) - Bitmask</span><span class="diff diff-medium">Medium</span></div>
+</div>
+</div>
+
+<div id="summary" class="section summary-card">
+<h2>Summary &amp; Cheat Sheet</h2>
+<div class="summary-grid">
+<div class="summary-item"><h4>Bitmask DP (TSP)</h4><p>O(n^2 * 2^n). Represent subsets as integers. Feasible for n &lt;= 20. Used for Hamiltonian paths, assignment, scheduling.</p></div>
+<div class="summary-item"><h4>LIS O(n log n)</h4><p>Patience sorting with binary search. tails array stays sorted. lower_bound determines position.</p></div>
+<div class="summary-item"><h4>Matrix Chain Mult</h4><p>O(n^3) interval DP. dp[i][j] = min cost for matrices i..j. Try all split points k.</p></div>
+<div class="summary-item"><h4>Digit DP</h4><p>Count numbers by constraints. State: (position, tight, ...custom). Process digits left to right.</p></div>
+<div class="summary-item"><h4>Tree DP</h4><p>Post-order DFS. dp[node][taken/not] pattern. O(n). Used for independent set, coloring, matching.</p></div>
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 22/index.html" class="nav-btn"><span class="label">Previous</span><span class="title">Week 22: Advanced Graphs</span></a>
+<a href="../Week 24/index.html" class="nav-btn next"><span class="label">Next</span><span class="title">Week 24: Research Level Topics</span></a>
+</div>
+
+</main>
+</div>
+</div>
+
+<script>
+function switchTab(btn,group){const v=btn.closest('.code-viewer');v.querySelectorAll('.code-tab').forEach(t=>t.classList.remove('active'));btn.classList.add('active');const p=v.querySelectorAll('.code-panel');p.forEach(x=>x.classList.remove('active'));p[Array.from(btn.parentElement.children).indexOf(btn)].classList.add('active')}
+function copyCode(btn){const c=btn.nextElementSibling.textContent;navigator.clipboard.writeText(c).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})}
+const observer=new IntersectionObserver(e=>{e.forEach(x=>{if(x.isIntersecting)x.target.classList.add('visible')})},{threshold:.1});
+document.querySelectorAll('.section').forEach(s=>observer.observe(s));
+const sections=document.querySelectorAll('.section[id]');const navLinks=document.querySelectorAll('.sidebar-nav a');
+window.addEventListener('scroll',()=>{let c='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)c=s.id});navLinks.forEach(l=>{l.classList.remove('active');if(l.getAttribute('href')==='#'+c)l.classList.add('active')})});
+</script>
+</body>
+</html>
