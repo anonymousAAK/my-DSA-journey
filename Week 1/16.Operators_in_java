@@ -1,3 +1,25 @@
+/*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: Operators in Java
+ * File: 16.Operators_in_java
+ *
+ * CONCEPT:
+ * Comprehensive reference for the three main categories of operators in
+ * Java: Arithmetic, Relational, and Logical. Operators are symbols that
+ * perform operations on variables and values.
+ *
+ * KEY POINTS:
+ * - Arithmetic operators (+, -, *, /, %) work on numeric types
+ * - Relational operators (==, !=, >, <, >=, <=) return boolean results
+ * - Logical operators (&&, ||, !) combine or negate boolean expressions
+ * - && (AND) is true only when BOTH operands are true
+ * - || (OR) is true when at LEAST ONE operand is true
+ * - ! (NOT) inverts the boolean value
+ * - Java also supports assignment (=, +=, -=), bitwise (&, |, ^, ~),
+ *   and ternary (? :) operators (covered later)
+ * - Short-circuit evaluation: && and || stop evaluating if result is determined
+ */
+
 Operators
 
 
