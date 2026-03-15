@@ -60,7 +60,7 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 <div class="meta">
 <span><span class="dot medium"></span> Intermediate</span>
 <span>~8 hours estimated</span>
-<span>6 classic problems</span>
+<span>10 classic problems</span>
 </div>
 </section>
 
@@ -606,6 +606,730 @@ std::pair&lt;int, std::string&gt; job_sequencing(std::vector&lt;Job&gt; jobs) {
 </div>
 </div>
 
+<div class="card" id="greedy-vs-dp">
+<h2><span class="icon">&#9878;</span> Greedy vs Dynamic Programming</h2>
+<p>One of the most important skills in algorithm design is recognizing whether a problem needs <strong>greedy</strong> or <strong>dynamic programming</strong>. Both exploit optimal substructure, but differ fundamentally in how they make choices.</p>
+<h3>Decision Framework</h3>
+<table>
+<thead><tr><th>Criterion</th><th>Use Greedy</th><th>Use DP</th></tr></thead>
+<tbody>
+<tr><td>Greedy Choice Property</td><td><span class="badge badge-green">Yes &mdash; locally optimal leads to global optimum</span></td><td><span class="badge badge-red">No &mdash; must consider all subproblems</span></td></tr>
+<tr><td>Overlapping Subproblems</td><td>Not relevant (no backtracking)</td><td>Yes &mdash; memoization/tabulation helps</td></tr>
+<tr><td>Decision Revisiting</td><td>Never revisit a decision</td><td>Considers all options, picks the best</td></tr>
+<tr><td>Typical Complexity</td><td>O(n log n) &mdash; often dominated by sorting</td><td>O(n*W), O(n^2), O(n*m) &mdash; depends on state space</td></tr>
+<tr><td>Proof of Correctness</td><td>Exchange argument / greedy stays ahead</td><td>Induction on recurrence relation</td></tr>
+<tr><td>Implementation</td><td>Sort + single pass</td><td>Table filling or recursion + memo</td></tr>
+</tbody>
+</table>
+<h3>Side-by-Side Examples</h3>
+<h4>Knapsack: Fractional vs 0/1</h4>
+<div class="diagram">
+Items: (weight=10, value=60), (weight=20, value=100), (weight=30, value=120)
+Capacity: 50
+
+<span class="highlight">Fractional (Greedy)</span>: Sort by value/weight: 6.0, 5.0, 4.0
+  Take item1 fully (10kg, $60), item2 fully (20kg, $100)
+  Take 2/3 of item3 (20kg, $80)
+  Total = $240  &larr; Optimal via greedy
+
+<span class="swap">0/1 Knapsack (DP)</span>: Can't split items
+  Greedy would take item1+item2 (30kg, $160) then item3 doesn't fit &rarr; $160
+  DP finds item2+item3 (50kg, $220) &rarr; $220  &larr; Greedy fails!
+</div>
+<h4>Coin Change: Canonical vs Non-Canonical</h4>
+<div class="diagram">
+<span class="highlight">Canonical coins {1, 5, 10, 25}</span>, target = 30:
+  Greedy: 25 + 5 = 2 coins &larr; Optimal!
+
+<span class="swap">Non-canonical coins {1, 3, 4}</span>, target = 6:
+  Greedy: 4 + 1 + 1 = 3 coins
+  DP:     3 + 3     = 2 coins &larr; Greedy fails!
+</div>
+<div class="insight">
+<div class="label">Quick Test</div>
+If you suspect greedy works, try to find a <strong>counterexample</strong> with small input. If you can't, attempt to prove correctness via the exchange argument. If the proof breaks down, switch to DP.
+</div>
+<div class="warning-box">
+<div class="label">Common Traps</div>
+These problems <em>look</em> greedy but actually require DP: 0/1 Knapsack, Longest Increasing Subsequence, Edit Distance, Matrix Chain Multiplication, non-canonical Coin Change. The key giveaway: the optimal choice at one step depends on future decisions.
+</div>
+</div>
+
+<div class="card" id="huffman">
+<h2><span class="icon">&#127795;</span> Huffman Coding</h2>
+<p>Huffman coding is a <strong>greedy algorithm for lossless data compression</strong>. It assigns variable-length binary codes to characters based on their frequency &mdash; frequent characters get shorter codes.</p>
+<h3>Algorithm</h3>
+<ul class="objectives">
+<li>Create a leaf node for each character with its frequency</li>
+<li>Insert all nodes into a min-heap (priority queue by frequency)</li>
+<li>While the heap has more than one node: extract the two lowest-frequency nodes, create a new internal node with these as children and frequency = sum of both, insert the new node back into the heap</li>
+<li>The remaining node is the root of the Huffman tree. Traverse left = '0', right = '1' to get codes</li>
+</ul>
+<h3>Tree Construction Walk-Through</h3>
+<div class="diagram">
+Characters: a:5  b:9  c:12  d:13  e:16  f:45
+
+Step 1: Extract a(5) + b(9) = <span class="highlight">ab(14)</span>
+Step 2: Extract c(12) + d(13) = <span class="highlight">cd(25)</span>
+Step 3: Extract ab(14) + e(16) = <span class="highlight">abe(30)</span>
+Step 4: Extract cd(25) + abe(30) = <span class="highlight">cdabe(55)</span>
+Step 5: Extract f(45) + cdabe(55) = <span class="highlight">root(100)</span>
+
+Final Huffman Tree:
+           (100)
+          /     \
+       f:45    (55)
+              /    \
+           (25)    (30)
+           / \     /  \
+        c:12 d:13 (14) e:16
+                  / \
+               a:5  b:9
+
+Codes: f=0  c=100  d=101  a=1100  b=1101  e=111
+</div>
+<div class="insight">
+<div class="label">Why Greedy Works</div>
+The two least-frequent characters should be deepest in the tree (longest codes). By merging them first, we ensure they are siblings at the deepest level, which minimizes the total weighted path length (bits used).
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HuffmanCoding.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class HuffmanNode implements Comparable&lt;HuffmanNode&gt; {
+    char ch;
+    int freq;
+    HuffmanNode left, right;
+
+    HuffmanNode(char ch, int freq) {
+        this.ch = ch;
+        this.freq = freq;
+    }
+
+    public int compareTo(HuffmanNode other) {
+        return this.freq - other.freq;
+    }
+}
+
+static Map&lt;Character, String&gt; huffmanCoding(char[] chars, int[] freqs) {
+    PriorityQueue&lt;HuffmanNode&gt; pq = new PriorityQueue&lt;&gt;();
+    for (int i = 0; i &lt; chars.length; i++)
+        pq.offer(new HuffmanNode(chars[i], freqs[i]));
+
+    while (pq.size() &gt; 1) {
+        HuffmanNode left = pq.poll();
+        HuffmanNode right = pq.poll();
+        HuffmanNode parent = new HuffmanNode('\0', left.freq + right.freq);
+        parent.left = left;
+        parent.right = right;
+        pq.offer(parent);
+    }
+
+    Map&lt;Character, String&gt; codes = new HashMap&lt;&gt;();
+    buildCodes(pq.poll(), "", codes);
+    return codes;
+}
+
+static void buildCodes(HuffmanNode node, String prefix,
+                       Map&lt;Character, String&gt; codes) {
+    if (node == null) return;
+    if (node.left == null &amp;&amp; node.right == null) {
+        codes.put(node.ch, prefix.isEmpty() ? "0" : prefix);
+        return;
+    }
+    buildCodes(node.left, prefix + "0", codes);
+    buildCodes(node.right, prefix + "1", codes);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>huffman.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">struct HuffmanNode {
+    char ch;
+    int freq;
+    HuffmanNode *left, *right;
+    HuffmanNode(char c, int f) : ch(c), freq(f), left(nullptr), right(nullptr) {}
+};
+
+struct Compare {
+    bool operator()(HuffmanNode* a, HuffmanNode* b) {
+        return a-&gt;freq &gt; b-&gt;freq; // min-heap
+    }
+};
+
+std::unordered_map&lt;char, std::string&gt; huffman_coding(
+        const std::vector&lt;std::pair&lt;char, int&gt;&gt;&amp; char_freqs) {
+    std::priority_queue&lt;HuffmanNode*, std::vector&lt;HuffmanNode*&gt;, Compare&gt; pq;
+    for (auto [ch, freq] : char_freqs)
+        pq.push(new HuffmanNode(ch, freq));
+
+    while (pq.size() &gt; 1) {
+        auto* left = pq.top(); pq.pop();
+        auto* right = pq.top(); pq.pop();
+        auto* parent = new HuffmanNode('\0', left-&gt;freq + right-&gt;freq);
+        parent-&gt;left = left;
+        parent-&gt;right = right;
+        pq.push(parent);
+    }
+
+    std::unordered_map&lt;char, std::string&gt; codes;
+    std::function&lt;void(HuffmanNode*, std::string)&gt; build =
+        [&amp;](HuffmanNode* node, std::string prefix) {
+            if (!node) return;
+            if (!node-&gt;left &amp;&amp; !node-&gt;right) {
+                codes[node-&gt;ch] = prefix.empty() ? "0" : prefix;
+                return;
+            }
+            build(node-&gt;left, prefix + "0");
+            build(node-&gt;right, prefix + "1");
+        };
+    build(pq.top(), "");
+    return codes;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>huffman.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">import heapq
+from collections import defaultdict
+
+class HuffmanNode:
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+
+    def __lt__(self, other):
+        return self.freq &lt; other.freq
+
+def huffman_coding(char_freqs: dict) -&gt; dict:
+    """Build Huffman tree and return character -&gt; binary code mapping."""
+    heap = [HuffmanNode(ch, freq) for ch, freq in char_freqs.items()]
+    heapq.heapify(heap)
+
+    while len(heap) &gt; 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+        merged = HuffmanNode(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        heapq.heappush(heap, merged)
+
+    codes = {}
+    def build_codes(node, prefix=""):
+        if node is None:
+            return
+        if node.left is None and node.right is None:
+            codes[node.char] = prefix if prefix else "0"
+            return
+        build_codes(node.left, prefix + "0")
+        build_codes(node.right, prefix + "1")
+
+    build_codes(heap[0])
+    return codes</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>huffman.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::{BinaryHeap, HashMap};
+use std::cmp::Reverse;
+
+#[derive(Eq, PartialEq)]
+struct HuffmanNode {
+    freq: u32,
+    ch: Option&lt;char&gt;,
+    left: Option&lt;Box&lt;HuffmanNode&gt;&gt;,
+    right: Option&lt;Box&lt;HuffmanNode&gt;&gt;,
+}
+
+impl Ord for HuffmanNode {
+    fn cmp(&amp;self, other: &amp;Self) -&gt; std::cmp::Ordering {
+        other.freq.cmp(&amp;self.freq) // min-heap behavior
+    }
+}
+impl PartialOrd for HuffmanNode {
+    fn partial_cmp(&amp;self, other: &amp;Self) -&gt; Option&lt;std::cmp::Ordering&gt; {
+        Some(self.cmp(other))
+    }
+}
+
+fn huffman_coding(char_freqs: &amp;[(char, u32)]) -&gt; HashMap&lt;char, String&gt; {
+    let mut heap = BinaryHeap::new();
+    for &amp;(ch, freq) in char_freqs {
+        heap.push(HuffmanNode {
+            freq, ch: Some(ch), left: None, right: None,
+        });
+    }
+
+    while heap.len() &gt; 1 {
+        let left = heap.pop().unwrap();
+        let right = heap.pop().unwrap();
+        heap.push(HuffmanNode {
+            freq: left.freq + right.freq,
+            ch: None,
+            left: Some(Box::new(left)),
+            right: Some(Box::new(right)),
+        });
+    }
+
+    let mut codes = HashMap::new();
+    fn build(node: &amp;HuffmanNode, prefix: String, codes: &amp;mut HashMap&lt;char, String&gt;) {
+        if let Some(ch) = node.ch {
+            codes.insert(ch, if prefix.is_empty() { "0".into() } else { prefix });
+            return;
+        }
+        if let Some(ref left) = node.left {
+            build(left, format!("{}0", prefix), codes);
+        }
+        if let Some(ref right) = node.right {
+            build(right, format!("{}1", prefix), codes);
+        }
+    }
+    if let Some(root) = heap.pop() {
+        build(&amp;root, String::new(), &amp;mut codes);
+    }
+    codes
+}</div></div>
+</div>
+</div>
+<div class="warning-box">
+<div class="label">Complexity</div>
+Building the Huffman tree takes <strong>O(n log n)</strong> where n is the number of distinct characters. Each heap operation is O(log n) and we do 2n-1 operations. The resulting encoding is a <strong>prefix-free code</strong> &mdash; no code is a prefix of another, enabling unambiguous decoding.
+</div>
+</div>
+
+<div class="card" id="jump-game">
+<h2><span class="icon">&#128694;</span> Jump Game</h2>
+<p>Given an array where each element represents the maximum jump length from that position, determine if you can reach the last index. <strong>LeetCode 55.</strong></p>
+<h3>Greedy Insight</h3>
+<p>Track the <strong>farthest reachable index</strong> as you scan left to right. If you ever land on an index beyond the current farthest reach, you're stuck. If the farthest reach extends to or past the last index, you can make it.</p>
+<div class="diagram">
+nums = [2, 3, 1, 1, 4]
+
+i=0: reach = max(0, 0+2) = <span class="highlight">2</span>
+i=1: reach = max(2, 1+3) = <span class="highlight">4</span>  &ge; last index (4) &rarr; return true!
+
+nums = [3, 2, 1, 0, 4]
+
+i=0: reach = max(0, 0+3) = <span class="highlight">3</span>
+i=1: reach = max(3, 1+2) = <span class="highlight">3</span>
+i=2: reach = max(3, 2+1) = <span class="highlight">3</span>
+i=3: reach = max(3, 3+0) = <span class="highlight">3</span>
+i=4: <span class="swap">4 &gt; reach(3) &rarr; unreachable! return false</span>
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>JumpGame.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static boolean canJump(int[] nums) {
+    int farthest = 0;
+    for (int i = 0; i &lt; nums.length; i++) {
+        if (i &gt; farthest) return false; // stuck
+        farthest = Math.max(farthest, i + nums[i]);
+        if (farthest &gt;= nums.length - 1) return true;
+    }
+    return true;
+}
+
+// Jump Game II (LeetCode 45): minimum jumps to reach end
+static int jump(int[] nums) {
+    int jumps = 0, curEnd = 0, farthest = 0;
+    for (int i = 0; i &lt; nums.length - 1; i++) {
+        farthest = Math.max(farthest, i + nums[i]);
+        if (i == curEnd) {  // must jump now
+            jumps++;
+            curEnd = farthest;
+            if (curEnd &gt;= nums.length - 1) break;
+        }
+    }
+    return jumps;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>jump_game.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">bool can_jump(const std::vector&lt;int&gt;&amp; nums) {
+    int farthest = 0;
+    for (int i = 0; i &lt; static_cast&lt;int&gt;(nums.size()); ++i) {
+        if (i &gt; farthest) return false;
+        farthest = std::max(farthest, i + nums[i]);
+        if (farthest &gt;= static_cast&lt;int&gt;(nums.size()) - 1) return true;
+    }
+    return true;
+}
+
+// Jump Game II: minimum number of jumps
+int jump(const std::vector&lt;int&gt;&amp; nums) {
+    int jumps = 0, cur_end = 0, farthest = 0;
+    for (int i = 0; i &lt; static_cast&lt;int&gt;(nums.size()) - 1; ++i) {
+        farthest = std::max(farthest, i + nums[i]);
+        if (i == cur_end) {
+            ++jumps;
+            cur_end = farthest;
+            if (cur_end &gt;= static_cast&lt;int&gt;(nums.size()) - 1) break;
+        }
+    }
+    return jumps;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>jump_game.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def can_jump(nums: list[int]) -&gt; bool:
+    """Greedy: track the farthest reachable index."""
+    farthest = 0
+    for i, jump_len in enumerate(nums):
+        if i &gt; farthest:
+            return False  # stuck at unreachable index
+        farthest = max(farthest, i + jump_len)
+        if farthest &gt;= len(nums) - 1:
+            return True
+    return True
+
+def jump_min(nums: list[int]) -&gt; int:
+    """Jump Game II: minimum jumps to reach the end (BFS-style greedy)."""
+    jumps = cur_end = farthest = 0
+    for i in range(len(nums) - 1):
+        farthest = max(farthest, i + nums[i])
+        if i == cur_end:  # exhausted current level
+            jumps += 1
+            cur_end = farthest
+            if cur_end &gt;= len(nums) - 1:
+                break
+    return jumps</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>jump_game.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn can_jump(nums: &amp;[i32]) -&gt; bool {
+    let mut farthest: usize = 0;
+    for (i, &amp;val) in nums.iter().enumerate() {
+        if i &gt; farthest { return false; }
+        farthest = farthest.max(i + val as usize);
+        if farthest &gt;= nums.len() - 1 { return true; }
+    }
+    true
+}
+
+fn jump(nums: &amp;[i32]) -&gt; i32 {
+    let (mut jumps, mut cur_end, mut farthest) = (0i32, 0usize, 0usize);
+    for i in 0..nums.len() - 1 {
+        farthest = farthest.max(i + nums[i] as usize);
+        if i == cur_end {
+            jumps += 1;
+            cur_end = farthest;
+            if cur_end &gt;= nums.len() - 1 { break; }
+        }
+    }
+    jumps
+}</div></div>
+</div>
+</div>
+<div class="insight">
+<div class="label">BFS Interpretation of Jump Game II</div>
+Think of each "level" of BFS as one jump. <code>curEnd</code> marks the boundary of the current level. When you reach <code>curEnd</code>, you must take another jump, and the next level boundary is <code>farthest</code>. This gives O(n) time and O(1) space.
+</div>
+</div>
+
+<div class="card" id="gas-station">
+<h2><span class="icon">&#9981;</span> Gas Station</h2>
+<p>There are <em>n</em> gas stations along a circular route. Station <em>i</em> has <code>gas[i]</code> fuel and costs <code>cost[i]</code> to travel to the next station. Find the starting station index that lets you complete the circuit, or return -1 if impossible. <strong>LeetCode 134.</strong></p>
+<h3>Greedy Insight</h3>
+<ul class="objectives">
+<li>If total gas &ge; total cost, a solution is <strong>guaranteed to exist</strong></li>
+<li>Track a running <code>tank</code>. If it drops below 0 at station <em>i</em>, all starting points from the current start to <em>i</em> are invalid &mdash; reset the start to <em>i+1</em></li>
+<li>This works because if you can't reach station <em>i</em> from station <em>s</em>, you also can't reach it from any station between <em>s</em> and <em>i</em></li>
+</ul>
+<div class="diagram">
+gas  = [1, 2, 3, 4, 5]
+cost = [3, 4, 5, 1, 2]
+net  = [-2, -2, -2, 3, 3]   total_net = 0 &ge; 0, solution exists
+
+Try start=0: tank = -2 &lt; 0 &rarr; reset start=1
+Try start=1: tank = -2 &lt; 0 &rarr; reset start=2
+Try start=2: tank = -2 &lt; 0 &rarr; reset start=3
+Try start=3: tank = 3 &rarr; i=4: tank = 3+3 = 6 &rarr; keep going
+<span class="highlight">Answer: start = 3</span>
+
+Verify: 3&rarr;4 (tank: 4-1=3), 4&rarr;0 (3+5-2=6), 0&rarr;1 (6+1-3=4),
+        1&rarr;2 (4+2-4=2), 2&rarr;3 (2+3-5=0) &check;
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>GasStation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int canCompleteCircuit(int[] gas, int[] cost) {
+    int totalSurplus = 0;
+    int tank = 0;
+    int start = 0;
+
+    for (int i = 0; i &lt; gas.length; i++) {
+        int net = gas[i] - cost[i];
+        totalSurplus += net;
+        tank += net;
+        if (tank &lt; 0) {
+            // Can't start from any station [start..i]
+            start = i + 1;
+            tank = 0;
+        }
+    }
+    return totalSurplus &gt;= 0 ? start : -1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>gas_station.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int can_complete_circuit(const std::vector&lt;int&gt;&amp; gas,
+                         const std::vector&lt;int&gt;&amp; cost) {
+    int total_surplus = 0, tank = 0, start = 0;
+
+    for (int i = 0; i &lt; static_cast&lt;int&gt;(gas.size()); ++i) {
+        int net = gas[i] - cost[i];
+        total_surplus += net;
+        tank += net;
+        if (tank &lt; 0) {
+            start = i + 1;
+            tank = 0;
+        }
+    }
+    return total_surplus &gt;= 0 ? start : -1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>gas_station.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def can_complete_circuit(gas: list[int], cost: list[int]) -&gt; int:
+    """Find starting station to complete the circular route.
+    Greedy: if total gas &gt;= total cost, solution exists.
+    Reset start whenever running tank goes negative."""
+    total_surplus = 0
+    tank = 0
+    start = 0
+
+    for i in range(len(gas)):
+        net = gas[i] - cost[i]
+        total_surplus += net
+        tank += net
+        if tank &lt; 0:
+            start = i + 1
+            tank = 0
+
+    return start if total_surplus &gt;= 0 else -1</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>gas_station.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn can_complete_circuit(gas: &amp;[i32], cost: &amp;[i32]) -&gt; i32 {
+    let mut total_surplus = 0;
+    let mut tank = 0;
+    let mut start = 0usize;
+
+    for i in 0..gas.len() {
+        let net = gas[i] - cost[i];
+        total_surplus += net;
+        tank += net;
+        if tank &lt; 0 {
+            start = i + 1;
+            tank = 0;
+        }
+    }
+    if total_surplus &gt;= 0 { start as i32 } else { -1 }
+}</div></div>
+</div>
+</div>
+<div class="warning-box">
+<div class="label">Why One Pass Works</div>
+If you can't reach station <em>i</em> starting from station <em>s</em>, then no station between <em>s</em> and <em>i</em> can be the answer either. This is because the cumulative surplus from <em>s</em> to any intermediate station <em>s'</em> is non-negative (otherwise we'd have reset earlier), so starting at <em>s'</em> means less fuel than starting at <em>s</em>. Time: O(n), Space: O(1).
+</div>
+</div>
+
+<div class="card" id="task-scheduler">
+<h2><span class="icon">&#128339;</span> Task Scheduler</h2>
+<p>Given tasks (characters) and a cooldown period <em>n</em>, find the minimum number of CPU intervals needed to execute all tasks such that the same task has at least <em>n</em> intervals between executions. <strong>LeetCode 621.</strong></p>
+<h3>Greedy Insight</h3>
+<p>The most frequent task dictates the structure. Imagine placing the most frequent task first, leaving <em>n</em> gaps between each occurrence. Fill the gaps with other tasks. If gaps remain, they become idle slots.</p>
+<div class="diagram">
+Tasks: A A A B B B C C, cooldown n = 2
+
+Most frequent: A and B (freq = 3 each)
+
+Build frame with most-frequent task (A):
+  A _ _ | A _ _ | A
+
+Fill in B and C:
+  A B C | A B C | A B
+
+Intervals needed: <span class="highlight">8</span> (no idle time needed!)
+
+Another example: A A A B B C, n = 2
+
+Frame: A _ _ | A _ _ | A
+Fill:  A B C | A B _ | A
+                  ^idle
+Intervals: <span class="highlight">7</span> (1 idle slot)
+
+Formula: result = max(total_tasks, (max_freq - 1) * (n + 1) + count_of_max_freq)
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TaskScheduler.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int leastInterval(char[] tasks, int n) {
+    int[] freq = new int[26];
+    for (char t : tasks) freq[t - 'A']++;
+
+    int maxFreq = 0;
+    for (int f : freq) maxFreq = Math.max(maxFreq, f);
+
+    // Count how many tasks share the max frequency
+    int maxCount = 0;
+    for (int f : freq) if (f == maxFreq) maxCount++;
+
+    // Frame: (maxFreq-1) full chunks of size (n+1), plus final partial chunk
+    int frameLen = (maxFreq - 1) * (n + 1) + maxCount;
+
+    // Answer is the larger of: frame length or total tasks (no idle needed)
+    return Math.max(tasks.length, frameLen);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>task_scheduler.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int least_interval(const std::vector&lt;char&gt;&amp; tasks, int n) {
+    std::array&lt;int, 26&gt; freq{};
+    for (char t : tasks) freq[t - 'A']++;
+
+    int max_freq = *std::max_element(freq.begin(), freq.end());
+    int max_count = std::count(freq.begin(), freq.end(), max_freq);
+
+    int frame_len = (max_freq - 1) * (n + 1) + max_count;
+    return std::max(static_cast&lt;int&gt;(tasks.size()), frame_len);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>task_scheduler.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">from collections import Counter
+
+def least_interval(tasks: list[str], n: int) -&gt; int:
+    """Greedy task scheduling with cooldown.
+    The most frequent task determines the minimum frame size."""
+    freq = Counter(tasks)
+    max_freq = max(freq.values())
+    max_count = sum(1 for v in freq.values() if v == max_freq)
+
+    # Frame: (max_freq - 1) chunks of (n + 1) + final chunk of max_count
+    frame_len = (max_freq - 1) * (n + 1) + max_count
+
+    # If there are enough diverse tasks, no idle time needed
+    return max(len(tasks), frame_len)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>task_scheduler.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn least_interval(tasks: &amp;[char], n: i32) -&gt; i32 {
+    let mut freq = [0i32; 26];
+    for &amp;t in tasks {
+        freq[(t as u8 - b'A') as usize] += 1;
+    }
+
+    let max_freq = *freq.iter().max().unwrap();
+    let max_count = freq.iter().filter(|&&amp;f| f == max_freq).count() as i32;
+
+    let frame_len = (max_freq - 1) * (n + 1) + max_count;
+    frame_len.max(tasks.len() as i32)
+}</div></div>
+</div>
+</div>
+<div class="insight">
+<div class="label">Understanding the Formula</div>
+Think of (maxFreq - 1) "full blocks" of size (n + 1). Each block starts with the most frequent task, then n slots for other tasks or idle. The last block only contains the tasks that have maxFreq occurrences. If total tasks exceed this frame, no idle time is needed at all.
+</div>
+</div>
+
+<div class="card" id="proof-techniques">
+<h2><span class="icon">&#128220;</span> Greedy Proof Techniques</h2>
+<p>Greedy algorithms are easy to design but notoriously hard to prove correct. Here are the two standard proof techniques used in competitive programming and algorithm courses.</p>
+
+<h3>1. Exchange Argument</h3>
+<p>The most common technique. Start with an arbitrary optimal solution O*, then show you can transform it into the greedy solution G without making it worse.</p>
+<h4>Template</h4>
+<ul class="objectives">
+<li><strong>Step 1:</strong> Assume O* is an optimal solution that differs from greedy solution G</li>
+<li><strong>Step 2:</strong> Find the first point of difference between O* and G</li>
+<li><strong>Step 3:</strong> Show that "exchanging" the O* choice for the greedy choice at that point produces a solution that is no worse than O*</li>
+<li><strong>Step 4:</strong> Repeat until O* is transformed into G, proving G is optimal</li>
+</ul>
+<div class="diagram">
+<span class="highlight">Example: Activity Selection</span>
+
+Claim: Greedy (pick earliest finish time) is optimal.
+
+Proof by Exchange Argument:
+  Let O* = {o1, o2, ..., ok} be optimal, sorted by finish time.
+  Let G  = {g1, g2, ..., gm} be greedy, sorted by finish time.
+
+  Suppose O* &ne; G. Find first difference at position j:
+    o1=g1, o2=g2, ..., o_{j-1}=g_{j-1}, but o_j &ne; g_j.
+
+  Since greedy picks earliest finish: <span class="highlight">finish(g_j) &le; finish(o_j)</span>
+
+  Exchange: Replace o_j with g_j in O*.
+  Since finish(g_j) &le; finish(o_j), the remaining activities
+  o_{j+1}, ..., o_k are still compatible. So the new solution
+  is still valid with k activities.
+
+  Repeat until O* = G. Therefore |G| &ge; |O*|, so G is optimal. &square;
+</div>
+
+<h3>2. Greedy Stays Ahead</h3>
+<p>Show that at every step, the greedy solution is at least as good as any other solution. Formalize with an invariant and prove by induction.</p>
+<h4>Template</h4>
+<ul class="objectives">
+<li><strong>Step 1:</strong> Define a measure of "progress" at each step</li>
+<li><strong>Step 2:</strong> Prove by induction that the greedy solution's measure is always &ge; any other solution's measure at each step</li>
+<li><strong>Step 3:</strong> Conclude that the greedy solution is at least as good overall</li>
+</ul>
+<div class="diagram">
+<span class="highlight">Example: Activity Selection (alternative proof)</span>
+
+Define: After selecting i activities, greedy's last finish time &le;
+        any other solution's last finish time (with i activities).
+
+Base case (i=1): Greedy picks the activity with the smallest
+  finish time. Any other solution's first activity finishes
+  no earlier. <span class="highlight">&check;</span>
+
+Inductive step: Assume true for i=k.
+  Greedy's k-th activity ends at time f_G.
+  Any solution S's k-th activity ends at time f_S &ge; f_G (by IH).
+  For the (k+1)-th activity, greedy picks the one with the
+  earliest finish time among those starting after f_G.
+  Since f_S &ge; f_G, greedy has at least as many options
+  as S does &rarr; greedy's (k+1)-th finish is &le; S's. <span class="highlight">&check;</span>
+
+Conclusion: Greedy selects at least as many activities as
+any other solution. &square;
+</div>
+<div class="insight">
+<div class="label">Which Technique to Use?</div>
+<strong>Exchange argument</strong> is more versatile and works for most greedy problems (scheduling, Huffman coding, Kruskal's MST). <strong>Greedy stays ahead</strong> is elegant when you can define a clear "progress" measure (activity selection, tape storage). When writing contest solutions, often a brief sketch of the exchange argument is sufficient.
+</div>
+<div class="warning-box">
+<div class="label">Common Pitfall in Proofs</div>
+The exchange step must preserve feasibility! When you swap a non-greedy choice for the greedy one, you must verify all constraints still hold. For example, in interval scheduling, replacing o_j with g_j works only because finish(g_j) &le; finish(o_j), so subsequent activities remain compatible. Forgetting to check feasibility is the #1 error in greedy proofs.
+</div>
+</div>
+
 <div class="card" id="comparison">
 <h2><span class="icon">&#128202;</span> Complexity Summary</h2>
 <table>
@@ -617,6 +1341,10 @@ std::pair&lt;int, std::string&gt; job_sequencing(std::vector&lt;Job&gt; jobs) {
 <tr><td>Merge Intervals</td><td><span class="badge badge-green">O(n log n)</span></td><td>O(n)</td><td>Sort by start, sweep</td></tr>
 <tr><td>Min Meeting Rooms</td><td><span class="badge badge-green">O(n log n)</span></td><td>O(n)</td><td>Min-heap of end times</td></tr>
 <tr><td>Job Sequencing</td><td><span class="badge badge-yellow">O(n^2)</span></td><td>O(n)</td><td>Sort by profit, fill slots</td></tr>
+<tr><td>Huffman Coding</td><td><span class="badge badge-green">O(n log n)</span></td><td>O(n)</td><td>Min-heap, merge two lowest</td></tr>
+<tr><td>Jump Game</td><td><span class="badge badge-green">O(n)</span></td><td>O(1)</td><td>Track farthest reachable</td></tr>
+<tr><td>Gas Station</td><td><span class="badge badge-green">O(n)</span></td><td>O(1)</td><td>Reset start on negative tank</td></tr>
+<tr><td>Task Scheduler</td><td><span class="badge badge-green">O(n)</span></td><td>O(1)</td><td>Frame formula from max freq</td></tr>
 </tbody>
 </table>
 </div>
@@ -628,6 +1356,11 @@ std::pair&lt;int, std::string&gt; job_sequencing(std::vector&lt;Job&gt; jobs) {
 <div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Meeting Rooms II</strong> -- LeetCode 253. Min-heap approach.</div>
 <div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Jump Game</strong> -- LeetCode 55. Greedy reachability check.</div>
 <div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Jump Game II</strong> -- LeetCode 45. Greedy BFS for min jumps.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Gas Station</strong> -- LeetCode 134. One-pass greedy with tank reset.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Task Scheduler</strong> -- LeetCode 621. Greedy frame formula from max frequency.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Huffman Encoding</strong> -- Build a Huffman tree and generate prefix-free codes.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Minimum Number of Arrows to Burst Balloons</strong> -- LeetCode 452. Interval greedy variant.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Candy</strong> -- LeetCode 135. Two-pass greedy.</div>
 </div>
 
 <div class="card" id="summary">
@@ -640,6 +1373,10 @@ std::pair&lt;int, std::string&gt; job_sequencing(std::vector&lt;Job&gt; jobs) {
 <tr><td>"Take fractions of items"</td><td>Sort by value/weight ratio</td><td>Fractional Knapsack</td></tr>
 <tr><td>"Merge overlapping intervals"</td><td>Sort by start, extend if overlap</td><td>Merge Intervals</td></tr>
 <tr><td>"Minimum resources for intervals"</td><td>Min-heap of end times</td><td>Meeting Rooms</td></tr>
+<tr><td>"Can you reach the end?"</td><td>Track farthest reachable index</td><td>Jump Game</td></tr>
+<tr><td>"Circular route / complete circuit"</td><td>One pass, reset start on deficit</td><td>Gas Station</td></tr>
+<tr><td>"Minimum time with cooldown"</td><td>Frame formula from max frequency</td><td>Task Scheduler</td></tr>
+<tr><td>"Variable-length encoding"</td><td>Min-heap, merge two smallest</td><td>Huffman Coding</td></tr>
 </tbody>
 </table>
 <div class="warning-box">
