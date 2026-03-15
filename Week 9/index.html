@@ -1,0 +1,1135 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 9: Sorting Algorithms | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+/* Layout */
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+/* Mobile sidebar */
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+/* Hero */
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.hero .meta .dot.hard{background:var(--danger)}
+/* Cards */
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+/* Objectives */
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+/* Insight box */
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+/* Code viewer */
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+/* Comparison Table */
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+/* Diagram */
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+/* Expandable */
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+/* Practice */
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+/* Nav footer */
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+/* Back to top */
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+/* Progress bar */
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+/* Print */
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 9 of 12</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#bubble-sort">Bubble Sort</a>
+<a href="#selection-sort" class="sub">Selection Sort</a>
+<a href="#insertion-sort" class="sub">Insertion Sort</a>
+<a href="#merge-sort">Merge Sort</a>
+<a href="#quick-sort">Quick Sort</a>
+<a href="#quickselect" class="sub">QuickSelect</a>
+<a href="#counting-sort">Counting Sort</a>
+<a href="#comparison">Comparison Table</a>
+<a href="#inversions">Counting Inversions</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 9</span>
+<h1>Sorting Algorithms</h1>
+<p class="subtitle">Master the fundamental sorting algorithms -- from elementary O(n^2) methods to the powerful divide-and-conquer approaches that power real-world systems.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~8 hours estimated</span>
+<span>7 algorithms covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand and implement Bubble, Selection, and Insertion Sort (the O(n^2) family)</li>
+<li>Master Merge Sort and its divide-and-conquer paradigm</li>
+<li>Implement Quick Sort with Lomuto and Hoare partition schemes</li>
+<li>Use randomized pivoting to avoid worst-case Quick Sort performance</li>
+<li>Apply QuickSelect to find the kth smallest element in O(n) average time</li>
+<li>Understand Counting Sort as a non-comparison-based approach</li>
+<li>Count inversions efficiently using modified Merge Sort</li>
+<li>Compare sorting algorithms by time/space complexity, stability, and practical use cases</li>
+</ul>
+</div>
+
+<!-- Bubble Sort -->
+<div class="card" id="bubble-sort">
+<h2><span class="icon">&#128302;</span> Bubble Sort</h2>
+<p>Bubble Sort repeatedly walks through the list, compares adjacent elements, and swaps them if they are out of order. After each pass, the largest unsorted element "bubbles up" to its correct position at the end.</p>
+
+<h3>Real-World Analogy</h3>
+<p>Imagine sorting a hand of playing cards by repeatedly comparing two adjacent cards and swapping if they are out of order. After one full pass, the largest card ends up on the right. Repeat until no swaps are needed.</p>
+
+<h3>Step-by-Step Visualization</h3>
+<div class="diagram">
+Array: [64, 25, 12, 22, 11]
+
+<span class="highlight">Pass 1:</span>
+  [<span class="swap">64, 25</span>, 12, 22, 11]  swap 64 &gt; 25  &rarr;  [25, 64, 12, 22, 11]
+  [25, <span class="swap">64, 12</span>, 22, 11]  swap 64 &gt; 12  &rarr;  [25, 12, 64, 22, 11]
+  [25, 12, <span class="swap">64, 22</span>, 11]  swap 64 &gt; 22  &rarr;  [25, 12, 22, 64, 11]
+  [25, 12, 22, <span class="swap">64, 11</span>]  swap 64 &gt; 11  &rarr;  [25, 12, 22, 11, <span class="sorted">64</span>]
+
+<span class="highlight">Pass 2:</span>
+  [<span class="swap">25, 12</span>, 22, 11, <span class="sorted">64</span>]  swap  &rarr;  [12, 25, 22, 11, <span class="sorted">64</span>]
+  [12, <span class="swap">25, 22</span>, 11, <span class="sorted">64</span>]  swap  &rarr;  [12, 22, 25, 11, <span class="sorted">64</span>]
+  [12, 22, <span class="swap">25, 11</span>, <span class="sorted">64</span>]  swap  &rarr;  [12, 22, 11, <span class="sorted">25, 64</span>]
+
+<span class="highlight">Pass 3:</span>
+  [12, 22, 11, <span class="sorted">25, 64</span>]  &rarr;  [12, 11, <span class="sorted">22, 25, 64</span>]
+
+<span class="highlight">Pass 4:</span>
+  [12, 11, <span class="sorted">22, 25, 64</span>]  &rarr;  [<span class="sorted">11, 12, 22, 25, 64</span>]  &#10004; Sorted!
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The <strong>early termination</strong> optimization is crucial: if no swaps occur during an entire pass, the array is already sorted. This gives Bubble Sort its best-case O(n) time on already-sorted input.
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BubbleSelectionInsertion.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static void bubbleSort(int[] arr) {
+    int n = arr.length;
+    for (int i = 0; i &lt; n - 1; i++) {
+        boolean swapped = false;
+        for (int j = 0; j &lt; n - 1 - i; j++) {
+            if (arr[j] &gt; arr[j + 1]) {
+                int temp = arr[j]; arr[j] = arr[j + 1]; arr[j + 1] = temp;
+                swapped = true;
+            }
+        }
+        if (!swapped) break; // already sorted -- early termination
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void bubbleSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 0; i &lt; n - 1; ++i) {
+        bool swapped = false;
+        for (int j = 0; j &lt; n - 1 - i; ++j) {
+            if (arr[j] &gt; arr[j + 1]) {
+                swap(arr[j], arr[j + 1]);
+                swapped = true;
+            }
+        }
+        if (!swapped) break;  // early termination if already sorted
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def bubble_sort(arr: List[int]) -&gt; List[int]:
+    n = len(arr)
+    for i in range(n):
+        swapped = False
+        for j in range(0, n - 1 - i):
+            if arr[j] &gt; arr[j + 1]:
+                arr[j], arr[j + 1] = arr[j + 1], arr[j]
+                swapped = True
+        if not swapped:
+            break  # early termination
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn bubble_sort(arr: &amp;mut Vec&lt;i32&gt;) {
+    let n = arr.len();
+    for i in 0..n {
+        let mut swapped = false;
+        for j in 0..n.saturating_sub(i + 1) {
+            if arr[j] &gt; arr[j + 1] {
+                arr.swap(j, j + 1);
+                swapped = true;
+            }
+        }
+        if !swapped {
+            break; // Array is sorted
+        }
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Selection Sort -->
+<div class="card" id="selection-sort">
+<h2><span class="icon">&#128269;</span> Selection Sort</h2>
+<p>Selection Sort divides the array into sorted (left) and unsorted (right) portions. On each pass, it <strong>finds the minimum</strong> element in the unsorted portion and swaps it into the correct position at the end of the sorted portion.</p>
+
+<h3>Real-World Analogy</h3>
+<p>Like picking cards from a messy pile: scan all the cards, find the smallest one, place it first. Then scan the remaining cards, find the next smallest, place it second. Repeat.</p>
+
+<h3>Step-by-Step Visualization</h3>
+<div class="diagram">
+Array: [64, 25, 12, 22, 11]
+
+<span class="highlight">Pass 1:</span> Find min in [64,25,12,22,11] &rarr; <span class="swap">11</span> at index 4
+  Swap arr[0] and arr[4]:  [<span class="sorted">11</span>, 25, 12, 22, 64]
+
+<span class="highlight">Pass 2:</span> Find min in [25,12,22,64] &rarr; <span class="swap">12</span> at index 2
+  Swap arr[1] and arr[2]:  [<span class="sorted">11, 12</span>, 25, 22, 64]
+
+<span class="highlight">Pass 3:</span> Find min in [25,22,64] &rarr; <span class="swap">22</span> at index 3
+  Swap arr[2] and arr[3]:  [<span class="sorted">11, 12, 22</span>, 25, 64]
+
+<span class="highlight">Pass 4:</span> Find min in [25,64] &rarr; 25 already in place
+  [<span class="sorted">11, 12, 22, 25, 64</span>]  &#10004; Sorted!
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Selection Sort performs at most <strong>O(n) swaps</strong>, which makes it optimal when write operations are expensive (e.g., writing to flash memory). However, it always does O(n^2) comparisons regardless of input order. It is also <strong>not stable</strong> in its basic form.
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BubbleSelectionInsertion.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static void selectionSort(int[] arr) {
+    int n = arr.length;
+    for (int i = 0; i &lt; n - 1; i++) {
+        int minIdx = i;
+        for (int j = i + 1; j &lt; n; j++) {
+            if (arr[j] &lt; arr[minIdx]) minIdx = j;
+        }
+        if (minIdx != i) {
+            int temp = arr[i]; arr[i] = arr[minIdx]; arr[minIdx] = temp;
+        }
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void selectionSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 0; i &lt; n - 1; ++i) {
+        int minIdx = i;
+        for (int j = i + 1; j &lt; n; ++j) {
+            if (arr[j] &lt; arr[minIdx]) minIdx = j;
+        }
+        if (minIdx != i) swap(arr[i], arr[minIdx]);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def selection_sort(arr: List[int]) -&gt; List[int]:
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] &lt; arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn selection_sort(arr: &amp;mut Vec&lt;i32&gt;) {
+    let n = arr.len();
+    for i in 0..n {
+        let min_idx = (i..n).min_by_key(|&amp;j| arr[j]).unwrap();
+        arr.swap(i, min_idx);
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Insertion Sort -->
+<div class="card" id="insertion-sort">
+<h2><span class="icon">&#128203;</span> Insertion Sort</h2>
+<p>Insertion Sort builds the sorted array one element at a time. It picks the next unsorted element and <strong>inserts</strong> it into its correct position within the already-sorted left portion, shifting elements as needed.</p>
+
+<h3>Real-World Analogy</h3>
+<p>Exactly like sorting a hand of playing cards: you pick up one card at a time and slide it into the correct position among the cards you have already sorted in your hand.</p>
+
+<h3>Step-by-Step Visualization</h3>
+<div class="diagram">
+Array: [64, 25, 12, 22, 11]
+
+<span class="highlight">Step 1:</span> key = 25, insert into [64]
+  25 &lt; 64, shift 64 right  &rarr;  [<span class="sorted">25, 64</span>, 12, 22, 11]
+
+<span class="highlight">Step 2:</span> key = 12, insert into [25, 64]
+  12 &lt; 64, shift; 12 &lt; 25, shift  &rarr;  [<span class="sorted">12, 25, 64</span>, 22, 11]
+
+<span class="highlight">Step 3:</span> key = 22, insert into [12, 25, 64]
+  22 &lt; 64, shift; 22 &lt; 25, shift; 22 &gt; 12, stop  &rarr;  [<span class="sorted">12, 22, 25, 64</span>, 11]
+
+<span class="highlight">Step 4:</span> key = 11, insert into [12, 22, 25, 64]
+  Shift all  &rarr;  [<span class="sorted">11, 12, 22, 25, 64</span>]  &#10004; Sorted!
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Insertion Sort is the <strong>best choice for small arrays</strong> (n &lt; 16) and nearly-sorted data. Java's <code>Arrays.sort()</code> for objects uses TimSort, which switches to Insertion Sort for small subarrays. The number of swaps equals the number of inversions in the array.
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BubbleSelectionInsertion.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static void insertionSort(int[] arr) {
+    int n = arr.length;
+    for (int i = 1; i &lt; n; i++) {
+        int key = arr[i]; // element to insert
+        int j = i - 1;
+        // Shift elements greater than key one position right
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            arr[j + 1] = arr[j];
+            j--;
+        }
+        arr[j + 1] = key; // insert key at correct position
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">void insertionSort(vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    for (int i = 1; i &lt; n; ++i) {
+        int key = arr[i];
+        int j = i - 1;
+        while (j &gt;= 0 &amp;&amp; arr[j] &gt; key) {
+            arr[j + 1] = arr[j];
+            --j;
+        }
+        arr[j + 1] = key;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def insertion_sort(arr: List[int]) -&gt; List[int]:
+    for i in range(1, len(arr)):
+        key = arr[i]
+        j = i - 1
+        while j &gt;= 0 and arr[j] &gt; key:
+            arr[j + 1] = arr[j]
+            j -= 1
+        arr[j + 1] = key
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn insertion_sort(arr: &amp;mut Vec&lt;i32&gt;) {
+    for i in 1..arr.len() {
+        let key = arr[i];
+        let mut j = i;
+        while j &gt; 0 &amp;&amp; arr[j - 1] &gt; key {
+            arr[j] = arr[j - 1];
+            j -= 1;
+        }
+        arr[j] = key;
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Merge Sort -->
+<div class="card" id="merge-sort">
+<h2><span class="icon">&#9997;&#65039;</span> Merge Sort</h2>
+<p>Merge Sort is a <strong>divide-and-conquer</strong> algorithm. It splits the array in half recursively until each piece has one element (trivially sorted), then merges sorted halves back together.</p>
+
+<h3>Algorithm</h3>
+<ol>
+<li><strong>DIVIDE:</strong> Split the array in half recursively until each subarray has size 1.</li>
+<li><strong>CONQUER:</strong> Merge two sorted halves into one sorted array using two pointers.</li>
+</ol>
+
+<h3>Step-by-Step Visualization</h3>
+<div class="diagram">
+                     [38, 27, 43, 3, 9, 82, 10]
+                    /                            \
+           [38, 27, 43, 3]                 [9, 82, 10]
+           /             \                 /          \
+       [38, 27]       [43, 3]         [9, 82]       [10]
+       /     \         /    \          /    \           |
+     [38]   [27]    [43]   [3]      [9]   [82]      [10]
+       \     /         \    /          \    /           |
+       [27, 38]       [3, 43]        [9, 82]        [10]
+           \             /                 \          /
+         [3, 27, 38, 43]                [9, 10, 82]
+                    \                            /
+              [<span class="sorted">3, 9, 10, 27, 38, 43, 82</span>]  &#10004;
+</div>
+
+<h3>Recurrence Relation</h3>
+<p><code>T(n) = 2T(n/2) + O(n)</code> -- By the Master Theorem, this solves to <strong>O(n log n)</strong>.</p>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Merge Sort guarantees O(n log n) in <strong>all cases</strong> (best, average, worst). It is <strong>stable</strong> (equal elements maintain their relative order) and is the basis for <strong>TimSort</strong>, used by Java's <code>Arrays.sort()</code> for objects and Python's built-in <code>sort()</code>. The tradeoff is O(n) extra space for the temporary arrays.
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>MergeSort.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static void merge(int[] arr, int left, int mid, int right) {
+    int n1 = mid - left + 1;
+    int n2 = right - mid;
+
+    int[] L = Arrays.copyOfRange(arr, left, mid + 1);
+    int[] R = Arrays.copyOfRange(arr, mid + 1, right + 1);
+
+    int i = 0, j = 0, k = left;
+    while (i &lt; n1 &amp;&amp; j &lt; n2) {
+        if (L[i] &lt;= R[j]) arr[k++] = L[i++]; // &lt;= keeps it stable
+        else arr[k++] = R[j++];
+    }
+    while (i &lt; n1) arr[k++] = L[i++];
+    while (j &lt; n2) arr[k++] = R[j++];
+}
+
+static void mergeSort(int[] arr, int left, int right) {
+    if (left &gt;= right) return; // base case: 0 or 1 element
+    int mid = left + (right - left) / 2;
+    mergeSort(arr, left, mid);
+    mergeSort(arr, mid + 1, right);
+    merge(arr, left, mid, right);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">long long mergeAndCount(vector&lt;int&gt;&amp; arr, int left, int mid, int right) {
+    vector&lt;int&gt; temp;
+    temp.reserve(right - left + 1);
+    int i = left, j = mid + 1;
+    long long inversions = 0;
+
+    while (i &lt;= mid &amp;&amp; j &lt;= right) {
+        if (arr[i] &lt;= arr[j]) {
+            temp.push_back(arr[i++]);
+        } else {
+            inversions += (mid - i + 1);
+            temp.push_back(arr[j++]);
+        }
+    }
+    while (i &lt;= mid) temp.push_back(arr[i++]);
+    while (j &lt;= right) temp.push_back(arr[j++]);
+    copy(temp.begin(), temp.end(), arr.begin() + left);
+    return inversions;
+}
+
+long long mergeSortAndCount(vector&lt;int&gt;&amp; arr, int left, int right) {
+    if (left &gt;= right) return 0;
+    int mid = left + (right - left) / 2;
+    long long inversions = 0;
+    inversions += mergeSortAndCount(arr, left, mid);
+    inversions += mergeSortAndCount(arr, mid + 1, right);
+    inversions += mergeAndCount(arr, left, mid, right);
+    return inversions;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def merge_sort(arr: List[int]) -&gt; List[int]:
+    if len(arr) &lt;= 1:
+        return arr
+
+    mid = len(arr) // 2
+    left = arr[:mid]
+    right = arr[mid:]
+
+    merge_sort(left)
+    merge_sort(right)
+
+    # Merge back into arr
+    i = j = k = 0
+    while i &lt; len(left) and j &lt; len(right):
+        if left[i] &lt;= right[j]:
+            arr[k] = left[i]
+            i += 1
+        else:
+            arr[k] = right[j]
+            j += 1
+        k += 1
+    while i &lt; len(left):
+        arr[k] = left[i]; i += 1; k += 1
+    while j &lt; len(right):
+        arr[k] = right[j]; j += 1; k += 1
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn merge_sort(arr: &amp;[i32]) -&gt; (Vec&lt;i32&gt;, u64) {
+    if arr.len() &lt;= 1 {
+        return (arr.to_vec(), 0);
+    }
+    let mid = arr.len() / 2;
+    let (left_sorted, left_inv) = merge_sort(&amp;arr[..mid]);
+    let (right_sorted, right_inv) = merge_sort(&amp;arr[mid..]);
+    let (merged, split_inv) = merge(&amp;left_sorted, &amp;right_sorted);
+    (merged, left_inv + right_inv + split_inv)
+}
+
+fn merge(left: &amp;[i32], right: &amp;[i32]) -&gt; (Vec&lt;i32&gt;, u64) {
+    let mut result = Vec::with_capacity(left.len() + right.len());
+    let mut inversions: u64 = 0;
+    let (mut i, mut j) = (0, 0);
+    while i &lt; left.len() &amp;&amp; j &lt; right.len() {
+        if left[i] &lt;= right[j] {
+            result.push(left[i]); i += 1;
+        } else {
+            result.push(right[j]);
+            inversions += (left.len() - i) as u64;
+            j += 1;
+        }
+    }
+    result.extend_from_slice(&amp;left[i..]);
+    result.extend_from_slice(&amp;right[j..]);
+    (result, inversions)
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Quick Sort -->
+<div class="card" id="quick-sort">
+<h2><span class="icon">&#9889;</span> Quick Sort</h2>
+<p>Quick Sort is another divide-and-conquer algorithm. It selects a <strong>pivot</strong> element, partitions the array so elements less than the pivot go left and greater go right, then recursively sorts each partition.</p>
+
+<h3>Partition Schemes</h3>
+<h4>Lomuto Partition (simpler, uses last element as pivot)</h4>
+<div class="diagram">
+Array: [10, 7, 8, 9, 1, 5]   pivot = <span class="pivot">5</span> (last element)
+
+i = -1 (boundary of "less than pivot" region)
+
+j=0: arr[0]=10 &gt; 5, skip
+j=1: arr[1]=7  &gt; 5, skip
+j=2: arr[2]=8  &gt; 5, skip
+j=3: arr[3]=9  &gt; 5, skip
+j=4: arr[4]=1  &lt;= 5, i++ then swap arr[0]&harr;arr[4]  &rarr; [<span class="sorted">1</span>, 7, 8, 9, 10, <span class="pivot">5</span>]
+
+Place pivot: swap arr[i+1]&harr;arr[5]  &rarr;  [<span class="sorted">1</span>, <span class="pivot">5</span>, 8, 9, 10, 7]
+Pivot 5 is now at index 1 (its final position!)
+</div>
+
+<h4>Hoare Partition (original, fewer swaps, uses first element as pivot)</h4>
+<p>Uses two pointers converging from both ends. On average, Hoare performs about 3x fewer swaps than Lomuto.</p>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+<strong>Randomized Quick Sort</strong> avoids the O(n^2) worst case by randomly selecting the pivot before partitioning. This makes the expected time O(n log n) regardless of input distribution. Java uses a <strong>Dual-Pivot Quicksort</strong> (Yaroslavskiy) for primitive arrays.
+</div>
+
+<div class="warning-box">
+<div class="label">Common Pitfall</div>
+Quick Sort degrades to O(n^2) when the pivot is always the smallest or largest element -- which happens on already-sorted or reverse-sorted input if you always pick the first or last element as pivot. Always use randomized pivot selection in practice.
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>QuickSort.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int lomutoPartition(int[] arr, int low, int high) {
+    int pivot = arr[high];
+    int i = low - 1;
+    for (int j = low; j &lt; high; j++) {
+        if (arr[j] &lt;= pivot) {
+            i++;
+            int temp = arr[i]; arr[i] = arr[j]; arr[j] = temp;
+        }
+    }
+    int temp = arr[i + 1]; arr[i + 1] = arr[high]; arr[high] = temp;
+    return i + 1;
+}
+
+// Randomized Quicksort -- avoids O(n^2) worst case
+static void quickSortRandom(int[] arr, int low, int high) {
+    if (low &gt;= high) return;
+    int pivotIdx = low + rand.nextInt(high - low + 1);
+    int temp = arr[pivotIdx]; arr[pivotIdx] = arr[high]; arr[high] = temp;
+    int p = lomutoPartition(arr, low, high);
+    quickSortRandom(arr, low, p - 1);
+    quickSortRandom(arr, p + 1, high);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int lomutoPartition(vector&lt;int&gt;&amp; arr, int lo, int hi) {
+    int pivot = arr[hi];
+    int i = lo - 1;
+    for (int j = lo; j &lt; hi; ++j) {
+        if (arr[j] &lt;= pivot) {
+            swap(arr[++i], arr[j]);
+        }
+    }
+    swap(arr[i + 1], arr[hi]);
+    return i + 1;
+}
+
+int randomizedPartition(vector&lt;int&gt;&amp; arr, int lo, int hi) {
+    static mt19937 rng(42);
+    int randIdx = uniform_int_distribution&lt;int&gt;(lo, hi)(rng);
+    swap(arr[randIdx], arr[hi]);
+    return lomutoPartition(arr, lo, hi);
+}
+
+void quickSortHelper(vector&lt;int&gt;&amp; arr, int lo, int hi) {
+    if (lo &gt;= hi) return;
+    int pivot = randomizedPartition(arr, lo, hi);
+    quickSortHelper(arr, lo, pivot - 1);
+    quickSortHelper(arr, pivot + 1, hi);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def _lomuto_partition(arr: List[int], lo: int, hi: int) -&gt; int:
+    pivot = arr[hi]
+    i = lo - 1
+    for j in range(lo, hi):
+        if arr[j] &lt;= pivot:
+            i += 1
+            arr[i], arr[j] = arr[j], arr[i]
+    arr[i + 1], arr[hi] = arr[hi], arr[i + 1]
+    return i + 1
+
+def quicksort_randomized(arr, lo=0, hi=None):
+    if hi is None:
+        hi = len(arr) - 1
+    if lo &lt; hi:
+        rand_idx = random.randint(lo, hi)
+        arr[rand_idx], arr[hi] = arr[hi], arr[rand_idx]
+        pivot_idx = _lomuto_partition(arr, lo, hi)
+        quicksort_randomized(arr, lo, pivot_idx - 1)
+        quicksort_randomized(arr, pivot_idx + 1, hi)
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn lomuto_partition(arr: &amp;mut [i32]) -&gt; usize {
+    let n = arr.len();
+    let pivot = arr[n - 1];
+    let mut i = 0;
+    for j in 0..n - 1 {
+        if arr[j] &lt; pivot {
+            arr.swap(i, j);
+            i += 1;
+        }
+    }
+    arr.swap(i, n - 1);
+    i
+}
+
+fn quicksort(arr: &amp;mut [i32]) {
+    if arr.len() &lt;= 1 { return; }
+    let pivot_idx = lomuto_partition(arr);
+    quicksort(&amp;mut arr[..pivot_idx]);
+    if pivot_idx + 1 &lt; arr.len() {
+        quicksort(&amp;mut arr[pivot_idx + 1..]);
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- QuickSelect -->
+<div class="card" id="quickselect">
+<h2><span class="icon">&#127942;</span> QuickSelect -- Kth Smallest Element</h2>
+<p>QuickSelect uses the Quick Sort partitioning idea to find the kth smallest element in <strong>O(n) average time</strong> without fully sorting the array. After partitioning, the pivot is at its final sorted position. If that position equals k, we are done. Otherwise, recurse on the correct side only.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>QuickSort.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int quickSelect(int[] arr, int low, int high, int k) {
+    if (low == high) return arr[low];
+    int pivotIdx = low + rand.nextInt(high - low + 1);
+    int temp = arr[pivotIdx]; arr[pivotIdx] = arr[high]; arr[high] = temp;
+    int p = lomutoPartition(arr, low, high);
+    int rank = p - low + 1;
+    if (rank == k) return arr[p];
+    else if (k &lt; rank) return quickSelect(arr, low, p - 1, k);
+    else return quickSelect(arr, p + 1, high, k - rank);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int quickSelect(vector&lt;int&gt;&amp; arr, int lo, int hi, int k) {
+    while (lo &lt;= hi) {
+        int pivotIdx = randomizedPartition(arr, lo, hi);
+        if (pivotIdx == k) return arr[pivotIdx];
+        else if (pivotIdx &lt; k) lo = pivotIdx + 1;
+        else hi = pivotIdx - 1;
+    }
+    return -1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def quickselect(arr: List[int], k: int) -&gt; int:
+    target = k - 1  # convert to 0-indexed
+    lo, hi = 0, len(arr) - 1
+    while lo &lt;= hi:
+        rand_idx = random.randint(lo, hi)
+        arr[rand_idx], arr[hi] = arr[hi], arr[rand_idx]
+        pivot_idx = _lomuto_partition(arr, lo, hi)
+        if pivot_idx == target:
+            return arr[pivot_idx]
+        elif pivot_idx &lt; target:
+            lo = pivot_idx + 1
+        else:
+            hi = pivot_idx - 1
+    return arr[lo]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn quickselect(arr: &amp;mut [i32], k: usize) -&gt; i32 {
+    assert!(k &lt; arr.len(), "k must be within array bounds");
+    if arr.len() == 1 { return arr[0]; }
+    let pivot_idx = lomuto_partition(arr);
+    match k.cmp(&amp;pivot_idx) {
+        std::cmp::Ordering::Equal =&gt; arr[pivot_idx],
+        std::cmp::Ordering::Less =&gt; quickselect(&amp;mut arr[..pivot_idx], k),
+        std::cmp::Ordering::Greater =&gt;
+            quickselect(&amp;mut arr[pivot_idx + 1..], k - pivot_idx - 1),
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Counting Sort -->
+<div class="card" id="counting-sort">
+<h2><span class="icon">&#128290;</span> Counting Sort</h2>
+<p>Counting Sort is a <strong>non-comparison-based</strong> sorting algorithm. Instead of comparing elements, it counts the occurrence of each value, then reconstructs the sorted array. It runs in O(n + k) time where k is the range of input values.</p>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Counting Sort breaks the O(n log n) lower bound of comparison-based sorts. It is extremely fast when the range k is small relative to n. It is <strong>stable</strong>, which makes it the building block for Radix Sort.
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="cpp">
+<div class="code-header"><span>sorting.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">vector&lt;int&gt; countingSort(const vector&lt;int&gt;&amp; arr) {
+    if (arr.empty()) return {};
+    auto [minIt, maxIt] = minmax_element(arr.begin(), arr.end());
+    int minVal = *minIt, maxVal = *maxIt;
+    int range = maxVal - minVal + 1;
+
+    vector&lt;int&gt; count(range, 0);
+    for (int x : arr) count[x - minVal]++;
+
+    // Build prefix sum for stable sort
+    for (int i = 1; i &lt; range; ++i) count[i] += count[i - 1];
+
+    // Build output in reverse for stability
+    vector&lt;int&gt; output(arr.size());
+    for (int i = (int)arr.size() - 1; i &gt;= 0; --i) {
+        output[--count[arr[i] - minVal]] = arr[i];
+    }
+    return output;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>sorting.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def counting_sort(arr: List[int]) -&gt; List[int]:
+    if not arr:
+        return arr
+    max_val = max(arr)
+    count = [0] * (max_val + 1)
+    for val in arr:
+        count[val] += 1
+    for i in range(1, len(count)):
+        count[i] += count[i - 1]
+    output = [0] * len(arr)
+    for val in reversed(arr):
+        count[val] -= 1
+        output[count[val]] = val
+    arr[:] = output
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sorting.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn counting_sort(arr: &amp;mut Vec&lt;i32&gt;) {
+    if arr.is_empty() { return; }
+    let &amp;max_val = arr.iter().max().unwrap();
+    let &amp;min_val = arr.iter().min().unwrap();
+    let range = (max_val - min_val + 1) as usize;
+    let mut count = vec![0usize; range];
+    for &amp;val in arr.iter() {
+        count[(val - min_val) as usize] += 1;
+    }
+    let mut idx = 0;
+    for i in 0..range {
+        for _ in 0..count[i] {
+            arr[idx] = i as i32 + min_val;
+            idx += 1;
+        }
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Comparison Table -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Sorting Algorithm Comparison</h2>
+<table>
+<thead>
+<tr><th>Algorithm</th><th>Best</th><th>Average</th><th>Worst</th><th>Space</th><th>Stable</th><th>In-Place</th></tr>
+</thead>
+<tbody>
+<tr><td>Bubble Sort</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td>O(1)</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+<tr><td>Selection Sort</td><td><span class="badge badge-red">O(n^2)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td>O(1)</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+<tr><td>Insertion Sort</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td>O(1)</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+<tr><td>Merge Sort</td><td><span class="badge badge-blue">O(n log n)</span></td><td><span class="badge badge-blue">O(n log n)</span></td><td><span class="badge badge-blue">O(n log n)</span></td><td>O(n)</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-red">No</span></td></tr>
+<tr><td>Quick Sort</td><td><span class="badge badge-blue">O(n log n)</span></td><td><span class="badge badge-blue">O(n log n)</span></td><td><span class="badge badge-red">O(n^2)</span></td><td>O(log n)</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td></tr>
+<tr><td>Counting Sort</td><td><span class="badge badge-green">O(n+k)</span></td><td><span class="badge badge-green">O(n+k)</span></td><td><span class="badge badge-green">O(n+k)</span></td><td>O(k)</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-red">No</span></td></tr>
+</tbody>
+</table>
+
+<div class="insight">
+<div class="label">Interview Tip</div>
+When asked "which sort to use?", consider: (1) If data is nearly sorted, <strong>Insertion Sort</strong> is O(n). (2) If stability matters, <strong>Merge Sort</strong>. (3) For general-purpose in-memory sorting, <strong>Quick Sort</strong> (randomized) -- it has better cache performance. (4) For integer data with small range, <strong>Counting Sort</strong>.
+</div>
+</div>
+
+<!-- Counting Inversions -->
+<div class="card" id="inversions">
+<h2><span class="icon">&#128260;</span> Counting Inversions</h2>
+<p>An <strong>inversion</strong> is a pair (i, j) where i &lt; j but arr[i] &gt; arr[j]. The number of inversions measures how "unsorted" an array is. A sorted array has 0 inversions; a reverse-sorted array of n elements has n*(n-1)/2 inversions.</p>
+
+<h3>Efficient Counting with Merge Sort</h3>
+<p>During the merge step, whenever we pick from the <strong>right half</strong> before the left half, every remaining element in the left half forms an inversion with that right element. This counts all split inversions in O(n log n) total.</p>
+
+<div class="diagram">
+Inversions in [2, 4, 1, 3, 5]:
+  (2,1), (4,1), (4,3) = <span class="highlight">3 inversions</span>
+
+Inversions in [5, 4, 3, 2, 1]:
+  Every pair is an inversion = 5*4/2 = <span class="highlight">10 inversions</span>
+
+Inversions in [1, 2, 3]:
+  Already sorted = <span class="highlight">0 inversions</span>
+</div>
+</div>
+
+<!-- Practice Problems -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<strong>Sort an Array</strong> -- LeetCode 912. Implement merge sort or quick sort to sort an array of integers.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Sort Colors</strong> -- LeetCode 75. Sort an array of 0s, 1s, and 2s in-place (Dutch National Flag problem).
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Kth Largest Element</strong> -- LeetCode 215. Use QuickSelect to find the kth largest in O(n) average.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-red">Hard</span>
+<strong>Count of Smaller Numbers After Self</strong> -- LeetCode 315. Modified merge sort to count inversions per element.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Merge Intervals</strong> -- LeetCode 56. Sort intervals by start time, then merge overlapping intervals.
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary &amp; Cheat Sheet</h2>
+<h3>When to Use What</h3>
+<table>
+<thead><tr><th>Scenario</th><th>Best Algorithm</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Small array (n &lt; 16)</td><td>Insertion Sort</td><td>Low overhead, fast on small inputs</td></tr>
+<tr><td>Nearly sorted data</td><td>Insertion Sort</td><td>O(n) on nearly sorted</td></tr>
+<tr><td>Stability required</td><td>Merge Sort</td><td>Guaranteed stable, O(n log n)</td></tr>
+<tr><td>General purpose</td><td>Quick Sort (randomized)</td><td>Best cache performance, O(n log n) expected</td></tr>
+<tr><td>Integer range is small</td><td>Counting Sort</td><td>O(n + k) -- beats comparison sorts</td></tr>
+<tr><td>External data (disk)</td><td>Merge Sort</td><td>Sequential access pattern, good for disk I/O</td></tr>
+<tr><td>Find kth element</td><td>QuickSelect</td><td>O(n) average without full sort</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Navigation Footer -->
+<div class="nav-footer">
+<a href="../Week 8/index.html">&larr; Week 8</a>
+<a href="../Week 10/index.html">Week 10: Matrix &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+// Sidebar toggle
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+
+// Progress bar
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{
+const h=document.documentElement,b=document.body;
+const st=h.scrollTop||b.scrollTop;
+const sh=h.scrollHeight||b.scrollHeight;
+const p=(st/(sh-h.clientHeight))*100;
+progressBar.style.width=p+'%';
+});
+
+// Back to top
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+
+// Scroll reveal
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+
+// Code tabs
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');
+const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{
+tab.addEventListener('click',()=>{
+const lang=tab.dataset.lang;
+tabs.forEach(t=>t.classList.remove('active'));
+panels.forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');
+});
+});
+});
+
+// Copy button
+document.querySelectorAll('.copy-btn').forEach(btn=>{
+btn.addEventListener('click',()=>{
+const code=btn.closest('.code-panel').querySelector('.code-text').textContent;
+navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});
+});
+});
+
+// Line numbers
+document.querySelectorAll('.code-text').forEach(block=>{
+const lines=block.textContent.split('\n');
+const nums=block.previousElementSibling;
+nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
+});
+
+// Syntax highlighting
+function highlight(code,lang){
+// Comments
+code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+// Strings
+code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
+// Numbers
+code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
+// Keywords
+const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;
+const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;
+const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;
+const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;
+let kw=kwJava;
+if(lang==='cpp')kw=kwCpp;
+if(lang==='python')kw=kwPy;
+if(lang==='rust')kw=kwRs;
+code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
+// Functions
+code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
+return code;
+}
+document.querySelectorAll('.code-text').forEach(block=>{
+const lang=block.dataset.code||'';
+const raw=block.textContent;
+block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);
+// Re-escape for display but keep spans
+});
+// Re-run highlighting properly
+document.querySelectorAll('.code-text').forEach(block=>{
+const lang=block.dataset.code||'';
+const raw=block.textContent;
+block.innerHTML=highlight(block.innerHTML,lang);
+});
+
+// Active sidebar link on scroll
+const sections=document.querySelectorAll('[id]');
+const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{
+let current='';
+sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});
+navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')});
+});
+</script>
+</body>
+</html>

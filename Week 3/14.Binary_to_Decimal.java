@@ -1,114 +1,61 @@
 /*
-Binary to decimal 
+ * WEEK 3 - LOOPS & NUMBER THEORY
+ * Topic: Binary to Decimal Conversion
+ * File: 14.Binary_to_Decimal.java
+ *
+ * CONCEPT:
+ * Convert a binary number (given as an integer, e.g., 1100) to its decimal
+ * equivalent. Each binary digit is multiplied by 2 raised to its positional
+ * power, and the results are summed.
+ *
+ * KEY POINTS / ALGORITHM:
+ * 1. Read the binary number as an integer (e.g., 1100).
+ * 2. Initialize decimal = 0 (running sum) and pow = 1 (represents 2^0 = 1).
+ * 3. Loop while num > 0:
+ *    a. Extract last digit: last = num % 10 (gives 0 or 1).
+ *    b. Add its weighted value: decimal += last * pow.
+ *    c. Double the power: pow *= 2 (next position is 2x more).
+ *    d. Remove last digit: num = num / 10.
+ * 4. Print the decimal result.
+ *
+ * Example: 1100 -> 0*1 + 0*2 + 1*4 + 1*8 = 12
+ *
+ * Time Complexity: O(d) where d = number of binary digits (O(log N))
+ * Space Complexity: O(1)
+ *
+ * Input Format: Integer N in binary form (e.g., 1100)
+ * Output Format: Decimal equivalent (e.g., 12)
+ */
 
-  
+import java.util.Scanner;
 
-  
+public class Main {
 
-Given a binary number as an integer N, convert it into decimal and print. 
+    public static void main(String[] args) {
 
-  
+          Scanner s = new Scanner(System.in);
 
-  
+          int num = s.nextInt();         // read binary number as integer
 
-Input format : 
+          int decimal = 0, pow = 1;      // decimal = result, pow = current power of 2
 
-An integer N in the Binary Format 
+          while(num > 0) {               // process each binary digit right to left
 
-  
+              int last = num % 10;       // extract rightmost digit (0 or 1)
 
-  
+              decimal += last * pow;     // add digit's contribution: digit * 2^position
 
-Output format : 
+              pow *= 2;                  // next position: multiply power by 2
 
-Corresponding Decimal number (as integer) 
+              num = num / 10;            // remove the rightmost digit
 
-  
+            }
 
-How to approach? 
+          System.out.println(decimal);   // print the decimal equivalent
 
-A binary number can be converted into a decimal number by picking up the last digit and then 
+        }
 
-multiplying each digit with 2 raised to the power of its place value and then adding them in a 
+}
 
-continuous manner. 
 
-For example, in the case of 1100, start picking up the last digit multiplied by 2’s respective 
 
-powers and add them up.So, 
-
-1100=0*2^(0)+0*2^(1)+1*2^(2)+1*2^(3)=0+0+4+8=12 
-
-1. Take the number as input from the user. 
-
-2. Now, initialize the decimal number (this will be our running sum) by 0 and take another 
-
-variable pow for powers of 2 and initialize it with 1. 
-
-3. Now, run a loop until the number is greater than 0. 
-
-4. In each iteration, take the last digit by taking modulo 10 of the number. Find the decimal 
-
-number by maintaining a running sum of multiplication of last digit and pow. 
-
-5. In each iteration multiply pow by 2 and divide num by 10 
-
-  
-
-Pseudo Code for this problem: 
-
-Input = number 
-
-decimal=0, pow=1 
-
-While number is greater than 0: 
-
-last = number % 10 
-
-decimal += last * pow 
-
-pow *= 2 
-
-number = number / 10 
-
-print(decimal) 
-
-  
-
-  
-
-  */
-
-import java.util.Scanner; 
-
-public class Main { 
-
-    public static void main(String[] args) { 
-
-          Scanner s = new Scanner(System.in); 
-
-          int num = s.nextInt(); 
-
-          int decimal = 0, pow = 1; 
-
-          while(num > 0) { 
-
-              int last = num % 10; 
-
-              decimal += last * pow; 
-
-              pow *= 2; 
-
-              num = num / 10; 
-
-            } 
-
-          System.out.println(decimal); 
-
-        } 
-
-} 
-
- 
-
- 

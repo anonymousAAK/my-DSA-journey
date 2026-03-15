@@ -1,49 +1,34 @@
 /*
-Decimal to Binary
-
-Given a decimal number (integer N), convert it into binary and print.
-The binary number should be in the form of an integer.
-
-Input format :
-Integer N
-
-
-Output format :
-Corresponding Binary number (long)
-  
-  
-A decimal number can be converted into a binary number by picking up the number and then
-taking its remainder, after dividing it by 2, then start adding up the remainder by multiplying it
-by its place value to convert the binary representation into an integer.
-For example in case of 12, start picking up the remainder when 12 is divided by 2 and then
-adding it by multiplying by its place value.
-12 = 12%2 = 0*1 = 0
-12/2 = 6%2 = 0*10 = 0
-6/2 = 3%2 = 1*100 = 100
-3/2 = 1%2 = 1*1000 = 1000
-1/2 = 0. We will terminate the algorithm, when number becomes 0.
-So, decimal number = 1000+100+0+0 = 1100
-Step by step implementation:
-1. Take the number as input from the user.
-2. Now, initialize binary number by 0, and place value by 1.
-3. Run a while loop until the number is greater than 0.
-4. In each iteration of this loop, find the remainder when divided by 2, multiply it by its
-place value and then add it to the binary number.
-5. After this, in each iteration, multiply the place value by 10 and divide the number by 2.
-
-
-
-Pseudo Code for this problem:
-Input = number
-binary_number=0, pv=1
-While number is greater than 0:
- rem = number % 2
-binary_number += rem* pv
-pv *= 10;
-number = number / 2
-print(binary_number)
-
-*/
+ * WEEK 3 - LOOPS & NUMBER THEORY
+ * Topic: Decimal to Binary Conversion
+ * File: 15.Decimal_to_Binary.java
+ *
+ * CONCEPT:
+ * Convert a decimal (base-10) number to its binary (base-2) representation.
+ * The binary result is stored as a long integer to accommodate large binary
+ * representations (e.g., decimal 255 = binary 11111111).
+ *
+ * KEY POINTS / ALGORITHM:
+ * 1. Read the decimal number N.
+ * 2. Initialize binary = 0 (result) and pow = 1 (place value: 1, 10, 100, ...).
+ * 3. Loop while N > 0:
+ *    a. Get the remainder: lastBit = N % 2 (gives 0 or 1).
+ *    b. Place it in the result: binary += lastBit * pow.
+ *    c. Move to next decimal place: pow *= 10.
+ *    d. Integer-divide N by 2: N = N / 2.
+ * 4. Print the binary representation.
+ *
+ * Example: 12 -> 12%2=0, 6%2=0, 3%2=1, 1%2=1 -> binary = 1100
+ *
+ * NOTE: Uses long for the binary result because binary representations
+ * can exceed int range (e.g., 1000000000 for decimal 512).
+ *
+ * Time Complexity: O(log n) - number of bits in the binary representation
+ * Space Complexity: O(1)
+ *
+ * Input Format: Integer N (decimal)
+ * Output Format: Binary representation as a long integer
+ */
 
 
 
@@ -51,14 +36,16 @@ import java.util.Scanner;
   public class Main {
       public static void main(String[] args) {
           Scanner s = new Scanner(System.in);
-          int n = s.nextInt();
-          long binary = 0, pow = 1;
+          int n = s.nextInt();           // read decimal number
+
+          long binary = 0, pow = 1;      // binary = result (long to avoid overflow), pow = place value
           while(n > 0) {
-             int lastBit = n % 2;
-             binary += lastBit * pow;
-              pow *= 10;
-              n = n / 2;
+             int lastBit = n % 2;        // get remainder: 0 or 1 (rightmost binary digit)
+             binary += lastBit * pow;    // place the bit at the correct decimal position
+              pow *= 10;                 // move to next place value (1 -> 10 -> 100 -> ...)
+              n = n / 2;                 // divide n by 2 to process next bit
           }
-          System.out.println(binary);
+
+          System.out.println(binary);    // print the binary representation
       }
 }
