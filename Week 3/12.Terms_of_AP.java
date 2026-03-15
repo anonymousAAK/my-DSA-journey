@@ -1,85 +1,58 @@
 /*
-Terms of AP 
+ * WEEK 3 - LOOPS & NUMBER THEORY
+ * Topic: Terms of Arithmetic Progression (AP)
+ * File: 12.Terms_of_AP.java
+ *
+ * CONCEPT:
+ * Print the first X terms of the series 3N + 2 that are NOT multiples of 4.
+ * The series 3N + 2 generates: 5, 8, 11, 14, 17, 20, 23, ...
+ * After filtering out multiples of 4 (8, 20, ...): 5, 11, 14, 17, 23, ...
+ *
+ * KEY POINTS / ALGORITHM:
+ * 1. Read x (number of terms to print).
+ * 2. Use two counters: 'count' for how many valid terms printed, 'current' for N.
+ * 3. For each N, compute num = 3*N + 2.
+ * 4. If num is NOT divisible by 4, print it and increment count.
+ * 5. Always increment current (N) regardless of whether we printed.
+ * 6. Stop when count reaches x.
+ *
+ * Time Complexity: O(x) in the best case, O(x * k) where k depends on how
+ *                  many multiples of 4 are skipped; effectively linear.
+ * Space Complexity: O(1)
+ *
+ * Input Format: Integer x (number of terms to print)
+ * Output Format: Terms separated by spaces
+ */
+import java.util.Scanner;
 
-Write a program to print first x terms of the series 3N + 2 which are not multiples of 4. 
+public class Main {
 
- 
+    public static void main(String[] args) {
 
-Input format: 
+          Scanner s = new Scanner(System.in);
 
-Integer x 
- 
+          int n = s.nextInt();           // number of terms to print
 
-Output format: 
+          int count = 1, current = 1;    // count tracks printed terms, current is N
 
-Terms of series (separated by space) 
+          while(count <= n) {            // loop until we've printed n valid terms
 
- 
+              int num = 3 * current + 2; // compute the series term: 3N + 2
 
-How to approach?  
+              if(num % 4 != 0) {         // only print if NOT a multiple of 4
 
-1. Take the number x as input from the user.  
+                    System.out.print(num + " ");  // print valid term
 
-2. Initialize the count of numbers from 1 and N from 1.  
+                    count++;             // increment count of printed terms
 
-3. Run a loop while count is less than or equal to x.  
+                  }
 
-4. Calculate the number to printed as 3*N+2  
+               current++;               // always move to next N
 
-5. If number is not divisible by 4 print it and increment the count.  
+          }
 
- 
+        }
 
-Pseudo Code for this problem:  
+ }
 
-Input=N  
 
-count=1, N=1  
-
-While count is less than or equal to x:  
-
-num=3*N+2  
-
-If num is not divisible by 4:  
-
-print(num)  
-
-Increment the count by 1  
-
-Increment N by 1 
-
- 
-*/
-import java.util.Scanner;  
-
-public class Main {  
-
-    public static void main(String[] args) {  
-
-          Scanner s = new Scanner(System.in);  
-
-          int n = s.nextInt();  
-
-          int count = 1, current = 1; 
-
-          while(count <= n) { 
-
-              int num = 3 * current + 2; 
-
-              if(num % 4 != 0) {  
-
-                    System.out.print(num + " ");  
-
-                    count++;  
-
-                  }  
-
-               current++;  
-
-          } 
-
-        } 
-
- } 
-
- 

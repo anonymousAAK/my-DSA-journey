@@ -1,4 +1,31 @@
 /*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: How Float, Double, and Char are Stored
+ * File: 14. How other datatype are stores.java
+ *
+ * CONCEPT:
+ * Explains how floating-point numbers (float and double) and characters
+ * are stored in memory. Covers the 'f' suffix requirement for float
+ * literals, Unicode character representation, and char arithmetic.
+ *
+ * KEY POINTS:
+ * - Decimal values default to double (8 bytes); use 'f' suffix for float (4 bytes)
+ * - char in Java is 16-bit (2 bytes) using Unicode, range 0 to 65,536
+ * - Characters are stored as their Unicode/ASCII code in binary form
+ * - A char can be assigned an integer value (ASCII code): char ch = 88; // 'X'
+ * - Adding int to char adds the int to the char's ASCII value
+ *   e.g., 'a' + 1 = 97 + 1 = 98
+ * - Adding two chars adds their ASCII values: 'a' + 'b' = 97 + 98 = 195
+ * - Common pitfall: char arithmetic produces int, not char
+ *
+ * SYNTAX:
+ * float f = 10.4f;  // 'f' suffix required for float literals
+ * double d = 10.4;  // no suffix needed for double (default)
+ * char ch = 'A';    // character literal in single quotes
+ * char ch = 65;     // same as 'A' (using ASCII code directly)
+ */
+
+/*
 b) Float and Double values
 
 

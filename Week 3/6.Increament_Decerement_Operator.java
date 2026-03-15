@@ -1,20 +1,24 @@
 /*
- * Increment & Decrement Operators
+ * WEEK 3 - LOOPS & NUMBER THEORY
+ * Topic: Increment & Decrement Operators
+ * File: 6.Increament_Decerement_Operator.java
  *
- * PRE-INCREMENT (++a):
- *   Increases value by 1 FIRST, then uses the new value in the expression.
+ * CONCEPT:
+ * Increment (++) and decrement (--) operators modify a variable's value by 1.
+ * They come in two forms: prefix (++a/--a) and postfix (a++/a--), which differ
+ * in WHEN the modification happens relative to the expression evaluation.
  *
- * POST-INCREMENT (a++):
- *   Uses the CURRENT value in the expression, then increases by 1.
+ * KEY POINTS / ALGORITHM:
+ * 1. PRE-INCREMENT (++a): Increases value by 1 FIRST, then uses the new value.
+ * 2. POST-INCREMENT (a++): Uses the CURRENT value, then increases by 1.
+ * 3. PRE-DECREMENT (--a): Decreases value by 1 FIRST, then uses the new value.
+ * 4. POST-DECREMENT (a--): Uses the CURRENT value, then decreases by 1.
+ * 5. In for loops, i++ and ++i produce the same result (update happens separately).
+ * 6. In Java (unlike C/C++), behavior is well-defined even in complex expressions
+ *    because Java evaluates strictly left to right.
  *
- * PRE-DECREMENT (--a):
- *   Decreases value by 1 FIRST, then uses the new value.
- *
- * POST-DECREMENT (a--):
- *   Uses the CURRENT value, then decreases by 1.
- *
- * IMPORTANT: In Java (unlike C/C++), the behavior of these operators is
- * well-defined even in complex expressions — Java evaluates left to right.
+ * Time Complexity: O(1) for each operation
+ * Space Complexity: O(1)
  */
 
 public class IncrementDecrementOperator {
