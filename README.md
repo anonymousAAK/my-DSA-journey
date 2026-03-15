@@ -4,6 +4,22 @@
 
 All implementations available in **4 languages**: Java, Python, C++, and Rust — with detailed comments, complexity analysis, and test cases.
 
+### Interactive Learning Pages
+
+Every week includes a beautifully designed **interactive HTML page** (`index.html`) that you can open in any browser. Features include:
+
+- Dark-themed UI with sidebar navigation and scroll-spy
+- **Multi-language code viewer** with tabs for Java, C++, Python, and Rust
+- One-click copy-to-clipboard for all code snippets
+- Syntax highlighting and line numbers
+- Card-based sections with scroll-reveal animations
+- Visual diagrams and algorithm walkthroughs
+- Complexity comparison tables
+- Curated practice problems with difficulty badges
+- Fully responsive design with mobile hamburger menu
+
+> Open any `Week N/index.html` in your browser to start learning!
+
 ### Languages
 
 | Language | File Extension | Notes |
@@ -370,12 +386,13 @@ Contributions in **any language** are welcome — Go, TypeScript, Kotlin, C#, et
 
 ```
 Week N/
-├── 1.TopicName.java        # Java implementation (numbered)
+├── index.html               # Interactive learning page (open in browser)
+├── 1.TopicName.java         # Java implementation (numbered)
 ├── 2.AnotherTopic.java
-├── topic_name.py            # Python implementation
-├── topic_name.cpp           # C++ implementation
-├── topic_name.rs            # Rust implementation
-└── (concept notes)          # Theory/explanation files
+├── topic_name.py             # Python implementation
+├── topic_name.cpp            # C++ implementation
+├── topic_name.rs             # Rust implementation
+└── (concept notes)           # Theory/explanation files
 ```
 
 ## Quick Start
