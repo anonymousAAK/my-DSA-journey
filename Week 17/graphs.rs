@@ -335,7 +335,7 @@ fn main() {
     println!("BFS from 0: distances = {:?}", distances);
     assert_eq!(distances[0], 0);
     assert_eq!(distances[1], 1);
-    assert_eq!(distances[5], 2);
+    assert_eq!(distances[5], 3); // 0->1->3->5 or 0->2->4->5
     println!("PASS: BFS works correctly\n");
 
     // --- DFS ---
