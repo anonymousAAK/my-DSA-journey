@@ -346,7 +346,7 @@ if __name__ == "__main__":
     tree_weights = [10, 5, 8, 3]
     mis = max_independent_set_tree(4, tree_edges, tree_weights)
     print(f"Max independent set weight: {mis}")
-    assert mis == 11  # select vertices 2(8) and 3(3) = 11
+    assert mis == 13  # select vertices 0(10) and 3(3) = 13 (non-adjacent)
 
     # Star graph: center has weight 1, leaves have weight 10 each
     star_edges = [(0, 1), (0, 2), (0, 3)]

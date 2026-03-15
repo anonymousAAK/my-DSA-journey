@@ -345,7 +345,7 @@ fn main() {
     let text = "ABABDABACDABABCABAB";
     let pattern = "ABABCABAB";
     let positions = kmp_search(text, pattern);
-    assert_eq!(positions, vec![9]);
+    assert_eq!(positions, vec![10]);
     println!("KMP search for \"{}\" in \"{}\": positions = {:?}", pattern, text, positions);
 
     // Multiple occurrences
