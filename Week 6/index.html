@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 6: Arrays | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 6 of 12</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#array-sum">Array Sum</a>
+<a href="#linear-search">Linear Search</a>
+<a href="#reverse-rotate">Reverse &amp; Rotate</a>
+<a href="#prefix-sum">Prefix Sum</a>
+<a href="#kadane" class="sub">Kadane's Algorithm</a>
+<a href="#dutch-flag">Dutch National Flag</a>
+<a href="#missing-duplicate" class="sub">Missing &amp; Duplicate</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 6</span>
+<h1>Arrays</h1>
+<p class="subtitle">Master the most fundamental data structure in programming -- learn traversal, searching, rotation, prefix sums, Kadane's algorithm, and classic array manipulation techniques.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~7 hours estimated</span>
+<span>7 techniques covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Compute array sum iteratively and recursively</li>
+<li>Implement linear search and find min/max in a single pass</li>
+<li>Reverse and rotate arrays in-place using the two-pointer and reversal algorithms</li>
+<li>Build prefix sum arrays for O(1) range sum queries</li>
+<li>Apply Kadane's algorithm to find the maximum subarray sum</li>
+<li>Sort 0s, 1s, and 2s in a single pass using the Dutch National Flag algorithm</li>
+<li>Find missing and duplicate numbers using sum/XOR formulas and Floyd's cycle detection</li>
+</ul>
+</div>
+
+<!-- Array Sum -->
+<div class="card" id="array-sum">
+<h2><span class="icon">&#10133;</span> Array Sum</h2>
+<p>The simplest array problem: iterate through all elements and accumulate a running sum. This O(n) single-pass technique is the foundation for many array algorithms.</p>
+
+<div class="code-viewer" data-viewer="array-sum">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ReturnArraySum.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Iterative approach -- O(n) time, O(1) space
+public static int sum(int[] arr) {
+    int sum = 0;
+    for (int val : arr) {
+        sum += val;
+    }
+    return sum;
+}
+
+// Recursive approach -- O(n) time, O(n) stack space
+public static int sumRecursive(int[] arr, int index) {
+    if (index == arr.length) return 0;
+    return arr[index] + sumRecursive(arr, index + 1);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Using STL accumulate -- O(n) time, O(1) space
+#include &lt;numeric&gt;
+int arraySum(const vector&lt;int&gt;&amp; arr) {
+    return accumulate(arr.begin(), arr.end(), 0);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text"># Python built-in -- O(n) time, O(1) space
+total = sum(arr)
+
+# Manual loop
+def array_sum(arr):
+    total = 0
+    for val in arr:
+        total += val
+    return total</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Rust iterator sum -- O(n) time, O(1) space
+let total: i64 = arr.iter().map(|&amp;x| x as i64).sum();</div></div>
+</div>
+</div>
+</div>
+
+<!-- Linear Search -->
+<div class="card" id="linear-search">
+<h2><span class="icon">&#128269;</span> Linear Search</h2>
+<p>Sequentially check each element until a match is found or the array ends. This is the simplest search algorithm -- no prerequisites on array order.</p>
+
+<table>
+<tr><th>Case</th><th>Time</th></tr>
+<tr><td>Best (target is first)</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td>Average</td><td><span class="badge badge-yellow">O(n/2) = O(n)</span></td></tr>
+<tr><td>Worst (not found)</td><td><span class="badge badge-red">O(n)</span></td></tr>
+</table>
+
+<div class="code-viewer" data-viewer="linear-search">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>LinearSearch.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Return index of first occurrence, or -1 if not found
+public static int linearSearch(int[] arr, int target) {
+    for (int i = 0; i &lt; arr.length; i++) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}
+
+// Count all occurrences
+public static int countOccurrences(int[] arr, int target) {
+    int count = 0;
+    for (int val : arr) {
+        if (val == target) count++;
+    }
+    return count;
+}
+
+// Find minimum and maximum in one pass -- O(n)
+public static int[] findMinMax(int[] arr) {
+    int min = arr[0], max = arr[0];
+    for (int val : arr) {
+        if (val &lt; min) min = val;
+        if (val &gt; max) max = val;
+    }
+    return new int[]{min, max};
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Linear search -- O(n) time, O(1) space
+int linearSearch(const vector&lt;int&gt;&amp; arr, int target) {
+    for (int i = 0; i &lt; (int)arr.size(); ++i) {
+        if (arr[i] == target) return i;
+    }
+    return -1;
+}
+
+// Using STL find
+auto it = find(arr.begin(), arr.end(), target);
+int idx = (it != arr.end()) ? distance(arr.begin(), it) : -1;</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def linear_search(arr, target):
+    for i, val in enumerate(arr):
+        if val == target:
+            return i
+    return -1
+
+# Python built-in (raises ValueError if not found)
+idx = arr.index(target)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Using iterator position -- O(n) time
+fn linear_search(arr: &amp;[i32], target: i32) -&gt; Option&lt;usize&gt; {
+    arr.iter().position(|&amp;x| x == target)
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Linear vs Binary Search</div>
+<p>Linear search works on <strong>any</strong> array (sorted or unsorted). Binary search requires a <strong>sorted</strong> array but runs in O(log n). For small arrays (n &lt; 30), linear search can be faster due to cache effects.</p>
+</div>
+</div>
+
+<!-- Reverse & Rotate -->
+<div class="card" id="reverse-rotate">
+<h2><span class="icon">&#128260;</span> Array Reverse &amp; Rotate</h2>
+
+<h3>Reverse: Two-Pointer Technique</h3>
+<p>Swap elements at the left and right pointers, then move inward. Time: O(n), Space: O(1).</p>
+
+<h3>Left Rotate by K: Reversal Algorithm</h3>
+<div class="diagram">
+Input:  [1, 2, 3, 4, 5], k=2
+
+<span class="highlight">Step 1:</span> Reverse first k elements:   [<span class="swap">2, 1</span>, 3, 4, 5]
+<span class="highlight">Step 2:</span> Reverse remaining n-k:      [2, 1, <span class="swap">5, 4, 3</span>]
+<span class="highlight">Step 3:</span> Reverse entire array:        [<span class="sorted">3, 4, 5, 1, 2</span>]
+
+Time: O(n), Space: O(1) -- much better than naive O(n*k) shifting!
+</div>
+
+<div class="code-viewer" data-viewer="reverse-rotate">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ArrayReverseAndRotate.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Reverse a subarray from index l to r (inclusive)
+static void reverse(int[] arr, int l, int r) {
+    while (l &lt; r) {
+        int temp = arr[l];
+        arr[l] = arr[r];
+        arr[r] = temp;
+        l++; r--;
+    }
+}
+
+// Left rotate by k positions using reversal algorithm
+// Time: O(n), Space: O(1)
+static void leftRotate(int[] arr, int k) {
+    int n = arr.length;
+    k = k % n; // handle k &gt;= n
+    if (k == 0) return;
+    reverse(arr, 0, k - 1);
+    reverse(arr, k, n - 1);
+    reverse(arr, 0, n - 1);
+}
+
+// Right rotate = left rotate by (n - k)
+static void rightRotate(int[] arr, int k) {
+    leftRotate(arr, arr.length - (k % arr.length));
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">void reverseArray(vector&lt;int&gt;&amp; arr, int left, int right) {
+    while (left &lt; right) {
+        swap(arr[left++], arr[right--]);
+    }
+}
+
+// Rotate right by k positions -- O(n) time, O(1) space
+void rotateRight(vector&lt;int&gt;&amp; arr, int k) {
+    int n = arr.size();
+    if (n == 0) return;
+    k = ((k % n) + n) % n;
+    reverseArray(arr, 0, n - 1);
+    reverseArray(arr, 0, k - 1);
+    reverseArray(arr, k, n - 1);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def reverse_array(arr):
+    """Reverse in-place using two pointers. Time: O(n), Space: O(1)"""
+    left, right = 0, len(arr) - 1
+    while left &lt; right:
+        arr[left], arr[right] = arr[right], arr[left]
+        left += 1
+        right -= 1
+    return arr
+
+def rotate_array(arr, k):
+    """Rotate right by k using reversal algorithm. Time: O(n), Space: O(1)"""
+    n = len(arr)
+    k %= n
+    def _reverse(lo, hi):
+        while lo &lt; hi:
+            arr[lo], arr[hi] = arr[hi], arr[lo]
+            lo += 1; hi -= 1
+    _reverse(0, n - 1)
+    _reverse(0, k - 1)
+    _reverse(k, n - 1)
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Rotate right by k using reversal algorithm. Time: O(n), Space: O(1)
+fn rotate_array(arr: &amp;mut [i32], k: usize) {
+    let n = arr.len();
+    if n == 0 { return; }
+    let k = k % n;
+    if k == 0 { return; }
+    arr.reverse();
+    arr[..k].reverse();
+    arr[k..].reverse();
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Prefix Sum -->
+<div class="card" id="prefix-sum">
+<h2><span class="icon">&#128200;</span> Prefix Sum &amp; Range Queries</h2>
+<p>A prefix sum array P where <code>P[i] = arr[0] + arr[1] + ... + arr[i]</code>. After O(n) preprocessing, any range sum query can be answered in <strong>O(1)</strong>:</p>
+<p><code>sum(arr[l..r]) = P[r] - P[l-1]</code></p>
+
+<div class="diagram">
+Array:  [3, -1,  2,  4, -3,  7]
+Prefix: [3,  2,  4,  8,  5, 12]
+
+<span class="highlight">Query: sum(arr[1..4])</span> = P[4] - P[0] = 5 - 3 = <span class="sorted">2</span>
+  Verify: -1 + 2 + 4 + (-3) = 2  &#10004;
+</div>
+
+<div class="code-viewer" data-viewer="prefix-sum">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>PrefixSumAndKadane.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Build prefix sum array -- O(n)
+static int[] buildPrefix(int[] arr) {
+    int n = arr.length;
+    int[] prefix = new int[n];
+    prefix[0] = arr[0];
+    for (int i = 1; i &lt; n; i++) {
+        prefix[i] = prefix[i - 1] + arr[i];
+    }
+    return prefix;
+}
+
+// Range sum query [l, r] using prefix -- O(1)
+static int rangeSum(int[] prefix, int l, int r) {
+    if (l == 0) return prefix[r];
+    return prefix[r] - prefix[l - 1];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Build prefix sum -- O(n) time, O(n) space
+// prefix[i] = arr[0] + ... + arr[i-1], prefix[0] = 0
+vector&lt;long long&gt; buildPrefixSum(const vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    vector&lt;long long&gt; prefix(n + 1, 0);
+    for (int i = 0; i &lt; n; ++i) {
+        prefix[i + 1] = prefix[i] + arr[i];
+    }
+    return prefix;
+}
+
+// Range sum [l, r] inclusive -- O(1)
+long long rangeSum(const vector&lt;long long&gt;&amp; prefix, int l, int r) {
+    return prefix[r + 1] - prefix[l];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def build_prefix_sum(arr):
+    """Build prefix-sum array. Time: O(n), Space: O(n)"""
+    prefix = [0] * (len(arr) + 1)
+    for i in range(len(arr)):
+        prefix[i + 1] = prefix[i] + arr[i]
+    return prefix
+
+def range_sum(prefix, left, right):
+    """Return sum(arr[left..right]) in O(1)."""
+    return prefix[right + 1] - prefix[left]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn build_prefix_sum(arr: &amp;[i32]) -&gt; Vec&lt;i64&gt; {
+    let mut prefix = Vec::with_capacity(arr.len() + 1);
+    prefix.push(0i64);
+    for &amp;val in arr {
+        let last = *prefix.last().unwrap();
+        prefix.push(last + val as i64);
+    }
+    prefix
+}
+
+fn range_sum_query(prefix: &amp;[i64], left: usize, right: usize) -&gt; i64 {
+    prefix[right + 1] - prefix[left]
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Kadane's Algorithm -->
+<div class="card" id="kadane">
+<h2><span class="icon">&#9889;</span> Kadane's Algorithm (Maximum Subarray Sum)</h2>
+<p>Find the contiguous subarray with the maximum sum. This is a classic <strong>Dynamic Programming</strong> problem solved in linear time.</p>
+
+<h3>Algorithm</h3>
+<p>At each position, decide: extend the current subarray, or start fresh?</p>
+<p><code>currentSum = max(arr[i], currentSum + arr[i])</code></p>
+
+<div class="diagram">
+Array: [-2, 1, -3, <span class="highlight">4, -1, 2, 1</span>, -5, 4]
+
+The subarray [4, -1, 2, 1] has the maximum sum = <span class="highlight">6</span>
+</div>
+
+<div class="code-viewer" data-viewer="kadane">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>PrefixSumAndKadane.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Kadane's Algorithm -- O(n) time, O(1) space
+static int maxSubarraySum(int[] arr) {
+    int maxSum = arr[0];
+    int currentSum = arr[0];
+    for (int i = 1; i &lt; arr.length; i++) {
+        currentSum = Math.max(arr[i], currentSum + arr[i]);
+        maxSum = Math.max(maxSum, currentSum);
+    }
+    return maxSum;
+}
+
+// Extended: also return start and end indices
+static int[] maxSubarrayWithIndices(int[] arr) {
+    int maxSum = arr[0], currentSum = arr[0];
+    int start = 0, end = 0, tempStart = 0;
+    for (int i = 1; i &lt; arr.length; i++) {
+        if (arr[i] &gt; currentSum + arr[i]) {
+            currentSum = arr[i];
+            tempStart = i;
+        } else {
+            currentSum += arr[i];
+        }
+        if (currentSum &gt; maxSum) {
+            maxSum = currentSum;
+            start = tempStart;
+            end = i;
+        }
+    }
+    return new int[]{maxSum, start, end};
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Kadane's -- returns {maxSum, startIndex, endIndex}
+// Time: O(n)   Space: O(1)
+tuple&lt;long long, int, int&gt; kadane(const vector&lt;int&gt;&amp; arr) {
+    long long maxSum = arr[0], currentSum = arr[0];
+    int start = 0, end = 0, tempStart = 0;
+    for (int i = 1; i &lt; (int)arr.size(); ++i) {
+        if (currentSum + arr[i] &lt; arr[i]) {
+            currentSum = arr[i];
+            tempStart = i;
+        } else {
+            currentSum += arr[i];
+        }
+        if (currentSum &gt; maxSum) {
+            maxSum = currentSum;
+            start = tempStart;
+            end = i;
+        }
+    }
+    return {maxSum, start, end};
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def kadane(arr):
+    """Return (max_sum, start_index, end_index).
+    Time: O(n), Space: O(1)"""
+    max_sum = current_sum = arr[0]
+    start = end = temp_start = 0
+    for i in range(1, len(arr)):
+        if current_sum + arr[i] &lt; arr[i]:
+            current_sum = arr[i]
+            temp_start = i
+        else:
+            current_sum += arr[i]
+        if current_sum &gt; max_sum:
+            max_sum = current_sum
+            start = temp_start
+            end = i
+    return (max_sum, start, end)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Kadane's algorithm. Returns (max_sum, start, end).
+/// Time: O(n), Space: O(1)
+fn kadanes_algorithm(arr: &amp;[i32]) -&gt; (i64, usize, usize) {
+    let mut max_sum = arr[0] as i64;
+    let mut current_sum = arr[0] as i64;
+    let (mut start, mut end, mut temp_start) = (0, 0, 0);
+    for i in 1..arr.len() {
+        if current_sum + (arr[i] as i64) &lt; arr[i] as i64 {
+            current_sum = arr[i] as i64;
+            temp_start = i;
+        } else {
+            current_sum += arr[i] as i64;
+        }
+        if current_sum &gt; max_sum {
+            max_sum = current_sum;
+            start = temp_start;
+            end = i;
+        }
+    }
+    (max_sum, start, end)
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Dutch National Flag -->
+<div class="card" id="dutch-flag">
+<h2><span class="icon">&#127475;&#127473;</span> Dutch National Flag (3-Way Partition)</h2>
+<p>Sort an array containing only 0s, 1s, and 2s in-place in a <strong>single pass</strong>.</p>
+
+<h3>Dijkstra's Three-Pointer Algorithm</h3>
+<div class="diagram">
+Three pointers: low, mid, high
+
+  arr[0..low-1]   = all 0s  <span class="sorted">(sorted)</span>
+  arr[low..mid-1]  = all 1s  <span class="sorted">(sorted)</span>
+  arr[mid..high]   = unsorted <span class="pivot">(being processed)</span>
+  arr[high+1..n-1] = all 2s  <span class="sorted">(sorted)</span>
+
+Rules:
+  arr[mid] == 0  &rarr;  swap(low, mid), low++, mid++
+  arr[mid] == 1  &rarr;  mid++
+  arr[mid] == 2  &rarr;  swap(mid, high), high-- (don't advance mid!)
+</div>
+
+<div class="code-viewer" data-viewer="dutch-flag">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DutchNationalFlagAndMissing.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Dutch National Flag -- O(n) time, O(1) space
+static void dutchFlag(int[] arr) {
+    int low = 0, mid = 0, high = arr.length - 1;
+    while (mid &lt;= high) {
+        if (arr[mid] == 0) {
+            int t = arr[low]; arr[low] = arr[mid]; arr[mid] = t;
+            low++; mid++;
+        } else if (arr[mid] == 1) {
+            mid++;
+        } else { // arr[mid] == 2
+            int t = arr[mid]; arr[mid] = arr[high]; arr[high] = t;
+            high--;
+        }
+    }
+}
+// [2,0,2,1,1,0] --> [0,0,1,1,2,2]</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Dutch National Flag -- O(n) time, O(1) space
+void dutchNationalFlag(vector&lt;int&gt;&amp; arr) {
+    int low = 0, mid = 0, high = (int)arr.size() - 1;
+    while (mid &lt;= high) {
+        if (arr[mid] == 0) swap(arr[low++], arr[mid++]);
+        else if (arr[mid] == 1) ++mid;
+        else swap(arr[mid], arr[high--]);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def dutch_national_flag(arr):
+    """Sort 0s, 1s, 2s in one pass. Time: O(n), Space: O(1)"""
+    low = mid = 0
+    high = len(arr) - 1
+    while mid &lt;= high:
+        if arr[mid] == 0:
+            arr[low], arr[mid] = arr[mid], arr[low]
+            low += 1; mid += 1
+        elif arr[mid] == 1:
+            mid += 1
+        else:
+            arr[mid], arr[high] = arr[high], arr[mid]
+            high -= 1
+    return arr</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Dutch National Flag -- O(n) time, O(1) space
+fn dutch_national_flag(arr: &amp;mut [i32]) {
+    if arr.is_empty() { return; }
+    let (mut low, mut mid) = (0usize, 0usize);
+    let mut high = arr.len() - 1;
+    while mid &lt;= high {
+        match arr[mid] {
+            0 =&gt; { arr.swap(low, mid); low += 1; mid += 1; }
+            1 =&gt; { mid += 1; }
+            2 =&gt; {
+                arr.swap(mid, high);
+                if high == 0 { break; }
+                high -= 1;
+            }
+            _ =&gt; panic!("Array must contain only 0, 1, or 2"),
+        }
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Missing & Duplicate -->
+<div class="card" id="missing-duplicate">
+<h2><span class="icon">&#128270;</span> Missing Number &amp; Find Duplicate</h2>
+
+<h3>Missing Number</h3>
+<p>Given array [0..n] with one number missing. Two approaches:</p>
+<ul>
+<li><strong>Sum formula:</strong> expected = n*(n+1)/2, subtract actual sum. O(n) time, O(1) space.</li>
+<li><strong>XOR:</strong> XOR of [0..n] XOR all elements. All pairs cancel; only missing remains.</li>
+</ul>
+
+<h3>Find Duplicate: Floyd's Cycle Detection</h3>
+<p>Given n+1 integers where each is in [1..n], one number repeats. Treat the array as a linked list where arr[i] is the "next" pointer. The duplicate creates a cycle; find the cycle entry.</p>
+
+<div class="code-viewer" data-viewer="missing-dup">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DutchNationalFlagAndMissing.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Missing number using XOR -- O(n) time, O(1) space
+static int missingNumberXOR(int[] arr) {
+    int n = arr.length;
+    int xor = 0;
+    for (int i = 0; i &lt;= n; i++) xor ^= i;
+    for (int x : arr) xor ^= x;
+    return xor; // only missing number remains
+}
+
+// Find duplicate -- Floyd's Cycle Detection
+// O(n) time, O(1) space
+static int findDuplicate(int[] arr) {
+    // Phase 1: find intersection point inside cycle
+    int slow = arr[0], fast = arr[0];
+    do {
+        slow = arr[slow];
+        fast = arr[arr[fast]];
+    } while (slow != fast);
+
+    // Phase 2: find cycle entrance (= duplicate)
+    slow = arr[0];
+    while (slow != fast) {
+        slow = arr[slow];
+        fast = arr[fast];
+    }
+    return slow;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>arrays.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Missing number using XOR -- O(n) time, O(1) space
+int missingNumberXOR(const vector&lt;int&gt;&amp; nums) {
+    int n = nums.size();
+    int xorAll = 0;
+    for (int i = 0; i &lt;= n; ++i) xorAll ^= i;
+    for (int x : nums) xorAll ^= x;
+    return xorAll;
+}
+
+// Floyd's cycle detection -- O(n) time, O(1) space
+int findDuplicate(const vector&lt;int&gt;&amp; nums) {
+    int slow = nums[0], fast = nums[0];
+    do {
+        slow = nums[slow];
+        fast = nums[nums[fast]];
+    } while (slow != fast);
+    slow = nums[0];
+    while (slow != fast) {
+        slow = nums[slow];
+        fast = nums[fast];
+    }
+    return slow;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>arrays.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def missing_number_xor(nums):
+    """Find missing number using XOR. Time: O(n), Space: O(1)"""
+    xor = len(nums)
+    for i, v in enumerate(nums):
+        xor ^= i ^ v
+    return xor
+
+def find_duplicate(nums):
+    """Floyd's tortoise and hare. Time: O(n), Space: O(1)"""
+    slow = fast = nums[0]
+    while True:
+        slow = nums[slow]
+        fast = nums[nums[fast]]
+        if slow == fast:
+            break
+    slow = nums[0]
+    while slow != fast:
+        slow = nums[slow]
+        fast = nums[fast]
+    return slow</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>arrays.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn missing_number_xor(nums: &amp;[i32]) -&gt; i32 {
+    let n = nums.len() as i32;
+    let mut xor_all = 0i32;
+    for i in 0..=n { xor_all ^= i; }
+    for &amp;num in nums { xor_all ^= num; }
+    xor_all
+}
+
+fn find_duplicate(nums: &amp;[i32]) -&gt; i32 {
+    let mut slow = nums[0] as usize;
+    let mut fast = nums[0] as usize;
+    loop {
+        slow = nums[slow] as usize;
+        fast = nums[nums[fast] as usize] as usize;
+        if slow == fast { break; }
+    }
+    let mut slow = nums[0] as usize;
+    while slow != fast {
+        slow = nums[slow] as usize;
+        fast = nums[fast] as usize;
+    }
+    slow as i32
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Complexity Table -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Comparison</h2>
+<table>
+<tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Key Idea</th></tr>
+<tr><td>Array Sum</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Single pass accumulation</td></tr>
+<tr><td>Linear Search</td><td><span class="badge badge-yellow">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Sequential scan</td></tr>
+<tr><td>Array Reverse</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Two pointers</td></tr>
+<tr><td>Array Rotate (reversal)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Three reverses</td></tr>
+<tr><td>Prefix Sum Build</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>Cumulative sum</td></tr>
+<tr><td>Range Sum Query</td><td><span class="badge badge-green">O(1)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Prefix subtraction</td></tr>
+<tr><td>Kadane's Algorithm</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>DP: extend or restart</td></tr>
+<tr><td>Dutch National Flag</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>3-way partition</td></tr>
+<tr><td>Missing Number (XOR)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>XOR cancellation</td></tr>
+<tr><td>Find Duplicate (Floyd's)</td><td><span class="badge badge-green">O(n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Cycle detection</td></tr>
+</table>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#127947;</span> Practice Problems</h2>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Two Sum</strong> -- Given an array and a target, find two elements that add up to the target.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Move Zeros</strong> -- Move all zeros to the end while maintaining the order of non-zero elements.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Product of Array Except Self</strong> -- Return an array where each element is the product of all other elements, without using division.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Subarray Sum Equals K</strong> -- Find the total number of contiguous subarrays whose sum equals k (prefix sum + hashmap).
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--danger)">Hard</div>
+<strong>Trapping Rain Water</strong> -- Given elevation bars, compute how much water can be trapped after raining.
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128218;</span> Summary</h2>
+<ul>
+<li><strong>Two-pointer technique</strong> (reverse, rotate) is fundamental for O(1)-space array manipulation.</li>
+<li><strong>Prefix sum</strong> is a powerful preprocessing technique for range queries.</li>
+<li><strong>Kadane's algorithm</strong> elegantly solves maximum subarray in O(n) using a simple DP recurrence.</li>
+<li><strong>Dutch National Flag</strong> (3-way partition) is the key building block for quicksort with many duplicates.</li>
+<li><strong>XOR tricks</strong> and <strong>Floyd's cycle detection</strong> solve missing/duplicate problems in O(1) extra space.</li>
+<li>Nearly every algorithm this week runs in <strong>O(n) time and O(1) space</strong> -- that is the sweet spot for array problems.</li>
+</ul>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 5/index.html">&larr; Week 5: Methods &amp; Recursion</a>
+<a href="../Week 7/index.html">Week 7: Strings &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+<script>
+(function(){
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const pb=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement;const st=h.scrollTop||document.body.scrollTop;const sh=h.scrollHeight-h.clientHeight;pb.style.width=(st/sh*100)+'%'});
+const btt=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{btt.classList.toggle('visible',window.scrollY>400)});
+btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+const sections=document.querySelectorAll('.card, .hero');
+const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id});navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');
+const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{tab.addEventListener('click',()=>{
+const lang=tab.dataset.lang;
+tabs.forEach(t=>t.classList.remove('active'));
+panels.forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');
+})});
+});
+document.querySelectorAll('.code-content').forEach(block=>{
+const code=block.querySelector('.code-text');
+const nums=block.querySelector('.line-numbers');
+if(!code||!nums)return;
+const lines=code.textContent.split('\n');
+nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
+});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{
+const code=btn.closest('.code-panel').querySelector('.code-text').textContent;
+navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});
+})});
+})();
+</script>
+</body>
+</html>

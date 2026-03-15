@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 8: Searching Algorithms | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 8 of 12</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#binary-search">Binary Search</a>
+<a href="#first-last" class="sub">First/Last Occurrence</a>
+<a href="#rotated" class="sub">Rotated Array</a>
+<a href="#bs-on-answer">BS on the Answer</a>
+<a href="#sqrt" class="sub">Integer Square Root</a>
+<a href="#koko" class="sub">Koko Eating Bananas</a>
+<a href="#ship" class="sub">Ship Packages</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 8</span>
+<h1>Searching Algorithms</h1>
+<p class="subtitle">Master binary search in all its forms -- from the classic sorted-array search to the powerful "binary search on the answer" paradigm that solves optimization problems in O(n log n).</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~7 hours estimated</span>
+<span>7 variations covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Implement binary search iteratively and recursively with correct mid calculation</li>
+<li>Find first and last occurrences of a target in a sorted array</li>
+<li>Search in a rotated sorted array</li>
+<li>Understand the "binary search on the answer" paradigm for optimization problems</li>
+<li>Apply BS on answer to: integer square root, Koko eating bananas, ship packages</li>
+<li>Recognize the common template: monotonic condition over a range of possible answers</li>
+</ul>
+</div>
+
+<!-- Binary Search -->
+<div class="card" id="binary-search">
+<h2><span class="icon">&#128269;</span> Binary Search</h2>
+<p>Binary search halves the search space at each step by comparing the target with the middle element. <strong>Prerequisite: the array must be sorted.</strong></p>
+
+<h3>Step-by-Step Visualization</h3>
+<div class="diagram">
+Array: [1, 3, 5, 7, 9, 11, 13, 15]    Target: <span class="highlight">7</span>
+
+<span class="highlight">Step 1:</span> lo=0, hi=7, mid=3 &rarr; arr[3]=<span class="sorted">7</span> == target &rarr; <span class="highlight">Found at index 3!</span>
+
+Another example, Target: <span class="pivot">11</span>
+<span class="highlight">Step 1:</span> lo=0, hi=7, mid=3 &rarr; arr[3]=7 &lt; 11 &rarr; lo=4
+<span class="highlight">Step 2:</span> lo=4, hi=7, mid=5 &rarr; arr[5]=<span class="sorted">11</span> == target &rarr; <span class="highlight">Found at index 5!</span>
+</div>
+
+<div class="warning-box">
+<div class="label">Integer Overflow Pitfall</div>
+<p><strong>BAD:</strong> <code>mid = (low + high) / 2</code> -- can overflow if low + high &gt; Integer.MAX_VALUE<br>
+<strong>GOOD:</strong> <code>mid = low + (high - low) / 2</code> -- always safe</p>
+</div>
+
+<div class="code-viewer" data-viewer="binary-search">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BinarySearch.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Standard binary search -- O(log n) time, O(1) space
+static int binarySearch(int[] arr, int target) {
+    int low = 0, high = arr.length - 1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) return mid;
+        else if (arr[mid] &lt; target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return -1;
+}
+
+// Recursive binary search -- O(log n) time, O(log n) stack
+static int binarySearchRec(int[] arr, int target, int low, int high) {
+    if (low &gt; high) return -1;
+    int mid = low + (high - low) / 2;
+    if (arr[mid] == target) return mid;
+    else if (arr[mid] &lt; target)
+        return binarySearchRec(arr, target, mid + 1, high);
+    else
+        return binarySearchRec(arr, target, low, mid - 1);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>searching.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Iterative -- O(log n) time, O(1) space
+int binarySearchIterative(const vector&lt;int&gt;&amp; arr, int target) {
+    int lo = 0, hi = (int)arr.size() - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) return mid;
+        else if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return -1;
+}
+
+// Recursive -- O(log n) time, O(log n) stack
+int binarySearchRecursive(const vector&lt;int&gt;&amp; arr, int target, int lo, int hi) {
+    if (lo &gt; hi) return -1;
+    int mid = lo + (hi - lo) / 2;
+    if (arr[mid] == target) return mid;
+    if (arr[mid] &lt; target)
+        return binarySearchRecursive(arr, target, mid + 1, hi);
+    return binarySearchRecursive(arr, target, lo, mid - 1);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>searching.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def binary_search_iterative(arr, target):
+    """O(log n) time, O(1) space"""
+    lo, hi = 0, len(arr) - 1
+    while lo &lt;= hi:
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] &lt; target:
+            lo = mid + 1
+        else:
+            hi = mid - 1
+    return -1
+
+def binary_search_recursive(arr, target, lo=0, hi=None):
+    """O(log n) time, O(log n) stack"""
+    if hi is None: hi = len(arr) - 1
+    if lo &gt; hi: return -1
+    mid = lo + (hi - lo) // 2
+    if arr[mid] == target: return mid
+    elif arr[mid] &lt; target:
+        return binary_search_recursive(arr, target, mid + 1, hi)
+    else:
+        return binary_search_recursive(arr, target, lo, mid - 1)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>searching.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">/// Standard binary search. Returns Some(index) or None.
+/// Time: O(log n), Space: O(1)
+fn binary_search(arr: &amp;[i32], target: i32) -&gt; Option&lt;usize&gt; {
+    if arr.is_empty() { return None; }
+    let mut left = 0usize;
+    let mut right = arr.len() - 1;
+    while left &lt;= right {
+        let mid = left + (right - left) / 2;
+        match arr[mid].cmp(&amp;target) {
+            std::cmp::Ordering::Equal =&gt; return Some(mid),
+            std::cmp::Ordering::Less =&gt; left = mid + 1,
+            std::cmp::Ordering::Greater =&gt; {
+                if mid == 0 { break; }
+                right = mid - 1;
+            }
+        }
+    }
+    None
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- First/Last Occurrence -->
+<div class="card" id="first-last">
+<h2><span class="icon">&#128205;</span> First &amp; Last Occurrence</h2>
+<p>When the array has duplicates, standard binary search returns an arbitrary match. To find the <strong>first</strong> (leftmost) or <strong>last</strong> (rightmost) occurrence, keep searching even after finding a match.</p>
+
+<div class="code-viewer" data-viewer="first-last">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BinarySearch.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Find FIRST occurrence -- O(log n)
+static int firstOccurrence(int[] arr, int target) {
+    int low = 0, high = arr.length - 1, result = -1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) {
+            result = mid;
+            high = mid - 1; // keep searching LEFT
+        } else if (arr[mid] &lt; target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return result;
+}
+
+// Find LAST occurrence -- O(log n)
+static int lastOccurrence(int[] arr, int target) {
+    int low = 0, high = arr.length - 1, result = -1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) {
+            result = mid;
+            low = mid + 1; // keep searching RIGHT
+        } else if (arr[mid] &lt; target) low = mid + 1;
+        else high = mid - 1;
+    }
+    return result;
+}
+
+// Count occurrences = last - first + 1
+static int countOccurrences(int[] arr, int target) {
+    int first = firstOccurrence(arr, target);
+    if (first == -1) return 0;
+    return lastOccurrence(arr, target) - first + 1;
+}
+// [1,2,2,2,3,4,4,5]: count(2) = 3, count(4) = 2</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>searching.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">int firstOccurrence(const vector&lt;int&gt;&amp; arr, int target) {
+    int lo = 0, hi = (int)arr.size() - 1, result = -1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) { result = mid; hi = mid - 1; }
+        else if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return result;
+}
+
+int lastOccurrence(const vector&lt;int&gt;&amp; arr, int target) {
+    int lo = 0, hi = (int)arr.size() - 1, result = -1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) { result = mid; lo = mid + 1; }
+        else if (arr[mid] &lt; target) lo = mid + 1;
+        else hi = mid - 1;
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>searching.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def first_occurrence(arr, target):
+    lo, hi, result = 0, len(arr) - 1, -1
+    while lo &lt;= hi:
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target:
+            result = mid
+            hi = mid - 1  # keep searching left
+        elif arr[mid] &lt; target: lo = mid + 1
+        else: hi = mid - 1
+    return result
+
+def last_occurrence(arr, target):
+    lo, hi, result = 0, len(arr) - 1, -1
+    while lo &lt;= hi:
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target:
+            result = mid
+            lo = mid + 1  # keep searching right
+        elif arr[mid] &lt; target: lo = mid + 1
+        else: hi = mid - 1
+    return result</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>searching.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn first_occurrence(arr: &amp;[i32], target: i32) -&gt; Option&lt;usize&gt; {
+    let (mut left, mut right) = (0, arr.len());
+    let mut result: Option&lt;usize&gt; = None;
+    while left &lt; right {
+        let mid = left + (right - left) / 2;
+        match arr[mid].cmp(&amp;target) {
+            std::cmp::Ordering::Equal =&gt; { result = Some(mid); right = mid; }
+            std::cmp::Ordering::Less =&gt; left = mid + 1,
+            std::cmp::Ordering::Greater =&gt; right = mid,
+        }
+    }
+    result
+}
+
+fn last_occurrence(arr: &amp;[i32], target: i32) -&gt; Option&lt;usize&gt; {
+    let (mut left, mut right) = (0, arr.len());
+    let mut result: Option&lt;usize&gt; = None;
+    while left &lt; right {
+        let mid = left + (right - left) / 2;
+        match arr[mid].cmp(&amp;target) {
+            std::cmp::Ordering::Equal =&gt; { result = Some(mid); left = mid + 1; }
+            std::cmp::Ordering::Less =&gt; left = mid + 1,
+            std::cmp::Ordering::Greater =&gt; right = mid,
+        }
+    }
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Rotated Array -->
+<div class="card" id="rotated">
+<h2><span class="icon">&#128260;</span> Search in Rotated Sorted Array</h2>
+<p>A rotated sorted array like <code>[4, 5, 6, 7, 0, 1, 2]</code> was sorted then rotated at some pivot. At each step of binary search, <strong>one half is always sorted</strong>. Determine which half the target lies in and discard the other.</p>
+
+<div class="diagram">
+Array: [4, 5, 6, 7, 0, 1, 2]    Target: <span class="highlight">0</span>
+
+<span class="highlight">Step 1:</span> lo=0, hi=6, mid=3 &rarr; arr[3]=7
+  Left [4,5,6,7] is sorted. Target 0 not in [4,7] &rarr; go right
+<span class="highlight">Step 2:</span> lo=4, hi=6, mid=5 &rarr; arr[5]=1
+  Left [0,1] is sorted... but arr[lo]=0 &lt;= 0 &lt; 1 &rarr; go left
+<span class="highlight">Step 3:</span> lo=4, hi=4, mid=4 &rarr; arr[4]=<span class="sorted">0</span> &rarr; <span class="highlight">Found at index 4!</span>
+</div>
+
+<div class="code-viewer" data-viewer="rotated">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BinarySearch.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Search in rotated sorted array -- O(log n)
+static int searchRotated(int[] arr, int target) {
+    int low = 0, high = arr.length - 1;
+    while (low &lt;= high) {
+        int mid = low + (high - low) / 2;
+        if (arr[mid] == target) return mid;
+
+        if (arr[low] &lt;= arr[mid]) { // left half is sorted
+            if (arr[low] &lt;= target &amp;&amp; target &lt; arr[mid])
+                high = mid - 1;
+            else
+                low = mid + 1;
+        } else { // right half is sorted
+            if (arr[mid] &lt; target &amp;&amp; target &lt;= arr[high])
+                low = mid + 1;
+            else
+                high = mid - 1;
+        }
+    }
+    return -1;
+}
+// [4,5,6,7,0,1,2], target=0 --> 4
+// [4,5,6,7,0,1,2], target=3 --> -1</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>searching.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">int searchRotated(const vector&lt;int&gt;&amp; arr, int target) {
+    int lo = 0, hi = (int)arr.size() - 1;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (arr[mid] == target) return mid;
+        if (arr[lo] &lt;= arr[mid]) {
+            if (arr[lo] &lt;= target &amp;&amp; target &lt; arr[mid]) hi = mid - 1;
+            else lo = mid + 1;
+        } else {
+            if (arr[mid] &lt; target &amp;&amp; target &lt;= arr[hi]) lo = mid + 1;
+            else hi = mid - 1;
+        }
+    }
+    return -1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>searching.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def search_rotated(arr, target):
+    """O(log n) time, O(1) space"""
+    lo, hi = 0, len(arr) - 1
+    while lo &lt;= hi:
+        mid = lo + (hi - lo) // 2
+        if arr[mid] == target: return mid
+        if arr[lo] &lt;= arr[mid]:  # left half sorted
+            if arr[lo] &lt;= target &lt; arr[mid]: hi = mid - 1
+            else: lo = mid + 1
+        else:  # right half sorted
+            if arr[mid] &lt; target &lt;= arr[hi]: lo = mid + 1
+            else: hi = mid - 1
+    return -1</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>searching.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn search_rotated(arr: &amp;[i32], target: i32) -&gt; Option&lt;usize&gt; {
+    if arr.is_empty() { return None; }
+    let (mut left, mut right) = (0, arr.len() - 1);
+    while left &lt;= right {
+        let mid = left + (right - left) / 2;
+        if arr[mid] == target { return Some(mid); }
+        if arr[left] &lt;= arr[mid] {
+            if arr[left] &lt;= target &amp;&amp; target &lt; arr[mid] {
+                if mid == 0 { break; }
+                right = mid - 1;
+            } else { left = mid + 1; }
+        } else {
+            if arr[mid] &lt; target &amp;&amp; target &lt;= arr[right] {
+                left = mid + 1;
+            } else {
+                if mid == 0 { break; }
+                right = mid - 1;
+            }
+        }
+    }
+    None
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Binary Search on Answer -->
+<div class="card" id="bs-on-answer">
+<h2><span class="icon">&#9889;</span> Binary Search on the Answer</h2>
+<p>Binary search is not just for finding elements in arrays. It can be applied to <strong>any monotonic function</strong> over a range of possible answers.</p>
+
+<h3>The Universal Template</h3>
+<div class="diagram">
+<span class="highlight">Pattern:</span> "Find the minimum/maximum value X such that condition(X) is true."
+
+lo = minimum possible answer
+hi = maximum possible answer
+
+while (lo &lt; hi) {
+    mid = lo + (hi - lo) / 2
+    if (<span class="sorted">condition(mid)</span>)
+        hi = mid       <span class="pivot">// mid might be the answer, try smaller</span>
+    else
+        lo = mid + 1   <span class="pivot">// mid is too small, go bigger</span>
+}
+return lo  <span class="pivot">// lo == hi is the answer</span>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+<p>Binary search on the answer works whenever the condition function is <strong>monotonic</strong>: once it becomes true, it stays true for all larger values (or vice versa). This creates a clean partition of the search space into "no" and "yes" regions.</p>
+</div>
+</div>
+
+<!-- Integer Square Root -->
+<div class="card" id="sqrt">
+<h2><span class="icon">&#8730;</span> Problem 1: Integer Square Root</h2>
+<p>Find the largest integer x such that x*x &lt;= n. Binary search over [1, n/2].</p>
+
+<div class="code-viewer" data-viewer="sqrt">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BinarySearchOnAnswer.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Integer Square Root -- O(log n) time, O(1) space
+static int sqrtInt(int n) {
+    if (n &lt; 2) return n;
+    int lo = 1, hi = n / 2;
+    while (lo &lt; hi) {
+        int mid = lo + (hi - lo + 1) / 2;
+        if ((long) mid * mid &lt;= n) lo = mid;
+        else hi = mid - 1;
+    }
+    return lo;
+}
+// sqrtInt(16) = 4, sqrtInt(8) = 2, sqrtInt(100) = 10</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>searching.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// Use mid &lt;= n / mid to avoid overflow
+long long intSqrt(long long n) {
+    if (n &lt; 0) return -1;
+    long long lo = 0, hi = n, result = 0;
+    while (lo &lt;= hi) {
+        long long mid = lo + (hi - lo) / 2;
+        if (mid &lt;= n / mid) { result = mid; lo = mid + 1; }
+        else hi = mid - 1;
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>searching.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def integer_sqrt(n):
+    """floor(sqrt(n)) using binary search. O(log n)"""
+    if n &lt; 2: return n
+    lo, hi, result = 1, n // 2, 0
+    while lo &lt;= hi:
+        mid = lo + (hi - lo) // 2
+        if mid * mid == n: return mid
+        elif mid * mid &lt; n:
+            result = mid
+            lo = mid + 1
+        else: hi = mid - 1
+    return result</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>searching.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn integer_sqrt(n: u64) -&gt; u64 {
+    if n &lt; 2 { return n; }
+    let (mut left, mut right, mut result) = (1u64, n / 2 + 1, 1u64);
+    while left &lt;= right {
+        let mid = left + (right - left) / 2;
+        if mid &lt;= n / mid {  // avoids overflow
+            result = mid;
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+    }
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Koko Eating Bananas -->
+<div class="card" id="koko">
+<h2><span class="icon">&#127820;</span> Problem 2: Koko Eating Bananas</h2>
+<p>Koko has piles of bananas and H hours. At speed k (bananas/hour), each pile takes <code>ceil(pile/k)</code> hours. Find the <strong>minimum speed k</strong> to eat all bananas within H hours.</p>
+<p><strong>Search space:</strong> [1, max(piles)]. <strong>Condition:</strong> totalHours(k) &lt;= H</p>
+
+<div class="code-viewer" data-viewer="koko">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BinarySearchOnAnswer.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// O(n * log(max_pile)) time
+static boolean canFinish(int[] piles, int h, int speed) {
+    long hours = 0;
+    for (int pile : piles) {
+        hours += (pile + speed - 1) / speed; // ceil(pile / speed)
+    }
+    return hours &lt;= h;
+}
+
+static int minEatingSpeed(int[] piles, int h) {
+    int lo = 1;
+    int hi = Arrays.stream(piles).max().getAsInt();
+    while (lo &lt; hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (canFinish(piles, h, mid)) hi = mid;  // can finish, try slower
+        else lo = mid + 1;                         // too slow, speed up
+    }
+    return lo;
+}
+// piles=[3,6,7,11], H=8 --> 4
+// piles=[30,11,23,4,20], H=5 --> 30</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>searching.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">int minEatingSpeed(const vector&lt;int&gt;&amp; piles, int h) {
+    int lo = 1, hi = *max_element(piles.begin(), piles.end());
+    int result = hi;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        long long hours = 0;
+        for (int p : piles) hours += (p + mid - 1) / mid;
+        if (hours &lt;= h) { result = mid; hi = mid - 1; }
+        else lo = mid + 1;
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>searching.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">import math
+
+def koko_bananas(piles, h):
+    """O(n * log(max_pile)) time"""
+    def hours_needed(speed):
+        return sum(math.ceil(p / speed) for p in piles)
+
+    lo, hi = 1, max(piles)
+    while lo &lt; hi:
+        mid = lo + (hi - lo) // 2
+        if hours_needed(mid) &lt;= h:
+            hi = mid      # try slower
+        else:
+            lo = mid + 1  # need faster
+    return lo</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>searching.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn min_eating_speed(piles: &amp;[i32], h: i32) -&gt; i32 {
+    let (mut left, mut right) = (1, *piles.iter().max().unwrap());
+    while left &lt; right {
+        let mid = left + (right - left) / 2;
+        let hours: i64 = piles.iter()
+            .map(|&amp;p| ((p as i64) + (mid as i64) - 1) / (mid as i64))
+            .sum();
+        if hours &lt;= h as i64 { right = mid; }
+        else { left = mid + 1; }
+    }
+    left
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Ship Packages -->
+<div class="card" id="ship">
+<h2><span class="icon">&#128674;</span> Problem 3: Ship Packages in D Days</h2>
+<p>Find the <strong>minimum ship capacity</strong> to ship all packages (in order) within D days. Greedily load packages until the next one would exceed capacity, then start a new day.</p>
+<p><strong>Search space:</strong> [max(weights), sum(weights)]. <strong>Condition:</strong> daysNeeded(capacity) &lt;= D</p>
+
+<div class="code-viewer" data-viewer="ship">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BinarySearchOnAnswer.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">// O(n * log(sum_weights)) time
+static boolean canShip(int[] weights, int days, int capacity) {
+    int currentLoad = 0, daysNeeded = 1;
+    for (int w : weights) {
+        if (w &gt; capacity) return false;
+        if (currentLoad + w &gt; capacity) {
+            daysNeeded++;
+            currentLoad = 0;
+        }
+        currentLoad += w;
+    }
+    return daysNeeded &lt;= days;
+}
+
+static int minShipCapacity(int[] weights, int days) {
+    int lo = Arrays.stream(weights).max().getAsInt();
+    int hi = Arrays.stream(weights).sum();
+    while (lo &lt; hi) {
+        int mid = lo + (hi - lo) / 2;
+        if (canShip(weights, days, mid)) hi = mid;
+        else lo = mid + 1;
+    }
+    return lo;
+}
+// weights=[1..10], D=5 --> 15
+// weights=[3,2,2,4,1,4], D=3 --> 6</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>searching.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">int shipWithinDays(const vector&lt;int&gt;&amp; weights, int D) {
+    int lo = *max_element(weights.begin(), weights.end());
+    int hi = accumulate(weights.begin(), weights.end(), 0);
+    int result = hi;
+    while (lo &lt;= hi) {
+        int mid = lo + (hi - lo) / 2;
+        int days = 1, load = 0;
+        for (int w : weights) {
+            if (load + w &gt; mid) { ++days; load = 0; }
+            load += w;
+        }
+        if (days &lt;= D) { result = mid; hi = mid - 1; }
+        else lo = mid + 1;
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>searching.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">def ship_packages(weights, days):
+    """O(n * log(sum - max)) time"""
+    def days_needed(capacity):
+        d, current_load = 1, 0
+        for w in weights:
+            if current_load + w &gt; capacity:
+                d += 1
+                current_load = 0
+            current_load += w
+        return d
+
+    lo, hi = max(weights), sum(weights)
+    while lo &lt; hi:
+        mid = lo + (hi - lo) // 2
+        if days_needed(mid) &lt;= days: hi = mid
+        else: lo = mid + 1
+    return lo</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>searching.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text">fn min_ship_capacity(weights: &amp;[i32], days: i32) -&gt; i32 {
+    let mut left = *weights.iter().max().unwrap();
+    let mut right: i32 = weights.iter().sum();
+    while left &lt; right {
+        let mid = left + (right - left) / 2;
+        let mut days_needed = 1;
+        let mut current_load = 0;
+        for &amp;w in weights {
+            if current_load + w &gt; mid {
+                days_needed += 1;
+                current_load = 0;
+            }
+            current_load += w;
+        }
+        if days_needed &lt;= days { right = mid; }
+        else { left = mid + 1; }
+    }
+    left
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Complexity Table -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Comparison</h2>
+<table>
+<tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Notes</th></tr>
+<tr><td>Binary Search (standard)</td><td><span class="badge badge-green">O(log n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Requires sorted array</td></tr>
+<tr><td>Binary Search (recursive)</td><td><span class="badge badge-green">O(log n)</span></td><td>O(log n) stack</td><td>Elegant but uses stack space</td></tr>
+<tr><td>First/Last Occurrence</td><td><span class="badge badge-green">O(log n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Continue search after match</td></tr>
+<tr><td>Count Occurrences</td><td><span class="badge badge-green">O(log n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>last - first + 1</td></tr>
+<tr><td>Search Rotated Array</td><td><span class="badge badge-green">O(log n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>One half always sorted</td></tr>
+<tr><td>Integer Square Root</td><td><span class="badge badge-green">O(log n)</span></td><td><span class="badge badge-green">O(1)</span></td><td>BS on answer</td></tr>
+<tr><td>Koko Eating Bananas</td><td>O(n * log(max))</td><td><span class="badge badge-green">O(1)</span></td><td>BS on answer + linear check</td></tr>
+<tr><td>Ship Packages</td><td>O(n * log(sum))</td><td><span class="badge badge-green">O(1)</span></td><td>BS on answer + greedy check</td></tr>
+</table>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#127947;</span> Practice Problems</h2>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--accent-green)">Easy</div>
+<strong>Search Insert Position</strong> -- Given a sorted array and target, return the index where it would be inserted.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Find Peak Element</strong> -- Find a peak element in an array where arr[i] != arr[i+1].
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Search in Rotated Sorted Array II</strong> -- Handle duplicates in the rotated array.
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--warning)">Medium</div>
+<strong>Split Array Largest Sum</strong> -- Split an array into m subarrays to minimize the largest sum (BS on answer).
+</div>
+<div class="practice-item">
+<div class="difficulty" style="color:var(--danger)">Hard</div>
+<strong>Median of Two Sorted Arrays</strong> -- Find the median of two sorted arrays in O(log(min(n,m))) time.
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128218;</span> Summary</h2>
+<ul>
+<li><strong>Binary search</strong> halves the search space at every step, giving O(log n) time on sorted data.</li>
+<li>Always use <code>mid = low + (high - low) / 2</code> to avoid integer overflow.</li>
+<li><strong>First/last occurrence</strong> variants continue searching even after finding a match, using the result variable pattern.</li>
+<li><strong>Rotated sorted array</strong> search leverages the fact that one half is always sorted.</li>
+<li><strong>Binary search on the answer</strong> is a powerful paradigm: apply it whenever you have a monotonic condition over a continuous range of possible answers.</li>
+<li>The key template: define a <code>condition(mid)</code> function, binary search over the answer space, and return the boundary where the condition flips.</li>
+<li>Problems like Koko bananas and ship packages combine BS on answer with a greedy O(n) feasibility check, yielding O(n log M) total time.</li>
+</ul>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 7/index.html">&larr; Week 7: Strings</a>
+<a href="../Week 9/index.html">Week 9: Sorting &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&uarr;</button>
+
+<script>
+(function(){
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const pb=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement;const st=h.scrollTop||document.body.scrollTop;const sh=h.scrollHeight-h.clientHeight;pb.style.width=(st/sh*100)+'%'});
+const btt=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{btt.classList.toggle('visible',window.scrollY>400)});
+btt.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.1});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+const sections=document.querySelectorAll('.card, .hero');
+const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let cur='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-120)cur=s.id});navLinks.forEach(a=>{a.classList.toggle('active',a.getAttribute('href')==='#'+cur)})});
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');
+const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{tab.addEventListener('click',()=>{
+const lang=tab.dataset.lang;
+tabs.forEach(t=>t.classList.remove('active'));
+panels.forEach(p=>p.classList.remove('active'));
+tab.classList.add('active');
+viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active');
+})});
+});
+document.querySelectorAll('.code-content').forEach(block=>{
+const code=block.querySelector('.code-text');
+const nums=block.querySelector('.line-numbers');
+if(!code||!nums)return;
+const lines=code.textContent.split('\n');
+nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
+});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{
+const code=btn.closest('.code-panel').querySelector('.code-text').textContent;
+navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)});
+})});
+})();
+</script>
+</body>
+</html>

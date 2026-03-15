@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 17: Graphs | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}.diagram .swap{color:var(--danger);font-weight:700}.diagram .sorted{color:var(--accent-blue)}.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 17 of 20</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#representations">Graph Representations</a>
+<a href="#bfs">BFS &amp; Shortest Path</a>
+<a href="#dfs">DFS</a>
+<a href="#components" class="sub">Connected Components</a>
+<a href="#cycle-detection">Cycle Detection</a>
+<a href="#bipartite" class="sub">Bipartite Check</a>
+<a href="#topological-sort">Topological Sort</a>
+<a href="#kahns" class="sub">Kahn's Algorithm</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 17</span>
+<h1>Graphs</h1>
+<p class="subtitle">Explore graph representations, traversals (BFS/DFS), cycle detection, bipartite checking, and topological sorting -- the foundation of countless real-world algorithms.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate-Advanced</span>
+<span>~10 hours estimated</span>
+<span>7 algorithms covered</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand adjacency list vs adjacency matrix representations and their tradeoffs</li>
+<li>Implement BFS for shortest paths in unweighted graphs</li>
+<li>Implement DFS (recursive and iterative) for graph exploration</li>
+<li>Count connected components in undirected graphs</li>
+<li>Detect cycles in both undirected and directed graphs</li>
+<li>Check if a graph is bipartite using BFS 2-coloring</li>
+<li>Perform topological sort using DFS and Kahn's algorithm (BFS)</li>
+</ul>
+</div>
+
+<!-- Graph Representations -->
+<div class="card" id="representations">
+<h2><span class="icon">&#128302;</span> Graph Representations</h2>
+<p>A graph G = (V, E) consists of vertices V connected by edges E. Graphs can be directed/undirected, weighted/unweighted, cyclic/acyclic.</p>
+
+<h3>Adjacency List vs Matrix</h3>
+<table>
+<thead><tr><th>Property</th><th>Adjacency List</th><th>Adjacency Matrix</th></tr></thead>
+<tbody>
+<tr><td>Space</td><td><span class="badge badge-green">O(V + E)</span></td><td><span class="badge badge-red">O(V^2)</span></td></tr>
+<tr><td>Check edge (u,v)</td><td>O(degree(u))</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td>Iterate neighbors</td><td><span class="badge badge-green">O(degree)</span></td><td>O(V)</td></tr>
+<tr><td>Best for</td><td>Sparse graphs (most real-world)</td><td>Dense graphs</td></tr>
+</tbody>
+</table>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>GraphRepresentations.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static class Graph {
+    int V;
+    List&lt;List&lt;Integer&gt;&gt; adj;
+    Graph(int v) {
+        V = v;
+        adj = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; v; i++) adj.add(new ArrayList&lt;&gt;());
+    }
+    void addEdge(int u, int v) { // undirected
+        adj.get(u).add(v);
+        adj.get(v).add(u);
+    }
+    void addDirectedEdge(int u, int v) {
+        adj.get(u).add(v);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>graphs.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class Graph {
+public:
+    explicit Graph(int n, bool directed = false)
+        : adj_(n), n_(n), directed_(directed) {}
+    void add_edge(int u, int v, int w = 1) {
+        adj_[u].emplace_back(v, w);
+        if (!directed_) adj_[v].emplace_back(u, w);
+    }
+private:
+    std::vector&lt;std::vector&lt;std::pair&lt;int,int&gt;&gt;&gt; adj_;
+    int n_;
+    bool directed_;
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>graphs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class Graph:
+    def __init__(self, directed: bool = False) -&gt; None:
+        self.directed = directed
+        self.adj: Dict[int, List[int]] = defaultdict(list)
+        self._vertices: Set[int] = set()
+
+    def add_edge(self, u: int, v: int) -&gt; None:
+        self.adj[u].append(v)
+        self._vertices.update([u, v])
+        if not self.directed:
+            self.adj[v].append(u)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>graphs.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct Graph {
+    adj: Vec&lt;Vec&lt;usize&gt;&gt;,
+    num_vertices: usize,
+    directed: bool,
+}
+impl Graph {
+    fn new(n: usize, directed: bool) -&gt; Self {
+        Graph { adj: vec![Vec::new(); n], num_vertices: n, directed }
+    }
+    fn add_edge(&amp;mut self, u: usize, v: usize) {
+        self.adj[u].push(v);
+        if !self.directed { self.adj[v].push(u); }
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- BFS -->
+<div class="card" id="bfs">
+<h2><span class="icon">&#128269;</span> BFS -- Breadth-First Search</h2>
+<p>BFS explores the graph <strong>level by level</strong> using a queue. It finds the shortest path in unweighted graphs.</p>
+
+<div class="diagram">
+Graph:  0 -- 1 -- 2
+        |         |
+        3 -- 4 -- 5
+
+BFS from 0:
+  Level 0: [<span class="highlight">0</span>]
+  Level 1: [<span class="sorted">1, 3</span>]
+  Level 2: [<span class="pivot">2, 4</span>]
+  Level 3: [<span class="swap">5</span>]
+
+Distances: {0:0, 1:1, 3:1, 2:2, 4:2, 5:3}
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>GraphRepresentations.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">int[] shortestDistances(int src) {
+    int[] dist = new int[V];
+    Arrays.fill(dist, -1);
+    dist[src] = 0;
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    queue.offer(src);
+    while (!queue.isEmpty()) {
+        int u = queue.poll();
+        for (int v : adj.get(u)) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                queue.offer(v);
+            }
+        }
+    }
+    return dist;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>graphs.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::vector&lt;int&gt; bfs(int src) const {
+    std::vector&lt;int&gt; dist(n_, -1);
+    std::queue&lt;int&gt; q;
+    dist[src] = 0;
+    q.push(src);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        for (auto [v, w] : adj_[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                q.push(v);
+            }
+        }
+    }
+    return dist;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>graphs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def bfs(graph: Graph, source: int) -&gt; Tuple[List[int], Dict[int, int]]:
+    visited: Set[int] = {source}
+    queue: deque[int] = deque([source])
+    order: List[int] = []
+    distances: Dict[int, int] = {source: 0}
+    while queue:
+        node = queue.popleft()
+        order.append(node)
+        for neighbor in graph.adj[node]:
+            if neighbor not in visited:
+                visited.add(neighbor)
+                distances[neighbor] = distances[node] + 1
+                queue.append(neighbor)
+    return order, distances</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>graphs.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn bfs(&amp;self, start: usize) -&gt; (Vec&lt;usize&gt;, Vec&lt;i32&gt;) {
+    let mut visited = vec![false; self.num_vertices];
+    let mut distances = vec![-1i32; self.num_vertices];
+    let mut order = Vec::new();
+    let mut queue = VecDeque::new();
+    visited[start] = true;
+    distances[start] = 0;
+    queue.push_back(start);
+    while let Some(u) = queue.pop_front() {
+        order.push(u);
+        for &amp;v in &amp;self.adj[u] {
+            if !visited[v] {
+                visited[v] = true;
+                distances[v] = distances[u] + 1;
+                queue.push_back(v);
+            }
+        }
+    }
+    (order, distances)
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- DFS -->
+<div class="card" id="dfs">
+<h2><span class="icon">&#128302;</span> DFS -- Depth-First Search</h2>
+<p>DFS explores as <strong>deep as possible</strong> before backtracking. Uses recursion or an explicit stack. Time: O(V + E).</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="python">Python</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>GraphRepresentations.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">List&lt;Integer&gt; dfs(int src) {
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    boolean[] visited = new boolean[V];
+    dfsHelper(src, visited, result);
+    return result;
+}
+void dfsHelper(int u, boolean[] visited, List&lt;Integer&gt; result) {
+    visited[u] = true;
+    result.add(u);
+    for (int v : adj.get(u))
+        if (!visited[v]) dfsHelper(v, visited, result);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>graphs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def dfs_recursive(graph: Graph, source: int) -&gt; List[int]:
+    visited: Set[int] = set()
+    order: List[int] = []
+    def _dfs(node: int) -&gt; None:
+        visited.add(node)
+        order.append(node)
+        for neighbor in graph.adj[node]:
+            if neighbor not in visited:
+                _dfs(neighbor)
+    _dfs(source)
+    return order</div></div>
+</div>
+</div>
+</div>
+
+<!-- Connected Components -->
+<div class="card" id="components">
+<h2><span class="icon">&#128204;</span> Connected Components</h2>
+<p>Count the number of connected components by running DFS/BFS from each unvisited vertex. Each new start increments the component count.</p>
+<div class="code-viewer">
+<div class="code-tabs"><button class="code-tab active" data-lang="java">Java</button></div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>GraphRepresentations.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">int countComponents() {
+    boolean[] visited = new boolean[V];
+    int count = 0;
+    for (int i = 0; i &lt; V; i++) {
+        if (!visited[i]) {
+            dfsForComponent(i, visited);
+            count++;
+        }
+    }
+    return count;
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Cycle Detection -->
+<div class="card" id="cycle-detection">
+<h2><span class="icon">&#128260;</span> Cycle Detection</h2>
+<h3>Undirected Graph</h3>
+<p>During DFS, if we encounter a visited neighbor that is NOT the parent of the current node, there is a cycle (a back edge).</p>
+<h3>Directed Graph (3-state coloring)</h3>
+<p>Use 3 states: <strong>WHITE</strong> (unvisited), <strong>GRAY</strong> (in the current DFS stack), <strong>BLACK</strong> (fully processed). A back edge to a GRAY node indicates a cycle.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TopologicalSort.java -- Directed Cycle Detection</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// States: 0=unvisited, 1=in-stack (being processed), 2=done
+boolean hasCycle() {
+    int[] state = new int[V];
+    for (int i = 0; i &lt; V; i++)
+        if (state[i] == 0 &amp;&amp; dfsDetectCycle(i, state)) return true;
+    return false;
+}
+boolean dfsDetectCycle(int u, int[] state) {
+    state[u] = 1; // mark as in-stack
+    for (int v : adj.get(u)) {
+        if (state[v] == 1) return true;  // back edge -- cycle
+        if (state[v] == 0 &amp;&amp; dfsDetectCycle(v, state)) return true;
+    }
+    state[u] = 2; // fully processed
+    return false;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>graphs.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">bool dfs_cycle_directed(int u, std::vector&lt;int&gt;&amp; color) const {
+    color[u] = 1; // gray
+    for (auto [v, w] : adj_[u]) {
+        if (color[v] == 1) return true;           // back edge =&gt; cycle
+        if (color[v] == 0 &amp;&amp; dfs_cycle_directed(v, color)) return true;
+    }
+    color[u] = 2; // black
+    return false;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>graphs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def has_cycle_directed(graph: Graph) -&gt; bool:
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color: Dict[int, int] = {v: WHITE for v in graph.vertices}
+    def _dfs(node: int) -&gt; bool:
+        color[node] = GRAY
+        for neighbor in graph.adj[node]:
+            if color.get(neighbor, WHITE) == GRAY:
+                return True  # back edge =&gt; cycle
+            if color.get(neighbor, WHITE) == WHITE:
+                if _dfs(neighbor): return True
+        color[node] = BLACK
+        return False
+    for v in graph.vertices:
+        if color[v] == WHITE and _dfs(v): return True
+    return False</div></div>
+</div>
+</div>
+</div>
+
+<!-- Bipartite -->
+<div class="card" id="bipartite">
+<h2><span class="icon">&#127912;</span> Bipartite Check</h2>
+<p>A graph is <strong>bipartite</strong> (2-colorable) if vertices can be split into two sets such that no edge connects vertices in the same set. Equivalent to having no odd-length cycles.</p>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Use BFS with alternating colors. If any neighbor has the same color as the current node, the graph is NOT bipartite.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>GraphRepresentations.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">boolean isBipartite() {
+    int[] color = new int[V]; // 0=uncolored, 1=red, -1=blue
+    for (int i = 0; i &lt; V; i++) {
+        if (color[i] == 0) {
+            Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+            queue.offer(i); color[i] = 1;
+            while (!queue.isEmpty()) {
+                int u = queue.poll();
+                for (int v : adj.get(u)) {
+                    if (color[v] == 0) { color[v] = -color[u]; queue.offer(v); }
+                    else if (color[v] == color[u]) return false;
+                }
+            }
+        }
+    }
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>graphs.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn is_bipartite(&amp;self) -&gt; bool {
+    let mut color = vec![-1i32; self.num_vertices];
+    for start in 0..self.num_vertices {
+        if color[start] != -1 { continue; }
+        let mut queue = VecDeque::new();
+        color[start] = 0;
+        queue.push_back(start);
+        while let Some(u) = queue.pop_front() {
+            for &amp;v in &amp;self.adj[u] {
+                match color[v] {
+                    -1 =&gt; { color[v] = 1 - color[u]; queue.push_back(v); }
+                    c if c == color[u] =&gt; { return false; }
+                    _ =&gt; {}
+                }
+            }
+        }
+    }
+    true
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Topological Sort -->
+<div class="card" id="topological-sort">
+<h2><span class="icon">&#128203;</span> Topological Sort (DFS)</h2>
+<p>A <strong>topological ordering</strong> of a DAG is a linear ordering of vertices such that for every edge u&rarr;v, u appears before v. Only possible for Directed Acyclic Graphs.</p>
+
+<h3>DFS Approach</h3>
+<p>Run DFS. Push each node to a stack AFTER all descendants are processed. Pop stack for the topological order.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="python">Python</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TopologicalSort.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">List&lt;Integer&gt; topoSortDFS() {
+    boolean[] visited = new boolean[V];
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+    for (int i = 0; i &lt; V; i++)
+        if (!visited[i]) dfsTopo(i, visited, stack);
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    while (!stack.isEmpty()) result.add(stack.pop());
+    return result;
+}
+void dfsTopo(int u, boolean[] visited, Deque&lt;Integer&gt; stack) {
+    visited[u] = true;
+    for (int v : adj.get(u))
+        if (!visited[v]) dfsTopo(v, visited, stack);
+    stack.push(u); // push AFTER processing all descendants
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>graphs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def topological_sort_dfs(graph: Graph) -&gt; Optional[List[int]]:
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {v: WHITE for v in graph.vertices}
+    result: List[int] = []
+    def _dfs(node: int) -&gt; bool:
+        color[node] = GRAY
+        for neighbor in graph.adj[node]:
+            if color.get(neighbor, WHITE) == GRAY: return False
+            if color.get(neighbor, WHITE) == WHITE:
+                if not _dfs(neighbor): return False
+        color[node] = BLACK
+        result.append(node)  # post-order
+        return True
+    for v in sorted(graph.vertices):
+        if color[v] == WHITE:
+            if not _dfs(v): return None
+    result.reverse()
+    return result</div></div>
+</div>
+</div>
+</div>
+
+<!-- Kahn's Algorithm -->
+<div class="card" id="kahns">
+<h2><span class="icon">&#9889;</span> Kahn's Algorithm (BFS Topological Sort)</h2>
+<p>Process nodes with <strong>in-degree 0</strong> first (no dependencies). Remove their edges, enqueue newly zero-indegree nodes. If not all nodes processed, a cycle exists!</p>
+
+<div class="diagram">
+DAG: 5&rarr;2, 5&rarr;0, 4&rarr;0, 4&rarr;1, 2&rarr;3, 3&rarr;1
+
+In-degrees: {0:<span class="sorted">2</span>, 1:<span class="sorted">2</span>, 2:<span class="sorted">1</span>, 3:<span class="sorted">1</span>, 4:<span class="highlight">0</span>, 5:<span class="highlight">0</span>}
+
+Queue: [4, 5] &rarr; process 4 &rarr; [5] &rarr; process 5 &rarr; [0, 2] &rarr; ...
+Result: [4, 5, 0, 2, 3, 1] (one valid topological order)
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TopologicalSort.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">List&lt;Integer&gt; topoSortKahn() {
+    int[] indegree = new int[V];
+    for (int u = 0; u &lt; V; u++)
+        for (int v : adj.get(u)) indegree[v]++;
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    for (int i = 0; i &lt; V; i++)
+        if (indegree[i] == 0) queue.offer(i);
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    while (!queue.isEmpty()) {
+        int u = queue.poll();
+        result.add(u);
+        for (int v : adj.get(u)) {
+            indegree[v]--;
+            if (indegree[v] == 0) queue.offer(v);
+        }
+    }
+    if (result.size() != V) return null; // cycle detected
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>graphs.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_kahn() const {
+    std::vector&lt;int&gt; indegree(n_, 0);
+    for (int u = 0; u &lt; n_; ++u)
+        for (auto [v, w] : adj_[u]) ++indegree[v];
+    std::queue&lt;int&gt; q;
+    for (int i = 0; i &lt; n_; ++i)
+        if (indegree[i] == 0) q.push(i);
+    std::vector&lt;int&gt; order;
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (auto [v, w] : adj_[u])
+            if (--indegree[v] == 0) q.push(v);
+    }
+    if (static_cast&lt;int&gt;(order.size()) != n_) return std::nullopt;
+    return order;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>graphs.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn topological_sort(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    let mut in_degree = vec![0usize; self.num_vertices];
+    for u in 0..self.num_vertices {
+        for &amp;v in &amp;self.adj[u] { in_degree[v] += 1; }
+    }
+    let mut queue: VecDeque&lt;usize&gt; = VecDeque::new();
+    for (v, &amp;deg) in in_degree.iter().enumerate() {
+        if deg == 0 { queue.push_back(v); }
+    }
+    let mut order = Vec::with_capacity(self.num_vertices);
+    while let Some(u) = queue.pop_front() {
+        order.push(u);
+        for &amp;v in &amp;self.adj[u] {
+            in_degree[v] -= 1;
+            if in_degree[v] == 0 { queue.push_back(v); }
+        }
+    }
+    if order.len() == self.num_vertices { Some(order) } else { None }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Comparison -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Algorithm Complexity Summary</h2>
+<table>
+<thead><tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Key Use Case</th></tr></thead>
+<tbody>
+<tr><td>BFS</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>Shortest path (unweighted)</td></tr>
+<tr><td>DFS</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>Exploration, cycle detection</td></tr>
+<tr><td>Connected Components</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>Count isolated groups</td></tr>
+<tr><td>Cycle Detection (undirected)</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>Back edge to non-parent</td></tr>
+<tr><td>Cycle Detection (directed)</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>3-color DFS</td></tr>
+<tr><td>Bipartite Check</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>BFS 2-coloring</td></tr>
+<tr><td>Topological Sort</td><td><span class="badge badge-blue">O(V + E)</span></td><td>O(V)</td><td>Dependency ordering (DAG)</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Number of Islands</strong> -- LeetCode 200. BFS/DFS on a 2D grid.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Course Schedule</strong> -- LeetCode 207. Topological sort / cycle detection in directed graph.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Course Schedule II</strong> -- LeetCode 210. Return the topological order.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Is Graph Bipartite?</strong> -- LeetCode 785. BFS 2-coloring.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Word Ladder</strong> -- LeetCode 127. BFS shortest path between words.</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary</h2>
+<h3>When to Use What</h3>
+<table>
+<thead><tr><th>Scenario</th><th>Algorithm</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>Shortest path (unweighted)</td><td>BFS</td><td>Explores level by level</td></tr>
+<tr><td>Explore all reachable nodes</td><td>DFS or BFS</td><td>Both O(V+E)</td></tr>
+<tr><td>Dependency ordering</td><td>Topological Sort</td><td>Kahn's also detects cycles</td></tr>
+<tr><td>Cycle detection (directed)</td><td>DFS with 3 colors</td><td>Back edge to gray = cycle</td></tr>
+<tr><td>2-colorability</td><td>BFS Bipartite</td><td>Alternating colors</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 16/index.html">&larr; Week 16: Hashing</a>
+<a href="../Week 18/index.html">Week 18: Dynamic Programming &rarr;</a>
+</div>
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%'});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})})});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});
+document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});
+function highlight(code,lang){code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');return code}
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';const raw=block.textContent;block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang)});
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});
+const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>

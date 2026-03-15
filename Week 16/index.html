@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 16: Hashing &amp; HashMap | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}
+a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){
+.sidebar{transform:translateX(-100%)}
+.sidebar.open{transform:translateX(0)}
+.overlay.open{display:block}
+.hamburger{display:block}
+.main{margin-left:0;padding:0 20px 60px}
+}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}
+.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}
+.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}
+summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}
+summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}
+.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar">
+<span></span><span></span><span></span>
+</button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo">
+<h2>DSA Journey</h2>
+<span>Week 16 of 20</span>
+</div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#hashing-basics">Hashing Basics</a>
+<a href="#two-sum">Two Sum</a>
+<a href="#frequency" class="sub">Frequency Count</a>
+<a href="#group-anagrams">Group Anagrams</a>
+<a href="#prefix-sum">Prefix Sum + HashMap</a>
+<a href="#subarray-sum" class="sub">Subarray Sum = k</a>
+<a href="#longest-consecutive">Longest Consecutive</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+
+<section class="hero" id="hero">
+<span class="week-badge">Week 16</span>
+<h1>Hashing &amp; HashMap</h1>
+<p class="subtitle">Master hash tables -- the data structure behind O(1) average-time lookups, insertions, and deletions. Solve classic interview problems using HashMap and HashSet.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~6 hours estimated</span>
+<span>5 problems covered</span>
+</div>
+</section>
+
+<!-- Learning Objectives -->
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand how hash functions map keys to array indices for O(1) average lookups</li>
+<li>Learn collision resolution strategies: chaining vs open addressing</li>
+<li>Understand load factor and when/how to rehash</li>
+<li>Solve the classic Two Sum problem using a HashMap in a single pass</li>
+<li>Use prefix sums with HashMaps to count subarrays with a given sum</li>
+<li>Group anagrams using sorted-key hashing</li>
+<li>Find the longest consecutive sequence in O(n) using a HashSet</li>
+</ul>
+</div>
+
+<!-- Hashing Basics -->
+<div class="card" id="hashing-basics">
+<h2><span class="icon">&#128273;</span> Hashing Fundamentals</h2>
+<p>A <strong>hash table</strong> maps keys to array indices using a hash function. The goal is O(1) average time for insert, delete, and lookup operations.</p>
+
+<h3>Hash Function Requirements</h3>
+<ul class="objectives">
+<li><strong>Deterministic:</strong> same key always produces the same hash</li>
+<li><strong>Uniform:</strong> distributes keys evenly across buckets</li>
+<li><strong>Fast:</strong> cheap to compute</li>
+</ul>
+
+<h3>Collision Resolution</h3>
+<div class="diagram">
+<span class="highlight">1. Chaining:</span> Each bucket holds a linked list.
+   Average time: O(1 + &alpha;) where &alpha; = load factor
+
+<span class="highlight">2. Open Addressing:</span> Find next open slot.
+   - Linear Probing: check slot+1, slot+2, ...
+   - Quadratic Probing: check slot+1, slot+4, slot+9, ...
+   - Double Hashing: use a second hash function for step size
+</div>
+
+<h3>Java HashMap Internals</h3>
+<table>
+<thead><tr><th>Property</th><th>Value</th></tr></thead>
+<tbody>
+<tr><td>Initial capacity</td><td>16 buckets</td></tr>
+<tr><td>Load factor threshold</td><td>0.75</td></tr>
+<tr><td>Resize strategy</td><td>Double buckets, rehash all entries</td></tr>
+<tr><td>Collision handling</td><td>Chaining (linked list &rarr; red-black tree when chain &gt; 8)</td></tr>
+<tr><td>Average time</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td>Worst-case time</td><td><span class="badge badge-red">O(n)</span> (all keys hash to same bucket)</td></tr>
+</tbody>
+</table>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The <strong>load factor</strong> &alpha; = n/m (elements/buckets) controls the tradeoff between space and speed. Java's default threshold of 0.75 means the table resizes when it is 75% full, keeping operations near O(1).
+</div>
+</div>
+
+<!-- Two Sum -->
+<div class="card" id="two-sum">
+<h2><span class="icon">&#128269;</span> Two Sum</h2>
+<p>Given an array and a target, return indices of two numbers that sum to target. This is the quintessential HashMap problem.</p>
+
+<h3>Strategy</h3>
+<p>For each element, compute <code>complement = target - nums[i]</code>. Check if the complement is already in the map. If yes, we found the pair. Otherwise, store <code>(nums[i], i)</code> in the map.</p>
+
+<div class="diagram">
+Array: [2, 7, 11, 15], target = 9
+
+i=0: complement = 9-2 = <span class="pivot">7</span>, map={}, not found &rarr; store {2:0}
+i=1: complement = 9-7 = <span class="pivot">2</span>, map={2:0}, <span class="highlight">found!</span> &rarr; return [0, 1]
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashingAndHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int[] twoSum(int[] nums, int target) {
+    Map&lt;Integer, Integer&gt; map = new HashMap&lt;&gt;(); // value &rarr; index
+    for (int i = 0; i &lt; nums.length; i++) {
+        int complement = target - nums[i];
+        if (map.containsKey(complement)) return new int[]{map.get(complement), i};
+        map.put(nums[i], i);
+    }
+    return new int[]{-1, -1}; // no solution
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>hashing.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::optional&lt;std::pair&lt;int,int&gt;&gt; two_sum(const std::vector&lt;int&gt;&amp; nums, int target) {
+    std::unordered_map&lt;int,int&gt; seen;   // value -&gt; index
+    for (int i = 0; i &lt; static_cast&lt;int&gt;(nums.size()); ++i) {
+        int complement = target - nums[i];
+        if (auto it = seen.find(complement); it != seen.end()) {
+            return std::make_pair(it-&gt;second, i);
+        }
+        seen[nums[i]] = i;
+    }
+    return std::nullopt;  // no solution
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def two_sum(nums: List[int], target: int) -&gt; Optional[Tuple[int, int]]:
+    seen: Dict[int, int] = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return (seen[complement], i)
+        seen[num] = i
+    return None</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>hashing.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn two_sum(nums: &amp;[i32], target: i32) -&gt; Option&lt;(usize, usize)&gt; {
+    let mut seen: HashMap&lt;i32, usize&gt; = HashMap::new();
+    for (i, &amp;num) in nums.iter().enumerate() {
+        let complement = target - num;
+        if let Some(&amp;j) = seen.get(&amp;complement) {
+            return Some((j, i));
+        }
+        seen.insert(num, i);
+    }
+    None
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Frequency Count -->
+<div class="card" id="frequency">
+<h2><span class="icon">&#128202;</span> Frequency Count</h2>
+<p>Count how often each element appears in an array. This is a fundamental HashMap pattern used as a building block in many problems.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashingAndHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static Map&lt;Integer, Integer&gt; frequency(int[] arr) {
+    Map&lt;Integer, Integer&gt; freq = new HashMap&lt;&gt;();
+    for (int x : arr) freq.merge(x, 1, Integer::sum);
+    return freq;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>hashing.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::unordered_map&lt;int,int&gt; frequency_count(const std::vector&lt;int&gt;&amp; nums) {
+    std::unordered_map&lt;int,int&gt; freq;
+    for (int x : nums) ++freq[x];
+    return freq;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def frequency_count(arr: List[int]) -&gt; Dict[int, int]:
+    freq: Dict[int, int] = {}
+    for val in arr:
+        freq[val] = freq.get(val, 0) + 1
+    return freq</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>hashing.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn frequency_count(nums: &amp;[i32]) -&gt; HashMap&lt;i32, usize&gt; {
+    let mut freq: HashMap&lt;i32, usize&gt; = HashMap::new();
+    for &amp;num in nums {
+        *freq.entry(num).or_insert(0) += 1;
+    }
+    freq
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Group Anagrams -->
+<div class="card" id="group-anagrams">
+<h2><span class="icon">&#128221;</span> Group Anagrams</h2>
+<p>Group strings that are anagrams of each other. Two strings are anagrams if they have the same characters in the same frequency.</p>
+
+<h3>Strategy</h3>
+<p>Sort each string to produce a <strong>canonical key</strong>. Strings with the same sorted form are anagrams. Use this sorted string as a HashMap key.</p>
+
+<div class="diagram">
+Input: ["eat", "tea", "tan", "ate", "nat", "bat"]
+
+Sorted keys:
+  "eat" &rarr; "<span class="highlight">aet</span>"    "tea" &rarr; "<span class="highlight">aet</span>"    "ate" &rarr; "<span class="highlight">aet</span>"
+  "tan" &rarr; "<span class="sorted">ant</span>"    "nat" &rarr; "<span class="sorted">ant</span>"
+  "bat" &rarr; "<span class="pivot">abt</span>"
+
+Groups: [["eat","tea","ate"], ["tan","nat"], ["bat"]]
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashingAndHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static List&lt;List&lt;String&gt;&gt; groupAnagrams(String[] strs) {
+    Map&lt;String, List&lt;String&gt;&gt; map = new HashMap&lt;&gt;();
+    for (String s : strs) {
+        char[] chars = s.toCharArray();
+        Arrays.sort(chars); // sorted key identifies anagram group
+        String key = new String(chars);
+        map.computeIfAbsent(key, k -&gt; new ArrayList&lt;&gt;()).add(s);
+    }
+    return new ArrayList&lt;&gt;(map.values());
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>hashing.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">std::vector&lt;std::vector&lt;std::string&gt;&gt; group_anagrams(const std::vector&lt;std::string&gt;&amp; strs) {
+    std::unordered_map&lt;std::string, std::vector&lt;std::string&gt;&gt; groups;
+    for (const auto&amp; s : strs) {
+        std::string key = s;
+        std::sort(key.begin(), key.end());   // canonical form
+        groups[key].push_back(s);
+    }
+    std::vector&lt;std::vector&lt;std::string&gt;&gt; result;
+    for (auto&amp; [key, group] : groups) result.push_back(std::move(group));
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def group_anagrams(strs: List[str]) -&gt; List[List[str]]:
+    groups: Dict[tuple, List[str]] = defaultdict(list)
+    for s in strs:
+        key = tuple(sorted(s))
+        groups[key].append(s)
+    return list(groups.values())</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>hashing.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn group_anagrams(strs: &amp;[String]) -&gt; Vec&lt;Vec&lt;String&gt;&gt; {
+    let mut groups: HashMap&lt;String, Vec&lt;String&gt;&gt; = HashMap::new();
+    for s in strs {
+        let mut chars: Vec&lt;char&gt; = s.chars().collect();
+        chars.sort_unstable();
+        let key: String = chars.into_iter().collect();
+        groups.entry(key).or_insert_with(Vec::new).push(s.clone());
+    }
+    groups.into_values().collect()
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Prefix Sum + HashMap -->
+<div class="card" id="prefix-sum">
+<h2><span class="icon">&#128200;</span> Prefix Sum + HashMap</h2>
+<p>A powerful technique: if <code>prefix[j] - prefix[i] == 0</code>, then the subarray <code>arr[i+1..j]</code> sums to zero. Generalize to any target sum k.</p>
+
+<h3>Zero Sum Subarray</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="python">Python</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashingAndHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static boolean hasZeroSumSubarray(int[] arr) {
+    Set&lt;Integer&gt; prefixSums = new HashSet&lt;&gt;();
+    prefixSums.add(0); // empty subarray has sum 0
+    int sum = 0;
+    for (int x : arr) {
+        sum += x;
+        if (prefixSums.contains(sum)) return true;
+        prefixSums.add(sum);
+    }
+    return false;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def subarray_with_zero_sum(arr: List[int]) -&gt; bool:
+    seen = set()
+    seen.add(0)
+    prefix = 0
+    for val in arr:
+        prefix += val
+        if prefix in seen:
+            return True
+        seen.add(prefix)
+    return False</div></div>
+</div>
+</div>
+</div>
+
+<!-- Subarray Sum = k -->
+<div class="card" id="subarray-sum">
+<h2><span class="icon">&#128290;</span> Subarray Sum Equals k</h2>
+<p>Count the number of contiguous subarrays whose sum equals k. For each index j, we need to count how many earlier prefix sums equal <code>prefix[j] - k</code>.</p>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Instead of checking all pairs (O(n^2)), maintain a running count of each prefix sum in a HashMap. For each new prefix sum, look up how many times <code>prefix - k</code> has appeared. This gives O(n) time.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashingAndHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int subarraySum(int[] nums, int k) {
+    Map&lt;Integer, Integer&gt; prefixCount = new HashMap&lt;&gt;();
+    prefixCount.put(0, 1);
+    int sum = 0, count = 0;
+    for (int x : nums) {
+        sum += x;
+        count += prefixCount.getOrDefault(sum - k, 0);
+        prefixCount.merge(sum, 1, Integer::sum);
+    }
+    return count;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>hashing.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int subarray_sum_equals_k(const std::vector&lt;int&gt;&amp; nums, int k) {
+    std::unordered_map&lt;int,int&gt; prefix_count;
+    prefix_count[0] = 1;   // empty prefix
+    int sum = 0, count = 0;
+    for (int x : nums) {
+        sum += x;
+        if (auto it = prefix_count.find(sum - k); it != prefix_count.end())
+            count += it-&gt;second;
+        ++prefix_count[sum];
+    }
+    return count;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def subarray_sum_equals_k(nums: List[int], k: int) -&gt; int:
+    count = 0
+    prefix = 0
+    prefix_counts: Dict[int, int] = defaultdict(int)
+    prefix_counts[0] = 1  # empty prefix
+    for num in nums:
+        prefix += num
+        count += prefix_counts[prefix - k]
+        prefix_counts[prefix] += 1
+    return count</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>hashing.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn subarray_sum_equals_k(nums: &amp;[i32], k: i32) -&gt; i32 {
+    let mut count = 0;
+    let mut prefix_sum = 0;
+    let mut prefix_counts: HashMap&lt;i32, i32&gt; = HashMap::new();
+    prefix_counts.insert(0, 1);
+    for &amp;num in nums {
+        prefix_sum += num;
+        if let Some(&amp;c) = prefix_counts.get(&amp;(prefix_sum - k)) {
+            count += c;
+        }
+        *prefix_counts.entry(prefix_sum).or_insert(0) += 1;
+    }
+    count
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Longest Consecutive Sequence -->
+<div class="card" id="longest-consecutive">
+<h2><span class="icon">&#9889;</span> Longest Consecutive Sequence</h2>
+<p>Given an unsorted array, find the length of the longest sequence of consecutive integers. Example: <code>[100,4,200,1,3,2]</code> &rarr; 4 (sequence 1,2,3,4).</p>
+
+<h3>Strategy</h3>
+<p>Put all numbers in a HashSet for O(1) lookup. For each number, only start counting if <code>num-1</code> is NOT in the set (i.e., it is the beginning of a sequence). Then extend forward.</p>
+
+<div class="diagram">
+Set: {100, 4, 200, 1, 3, 2}
+
+100: 100-1=99 not in set &rarr; start! length=<span class="highlight">1</span> (just 100)
+  4: 4-1=3 IS in set &rarr; skip (not a sequence start)
+200: 200-1=199 not in set &rarr; start! length=<span class="highlight">1</span>
+  1: 1-1=0 not in set &rarr; start! extend: 2,3,4 &rarr; length=<span class="highlight">4</span> &#10004;
+  3: 3-1=2 IS in set &rarr; skip
+  2: 2-1=1 IS in set &rarr; skip
+
+Answer: <span class="highlight">4</span>
+</div>
+
+<div class="insight">
+<div class="label">Why O(n)?</div>
+Each element is visited at most twice: once as a potential start, and at most once while extending a sequence. The "only start from the beginning" check ensures no element is counted multiple times across different sequences.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashingAndHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int longestConsecutive(int[] nums) {
+    Set&lt;Integer&gt; set = new HashSet&lt;&gt;();
+    for (int x : nums) set.add(x);
+    int longest = 0;
+    for (int x : set) {
+        if (!set.contains(x - 1)) { // only start from sequence beginning
+            int curr = x, length = 1;
+            while (set.contains(curr + 1)) { curr++; length++; }
+            longest = Math.max(longest, length);
+        }
+    }
+    return longest;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>hashing.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int longest_consecutive_sequence(const std::vector&lt;int&gt;&amp; nums) {
+    std::unordered_set&lt;int&gt; num_set(nums.begin(), nums.end());
+    int best = 0;
+    for (int n : num_set) {
+        if (num_set.count(n - 1)) continue; // not a start
+        int length = 1, cur = n;
+        while (num_set.count(cur + 1)) { ++cur; ++length; }
+        best = std::max(best, length);
+    }
+    return best;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def longest_consecutive_sequence(nums: List[int]) -&gt; int:
+    num_set = set(nums)
+    best = 0
+    for num in num_set:
+        if num - 1 not in num_set:  # start of a sequence
+            current, length = num, 1
+            while current + 1 in num_set:
+                current += 1
+                length += 1
+            best = max(best, length)
+    return best</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>hashing.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn longest_consecutive_sequence(nums: &amp;[i32]) -&gt; i32 {
+    let num_set: HashSet&lt;i32&gt; = nums.iter().copied().collect();
+    let mut best = 0;
+    for &amp;num in &amp;num_set {
+        if !num_set.contains(&amp;(num - 1)) {
+            let mut current = num;
+            let mut length = 1;
+            while num_set.contains(&amp;(current + 1)) {
+                current += 1;
+                length += 1;
+            }
+            best = best.max(length);
+        }
+    }
+    best
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Comparison Table -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Summary</h2>
+<table>
+<thead>
+<tr><th>Problem</th><th>Time</th><th>Space</th><th>Key Technique</th></tr>
+</thead>
+<tbody>
+<tr><td>Two Sum</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>HashMap: value &rarr; index</td></tr>
+<tr><td>Frequency Count</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>HashMap: merge/increment</td></tr>
+<tr><td>Group Anagrams</td><td><span class="badge badge-blue">O(n*k log k)</span></td><td>O(n*k)</td><td>Sorted string as key</td></tr>
+<tr><td>Subarray Sum = k</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>Prefix sum + count map</td></tr>
+<tr><td>Longest Consecutive</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>HashSet + sequence start</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Practice Problems -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item">
+<span class="difficulty badge badge-green">Easy</span>
+<strong>Two Sum</strong> -- LeetCode 1. Classic one-pass HashMap solution.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Group Anagrams</strong> -- LeetCode 49. Group strings by their sorted canonical form.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Subarray Sum Equals K</strong> -- LeetCode 560. Prefix sum + HashMap counting.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Longest Consecutive Sequence</strong> -- LeetCode 128. Must achieve O(n) using HashSet.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>Top K Frequent Elements</strong> -- LeetCode 347. Combine frequency count with heap or bucket sort.
+</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary &amp; Cheat Sheet</h2>
+<h3>HashMap Patterns</h3>
+<table>
+<thead><tr><th>Pattern</th><th>When to Use</th><th>Example</th></tr></thead>
+<tbody>
+<tr><td>Value &rarr; Index</td><td>Find pairs with a target property</td><td>Two Sum</td></tr>
+<tr><td>Sorted Key</td><td>Group equivalent items</td><td>Group Anagrams</td></tr>
+<tr><td>Prefix Sum + Map</td><td>Count subarrays with given sum</td><td>Subarray Sum = k</td></tr>
+<tr><td>HashSet membership</td><td>O(1) existence check</td><td>Longest Consecutive</td></tr>
+<tr><td>Frequency Map</td><td>Count occurrences</td><td>Top K Frequent</td></tr>
+</tbody>
+</table>
+
+<div class="warning-box">
+<div class="label">Common Pitfall</div>
+Hash table operations are O(1) <strong>on average</strong>. In the worst case (all keys hash to the same bucket), they degrade to O(n). In competitive programming, adversarial inputs can trigger this. Use randomized hashing or switch to balanced BST maps (TreeMap) if needed.
+</div>
+</div>
+
+<!-- Navigation Footer -->
+<div class="nav-footer">
+<a href="../Week 15/index.html">&larr; Week 15</a>
+<a href="../Week 17/index.html">Week 17: Graphs &rarr;</a>
+</div>
+
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%'});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})})});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});
+document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});
+function highlight(code,lang){code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');return code}
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';const raw=block.textContent;block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang)});
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});
+const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>
