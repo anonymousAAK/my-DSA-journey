@@ -1,45 +1,36 @@
 /*
-Find power of a number
-
-
-Write a program to find x to the power n (i.e. x^n). Take x and n from the user. You need to print the answer.
-Note : For this question, you can assume that 0 raised to the power of 0 is 1.
-  
-
-
-Input format :
-Two integers x and n (separated by space)
-  
-  
-Output Format :
-x^n (i.e. x raise to the power n)
-
-
-
-How to approach?
-1. Take x and n as input from the user.
-2. x^n basically means, multiplying x, n times. So, initialize an ans with 1.
-3. Now, run a loop until n becomes 0, and multiply x with ans each time.
-4. Print the final ans obtained.
-
-
-
-*/
-
-
-
+ * Find power of a number: x^n
+ *
+ * PROBLEM:
+ * Given integers x and n, compute x raised to the power n.
+ * Note: 0^0 is defined as 1 for this problem.
+ *
+ * APPROACH:
+ * 1. Take x and n as input.
+ * 2. Initialize ans = 1.
+ * 3. Multiply x with ans, n times.
+ * 4. Print the final result.
+ *
+ * Time Complexity: O(n) — we multiply n times
+ * Space Complexity: O(1)
+ *
+ * NOTE: See Week 5 for O(log n) fast exponentiation.
+ */
 
 import java.util.Scanner;
-public class Solution {
+
+public class FindPower {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
+        System.out.print("Enter base x and exponent n: ");
+        int x = s.nextInt();
         int n = s.nextInt();
-        int i = 2;
-        while(i <= n / 2) {
-            if(n % i == 0) {
-              System.out.print(i + " ");
-              }
-            i += 1;
-          }
-      }
+
+        long ans = 1;
+        for (int i = 0; i < n; i++) {
+            ans *= x;
+        }
+        System.out.println(x + "^" + n + " = " + ans);
+        s.close();
+    }
 }

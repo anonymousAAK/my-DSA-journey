@@ -2,7 +2,18 @@
 
 > A comprehensive, multi-week structured guide to mastering Data Structures and Algorithms — from first principles to research-level topics.
 
-All implementations are in **Java** with detailed comments, complexity analysis, and links to practice problems. Contributions in other languages are welcome!
+All implementations available in **4 languages**: Java, Python, C++, and Rust — with detailed comments, complexity analysis, and test cases.
+
+### Languages
+
+| Language | File Extension | Notes |
+|----------|---------------|-------|
+| **Java** | `.java` | Original implementations, numbered by topic |
+| **Python** | `.py` | Idiomatic Python with type hints, list comprehensions, `heapq`, `collections` |
+| **C++** | `.cpp` | Modern C++17, STL-heavy, competitive programming style |
+| **Rust** | `.rs` | Ownership-safe, uses `std::collections`, idiomatic iterators |
+
+Each week folder contains all four languages side by side. Pick your preferred language or study all four to understand trade-offs!
 
 ---
 
@@ -22,8 +33,9 @@ All implementations are in **Java** with detailed comments, complexity analysis,
 1. **Beginners**: Start at Week 1 and progress sequentially. Don't skip weeks.
 2. **Intermediate**: Jump to Week 8 (Searching) or Week 11 (Linked Lists) depending on your comfort level.
 3. **Advanced**: Weeks 18-24 cover DP, advanced graphs, and research-level topics.
-4. Each week folder contains numbered `.java` files and concept explanation files.
+4. Each week folder contains implementations in Java, Python, C++, and Rust.
 5. Every file includes: Problem statement → Approach/Pseudocode → Implementation → Complexity Analysis.
+6. **Language learners**: Compare implementations across languages to understand design differences.
 
 ---
 
@@ -335,16 +347,49 @@ All implementations are in **Java** with detailed comments, complexity analysis,
 
 1. Fork the repository
 2. Create a branch: `git checkout -b feature/week-X-topic`
-3. Follow the file naming convention: `N.TopicName.java`
+3. Follow the file naming conventions:
+   - Java: `N.TopicName.java`
+   - Python: `topic_name.py`
+   - C++: `topic_name.cpp`
+   - Rust: `topic_name.rs`
 4. Each file must include:
    - Problem description (comment block)
    - Approach/pseudocode
    - Implementation
    - Time & space complexity
+   - Test cases in main function
 5. Open a pull request
 
-Contributions in languages other than Java are very welcome!
+Contributions in **any language** are welcome — Go, TypeScript, Kotlin, C#, etc!
 
 ---
 
 > **Note on file numbering**: When files are numbered (e.g., `10.TopicName.java`), `10` comes after `9`, not after `1`. Files are listed in logical learning order.
+
+## Project Structure
+
+```
+Week N/
+├── 1.TopicName.java        # Java implementation (numbered)
+├── 2.AnotherTopic.java
+├── topic_name.py            # Python implementation
+├── topic_name.cpp           # C++ implementation
+├── topic_name.rs            # Rust implementation
+└── (concept notes)          # Theory/explanation files
+```
+
+## Quick Start
+
+```bash
+# Java
+javac "Week 8/1.BinarySearch.java" && java -cp "Week 8" BinarySearch
+
+# Python
+python3 "Week 8/searching.py"
+
+# C++
+g++ -std=c++17 -O2 "Week 8/searching.cpp" -o searching && ./searching
+
+# Rust
+rustc "Week 8/searching.rs" && ./searching
+```
