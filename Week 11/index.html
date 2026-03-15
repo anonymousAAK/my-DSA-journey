@@ -1,0 +1,990 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 11: Linked Lists | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+/* Linked list node visualization */
+.ll-viz{display:flex;align-items:center;gap:0;flex-wrap:wrap;margin:16px 0;padding:20px;background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;overflow-x:auto}
+.ll-node{display:flex;align-items:center;flex-shrink:0}
+.ll-node .box{border:2px solid var(--accent-blue);border-radius:6px;padding:8px 14px;font-family:monospace;font-weight:700;font-size:.95rem;background:rgba(88,166,255,.08);min-width:40px;text-align:center}
+.ll-node .box.head{border-color:var(--accent-green);background:rgba(63,185,80,.1);color:var(--accent-green)}
+.ll-node .box.null{border-color:var(--text-secondary);background:transparent;color:var(--text-secondary);font-style:italic;font-weight:400}
+.ll-node .arrow{color:var(--text-secondary);padding:0 6px;font-size:1.1rem}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 11 of 12</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#sll">Singly Linked List</a>
+<a href="#insert" class="sub">Insertion</a>
+<a href="#delete" class="sub">Deletion</a>
+<a href="#reverse" class="sub">Reverse</a>
+<a href="#middle" class="sub">Find Middle</a>
+<a href="#cycle" class="sub">Cycle Detection</a>
+<a href="#merge">Merge Sorted Lists</a>
+<a href="#lru">LRU Cache</a>
+<a href="#comparison">Arrays vs Linked Lists</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 11</span>
+<h1>Linked Lists</h1>
+<p class="subtitle">Master the pointer-based data structure that enables O(1) insertions and deletions -- and build a real LRU Cache used in production systems.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~7 hours estimated</span>
+<span>3 major topics</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand the singly linked list structure: Node(data, next)</li>
+<li>Implement insert (head, tail, at index), delete, and search operations</li>
+<li>Reverse a linked list both iteratively (O(1) space) and recursively</li>
+<li>Use Floyd's slow/fast pointer technique to find the middle node</li>
+<li>Detect cycles using Floyd's tortoise-and-hare algorithm</li>
+<li>Merge two sorted linked lists in O(m + n) time</li>
+<li>Build an LRU Cache using a doubly linked list + hash map for O(1) operations</li>
+<li>Understand Rust's ownership challenges with linked lists</li>
+</ul>
+</div>
+
+<!-- Singly Linked List -->
+<div class="card" id="sll">
+<h2><span class="icon">&#128279;</span> Singly Linked List</h2>
+<p>A singly linked list is a sequence of <strong>nodes</strong>, where each node contains data and a pointer to the next node. The last node points to <code>null</code>.</p>
+
+<h3>Structure</h3>
+<div class="ll-viz">
+<div class="ll-node"><span class="box head">HEAD</span><span class="arrow">&rarr;</span></div>
+<div class="ll-node"><span class="box">1</span><span class="arrow">&rarr;</span></div>
+<div class="ll-node"><span class="box">2</span><span class="arrow">&rarr;</span></div>
+<div class="ll-node"><span class="box">3</span><span class="arrow">&rarr;</span></div>
+<div class="ll-node"><span class="box">4</span><span class="arrow">&rarr;</span></div>
+<div class="ll-node"><span class="box">5</span><span class="arrow">&rarr;</span></div>
+<div class="ll-node"><span class="box null">NULL</span></div>
+</div>
+
+<h3>Advantages over Arrays</h3>
+<ul>
+<li><strong>O(1) insertion/deletion at head</strong> -- no shifting required</li>
+<li><strong>Dynamic size</strong> -- no pre-allocation or resizing needed</li>
+</ul>
+
+<h3>Disadvantages</h3>
+<ul>
+<li><strong>O(n) access by index</strong> -- no random access (must traverse)</li>
+<li><strong>Extra memory</strong> for each <code>next</code> pointer</li>
+<li><strong>Poor cache performance</strong> -- nodes are scattered in memory</li>
+</ul>
+
+<table>
+<thead><tr><th>Operation</th><th>Time</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>insertAtHead</td><td><span class="badge badge-green">O(1)</span></td><td></td></tr>
+<tr><td>insertAtTail</td><td><span class="badge badge-yellow">O(n)</span></td><td>O(1) with tail pointer</td></tr>
+<tr><td>insertAtIndex</td><td><span class="badge badge-yellow">O(n)</span></td><td></td></tr>
+<tr><td>deleteHead</td><td><span class="badge badge-green">O(1)</span></td><td></td></tr>
+<tr><td>deleteByValue</td><td><span class="badge badge-yellow">O(n)</span></td><td></td></tr>
+<tr><td>search</td><td><span class="badge badge-yellow">O(n)</span></td><td></td></tr>
+<tr><td>reverse</td><td><span class="badge badge-yellow">O(n)</span></td><td>O(1) space iteratively</td></tr>
+<tr><td>findMiddle</td><td><span class="badge badge-yellow">O(n)</span></td><td>Slow/fast pointer</td></tr>
+<tr><td>hasCycle</td><td><span class="badge badge-yellow">O(n)</span></td><td>Floyd's algorithm</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Insertion -->
+<div class="card" id="insert">
+<h2><span class="icon">&#10133;</span> Insertion Operations</h2>
+
+<h3>Insert at Head -- O(1)</h3>
+<div class="diagram">
+Before: HEAD &rarr; [1] &rarr; [2] &rarr; [3] &rarr; NULL
+
+Insert <span class="highlight">0</span> at head:
+  1. Create node [0]
+  2. Set [0].next = HEAD
+  3. HEAD = [0]
+
+After:  HEAD &rarr; [<span class="highlight">0</span>] &rarr; [1] &rarr; [2] &rarr; [3] &rarr; NULL
+</div>
+
+<h3>Insert at Tail -- O(n)</h3>
+<div class="diagram">
+Before: HEAD &rarr; [1] &rarr; [2] &rarr; [3] &rarr; NULL
+
+Insert <span class="highlight">4</span> at tail:
+  1. Traverse to last node [3]
+  2. Set [3].next = new node [4]
+
+After:  HEAD &rarr; [1] &rarr; [2] &rarr; [3] &rarr; [<span class="highlight">4</span>] &rarr; NULL
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>SinglyLinkedList.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">void insertAtHead(int data) {
+    Node newNode = new Node(data);
+    newNode.next = head;
+    head = newNode;
+}
+
+void insertAtTail(int data) {
+    Node newNode = new Node(data);
+    if (head == null) { head = newNode; return; }
+    Node curr = head;
+    while (curr.next != null) curr = curr.next;
+    curr.next = newNode;
+}
+
+void insertAtIndex(int idx, int data) {
+    if (idx == 0) { insertAtHead(data); return; }
+    Node curr = head;
+    for (int i = 0; i &lt; idx - 1 &amp;&amp; curr != null; i++) curr = curr.next;
+    if (curr == null) throw new IndexOutOfBoundsException();
+    Node newNode = new Node(data);
+    newNode.next = curr.next;
+    curr.next = newNode;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>linked_lists.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">ListNode* insertAtHead(ListNode* head, int val) {
+    return new ListNode(val, head);
+}
+
+ListNode* insertAtTail(ListNode* head, int val) {
+    ListNode* newNode = new ListNode(val);
+    if (!head) return newNode;
+    ListNode* curr = head;
+    while (curr-&gt;next) curr = curr-&gt;next;
+    curr-&gt;next = newNode;
+    return head;
+}
+
+ListNode* insertAtPosition(ListNode* head, int val, int pos) {
+    if (pos == 0) return insertAtHead(head, val);
+    ListNode* curr = head;
+    for (int i = 0; i &lt; pos - 1 &amp;&amp; curr; ++i) curr = curr-&gt;next;
+    if (!curr) return head;
+    ListNode* newNode = new ListNode(val, curr-&gt;next);
+    curr-&gt;next = newNode;
+    return head;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>linked_lists.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def insert_head(self, val: int) -&gt; None:
+    """Insert a node at the head.  O(1)"""
+    self.head = ListNode(val, self.head)
+
+def insert_tail(self, val: int) -&gt; None:
+    """Insert a node at the tail.  O(n)"""
+    new_node = ListNode(val)
+    if not self.head:
+        self.head = new_node
+        return
+    curr = self.head
+    while curr.next:
+        curr = curr.next
+    curr.next = new_node</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>linked_lists.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn push_front(&amp;mut self, value: i32) {
+    // self.head.take() moves the current head out, leaving None.
+    let new_node = Box::new(Node {
+        value,
+        next: self.head.take(),
+    });
+    self.head = Some(new_node);
+    self.size += 1;
+}
+
+fn push_back(&amp;mut self, value: i32) {
+    let new_node = Box::new(Node { value, next: None });
+    let mut current = &amp;mut self.head;
+    while let Some(ref mut node) = current {
+        if node.next.is_none() {
+            node.next = Some(new_node);
+            self.size += 1;
+            return;
+        }
+        current = &amp;mut node.next;
+    }
+    self.head = Some(new_node);
+    self.size += 1;
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Delete -->
+<div class="card" id="delete">
+<h2><span class="icon">&#10060;</span> Deletion Operations</h2>
+
+<div class="diagram">
+Delete value <span class="swap">3</span> from: HEAD &rarr; [1] &rarr; [2] &rarr; [<span class="swap">3</span>] &rarr; [4] &rarr; NULL
+
+  1. Traverse until curr.next.data == 3
+  2. Set curr.next = curr.next.next  (skip node [3])
+
+After: HEAD &rarr; [1] &rarr; [2] &rarr; [4] &rarr; NULL
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>SinglyLinkedList.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">boolean deleteByValue(int val) {
+    if (head == null) return false;
+    if (head.data == val) { head = head.next; return true; }
+    Node curr = head;
+    while (curr.next != null) {
+        if (curr.next.data == val) {
+            curr.next = curr.next.next;
+            return true;
+        }
+        curr = curr.next;
+    }
+    return false;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>linked_lists.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">ListNode* deleteByValue(ListNode* head, int val) {
+    if (!head) return nullptr;
+    if (head-&gt;val == val) {
+        ListNode* tmp = head-&gt;next;
+        delete head;
+        return tmp;
+    }
+    ListNode* curr = head;
+    while (curr-&gt;next &amp;&amp; curr-&gt;next-&gt;val != val) {
+        curr = curr-&gt;next;
+    }
+    if (curr-&gt;next) {
+        ListNode* tmp = curr-&gt;next;
+        curr-&gt;next = tmp-&gt;next;
+        delete tmp;
+    }
+    return head;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>linked_lists.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def delete(self, val: int) -&gt; bool:
+    if not self.head:
+        return False
+    if self.head.val == val:
+        self.head = self.head.next
+        return True
+    curr = self.head
+    while curr.next:
+        if curr.next.val == val:
+            curr.next = curr.next.next
+            return True
+        curr = curr.next
+    return False</div></div>
+</div>
+</div>
+</div>
+
+<!-- Reverse -->
+<div class="card" id="reverse">
+<h2><span class="icon">&#128260;</span> Reverse a Linked List</h2>
+
+<h3>Iterative Approach -- O(n) time, O(1) space</h3>
+<p>Maintain three pointers: <code>prev</code>, <code>curr</code>, and <code>next</code>. At each step, reverse <code>curr.next</code> to point to <code>prev</code>, then advance all three pointers.</p>
+
+<div class="diagram">
+<span class="highlight">Step-by-step reversal:</span>
+
+prev=NULL  curr=[1]&rarr;[2]&rarr;[3]&rarr;NULL
+
+Step 1: next = [2],  [1].next = NULL,  prev = [1],  curr = [2]
+        NULL&larr;[1]  [2]&rarr;[3]&rarr;NULL
+
+Step 2: next = [3],  [2].next = [1],  prev = [2],  curr = [3]
+        NULL&larr;[1]&larr;[2]  [3]&rarr;NULL
+
+Step 3: next = NULL, [3].next = [2],  prev = [3],  curr = NULL
+        NULL&larr;[1]&larr;[2]&larr;[3]
+
+HEAD = prev = [3]
+Result: [3]&rarr;[2]&rarr;[1]&rarr;NULL
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>SinglyLinkedList.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Iterative -- O(n) time, O(1) space
+void reverseIterative() {
+    Node prev = null, curr = head, next;
+    while (curr != null) {
+        next = curr.next;
+        curr.next = prev;
+        prev = curr;
+        curr = next;
+    }
+    head = prev;
+}
+
+// Recursive -- O(n) time, O(n) space (call stack)
+Node reverseRec(Node node) {
+    if (node == null || node.next == null) return node;
+    Node newHead = reverseRec(node.next);
+    node.next.next = node;
+    node.next = null;
+    return newHead;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>linked_lists.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">ListNode* reverseIterative(ListNode* head) {
+    ListNode* prev = nullptr;
+    ListNode* curr = head;
+    while (curr) {
+        ListNode* next = curr-&gt;next;
+        curr-&gt;next = prev;
+        prev = curr;
+        curr = next;
+    }
+    return prev;
+}
+
+ListNode* reverseRecursive(ListNode* head) {
+    if (!head || !head-&gt;next) return head;
+    ListNode* newHead = reverseRecursive(head-&gt;next);
+    head-&gt;next-&gt;next = head;
+    head-&gt;next = nullptr;
+    return newHead;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>linked_lists.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def reverse_iterative(self) -&gt; None:
+    prev, curr = None, self.head
+    while curr:
+        nxt = curr.next
+        curr.next = prev
+        prev = curr
+        curr = nxt
+    self.head = prev
+
+def reverse_recursive(self) -&gt; None:
+    def _reverse(node):
+        if not node or not node.next:
+            return node
+        new_head = _reverse(node.next)
+        node.next.next = node
+        node.next = None
+        return new_head
+    self.head = _reverse(self.head)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>linked_lists.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn reverse(&amp;mut self) {
+    let mut prev: Option&lt;Box&lt;Node&gt;&gt; = None;
+    let mut current = self.head.take();
+    while let Some(mut node) = current {
+        let next = node.next.take();
+        node.next = prev;
+        prev = Some(node);
+        current = next;
+    }
+    self.head = prev;
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Rust Note</div>
+Linked lists are notoriously difficult in Rust due to ownership rules. The <code>.take()</code> method is key -- it moves the value out of an <code>Option</code> and replaces it with <code>None</code>, satisfying the borrow checker. For production code, use <code>std::collections::LinkedList</code> or <code>VecDeque</code>.
+</div>
+</div>
+
+<!-- Find Middle -->
+<div class="card" id="middle">
+<h2><span class="icon">&#127919;</span> Find Middle Node</h2>
+<p>Use <strong>Floyd's slow/fast pointer</strong> technique: <code>slow</code> moves one step at a time, <code>fast</code> moves two steps. When <code>fast</code> reaches the end, <code>slow</code> is at the middle.</p>
+
+<div class="diagram">
+[1] &rarr; [2] &rarr; [3] &rarr; [4] &rarr; [5] &rarr; NULL
+
+Step 0: slow=[1], fast=[1]
+Step 1: slow=[2], fast=[3]
+Step 2: slow=[<span class="highlight">3</span>], fast=[5]
+Step 3: fast.next = NULL &rarr; STOP
+
+Middle node = <span class="highlight">3</span>
+</div>
+</div>
+
+<!-- Cycle Detection -->
+<div class="card" id="cycle">
+<h2><span class="icon">&#128256;</span> Cycle Detection -- Floyd's Algorithm</h2>
+<p>Also known as the <strong>tortoise and hare</strong> algorithm. If there is a cycle, the fast pointer will eventually lap the slow pointer and they will meet. If fast reaches <code>null</code>, there is no cycle.</p>
+
+<div class="diagram">
+List with cycle:
+[1] &rarr; [2] &rarr; [3] &rarr; [4] &rarr; [5]
+                   &uarr;                    |
+                   +&larr;&larr;&larr;&larr;&larr;&larr;&larr;&larr;&larr;&larr;&larr;&larr;&darr;
+
+<span class="highlight">Phase 1: Detect cycle</span>
+  slow and fast start at head
+  slow moves 1 step, fast moves 2 steps
+  If they meet &rarr; cycle exists!
+
+<span class="highlight">Phase 2: Find cycle start</span>
+  Reset slow to head
+  Both move 1 step at a time
+  They meet at the cycle start node = [3]
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>SinglyLinkedList.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">boolean hasCycle() {
+    Node slow = head, fast = head;
+    while (fast != null &amp;&amp; fast.next != null) {
+        slow = slow.next;
+        fast = fast.next.next;
+        if (slow == fast) return true; // cycle detected
+    }
+    return false;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>linked_lists.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">ListNode* detectCycle(ListNode* head) {
+    ListNode* slow = head;
+    ListNode* fast = head;
+    while (fast &amp;&amp; fast-&gt;next) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+        if (slow == fast) {
+            // Phase 2: find cycle start
+            slow = head;
+            while (slow != fast) {
+                slow = slow-&gt;next;
+                fast = fast-&gt;next;
+            }
+            return slow;
+        }
+    }
+    return nullptr;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>linked_lists.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def has_cycle(self) -&gt; bool:
+    slow = fast = self.head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow is fast:
+            return True
+    return False</div></div>
+</div>
+</div>
+</div>
+
+<!-- Merge Sorted Lists -->
+<div class="card" id="merge">
+<h2><span class="icon">&#128279;</span> Merge Two Sorted Linked Lists</h2>
+<p>Given two sorted linked lists, merge them into one sorted list by re-linking existing nodes. Use a <strong>dummy head</strong> (sentinel node) to simplify edge cases.</p>
+
+<div class="diagram">
+L1: [1] &rarr; [3] &rarr; [5] &rarr; NULL
+L2: [2] &rarr; [4] &rarr; [6] &rarr; NULL
+
+Compare heads: 1 &lt; 2 &rarr; take [1]
+Compare: 3 &gt; 2 &rarr; take [2]
+Compare: 3 &lt; 4 &rarr; take [3]
+Compare: 5 &gt; 4 &rarr; take [4]
+Compare: 5 &lt; 6 &rarr; take [5]
+Remaining: [6]
+
+Merged: [<span class="sorted">1</span>] &rarr; [<span class="sorted">2</span>] &rarr; [<span class="sorted">3</span>] &rarr; [<span class="sorted">4</span>] &rarr; [<span class="sorted">5</span>] &rarr; [<span class="sorted">6</span>] &rarr; NULL
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>MergeSortedListsAndLRU.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static ListNode mergeSortedLists(ListNode l1, ListNode l2) {
+    ListNode dummy = new ListNode(0); // sentinel head
+    ListNode curr = dummy;
+    while (l1 != null &amp;&amp; l2 != null) {
+        if (l1.val &lt;= l2.val) { curr.next = l1; l1 = l1.next; }
+        else { curr.next = l2; l2 = l2.next; }
+        curr = curr.next;
+    }
+    curr.next = (l1 != null) ? l1 : l2;
+    return dummy.next;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>linked_lists.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">ListNode* mergeSortedLists(ListNode* l1, ListNode* l2) {
+    ListNode dummy(0);
+    ListNode* tail = &amp;dummy;
+    while (l1 &amp;&amp; l2) {
+        if (l1-&gt;val &lt;= l2-&gt;val) {
+            tail-&gt;next = l1; l1 = l1-&gt;next;
+        } else {
+            tail-&gt;next = l2; l2 = l2-&gt;next;
+        }
+        tail = tail-&gt;next;
+    }
+    tail-&gt;next = l1 ? l1 : l2;
+    return dummy.next;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>linked_lists.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def merge_sorted_lists(l1, l2):
+    dummy = ListNode(0)
+    tail = dummy
+    while l1 and l2:
+        if l1.val &lt;= l2.val:
+            tail.next = l1; l1 = l1.next
+        else:
+            tail.next = l2; l2 = l2.next
+        tail = tail.next
+    tail.next = l1 if l1 else l2
+    return dummy.next</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>linked_lists.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// Rust uses Vec-based merge for simplicity
+fn merge_sorted_lists(a: &amp;[i32], b: &amp;[i32]) -&gt; Vec&lt;i32&gt; {
+    let mut result = Vec::with_capacity(a.len() + b.len());
+    let (mut i, mut j) = (0, 0);
+    while i &lt; a.len() &amp;&amp; j &lt; b.len() {
+        if a[i] &lt;= b[j] {
+            result.push(a[i]); i += 1;
+        } else {
+            result.push(b[j]); j += 1;
+        }
+    }
+    result.extend_from_slice(&amp;a[i..]);
+    result.extend_from_slice(&amp;b[j..]);
+    result
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The <strong>dummy/sentinel node</strong> pattern eliminates edge cases for handling the head of the merged list. Instead of special-casing "which list provides the first node?", we always append to <code>dummy.next</code> and return <code>dummy.next</code> at the end.
+</div>
+</div>
+
+<!-- LRU Cache -->
+<div class="card" id="lru">
+<h2><span class="icon">&#128190;</span> LRU Cache</h2>
+<p>A <strong>Least Recently Used</strong> cache evicts the least recently accessed item when full. Both <code>get</code> and <code>put</code> must be <strong>O(1)</strong>.</p>
+
+<h3>Data Structure: Doubly Linked List + Hash Map</h3>
+<ul>
+<li><strong>Hash Map:</strong> key &rarr; node (for O(1) lookup)</li>
+<li><strong>Doubly Linked List:</strong> maintains access order (head = most recent, tail = least recent)</li>
+<li>On <code>get</code> or <code>put</code>: move the accessed node to the head</li>
+<li>On eviction: remove the tail node</li>
+</ul>
+
+<div class="diagram">
+LRU Cache (capacity=3):
+
+HashMap: { 1:node1, 3:node3, 4:node4 }
+
+Doubly Linked List (MRU &rarr; LRU):
+  DUMMY_HEAD &harr; [<span class="highlight">4:40</span>] &harr; [<span class="sorted">3:30</span>] &harr; [<span class="pivot">1:10</span>] &harr; DUMMY_TAIL
+
+get(1) &rarr; move node1 to front:
+  DUMMY_HEAD &harr; [<span class="highlight">1:10</span>] &harr; [<span class="sorted">4:40</span>] &harr; [<span class="pivot">3:30</span>] &harr; DUMMY_TAIL
+
+put(5, 50) &rarr; evict LRU (key 3), insert 5:
+  DUMMY_HEAD &harr; [<span class="highlight">5:50</span>] &harr; [<span class="sorted">1:10</span>] &harr; [<span class="pivot">4:40</span>] &harr; DUMMY_TAIL
+</div>
+
+<div class="insight">
+<div class="label">Real-World Usage</div>
+LRU caches are used everywhere: <strong>CPU caches</strong>, <strong>browser history</strong>, <strong>Redis</strong> eviction policies, <strong>database buffer pools</strong>, and <strong>CDN edge caches</strong>. This is a classic system design interview question.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>MergeSortedListsAndLRU.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static class LRUCache {
+    static class DLNode {
+        int key, val;
+        DLNode prev, next;
+        DLNode(int k, int v) { key = k; val = v; }
+    }
+    private final int capacity;
+    private final Map&lt;Integer, DLNode&gt; map;
+    private final DLNode head, tail;
+
+    LRUCache(int capacity) {
+        this.capacity = capacity;
+        this.map = new HashMap&lt;&gt;();
+        head = new DLNode(0, 0);
+        tail = new DLNode(0, 0);
+        head.next = tail; tail.prev = head;
+    }
+
+    private void remove(DLNode node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void insertAfterHead(DLNode node) {
+        node.next = head.next; node.prev = head;
+        head.next.prev = node; head.next = node;
+    }
+
+    int get(int key) {
+        if (!map.containsKey(key)) return -1;
+        DLNode node = map.get(key);
+        remove(node); insertAfterHead(node);
+        return node.val;
+    }
+
+    void put(int key, int value) {
+        if (map.containsKey(key)) {
+            DLNode node = map.get(key);
+            node.val = value;
+            remove(node); insertAfterHead(node);
+        } else {
+            if (map.size() == capacity) {
+                DLNode lru = tail.prev;
+                remove(lru); map.remove(lru.key);
+            }
+            DLNode newNode = new DLNode(key, value);
+            insertAfterHead(newNode);
+            map.put(key, newNode);
+        }
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>linked_lists.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class LRUCache {
+    int capacity_;
+    list&lt;pair&lt;int, int&gt;&gt; cache_;
+    unordered_map&lt;int, list&lt;pair&lt;int, int&gt;&gt;::iterator&gt; map_;
+public:
+    LRUCache(int capacity) : capacity_(capacity) {}
+
+    int get(int key) {
+        auto it = map_.find(key);
+        if (it == map_.end()) return -1;
+        cache_.splice(cache_.begin(), cache_, it-&gt;second);
+        return it-&gt;second-&gt;second;
+    }
+
+    void put(int key, int value) {
+        auto it = map_.find(key);
+        if (it != map_.end()) {
+            it-&gt;second-&gt;second = value;
+            cache_.splice(cache_.begin(), cache_, it-&gt;second);
+            return;
+        }
+        if ((int)cache_.size() == capacity_) {
+            auto&amp; [lruKey, lruVal] = cache_.back();
+            map_.erase(lruKey);
+            cache_.pop_back();
+        }
+        cache_.emplace_front(key, value);
+        map_[key] = cache_.begin();
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>linked_lists.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># Simple approach using OrderedDict
+class LRUCacheOrdered:
+    def __init__(self, capacity: int) -&gt; None:
+        self.capacity = capacity
+        self.cache = OrderedDict()
+
+    def get(self, key: int) -&gt; int:
+        if key not in self.cache:
+            return -1
+        self.cache.move_to_end(key)
+        return self.cache[key]
+
+    def put(self, key: int, value: int) -&gt; None:
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        self.cache[key] = value
+        if len(self.cache) &gt; self.capacity:
+            self.cache.popitem(last=False)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>linked_lists.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct LRUCache {
+    capacity: usize,
+    map: HashMap&lt;i32, i32&gt;,
+    order: VecDeque&lt;i32&gt;,
+}
+
+impl LRUCache {
+    fn new(capacity: usize) -&gt; Self {
+        LRUCache { capacity, map: HashMap::new(), order: VecDeque::new() }
+    }
+    fn get(&amp;mut self, key: i32) -&gt; Option&lt;i32&gt; {
+        if let Some(&amp;value) = self.map.get(&amp;key) {
+            self.move_to_back(key);
+            Some(value)
+        } else { None }
+    }
+    fn put(&amp;mut self, key: i32, value: i32) {
+        if self.map.contains_key(&amp;key) {
+            self.map.insert(key, value);
+            self.move_to_back(key);
+        } else {
+            if self.map.len() &gt;= self.capacity {
+                if let Some(lru_key) = self.order.pop_front() {
+                    self.map.remove(&amp;lru_key);
+                }
+            }
+            self.map.insert(key, value);
+            self.order.push_back(key);
+        }
+    }
+    fn move_to_back(&amp;mut self, key: i32) {
+        if let Some(pos) = self.order.iter().position(|&amp;k| k == key) {
+            self.order.remove(pos);
+        }
+        self.order.push_back(key);
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Arrays vs Linked Lists -->
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Arrays vs Linked Lists</h2>
+<table>
+<thead><tr><th>Feature</th><th>Array / ArrayList</th><th>Linked List</th></tr></thead>
+<tbody>
+<tr><td>Access by index</td><td><span class="badge badge-green">O(1)</span></td><td><span class="badge badge-red">O(n)</span></td></tr>
+<tr><td>Insert at head</td><td><span class="badge badge-red">O(n)</span> (shift)</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td>Insert at tail</td><td><span class="badge badge-green">O(1)</span> amortized</td><td><span class="badge badge-yellow">O(n)</span> without tail ptr</td></tr>
+<tr><td>Delete at head</td><td><span class="badge badge-red">O(n)</span> (shift)</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td>Search</td><td><span class="badge badge-yellow">O(n)</span></td><td><span class="badge badge-yellow">O(n)</span></td></tr>
+<tr><td>Memory</td><td>Contiguous</td><td>Scattered (pointers)</td></tr>
+<tr><td>Cache performance</td><td><span class="badge badge-green">Excellent</span></td><td><span class="badge badge-red">Poor</span></td></tr>
+<tr><td>Size</td><td>Fixed or resize needed</td><td>Dynamic</td></tr>
+</tbody>
+</table>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Reverse Linked List</strong> -- LeetCode 206</div>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Merge Two Sorted Lists</strong> -- LeetCode 21</div>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Linked List Cycle</strong> -- LeetCode 141</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Linked List Cycle II</strong> -- LeetCode 142. Find where the cycle starts.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Remove Nth Node From End</strong> -- LeetCode 19. Use two pointers.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>LRU Cache</strong> -- LeetCode 146. Classic design problem.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Merge k Sorted Lists</strong> -- LeetCode 23. Use a min-heap.</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary &amp; Cheat Sheet</h2>
+<table>
+<thead><tr><th>Concept</th><th>Time</th><th>Key Technique</th></tr></thead>
+<tbody>
+<tr><td>Insert at head</td><td>O(1)</td><td>New node points to old head</td></tr>
+<tr><td>Reverse (iterative)</td><td>O(n), O(1) space</td><td>Three pointers: prev, curr, next</td></tr>
+<tr><td>Find middle</td><td>O(n)</td><td>Slow/fast pointer (tortoise &amp; hare)</td></tr>
+<tr><td>Detect cycle</td><td>O(n)</td><td>Floyd's algorithm (slow + fast)</td></tr>
+<tr><td>Merge sorted lists</td><td>O(m + n)</td><td>Dummy head + two-pointer merge</td></tr>
+<tr><td>LRU Cache get/put</td><td>O(1)</td><td>Doubly linked list + hash map</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 10/index.html">&larr; Week 10: Matrix</a>
+<a href="../Week 12/index.html">Week 12: Stacks &rarr;</a>
+</div>
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;progressBar.style.width=(st/(sh-h.clientHeight))*100+'%'});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})});
+});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});
+document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});
+function highlight(code,lang){
+code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
+code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
+const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|final|this|null|Map|HashMap|throws)\b/g;
+const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|delete|class|public|private|template|using|namespace|vector|list|unordered_map|pair|static|nullptr|string)\b/g;
+const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|is)\b/g;
+const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|Vec|Some|None|Option|Box|HashMap|VecDeque|as|type)\b/g;
+let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;
+code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
+code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
+return code;
+}
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});
+const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>

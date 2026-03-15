@@ -1,0 +1,859 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 12: Stacks | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}
+a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}
+::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}
+.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}
+.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}
+.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}
+.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}
+.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.sidebar nav a.sub{padding-left:40px;font-size:.82rem}
+.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}
+.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}
+@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}
+.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}
+.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}
+.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}
+.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}
+.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}
+.hero .meta .dot{width:8px;height:8px;border-radius:50%}
+.hero .meta .dot.medium{background:var(--warning)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}
+.card.visible{opacity:1;transform:translateY(0)}
+.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.card h2 .icon{font-size:1.3rem}
+.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}
+.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}
+.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}
+.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}
+.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}
+.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}
+.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}
+.code-panel{display:none;position:relative}.code-panel.active{display:block}
+.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}
+.code-header span{font-size:.75rem;color:var(--text-secondary)}
+.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}
+.copy-btn:hover{background:var(--accent-blue);color:#fff}
+.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}
+.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}
+.line-numbers span{display:block;padding:0 12px 0 16px}
+.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}
+td{padding:10px 12px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}
+.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}
+.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}
+.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}
+.diagram .highlight{color:var(--accent-green);font-weight:700}
+.diagram .swap{color:var(--danger);font-weight:700}
+.diagram .sorted{color:var(--accent-blue)}
+.diagram .pivot{color:var(--warning);font-weight:700}
+/* Stack visualization */
+.stack-viz{display:inline-flex;flex-direction:column-reverse;border:2px solid var(--card-border);border-top:none;border-radius:0 0 8px 8px;margin:16px auto;min-width:120px}
+.stack-viz .item{padding:10px 24px;text-align:center;font-family:monospace;font-weight:700;font-size:1rem;border-top:1px solid var(--card-border);background:rgba(88,166,255,.08)}
+.stack-viz .item:last-child{background:rgba(63,185,80,.15);color:var(--accent-green);border-radius:0 0 6px 6px}
+.stack-viz .item.top{background:rgba(63,185,80,.15);color:var(--accent-green)}
+.stack-label{text-align:center;font-size:.8rem;color:var(--text-secondary);margin-top:4px}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}
+.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}
+.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}
+.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}
+.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}
+.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 12 of 12</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#stack-impl">Stack Implementation</a>
+<a href="#balanced">Balanced Parentheses</a>
+<a href="#nge">Next Greater Element</a>
+<a href="#min-stack">Min Stack</a>
+<a href="#postfix">Postfix Evaluation</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 12 -- Finale</span>
+<h1>Stacks</h1>
+<p class="subtitle">Master the LIFO data structure and its powerful applications -- from balanced parentheses to monotonic stacks used in competitive programming.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Intermediate</span>
+<span>~5 hours estimated</span>
+<span>5 topics covered</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Understand the LIFO (Last In, First Out) principle</li>
+<li>Implement a stack using arrays and understand all O(1) operations</li>
+<li>Check balanced parentheses using a stack</li>
+<li>Find the Next Greater Element using a monotonic stack in O(n)</li>
+<li>Build a Min Stack that supports O(1) getMin()</li>
+<li>Evaluate postfix (Reverse Polish Notation) expressions</li>
+<li>Recognize when stacks are the right tool for a problem</li>
+</ul>
+</div>
+
+<!-- Stack Implementation -->
+<div class="card" id="stack-impl">
+<h2><span class="icon">&#128218;</span> Stack Implementation</h2>
+<p>A <strong>stack</strong> is a LIFO (Last In, First Out) data structure. Think of a stack of plates -- you always add and remove from the <strong>top</strong>.</p>
+
+<h3>Core Operations (all O(1))</h3>
+<table>
+<thead><tr><th>Operation</th><th>Description</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td><code>push(x)</code></td><td>Add element to the top</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td><code>pop()</code></td><td>Remove and return the top element</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td><code>peek()</code> / <code>top()</code></td><td>View the top element without removing</td><td><span class="badge badge-green">O(1)</span></td></tr>
+<tr><td><code>isEmpty()</code></td><td>Check if the stack is empty</td><td><span class="badge badge-green">O(1)</span></td></tr>
+</tbody>
+</table>
+
+<h3>Push &amp; Pop Visualization</h3>
+<div class="diagram">
+<span class="highlight">push(10), push(20), push(30):</span>
+
+         TOP
+          |
+        | 30 |  &larr; push(30)
+        | 20 |
+        | 10 |
+        +----+
+
+<span class="swap">pop() returns 30:</span>
+
+         TOP
+          |
+        | 20 |
+        | 10 |
+        +----+
+
+<span class="swap">pop() returns 20:</span>
+
+         TOP
+          |
+        | 10 |
+        +----+
+</div>
+
+<div class="insight">
+<div class="label">Java Note</div>
+In Java, prefer <code>Deque&lt;Integer&gt;</code> (implemented by <code>ArrayDeque</code>) over the legacy <code>Stack</code> class. <code>ArrayDeque</code> is faster, more cache-friendly, and has a cleaner API.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StackImplementation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static class ArrayStack {
+    private int[] data;
+    private int top;
+
+    ArrayStack(int capacity) {
+        data = new int[capacity];
+        top = -1;
+    }
+
+    void push(int x) {
+        if (top == data.length - 1) throw new RuntimeException("Stack overflow");
+        data[++top] = x;
+    }
+
+    int pop() {
+        if (isEmpty()) throw new RuntimeException("Stack underflow");
+        return data[top--];
+    }
+
+    int peek() {
+        if (isEmpty()) throw new RuntimeException("Stack is empty");
+        return data[top];
+    }
+
+    boolean isEmpty() { return top == -1; }
+    int size() { return top + 1; }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>stacks.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">template &lt;typename T&gt;
+class Stack {
+    vector&lt;T&gt; data_;
+public:
+    void push(const T&amp; val) { data_.push_back(val); }
+
+    void pop() {
+        if (data_.empty()) throw runtime_error("Stack underflow");
+        data_.pop_back();
+    }
+
+    T&amp; top() {
+        if (data_.empty()) throw runtime_error("Stack is empty");
+        return data_.back();
+    }
+
+    bool empty() const { return data_.empty(); }
+    size_t size() const { return data_.size(); }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>stacks.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class Stack:
+    """LIFO stack backed by a Python list."""
+
+    def __init__(self) -&gt; None:
+        self._data: list[int] = []
+
+    def push(self, val: int) -&gt; None:
+        self._data.append(val)
+
+    def pop(self) -&gt; int:
+        if self.is_empty():
+            raise IndexError("pop from empty stack")
+        return self._data.pop()
+
+    def peek(self) -&gt; int:
+        if self.is_empty():
+            raise IndexError("peek from empty stack")
+        return self._data[-1]
+
+    def is_empty(self) -&gt; bool:
+        return len(self._data) == 0
+
+    def size(self) -&gt; int:
+        return len(self._data)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>stacks.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct Stack {
+    data: Vec&lt;i32&gt;,
+}
+
+impl Stack {
+    fn new() -&gt; Self { Stack { data: Vec::new() } }
+
+    fn push(&amp;mut self, value: i32) { self.data.push(value); }
+
+    fn pop(&amp;mut self) -&gt; Option&lt;i32&gt; { self.data.pop() }
+
+    fn peek(&amp;self) -&gt; Option&lt;&amp;i32&gt; { self.data.last() }
+
+    fn is_empty(&amp;self) -&gt; bool { self.data.is_empty() }
+
+    fn len(&amp;self) -&gt; usize { self.data.len() }
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Rust Note</div>
+<code>Vec&lt;T&gt;</code> is the natural stack in Rust: <code>push()</code> and <code>pop()</code> are O(1) amortized. <code>pop()</code> returns <code>Option&lt;T&gt;</code>, forcing you to handle the empty-stack case at compile time -- no null pointer exceptions.
+</div>
+</div>
+
+<!-- Balanced Parentheses -->
+<div class="card" id="balanced">
+<h2><span class="icon">&#10004;</span> Balanced Parentheses</h2>
+<p>Check if a string of brackets <code>(){}[]</code> is properly balanced. This is a classic stack application: push opening brackets, pop and match when encountering closing brackets.</p>
+
+<h3>Algorithm</h3>
+<ol>
+<li>For each character in the string:</li>
+<li>If it is an opening bracket <code>( [ {</code>, push it onto the stack</li>
+<li>If it is a closing bracket <code>) ] }</code>, pop from the stack and check if it matches</li>
+<li>If the stack is empty when we need to pop, or the match fails, return false</li>
+<li>At the end, the stack must be empty (all brackets matched)</li>
+</ol>
+
+<div class="diagram">
+Input: "({[]})"
+
+Step 1: '(' &rarr; push     Stack: [<span class="highlight">(</span>]
+Step 2: '{' &rarr; push     Stack: [(, <span class="highlight">{</span>]
+Step 3: '[' &rarr; push     Stack: [(, {, <span class="highlight">[</span>]
+Step 4: ']' &rarr; pop '[' &checkmark;  Stack: [(, {]
+Step 5: '}' &rarr; pop '{' &checkmark;  Stack: [(]
+Step 6: ')' &rarr; pop '(' &checkmark;  Stack: []
+
+Stack empty &rarr; <span class="highlight">BALANCED</span>
+
+Input: "(]"
+Step 1: '(' &rarr; push     Stack: [(]
+Step 2: ']' &rarr; pop '(' &ne; matching '[' &rarr; <span class="swap">NOT BALANCED</span>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StackImplementation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static boolean isBalanced(String s) {
+    Deque&lt;Character&gt; stack = new ArrayDeque&lt;&gt;();
+    for (char c : s.toCharArray()) {
+        if (c == '(' || c == '{' || c == '[') {
+            stack.push(c);
+        } else {
+            if (stack.isEmpty()) return false;
+            char top = stack.pop();
+            if (c == ')' &amp;&amp; top != '(') return false;
+            if (c == '}' &amp;&amp; top != '{') return false;
+            if (c == ']' &amp;&amp; top != '[') return false;
+        }
+    }
+    return stack.isEmpty();
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>stacks.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">bool isBalanced(const string&amp; s) {
+    stack&lt;char&gt; st;
+    unordered_map&lt;char, char&gt; match = {
+        {')', '('}, {'}', '{'}, {']', '['}
+    };
+    for (char c : s) {
+        if (c == '(' || c == '{' || c == '[') {
+            st.push(c);
+        } else if (match.count(c)) {
+            if (st.empty() || st.top() != match[c]) return false;
+            st.pop();
+        }
+    }
+    return st.empty();
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>stacks.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def is_balanced(s: str) -&gt; bool:
+    matching = {")": "(", "]": "[", "}": "{"}
+    stack = []
+    for ch in s:
+        if ch in "([{":
+            stack.append(ch)
+        elif ch in ")]}":
+            if not stack or stack[-1] != matching[ch]:
+                return False
+            stack.pop()
+    return len(stack) == 0</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>stacks.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn is_balanced(s: &amp;str) -&gt; bool {
+    let mut stack: Vec&lt;char&gt; = Vec::new();
+    let matches: HashMap&lt;char, char&gt; = [(')', '('), (']', '['), ('}', '{')]
+        .iter().cloned().collect();
+    for ch in s.chars() {
+        match ch {
+            '(' | '[' | '{' =&gt; stack.push(ch),
+            ')' | ']' | '}' =&gt; {
+                match (stack.pop(), matches.get(&amp;ch)) {
+                    (Some(top), Some(&amp;expected)) if top == expected =&gt; {}
+                    _ =&gt; return false,
+                }
+            }
+            _ =&gt; {}
+        }
+    }
+    stack.is_empty()
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Next Greater Element -->
+<div class="card" id="nge">
+<h2><span class="icon">&#128200;</span> Next Greater Element (Monotonic Stack)</h2>
+<p>For each element in an array, find the <strong>next element to the right</strong> that is greater than it. If none exists, the result is -1.</p>
+
+<h3>The Monotonic Stack Technique</h3>
+<p>Maintain a <strong>monotonically decreasing stack</strong> of indices. When we encounter an element larger than the stack top, that element is the "next greater" for all smaller elements on top of the stack.</p>
+
+<div class="diagram">
+Array: [4, 5, 2, 10, 8]
+
+i=0: arr[0]=4,  stack empty, push 0       Stack: [0]
+i=1: arr[1]=5 &gt; arr[0]=4  &rarr; NGE[0]=<span class="highlight">5</span>, pop   Stack: []
+     push 1                              Stack: [1]
+i=2: arr[2]=2,  2 &lt; 5, push 2            Stack: [1, 2]
+i=3: arr[3]=10 &gt; arr[2]=2  &rarr; NGE[2]=<span class="highlight">10</span>
+     arr[3]=10 &gt; arr[1]=5  &rarr; NGE[1]=<span class="highlight">10</span>
+     push 3                              Stack: [3]
+i=4: arr[4]=8,  8 &lt; 10, push 4           Stack: [3, 4]
+
+Remaining: NGE[3]=-1, NGE[4]=-1
+
+Result: [<span class="sorted">5, 10, 10, -1, -1</span>]
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Each element is pushed and popped from the stack <strong>at most once</strong>, so the total work is O(n) despite the nested while loop. This is the hallmark of the monotonic stack pattern.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StackImplementation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int[] nextGreaterElement(int[] arr) {
+    int n = arr.length;
+    int[] result = new int[n];
+    java.util.Arrays.fill(result, -1);
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;(); // stores INDICES
+
+    for (int i = 0; i &lt; n; i++) {
+        while (!stack.isEmpty() &amp;&amp; arr[i] &gt; arr[stack.peek()]) {
+            int idx = stack.pop();
+            result[idx] = arr[i];
+        }
+        stack.push(i);
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>stacks.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">vector&lt;int&gt; nextGreaterElement(const vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    vector&lt;int&gt; result(n, -1);
+    stack&lt;int&gt; st;  // stores indices
+    for (int i = 0; i &lt; n; ++i) {
+        while (!st.empty() &amp;&amp; arr[st.top()] &lt; arr[i]) {
+            result[st.top()] = arr[i];
+            st.pop();
+        }
+        st.push(i);
+    }
+    return result;
+}
+
+// Circular variant: traverse the array twice
+vector&lt;int&gt; nextGreaterElementCircular(const vector&lt;int&gt;&amp; arr) {
+    int n = arr.size();
+    vector&lt;int&gt; result(n, -1);
+    stack&lt;int&gt; st;
+    for (int i = 0; i &lt; 2 * n; ++i) {
+        int idx = i % n;
+        while (!st.empty() &amp;&amp; arr[st.top()] &lt; arr[idx]) {
+            result[st.top()] = arr[idx];
+            st.pop();
+        }
+        if (i &lt; n) st.push(i);
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>stacks.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def next_greater_element(arr):
+    n = len(arr)
+    result = [-1] * n
+    stack = []  # stores indices
+    for i in range(n):
+        while stack and arr[stack[-1]] &lt; arr[i]:
+            idx = stack.pop()
+            result[idx] = arr[i]
+        stack.append(i)
+    return result</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>stacks.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn next_greater_element(arr: &amp;[i32]) -&gt; Vec&lt;Option&lt;i32&gt;&gt; {
+    let n = arr.len();
+    let mut result: Vec&lt;Option&lt;i32&gt;&gt; = vec![None; n];
+    let mut stack: Vec&lt;usize&gt; = Vec::new();
+    for i in 0..n {
+        while let Some(&amp;top_idx) = stack.last() {
+            if arr[top_idx] &lt; arr[i] {
+                stack.pop();
+                result[top_idx] = Some(arr[i]);
+            } else { break; }
+        }
+        stack.push(i);
+    }
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Min Stack -->
+<div class="card" id="min-stack">
+<h2><span class="icon">&#128201;</span> Min Stack -- O(1) getMin()</h2>
+<p>A stack that supports push, pop, peek, <strong>and getMin()</strong> -- all in O(1) time. The trick: maintain a second stack that tracks the current minimum at each level.</p>
+
+<h3>How It Works</h3>
+<div class="diagram">
+Operations:  push(5), push(3), push(7), push(2), pop(), pop()
+
+Main Stack:    Min Stack:
+ push(5):  [5]         [5]        min = 5
+ push(3):  [5,3]       [5,3]      min = 3
+ push(7):  [5,3,7]     [5,3,3]    min = 3  (7 &gt; 3, min stays 3)
+ push(2):  [5,3,7,2]   [5,3,3,2]  min = <span class="highlight">2</span>
+ pop(2):   [5,3,7]     [5,3,3]    min = <span class="sorted">3</span>  (back to 3!)
+ pop(7):   [5,3]       [5,3]      min = <span class="sorted">3</span>  (still 3)
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The min stack stores the minimum at each "level" of the main stack. When we push, the new minimum is <code>min(new_value, current_min)</code>. When we pop, we pop from both stacks, automatically restoring the previous minimum.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StackImplementation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static class MinStack {
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+    Deque&lt;Integer&gt; minStack = new ArrayDeque&lt;&gt;();
+
+    void push(int x) {
+        stack.push(x);
+        int min = minStack.isEmpty() ? x : Math.min(x, minStack.peek());
+        minStack.push(min);
+    }
+
+    void pop() {
+        stack.pop();
+        minStack.pop();
+    }
+
+    int peek() { return stack.peek(); }
+    int getMin() { return minStack.peek(); }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>stacks.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class MinStack {
+    stack&lt;int&gt; mainStack_;
+    stack&lt;int&gt; minStack_;
+public:
+    void push(int val) {
+        mainStack_.push(val);
+        if (minStack_.empty() || val &lt;= minStack_.top()) {
+            minStack_.push(val);
+        }
+    }
+    void pop() {
+        if (mainStack_.top() == minStack_.top()) {
+            minStack_.pop();
+        }
+        mainStack_.pop();
+    }
+    int top() const { return mainStack_.top(); }
+    int getMin() const { return minStack_.top(); }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>stacks.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class MinStack:
+    def __init__(self) -&gt; None:
+        self._stack = []
+        self._min_stack = []
+
+    def push(self, val: int) -&gt; None:
+        self._stack.append(val)
+        current_min = min(val, self._min_stack[-1]) if self._min_stack else val
+        self._min_stack.append(current_min)
+
+    def pop(self) -&gt; int:
+        self._min_stack.pop()
+        return self._stack.pop()
+
+    def top(self) -&gt; int:
+        return self._stack[-1]
+
+    def get_min(self) -&gt; int:
+        return self._min_stack[-1]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>stacks.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct MinStack {
+    data: Vec&lt;i32&gt;,
+    mins: Vec&lt;i32&gt;,
+}
+
+impl MinStack {
+    fn new() -&gt; Self {
+        MinStack { data: Vec::new(), mins: Vec::new() }
+    }
+    fn push(&amp;mut self, value: i32) {
+        self.data.push(value);
+        let new_min = match self.mins.last() {
+            Some(&amp;current_min) =&gt; value.min(current_min),
+            None =&gt; value,
+        };
+        self.mins.push(new_min);
+    }
+    fn pop(&amp;mut self) -&gt; Option&lt;i32&gt; {
+        self.mins.pop();
+        self.data.pop()
+    }
+    fn top(&amp;self) -&gt; Option&lt;&amp;i32&gt; { self.data.last() }
+    fn get_min(&amp;self) -&gt; Option&lt;&amp;i32&gt; { self.mins.last() }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Postfix Evaluation -->
+<div class="card" id="postfix">
+<h2><span class="icon">&#128290;</span> Postfix (RPN) Expression Evaluation</h2>
+<p><strong>Reverse Polish Notation</strong> (postfix) places operators after their operands: <code>3 4 +</code> means <code>3 + 4 = 7</code>. Stacks make evaluation trivial -- push operands, pop two when you see an operator, compute, and push the result.</p>
+
+<h3>Step-by-Step Example</h3>
+<div class="diagram">
+Expression: "3 4 + 2 *"  (meaning: (3 + 4) * 2 = 14)
+
+Token "3": push 3        Stack: [<span class="sorted">3</span>]
+Token "4": push 4        Stack: [3, <span class="sorted">4</span>]
+Token "+": pop 4 &amp; 3     Stack: []
+           push 3+4=7    Stack: [<span class="highlight">7</span>]
+Token "2": push 2        Stack: [7, <span class="sorted">2</span>]
+Token "*": pop 2 &amp; 7     Stack: []
+           push 7*2=14   Stack: [<span class="highlight">14</span>]
+
+Result: <span class="highlight">14</span>
+</div>
+
+<div class="warning-box">
+<div class="label">Order Matters for - and /</div>
+When popping for subtraction and division, the <strong>first popped value is the right operand</strong> (b) and the <strong>second is the left operand</strong> (a). Compute <code>a - b</code> and <code>a / b</code>, not the reverse.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StackImplementation.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int evalPostfix(String expr) {
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+    for (String token : expr.split("\\s+")) {
+        switch (token) {
+            case "+": stack.push(stack.pop() + stack.pop()); break;
+            case "*": stack.push(stack.pop() * stack.pop()); break;
+            case "-": {
+                int b = stack.pop(), a = stack.pop();
+                stack.push(a - b); break;
+            }
+            case "/": {
+                int b = stack.pop(), a = stack.pop();
+                stack.push(a / b); break;
+            }
+            default: stack.push(Integer.parseInt(token));
+        }
+    }
+    return stack.pop();
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>stacks.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int evalPostfix(const vector&lt;string&gt;&amp; tokens) {
+    stack&lt;int&gt; st;
+    for (const auto&amp; token : tokens) {
+        if (token == "+" || token == "-" || token == "*" || token == "/") {
+            int b = st.top(); st.pop();
+            int a = st.top(); st.pop();
+            int result;
+            if (token == "+") result = a + b;
+            else if (token == "-") result = a - b;
+            else if (token == "*") result = a * b;
+            else result = a / b;
+            st.push(result);
+        } else {
+            st.push(stoi(token));
+        }
+    }
+    return st.top();
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>stacks.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def eval_postfix(tokens):
+    stack = []
+    for token in tokens:
+        if token in ("+", "-", "*", "/"):
+            b = stack.pop()
+            a = stack.pop()
+            if token == "+": stack.append(a + b)
+            elif token == "-": stack.append(a - b)
+            elif token == "*": stack.append(a * b)
+            else: stack.append(int(a / b))  # truncate toward zero
+        else:
+            stack.append(int(token))
+    return stack[0]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>stacks.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn eval_postfix(expression: &amp;str) -&gt; Option&lt;i32&gt; {
+    let mut stack: Vec&lt;i32&gt; = Vec::new();
+    for token in expression.split_whitespace() {
+        match token {
+            "+" | "-" | "*" | "/" =&gt; {
+                let b = stack.pop()?;
+                let a = stack.pop()?;
+                let result = match token {
+                    "+" =&gt; a + b,
+                    "-" =&gt; a - b,
+                    "*" =&gt; a * b,
+                    "/" =&gt; { if b == 0 { return None; } a / b }
+                    _ =&gt; unreachable!(),
+                };
+                stack.push(result);
+            }
+            _ =&gt; { stack.push(token.parse().ok()?); }
+        }
+    }
+    if stack.len() == 1 { stack.pop() } else { None }
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Practice -->
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Valid Parentheses</strong> -- LeetCode 20</div>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Min Stack</strong> -- LeetCode 155</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Evaluate Reverse Polish Notation</strong> -- LeetCode 150</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Next Greater Element II</strong> -- LeetCode 503. Circular array variant.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Daily Temperatures</strong> -- LeetCode 739. Monotonic stack to find warmer days.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Largest Rectangle in Histogram</strong> -- LeetCode 84. Classic monotonic stack.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Trapping Rain Water</strong> -- LeetCode 42. Can be solved with stacks.</div>
+</div>
+
+<!-- Summary -->
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary &amp; Cheat Sheet</h2>
+<table>
+<thead><tr><th>Problem Pattern</th><th>Technique</th><th>Time</th></tr></thead>
+<tbody>
+<tr><td>Matching brackets / tags</td><td>Push open, pop and match close</td><td>O(n)</td></tr>
+<tr><td>Next Greater / Smaller Element</td><td>Monotonic stack (decreasing / increasing)</td><td>O(n)</td></tr>
+<tr><td>Min/Max at each level</td><td>Auxiliary stack tracking min/max</td><td>O(1) per operation</td></tr>
+<tr><td>Expression evaluation</td><td>Postfix (RPN) with operand stack</td><td>O(n)</td></tr>
+<tr><td>Undo operations</td><td>Push actions onto stack, pop to undo</td><td>O(1) per undo</td></tr>
+<tr><td>DFS traversal</td><td>Explicit stack instead of recursion</td><td>Varies</td></tr>
+</tbody>
+</table>
+
+<div class="insight">
+<div class="label">When to Use a Stack</div>
+Look for these signals: (1) <strong>Last-in-first-out</strong> processing order. (2) <strong>Matching pairs</strong> (parentheses, tags). (3) <strong>Nearest previous/next</strong> element problems. (4) <strong>Undo</strong> functionality. (5) Converting <strong>recursion to iteration</strong>. (6) <strong>Expression parsing</strong>.
+</div>
+
+<h3>Congratulations!</h3>
+<p>You have completed all 12 weeks of the DSA Journey! You have covered arrays, strings, bit manipulation, recursion, binary search, hashing, two pointers, sliding window, sorting, matrices, linked lists, and stacks. Keep practicing on LeetCode and building your problem-solving intuition.</p>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 11/index.html">&larr; Week 11: Linked Lists</a>
+<a href="#hero">Back to Top</a>
+</div>
+</main>
+</div>
+
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');
+hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});
+overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});
+const progressBar=document.getElementById('progressBar');
+window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;progressBar.style.width=(st/(sh-h.clientHeight))*100+'%'});
+const backToTop=document.getElementById('backToTop');
+window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});
+backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});
+document.querySelectorAll('.card').forEach(c=>obs.observe(c));
+document.querySelectorAll('.code-viewer').forEach(viewer=>{
+const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');
+tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})});
+});
+document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});
+document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});
+function highlight(code,lang){
+code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
+code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
+const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|Deque|ArrayDeque|String)\b/g;
+const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|vector|stack|unordered_map|string|size_t|static|pair)\b/g;
+const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|is|raise|min|max|int|append|pop)\b/g;
+const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|Vec|Some|None|Option|HashMap|as|type|unreachable)\b/g;
+let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;
+code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
+code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
+return code;
+}
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});
+const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
+window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>
