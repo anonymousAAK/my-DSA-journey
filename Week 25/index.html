@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 25: Advanced String Algorithms | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}.sidebar nav a.sub{padding-left:40px;font-size:.82rem}.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}.hero .meta .dot{width:8px;height:8px;border-radius:50%}.hero .meta .dot.medium{background:var(--warning)}.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}.card.visible{opacity:1;transform:translateY(0)}.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}.card h2 .icon{font-size:1.3rem}.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}.code-panel{display:none;position:relative}.code-panel.active{display:block}.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}.code-header span{font-size:.75rem;color:var(--text-secondary)}.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}.copy-btn:hover{background:var(--accent-blue);color:#fff}.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}.line-numbers span{display:block;padding:0 12px 0 16px}.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}td{padding:10px 12px;border-bottom:1px solid var(--card-border)}tr:hover td{background:rgba(88,166,255,.03)}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}.diagram .highlight{color:var(--accent-green);font-weight:700}.diagram .swap{color:var(--danger);font-weight:700}.diagram .sorted{color:var(--accent-blue)}.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 25 of 30</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#z-algorithm">Z-Algorithm</a>
+<a href="#rabin-karp">Rabin-Karp</a>
+<a href="#trie-matching">Trie-Based Matching</a>
+<a href="#suffix-array">Suffix Array</a>
+<a href="#manacher">Manacher's Algorithm</a>
+<a href="#string-hashing">String Hashing</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 25</span>
+<h1>Advanced String Algorithms</h1>
+<p class="subtitle">Master powerful string processing techniques: pattern matching with Z-Algorithm and Rabin-Karp, trie-based search, suffix arrays, Manacher's palindrome algorithm, and string hashing.</p>
+<div class="meta">
+<span><span class="dot hard"></span> Advanced</span>
+<span>~12 hours estimated</span>
+<span>6 major topics</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Implement the Z-Algorithm for linear-time pattern matching</li>
+<li>Build Rabin-Karp using rolling hash for efficient multi-pattern search</li>
+<li>Construct a Trie and use it for pattern matching across text</li>
+<li>Build a Suffix Array and understand its applications</li>
+<li>Apply Manacher's Algorithm to find the longest palindromic substring in O(n)</li>
+<li>Use polynomial string hashing for fast string comparison and matching</li>
+</ul>
+</div>
+
+<div class="card" id="z-algorithm">
+<h2><span class="icon">&#128269;</span> Z-Algorithm</h2>
+<p>The Z-Algorithm computes the <strong>Z-array</strong> for a string S: Z[i] is the length of the longest substring starting at position i that matches a prefix of S. By concatenating the pattern P with the text T as <code>P$T</code>, any Z[i] == len(P) indicates a match.</p>
+<div class="diagram">
+Text:    a a b x a a b
+Z-array: [7 1 0 0 3 1 0]
+
+Pattern match using "aab$aabxaab":
+P = "aab", T = "aabxaab"
+Concat: <span class="highlight">aab$aabxaab</span>
+Z:      [- 1 0 0 <span class="highlight">3</span> 1 0 0 <span class="highlight">3</span> 1 0]
+                  ^               ^
+          Z[i]=3=len(P) &rarr; <span class="highlight">match at position i - len(P) - 1</span>
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringAlgorithms.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int[] zFunction(String s) {
+    int n = s.length();
+    int[] z = new int[n];
+    int l = 0, r = 0;
+    for (int i = 1; i &lt; n; i++) {
+        if (i &lt; r) z[i] = Math.min(r - i, z[i - l]);
+        while (i + z[i] &lt; n &amp;&amp; s.charAt(z[i]) == s.charAt(i + z[i]))
+            z[i]++;
+        if (i + z[i] &gt; r) { l = i; r = i + z[i]; }
+    }
+    return z;
+}
+
+static List&lt;Integer&gt; zSearch(String text, String pattern) {
+    String concat = pattern + "$" + text;
+    int[] z = zFunction(concat);
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    for (int i = pattern.length() + 1; i &lt; concat.length(); i++)
+        if (z[i] == pattern.length())
+            result.add(i - pattern.length() - 1);
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>string_algorithms.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">vector&lt;int&gt; zFunction(const string&amp; s) {
+    int n = s.size();
+    vector&lt;int&gt; z(n, 0);
+    int l = 0, r = 0;
+    for (int i = 1; i &lt; n; ++i) {
+        if (i &lt; r) z[i] = min(r - i, z[i - l]);
+        while (i + z[i] &lt; n &amp;&amp; s[z[i]] == s[i + z[i]])
+            z[i]++;
+        if (i + z[i] &gt; r) { l = i; r = i + z[i]; }
+    }
+    return z;
+}
+
+vector&lt;int&gt; zSearch(const string&amp; text, const string&amp; pattern) {
+    string concat = pattern + "$" + text;
+    auto z = zFunction(concat);
+    vector&lt;int&gt; result;
+    for (int i = pattern.size() + 1; i &lt; (int)concat.size(); ++i)
+        if (z[i] == (int)pattern.size())
+            result.push_back(i - pattern.size() - 1);
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>string_algorithms.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def z_function(s):
+    n = len(s)
+    z = [0] * n
+    l, r = 0, 0
+    for i in range(1, n):
+        if i &lt; r:
+            z[i] = min(r - i, z[i - l])
+        while i + z[i] &lt; n and s[z[i]] == s[i + z[i]]:
+            z[i] += 1
+        if i + z[i] &gt; r:
+            l, r = i, i + z[i]
+    return z
+
+def z_search(text, pattern):
+    concat = pattern + "$" + text
+    z = z_function(concat)
+    plen = len(pattern)
+    return [i - plen - 1 for i in range(plen + 1, len(concat)) if z[i] == plen]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>string_algorithms.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn z_function(s: &amp;[u8]) -&gt; Vec&lt;usize&gt; {
+    let n = s.len();
+    let mut z = vec![0usize; n];
+    let (mut l, mut r) = (0, 0);
+    for i in 1..n {
+        if i &lt; r { z[i] = z[i - l].min(r - i); }
+        while i + z[i] &lt; n &amp;&amp; s[z[i]] == s[i + z[i]] {
+            z[i] += 1;
+        }
+        if i + z[i] &gt; r { l = i; r = i + z[i]; }
+    }
+    z
+}
+
+fn z_search(text: &amp;str, pattern: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let concat = format!("{}${}", pattern, text);
+    let z = z_function(concat.as_bytes());
+    let plen = pattern.len();
+    (plen + 1..concat.len())
+        .filter(|&amp;i| z[i] == plen)
+        .map(|i| i - plen - 1)
+        .collect()
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="rabin-karp">
+<h2><span class="icon">&#128290;</span> Rabin-Karp (Rolling Hash)</h2>
+<p>Rabin-Karp uses a <strong>rolling hash</strong> to compare pattern and text windows in O(1) per slide. If hashes match, verify character-by-character. Excellent for <strong>multi-pattern search</strong> since you can check multiple pattern hashes simultaneously.</p>
+<div class="diagram">
+Pattern: "abc"   hash(P) = 294
+Text:    "x a b c d a b c y"
+          |---|                hash("xab") = 311  &ne; 294
+            |---|              hash("abc") = <span class="highlight">294  = 294 &rarr; verify match!</span>
+              |---|            hash("bcd") = 297  &ne; 294
+                |---|          hash("cda") = 298  &ne; 294
+                  |---|        hash("dab") = 295  &ne; 294
+                    |---|      hash("abc") = <span class="highlight">294  = 294 &rarr; verify match!</span>
+                      |---|    hash("bcy") = 320  &ne; 294
+
+Rolling update: <span class="highlight">hash(s[i+1..i+m]) = (hash - s[i]*base^(m-1)) * base + s[i+m]</span>
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringAlgorithms.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static List&lt;Integer&gt; rabinKarp(String text, String pattern) {
+    long MOD = 1_000_000_007, BASE = 31;
+    int n = text.length(), m = pattern.length();
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    if (m &gt; n) return result;
+
+    long patHash = 0, textHash = 0, power = 1;
+    for (int i = 0; i &lt; m; i++) {
+        patHash = (patHash * BASE + pattern.charAt(i)) % MOD;
+        textHash = (textHash * BASE + text.charAt(i)) % MOD;
+        if (i &gt; 0) power = power * BASE % MOD;
+    }
+
+    for (int i = 0; i &lt;= n - m; i++) {
+        if (patHash == textHash) {
+            if (text.substring(i, i + m).equals(pattern))
+                result.add(i);
+        }
+        if (i + m &lt; n) {
+            textHash = (textHash - text.charAt(i) * power % MOD + MOD) % MOD;
+            textHash = (textHash * BASE + text.charAt(i + m)) % MOD;
+        }
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>string_algorithms.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">vector&lt;int&gt; rabinKarp(const string&amp; text, const string&amp; pattern) {
+    const long long MOD = 1e9 + 7, BASE = 31;
+    int n = text.size(), m = pattern.size();
+    vector&lt;int&gt; result;
+    if (m &gt; n) return result;
+
+    long long patHash = 0, textHash = 0, power = 1;
+    for (int i = 0; i &lt; m; ++i) {
+        patHash = (patHash * BASE + pattern[i]) % MOD;
+        textHash = (textHash * BASE + text[i]) % MOD;
+        if (i &gt; 0) power = power * BASE % MOD;
+    }
+
+    for (int i = 0; i &lt;= n - m; ++i) {
+        if (patHash == textHash &amp;&amp; text.substr(i, m) == pattern)
+            result.push_back(i);
+        if (i + m &lt; n) {
+            textHash = (textHash - text[i] * power % MOD + MOD) % MOD;
+            textHash = (textHash * BASE + text[i + m]) % MOD;
+        }
+    }
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>string_algorithms.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def rabin_karp(text, pattern):
+    MOD, BASE = 10**9 + 7, 31
+    n, m = len(text), len(pattern)
+    if m &gt; n:
+        return []
+
+    pat_hash = 0
+    text_hash = 0
+    power = pow(BASE, m - 1, MOD)
+
+    for i in range(m):
+        pat_hash = (pat_hash * BASE + ord(pattern[i])) % MOD
+        text_hash = (text_hash * BASE + ord(text[i])) % MOD
+
+    result = []
+    for i in range(n - m + 1):
+        if pat_hash == text_hash and text[i:i + m] == pattern:
+            result.append(i)
+        if i + m &lt; n:
+            text_hash = (text_hash - ord(text[i]) * power) % MOD
+            text_hash = (text_hash * BASE + ord(text[i + m])) % MOD
+    return result</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>string_algorithms.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn rabin_karp(text: &amp;str, pattern: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let (n, m) = (text.len(), pattern.len());
+    let (t, p) = (text.as_bytes(), pattern.as_bytes());
+    let (modv, base): (u64, u64) = (1_000_000_007, 31);
+    let mut result = Vec::new();
+    if m &gt; n { return result; }
+
+    let mut pat_hash: u64 = 0;
+    let mut text_hash: u64 = 0;
+    let mut power: u64 = 1;
+    for i in 0..m {
+        pat_hash = (pat_hash * base + p[i] as u64) % modv;
+        text_hash = (text_hash * base + t[i] as u64) % modv;
+        if i &gt; 0 { power = power * base % modv; }
+    }
+
+    for i in 0..=n - m {
+        if pat_hash == text_hash &amp;&amp; &amp;t[i..i + m] == p {
+            result.push(i);
+        }
+        if i + m &lt; n {
+            text_hash = (text_hash + modv - t[i] as u64 * power % modv) % modv;
+            text_hash = (text_hash * base + t[i + m] as u64) % modv;
+        }
+    }
+    result
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="trie-matching">
+<h2><span class="icon">&#127795;</span> Trie-Based Pattern Matching</h2>
+<p>A <strong>Trie</strong> (prefix tree) stores a set of patterns in a tree structure. Each path from root to a marked node represents a pattern. Searching for a pattern of length m takes <strong>O(m)</strong> time regardless of how many patterns are stored.</p>
+<div class="diagram">
+Patterns: {"app", "apple", "apt", "bat"}
+
+            (root)
+           /      \
+         a          b
+        /             \
+       p               a
+      / \                \
+     p   t*              t*
+     |
+     l
+     |
+     e*
+
+  * = end of word
+
+<span class="highlight">Search "apt": root &rarr; a &rarr; p &rarr; t* &rarr; FOUND</span>
+<span class="swap">Search "api": root &rarr; a &rarr; p &rarr; i  &rarr; NOT FOUND (no 'i' child)</span>
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringAlgorithms.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class Trie {
+    int[][] children;
+    boolean[] isEnd;
+    int cnt;
+
+    Trie(int maxNodes) {
+        children = new int[maxNodes][26];
+        isEnd = new boolean[maxNodes];
+        for (int[] row : children) Arrays.fill(row, -1);
+        cnt = 1; // root is node 0
+    }
+
+    void insert(String word) {
+        int node = 0;
+        for (char c : word.toCharArray()) {
+            int idx = c - 'a';
+            if (children[node][idx] == -1)
+                children[node][idx] = cnt++;
+            node = children[node][idx];
+        }
+        isEnd[node] = true;
+    }
+
+    boolean search(String word) {
+        int node = 0;
+        for (char c : word.toCharArray()) {
+            int idx = c - 'a';
+            if (children[node][idx] == -1) return false;
+            node = children[node][idx];
+        }
+        return isEnd[node];
+    }
+
+    // Find all patterns present in text
+    List&lt;int[]&gt; searchInText(String text, String[] patterns) {
+        for (String p : patterns) insert(p);
+        List&lt;int[]&gt; matches = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; text.length(); i++) {
+            int node = 0;
+            for (int j = i; j &lt; text.length(); j++) {
+                int idx = text.charAt(j) - 'a';
+                if (children[node][idx] == -1) break;
+                node = children[node][idx];
+                if (isEnd[node]) matches.add(new int[]{i, j});
+            }
+        }
+        return matches;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>string_algorithms.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">struct Trie {
+    vector&lt;array&lt;int, 26&gt;&gt; children;
+    vector&lt;bool&gt; is_end;
+
+    Trie() { children.push_back({}); children[0].fill(-1); is_end.push_back(false); }
+
+    void insert(const string&amp; word) {
+        int node = 0;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (children[node][idx] == -1) {
+                children[node][idx] = children.size();
+                children.push_back({});
+                children.back().fill(-1);
+                is_end.push_back(false);
+            }
+            node = children[node][idx];
+        }
+        is_end[node] = true;
+    }
+
+    bool search(const string&amp; word) {
+        int node = 0;
+        for (char c : word) {
+            int idx = c - 'a';
+            if (children[node][idx] == -1) return false;
+            node = children[node][idx];
+        }
+        return is_end[node];
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>string_algorithms.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+
+class Trie:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word):
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+
+    def search(self, word):
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                return False
+            node = node.children[ch]
+        return node.is_end
+
+    def search_in_text(self, text):
+        """Find all trie patterns occurring in text."""
+        matches = []
+        for i in range(len(text)):
+            node = self.root
+            for j in range(i, len(text)):
+                if text[j] not in node.children:
+                    break
+                node = node.children[text[j]]
+                if node.is_end:
+                    matches.append((i, j))
+        return matches</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>string_algorithms.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct Trie {
+    children: Vec&lt;[i32; 26]&gt;,
+    is_end: Vec&lt;bool&gt;,
+}
+
+impl Trie {
+    fn new() -&gt; Self {
+        Trie { children: vec![[-1; 26]], is_end: vec![false] }
+    }
+
+    fn insert(&amp;mut self, word: &amp;str) {
+        let mut node = 0usize;
+        for b in word.bytes() {
+            let idx = (b - b'a') as usize;
+            if self.children[node][idx] == -1 {
+                self.children[node][idx] = self.children.len() as i32;
+                self.children.push([-1; 26]);
+                self.is_end.push(false);
+            }
+            node = self.children[node][idx] as usize;
+        }
+        self.is_end[node] = true;
+    }
+
+    fn search(&amp;self, word: &amp;str) -&gt; bool {
+        let mut node = 0usize;
+        for b in word.bytes() {
+            let idx = (b - b'a') as usize;
+            if self.children[node][idx] == -1 { return false; }
+            node = self.children[node][idx] as usize;
+        }
+        self.is_end[node]
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="suffix-array">
+<h2><span class="icon">&#128220;</span> Suffix Array Construction</h2>
+<p>A <strong>suffix array</strong> is a sorted array of all suffixes of a string, represented by their starting indices. It enables O(m log n) pattern search and is the foundation for many advanced string algorithms. Construction can be done in <strong>O(n log n)</strong> using prefix doubling.</p>
+<div class="diagram">
+String: "banana$"
+
+All suffixes:        Sorted suffixes:
+0: banana$           6: $
+1: anana$            5: a$
+2: nana$             3: ana$
+3: ana$              1: anana$
+4: na$               0: banana$
+5: a$                4: na$
+6: $                 2: nana$
+
+<span class="highlight">Suffix Array: [6, 5, 3, 1, 0, 4, 2]</span>
+
+Binary search for "ana": found at SA positions 2,3 &rarr; indices 3, 1
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringAlgorithms.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// O(n log^2 n) suffix array construction
+static int[] buildSuffixArray(String s) {
+    int n = s.length();
+    Integer[] sa = new Integer[n];
+    int[] rank = new int[n], tmp = new int[n];
+    for (int i = 0; i &lt; n; i++) { sa[i] = i; rank[i] = s.charAt(i); }
+
+    for (int k = 1; k &lt; n; k *= 2) {
+        final int kk = k;
+        final int[] rr = rank.clone();
+        Comparator&lt;Integer&gt; cmp = (a, b) -&gt; {
+            if (rr[a] != rr[b]) return rr[a] - rr[b];
+            int ra = a + kk &lt; n ? rr[a + kk] : -1;
+            int rb = b + kk &lt; n ? rr[b + kk] : -1;
+            return ra - rb;
+        };
+        Arrays.sort(sa, cmp);
+        tmp[sa[0]] = 0;
+        for (int i = 1; i &lt; n; i++)
+            tmp[sa[i]] = tmp[sa[i - 1]] + (cmp.compare(sa[i], sa[i - 1]) != 0 ? 1 : 0);
+        System.arraycopy(tmp, 0, rank, 0, n);
+    }
+    int[] result = new int[n];
+    for (int i = 0; i &lt; n; i++) result[i] = sa[i];
+    return result;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>string_algorithms.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">vector&lt;int&gt; buildSuffixArray(const string&amp; s) {
+    int n = s.size();
+    vector&lt;int&gt; sa(n), rank(n), tmp(n);
+    iota(sa.begin(), sa.end(), 0);
+    for (int i = 0; i &lt; n; ++i) rank[i] = s[i];
+
+    for (int k = 1; k &lt; n; k *= 2) {
+        auto cmp = [&amp;](int a, int b) {
+            if (rank[a] != rank[b]) return rank[a] &lt; rank[b];
+            int ra = a + k &lt; n ? rank[a + k] : -1;
+            int rb = b + k &lt; n ? rank[b + k] : -1;
+            return ra &lt; rb;
+        };
+        sort(sa.begin(), sa.end(), cmp);
+        tmp[sa[0]] = 0;
+        for (int i = 1; i &lt; n; ++i)
+            tmp[sa[i]] = tmp[sa[i - 1]] + (cmp(sa[i - 1], sa[i]) ? 1 : 0);
+        rank = tmp;
+    }
+    return sa;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>string_algorithms.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def build_suffix_array(s):
+    n = len(s)
+    sa = list(range(n))
+    rank = [ord(c) for c in s]
+    k = 1
+    while k &lt; n:
+        def compare(a, b):
+            if rank[a] != rank[b]:
+                return rank[a] - rank[b]
+            ra = rank[a + k] if a + k &lt; n else -1
+            rb = rank[b + k] if b + k &lt; n else -1
+            return ra - rb
+        from functools import cmp_to_key
+        sa.sort(key=cmp_to_key(compare))
+        tmp = [0] * n
+        for i in range(1, n):
+            tmp[sa[i]] = tmp[sa[i - 1]]
+            if compare(sa[i - 1], sa[i]) &lt; 0:
+                tmp[sa[i]] += 1
+        rank = tmp
+        k *= 2
+    return sa</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>string_algorithms.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn build_suffix_array(s: &amp;str) -&gt; Vec&lt;usize&gt; {
+    let n = s.len();
+    let bytes = s.as_bytes();
+    let mut sa: Vec&lt;usize&gt; = (0..n).collect();
+    let mut rank: Vec&lt;i64&gt; = bytes.iter().map(|&amp;b| b as i64).collect();
+    let mut tmp = vec![0i64; n];
+    let mut k = 1;
+    while k &lt; n {
+        let r = rank.clone();
+        sa.sort_by(|&amp;a, &amp;b| {
+            let cmp1 = r[a].cmp(&amp;r[b]);
+            if cmp1 != std::cmp::Ordering::Equal { return cmp1; }
+            let ra = if a + k &lt; n { r[a + k] } else { -1 };
+            let rb = if b + k &lt; n { r[b + k] } else { -1 };
+            ra.cmp(&amp;rb)
+        });
+        tmp[sa[0]] = 0;
+        for i in 1..n {
+            tmp[sa[i]] = tmp[sa[i - 1]];
+            let prev = sa[i - 1];
+            let curr = sa[i];
+            if r[prev] != r[curr]
+                || (if prev + k &lt; n { r[prev + k] } else { -1 })
+                    != (if curr + k &lt; n { r[curr + k] } else { -1 })
+            { tmp[sa[i]] += 1; }
+        }
+        rank = tmp.clone();
+        k *= 2;
+    }
+    sa
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="manacher">
+<h2><span class="icon">&#128142;</span> Manacher's Algorithm</h2>
+<p>Finds the <strong>longest palindromic substring</strong> in <strong>O(n)</strong> time. The key insight: palindromes mirror around their center, so previously computed palindrome lengths help us skip redundant checks.</p>
+<div class="diagram">
+Input: "abacaba"
+
+Transform (insert '#' between chars): #a#b#a#c#a#b#a#
+
+Palindrome radii (p[i] = radius of longest palindrome centered at i):
+  # a # b # a # c # a # b # a #
+  0 1 0 1 0 1 0 <span class="highlight">7</span> 0 1 0 1 0 1 0
+
+Center at 'c' (index 7): p[7] = 7
+Longest palindromic substring: <span class="highlight">"abacaba"</span> (length = p[7] = 7)
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringAlgorithms.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static String manacher(String s) {
+    // Transform: "abc" -&gt; "#a#b#c#"
+    StringBuilder sb = new StringBuilder("#");
+    for (char c : s.toCharArray()) { sb.append(c); sb.append('#'); }
+    String t = sb.toString();
+    int n = t.length();
+    int[] p = new int[n];
+    int center = 0, right = 0;
+
+    for (int i = 0; i &lt; n; i++) {
+        int mirror = 2 * center - i;
+        if (i &lt; right) p[i] = Math.min(right - i, p[mirror]);
+        while (i + p[i] + 1 &lt; n &amp;&amp; i - p[i] - 1 &gt;= 0
+               &amp;&amp; t.charAt(i + p[i] + 1) == t.charAt(i - p[i] - 1))
+            p[i]++;
+        if (i + p[i] &gt; right) { center = i; right = i + p[i]; }
+    }
+
+    int maxLen = 0, maxCenter = 0;
+    for (int i = 0; i &lt; n; i++) {
+        if (p[i] &gt; maxLen) { maxLen = p[i]; maxCenter = i; }
+    }
+    int start = (maxCenter - maxLen) / 2;
+    return s.substring(start, start + maxLen);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>string_algorithms.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">string manacher(const string&amp; s) {
+    string t = "#";
+    for (char c : s) { t += c; t += '#'; }
+    int n = t.size();
+    vector&lt;int&gt; p(n, 0);
+    int center = 0, right = 0;
+
+    for (int i = 0; i &lt; n; ++i) {
+        int mirror = 2 * center - i;
+        if (i &lt; right) p[i] = min(right - i, p[mirror]);
+        while (i + p[i] + 1 &lt; n &amp;&amp; i - p[i] - 1 &gt;= 0
+               &amp;&amp; t[i + p[i] + 1] == t[i - p[i] - 1])
+            p[i]++;
+        if (i + p[i] &gt; right) { center = i; right = i + p[i]; }
+    }
+
+    int maxLen = *max_element(p.begin(), p.end());
+    int maxCenter = max_element(p.begin(), p.end()) - p.begin();
+    int start = (maxCenter - maxLen) / 2;
+    return s.substr(start, maxLen);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>string_algorithms.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def manacher(s):
+    # Transform: "abc" -&gt; "#a#b#c#"
+    t = '#' + '#'.join(s) + '#'
+    n = len(t)
+    p = [0] * n
+    center = right = 0
+
+    for i in range(n):
+        mirror = 2 * center - i
+        if i &lt; right:
+            p[i] = min(right - i, p[mirror])
+        while (i + p[i] + 1 &lt; n and i - p[i] - 1 &gt;= 0
+               and t[i + p[i] + 1] == t[i - p[i] - 1]):
+            p[i] += 1
+        if i + p[i] &gt; right:
+            center, right = i, i + p[i]
+
+    max_len = max(p)
+    max_center = p.index(max_len)
+    start = (max_center - max_len) // 2
+    return s[start:start + max_len]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>string_algorithms.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn manacher(s: &amp;str) -&gt; String {
+    let mut t = vec![b'#'];
+    for &amp;b in s.as_bytes() { t.push(b); t.push(b'#'); }
+    let n = t.len();
+    let mut p = vec![0usize; n];
+    let (mut center, mut right) = (0usize, 0usize);
+
+    for i in 0..n {
+        let mirror = if i &gt; center { 2 * center.wrapping_sub(0) } else { 0 };
+        let mirror = (2 * center).wrapping_sub(i);
+        if i &lt; right { p[i] = p[mirror].min(right - i); }
+        while i + p[i] + 1 &lt; n
+            &amp;&amp; i &gt;= p[i] + 1
+            &amp;&amp; t[i + p[i] + 1] == t[i - p[i] - 1]
+        { p[i] += 1; }
+        if i + p[i] &gt; right { center = i; right = i + p[i]; }
+    }
+
+    let (max_center, &amp;max_len) = p.iter().enumerate()
+        .max_by_key(|&amp;(_, &amp;v)| v).unwrap();
+    let start = (max_center - max_len) / 2;
+    s[start..start + max_len].to_string()
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="string-hashing">
+<h2><span class="icon">&#128273;</span> String Hashing Techniques</h2>
+<p>Polynomial hashing maps a string to an integer: <code>hash(s) = s[0]*p^(n-1) + s[1]*p^(n-2) + ... + s[n-1]</code>. With <strong>prefix hashes</strong>, any substring hash can be computed in O(1), enabling fast string comparison.</p>
+<div class="insight">
+<div class="label">Double Hashing</div>
+Use two different (base, mod) pairs to reduce collision probability. The chance of two different strings having the same hash with one pair is ~1/MOD. With two pairs it drops to ~1/MOD^2, making collisions virtually impossible.
+</div>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>StringAlgorithms.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class StringHasher {
+    long[] h, pw;
+    long MOD = 1_000_000_007, BASE = 31;
+
+    StringHasher(String s) {
+        int n = s.length();
+        h = new long[n + 1];
+        pw = new long[n + 1];
+        pw[0] = 1;
+        for (int i = 0; i &lt; n; i++) {
+            h[i + 1] = (h[i] * BASE + s.charAt(i) - 'a' + 1) % MOD;
+            pw[i + 1] = pw[i] * BASE % MOD;
+        }
+    }
+
+    // Get hash of s[l..r] (inclusive)
+    long getHash(int l, int r) {
+        return (h[r + 1] - h[l] * pw[r - l + 1] % MOD + MOD * MOD) % MOD;
+    }
+
+    // Compare two substrings in O(1)
+    boolean equal(int l1, int r1, int l2, int r2) {
+        return getHash(l1, r1) == getHash(l2, r2);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>string_algorithms.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">struct StringHasher {
+    vector&lt;long long&gt; h, pw;
+    long long MOD = 1e9 + 7, BASE = 31;
+
+    StringHasher(const string&amp; s) {
+        int n = s.size();
+        h.resize(n + 1, 0);
+        pw.resize(n + 1, 1);
+        for (int i = 0; i &lt; n; ++i) {
+            h[i + 1] = (h[i] * BASE + s[i] - 'a' + 1) % MOD;
+            pw[i + 1] = pw[i] * BASE % MOD;
+        }
+    }
+
+    long long getHash(int l, int r) {
+        return (h[r + 1] - h[l] * pw[r - l + 1] % MOD + MOD * MOD) % MOD;
+    }
+
+    bool equal(int l1, int r1, int l2, int r2) {
+        return getHash(l1, r1) == getHash(l2, r2);
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>string_algorithms.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class StringHasher:
+    def __init__(self, s, base=31, mod=10**9 + 7):
+        self.mod = mod
+        n = len(s)
+        self.h = [0] * (n + 1)
+        self.pw = [1] * (n + 1)
+        for i in range(n):
+            self.h[i + 1] = (self.h[i] * base + ord(s[i]) - ord('a') + 1) % mod
+            self.pw[i + 1] = self.pw[i] * base % mod
+
+    def get_hash(self, l, r):
+        """Hash of s[l..r] inclusive."""
+        mod = self.mod
+        return (self.h[r + 1] - self.h[l] * self.pw[r - l + 1]) % mod
+
+    def equal(self, l1, r1, l2, r2):
+        return self.get_hash(l1, r1) == self.get_hash(l2, r2)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>string_algorithms.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct StringHasher {
+    h: Vec&lt;u64&gt;,
+    pw: Vec&lt;u64&gt;,
+    modv: u64,
+}
+
+impl StringHasher {
+    fn new(s: &amp;str) -&gt; Self {
+        let (base, modv): (u64, u64) = (31, 1_000_000_007);
+        let n = s.len();
+        let mut h = vec![0u64; n + 1];
+        let mut pw = vec![1u64; n + 1];
+        for (i, &amp;b) in s.as_bytes().iter().enumerate() {
+            h[i + 1] = (h[i] * base + (b - b'a') as u64 + 1) % modv;
+            pw[i + 1] = pw[i] * base % modv;
+        }
+        StringHasher { h, pw, modv }
+    }
+
+    fn get_hash(&amp;self, l: usize, r: usize) -&gt; u64 {
+        let m = self.modv;
+        (self.h[r + 1] + m * m - self.h[l] * self.pw[r - l + 1] % m) % m
+    }
+
+    fn equal(&amp;self, l1: usize, r1: usize, l2: usize, r2: usize) -&gt; bool {
+        self.get_hash(l1, r1) == self.get_hash(l2, r2)
+    }
+}</div></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Summary</h2>
+<table>
+<thead><tr><th>Algorithm</th><th>Time</th><th>Space</th><th>Notes</th></tr></thead>
+<tbody>
+<tr><td>Z-Algorithm</td><td><span class="badge badge-green">O(n + m)</span></td><td>O(n + m)</td><td>Linear pattern matching, no preprocessing table</td></tr>
+<tr><td>Rabin-Karp</td><td><span class="badge badge-green">O(n + m) avg</span></td><td>O(1)</td><td>O(nm) worst case; great for multi-pattern</td></tr>
+<tr><td>Trie Insert/Search</td><td><span class="badge badge-green">O(m)</span></td><td>O(alphabet * nodes)</td><td>Per-word operation; m = word length</td></tr>
+<tr><td>Suffix Array (build)</td><td><span class="badge badge-yellow">O(n log&sup2; n)</span></td><td>O(n)</td><td>O(n log n) with radix sort; O(n) with SA-IS</td></tr>
+<tr><td>Manacher's</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>Longest palindromic substring</td></tr>
+<tr><td>String Hashing (query)</td><td><span class="badge badge-green">O(1)</span></td><td>O(n)</td><td>After O(n) preprocessing</td></tr>
+</tbody>
+</table>
+</div>
+
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Implement strStr()</strong> &mdash; LeetCode 28. Classic pattern matching.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Repeated DNA Sequences</strong> &mdash; LeetCode 187. Rolling hash / Rabin-Karp application.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Implement Trie (Prefix Tree)</strong> &mdash; LeetCode 208. Core trie implementation.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Longest Palindromic Substring</strong> &mdash; LeetCode 5. Apply Manacher's for O(n).</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Palindrome Pairs</strong> &mdash; LeetCode 336. Combine trie + string hashing.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Shortest Palindrome</strong> &mdash; LeetCode 214. Z-Algorithm / KMP application.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Distinct Substrings</strong> &mdash; SPOJ DISUBSTR. Suffix array application.</div>
+</div>
+
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary</h2>
+<h3>When to Use What</h3>
+<table>
+<thead><tr><th>Scenario</th><th>Technique</th><th>Key Insight</th></tr></thead>
+<tbody>
+<tr><td>Single pattern matching</td><td>Z-Algorithm / KMP</td><td>Linear time, no hashing collisions</td></tr>
+<tr><td>Multiple pattern matching</td><td>Rabin-Karp / Aho-Corasick</td><td>Rolling hash checks many patterns at once</td></tr>
+<tr><td>Dictionary / prefix search</td><td>Trie</td><td>Share common prefixes across words</td></tr>
+<tr><td>All substring queries</td><td>Suffix Array</td><td>Sorted suffixes enable binary search</td></tr>
+<tr><td>Longest palindrome</td><td>Manacher's Algorithm</td><td>Mirror property avoids redundant expansion</td></tr>
+<tr><td>Fast substring comparison</td><td>String Hashing</td><td>O(1) comparison after O(n) preprocess</td></tr>
+</tbody>
+</table>
+<div class="warning-box">
+<div class="label">Pro Tip</div>
+In competitive programming, always use double hashing (two different mod values) to avoid anti-hash tests. For production code, consider suffix automata or Aho-Corasick for more complex multi-pattern scenarios.
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 24/index.html">&larr; Week 24: Research-Level Topics</a>
+<a href="../Week 26/index.html">Week 26: Network Flow &rarr;</a>
+</div>
+</main>
+</div>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});const progressBar=document.getElementById('progressBar');window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%'});const backToTop=document.getElementById('backToTop');window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});document.querySelectorAll('.card').forEach(c=>obs.observe(c));document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})})});document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});function highlight(code,lang){code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');return code}document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';const raw=block.textContent;block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang)});document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>

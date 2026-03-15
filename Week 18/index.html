@@ -30,7 +30,7 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 <div class="overlay" id="overlay"></div>
 <div class="page-wrapper">
 <aside class="sidebar" id="sidebar">
-<div class="logo"><h2>DSA Journey</h2><span>Week 18 of 20</span></div>
+<div class="logo"><h2>DSA Journey</h2><span>Week 18 of 30</span></div>
 <nav>
 <a href="#hero">Overview</a>
 <a href="#objectives">Learning Objectives</a>
@@ -41,6 +41,13 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 <a href="#lcs">Longest Common Subsequence</a>
 <a href="#coin-change">Coin Change</a>
 <a href="#subset-sum">Subset Sum</a>
+<a href="#lis">Longest Increasing Subsequence</a>
+<a href="#lis-bs" class="sub">O(n log n) Approach</a>
+<a href="#edit-distance">Edit Distance</a>
+<a href="#matrix-chain">Matrix Chain Multiplication</a>
+<a href="#house-robber">House Robber</a>
+<a href="#unique-paths">Unique Paths</a>
+<a href="#dp-framework">DP Problem-Solving Framework</a>
 <a href="#comparison">Complexity Table</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
@@ -54,7 +61,7 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 <div class="meta">
 <span><span class="dot hard"></span> Advanced</span>
 <span>~10 hours estimated</span>
-<span>5 classic problems</span>
+<span>11 classic problems</span>
 </div>
 </section>
 
@@ -448,6 +455,765 @@ else:
 </div>
 </div>
 
+<div class="card" id="lis">
+<h2><span class="icon">&#128200;</span> Longest Increasing Subsequence (LIS)</h2>
+<p>Given an integer array, find the length of the longest strictly increasing subsequence. This is one of the most classic DP problems with two well-known approaches.</p>
+
+<h3>O(n&sup2;) DP Approach</h3>
+<p>Define <code>dp[i]</code> = length of the LIS ending at index i. For each <code>j &lt; i</code>, if <code>nums[j] &lt; nums[i]</code>, we can extend the subsequence ending at j.</p>
+<div class="diagram">
+nums = [10, 9, 2, 5, 3, 7, 101, 18]
+
+dp[0] = 1  (just 10)
+dp[1] = 1  (just 9)
+dp[2] = 1  (just 2)
+dp[3] = 2  (2, 5)
+dp[4] = 2  (2, 3)
+dp[5] = 3  (2, 3, 7)  or  (2, 5, 7)
+dp[6] = 4  <span class="highlight">(2, 3, 7, 101)</span>
+dp[7] = 4  (2, 3, 7, 18)
+
+Answer: max(dp) = <span class="highlight">4</span>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// O(n^2) DP approach
+static int lisDP(int[] nums) {
+    int n = nums.length;
+    int[] dp = new int[n];
+    Arrays.fill(dp, 1); // each element is a subsequence of length 1
+    int maxLen = 1;
+    for (int i = 1; i &lt; n; i++) {
+        for (int j = 0; j &lt; i; j++) {
+            if (nums[j] &lt; nums[i])
+                dp[i] = Math.max(dp[i], dp[j] + 1);
+        }
+        maxLen = Math.max(maxLen, dp[i]);
+    }
+    return maxLen;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// O(n^2) DP approach
+int lis_dp(const std::vector&lt;int&gt;&amp; nums) {
+    int n = static_cast&lt;int&gt;(nums.size());
+    std::vector&lt;int&gt; dp(n, 1);
+    int max_len = 1;
+    for (int i = 1; i &lt; n; ++i) {
+        for (int j = 0; j &lt; i; ++j) {
+            if (nums[j] &lt; nums[i])
+                dp[i] = std::max(dp[i], dp[j] + 1);
+        }
+        max_len = std::max(max_len, dp[i]);
+    }
+    return max_len;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># O(n^2) DP approach
+def lis_dp(nums: List[int]) -&gt; int:
+    n = len(nums)
+    dp = [1] * n  # each element is an LIS of length 1
+    for i in range(1, n):
+        for j in range(i):
+            if nums[j] &lt; nums[i]:
+                dp[i] = max(dp[i], dp[j] + 1)
+    return max(dp)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// O(n^2) DP approach
+fn lis_dp(nums: &amp;[i32]) -&gt; usize {
+    let n = nums.len();
+    let mut dp = vec![1usize; n];
+    let mut max_len = 1;
+    for i in 1..n {
+        for j in 0..i {
+            if nums[j] &lt; nums[i] {
+                dp[i] = dp[i].max(dp[j] + 1);
+            }
+        }
+        max_len = max_len.max(dp[i]);
+    }
+    max_len
+}</div></div>
+</div>
+</div>
+
+<h3 id="lis-bs">O(n log n) Binary Search Approach</h3>
+<p>Maintain a <code>tails</code> array where <code>tails[i]</code> is the smallest tail element for an increasing subsequence of length <code>i+1</code>. For each number, use binary search to find its position.</p>
+<div class="insight">
+<div class="label">Key Insight</div>
+The <code>tails</code> array is always sorted! So we can binary search for the correct position. If the number is larger than all tails, extend the array. Otherwise, replace the first tail that is &gt;= the number. The final length of <code>tails</code> is the LIS length.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// O(n log n) binary search approach
+static int lisBinarySearch(int[] nums) {
+    int[] tails = new int[nums.length];
+    int size = 0;
+    for (int x : nums) {
+        int lo = 0, hi = size;
+        while (lo &lt; hi) {
+            int mid = lo + (hi - lo) / 2;
+            if (tails[mid] &lt; x) lo = mid + 1;
+            else hi = mid;
+        }
+        tails[lo] = x;
+        if (lo == size) size++;
+    }
+    return size;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// O(n log n) binary search approach
+int lis_binary_search(const std::vector&lt;int&gt;&amp; nums) {
+    std::vector&lt;int&gt; tails;
+    for (int x : nums) {
+        auto it = std::lower_bound(tails.begin(), tails.end(), x);
+        if (it == tails.end()) tails.push_back(x);
+        else *it = x;
+    }
+    return static_cast&lt;int&gt;(tails.size());
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># O(n log n) binary search approach
+from bisect import bisect_left
+
+def lis_binary_search(nums: List[int]) -&gt; int:
+    tails = []
+    for x in nums:
+        pos = bisect_left(tails, x)
+        if pos == len(tails):
+            tails.append(x)
+        else:
+            tails[pos] = x
+    return len(tails)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// O(n log n) binary search approach
+fn lis_binary_search(nums: &amp;[i32]) -&gt; usize {
+    let mut tails: Vec&lt;i32&gt; = Vec::new();
+    for &amp;x in nums {
+        let pos = tails.partition_point(|&amp;t| t &lt; x);
+        if pos == tails.len() {
+            tails.push(x);
+        } else {
+            tails[pos] = x;
+        }
+    }
+    tails.len()
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Important</div>
+The <code>tails</code> array does NOT contain the actual LIS -- it is a working array used to track the smallest possible tails. To reconstruct the actual subsequence, you need to store predecessor indices alongside the binary search.
+</div>
+</div>
+
+<div class="card" id="edit-distance">
+<h2><span class="icon">&#9999;&#65039;</span> Edit Distance</h2>
+<p>Given two strings <code>word1</code> and <code>word2</code>, find the minimum number of operations (insert, delete, replace) to convert word1 into word2. Also known as <strong>Levenshtein distance</strong>.</p>
+
+<h3>Recurrence</h3>
+<div class="diagram">
+if word1[i-1] == word2[j-1]:
+    dp[i][j] = dp[i-1][j-1]                     <span class="highlight">// characters match, no operation</span>
+else:
+    dp[i][j] = 1 + min(
+        dp[i-1][j],                              <span class="swap">// delete from word1</span>
+        dp[i][j-1],                              <span class="sorted">// insert into word1</span>
+        dp[i-1][j-1]                             <span class="pivot">// replace in word1</span>
+    )
+</div>
+
+<h3>2D Table Visualization</h3>
+<p>For word1 = "horse", word2 = "ros":</p>
+<div class="diagram">
+        ""   r   o   s
+  ""  [  <span class="highlight">0</span>,  1,  2,  3 ]
+  h   [  1,  <span class="sorted">1</span>,  2,  3 ]
+  o   [  2,  2,  <span class="sorted">1</span>,  2 ]
+  r   [  3,  <span class="sorted">2</span>,  2,  2 ]
+  s   [  4,  3,  3,  <span class="sorted">2</span> ]
+  e   [  5,  4,  4,  <span class="highlight">3</span> ]
+
+Answer: dp[5][3] = <span class="highlight">3</span>
+Operations: horse &rarr; rorse (replace h&rarr;r) &rarr; rose (delete r) &rarr; ros (delete e)
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int editDistance(String word1, String word2) {
+    int m = word1.length(), n = word2.length();
+    int[][] dp = new int[m + 1][n + 1];
+    // Base cases: transforming empty string
+    for (int i = 0; i &lt;= m; i++) dp[i][0] = i;
+    for (int j = 0; j &lt;= n; j++) dp[0][j] = j;
+    for (int i = 1; i &lt;= m; i++) {
+        for (int j = 1; j &lt;= n; j++) {
+            if (word1.charAt(i-1) == word2.charAt(j-1)) {
+                dp[i][j] = dp[i-1][j-1];
+            } else {
+                dp[i][j] = 1 + Math.min(dp[i-1][j-1],   // replace
+                            Math.min(dp[i-1][j],           // delete
+                                     dp[i][j-1]));         // insert
+            }
+        }
+    }
+    return dp[m][n];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int edit_distance(const std::string&amp; word1, const std::string&amp; word2) {
+    int m = word1.size(), n = word2.size();
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(m + 1, std::vector&lt;int&gt;(n + 1, 0));
+    for (int i = 0; i &lt;= m; ++i) dp[i][0] = i;
+    for (int j = 0; j &lt;= n; ++j) dp[0][j] = j;
+    for (int i = 1; i &lt;= m; ++i) {
+        for (int j = 1; j &lt;= n; ++j) {
+            if (word1[i - 1] == word2[j - 1]) {
+                dp[i][j] = dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = 1 + std::min({dp[i - 1][j - 1],  // replace
+                                          dp[i - 1][j],       // delete
+                                          dp[i][j - 1]});     // insert
+            }
+        }
+    }
+    return dp[m][n];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def edit_distance(word1: str, word2: str) -&gt; int:
+    m, n = len(word1), len(word2)
+    dp = [[0] * (n + 1) for _ in range(m + 1)]
+    for i in range(m + 1): dp[i][0] = i
+    for j in range(n + 1): dp[0][j] = j
+    for i in range(1, m + 1):
+        for j in range(1, n + 1):
+            if word1[i - 1] == word2[j - 1]:
+                dp[i][j] = dp[i - 1][j - 1]
+            else:
+                dp[i][j] = 1 + min(
+                    dp[i - 1][j - 1],  # replace
+                    dp[i - 1][j],      # delete
+                    dp[i][j - 1]       # insert
+                )
+    return dp[m][n]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn edit_distance(word1: &amp;str, word2: &amp;str) -&gt; usize {
+    let a: Vec&lt;char&gt; = word1.chars().collect();
+    let b: Vec&lt;char&gt; = word2.chars().collect();
+    let (m, n) = (a.len(), b.len());
+    let mut dp = vec![vec![0usize; n + 1]; m + 1];
+    for i in 0..=m { dp[i][0] = i; }
+    for j in 0..=n { dp[0][j] = j; }
+    for i in 1..=m {
+        for j in 1..=n {
+            if a[i - 1] == b[j - 1] {
+                dp[i][j] = dp[i - 1][j - 1];
+            } else {
+                dp[i][j] = 1 + dp[i - 1][j - 1]
+                              .min(dp[i - 1][j])
+                              .min(dp[i][j - 1]);
+            }
+        }
+    }
+    dp[m][n]
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Space Optimization</div>
+Edit Distance can be optimized from O(m*n) space to O(min(m,n)) by keeping only two rows (or even one row + a variable for the diagonal). This follows the same pattern as LCS space optimization.
+</div>
+</div>
+
+<div class="card" id="matrix-chain">
+<h2><span class="icon">&#128296;</span> Matrix Chain Multiplication</h2>
+<p>Given a sequence of matrices, find the most efficient way to multiply them. The order of multiplication matters because matrix multiplication is associative but the number of scalar multiplications varies dramatically with parenthesization.</p>
+
+<h3>Interval DP</h3>
+<p>This is a classic <strong>interval DP</strong> problem. Define <code>dp[i][j]</code> = minimum cost to multiply matrices from i to j. We try every possible split point k between i and j.</p>
+<div class="diagram">
+dp[i][j] = min over k from i to j-1 of:
+    dp[i][k] + dp[k+1][j] + dims[i-1] * dims[k] * dims[j]
+
+<span class="highlight">Base case:</span> dp[i][i] = 0 (single matrix, no multiplication needed)
+<span class="pivot">Order:</span> Fill by increasing chain length (j - i)
+</div>
+
+<div class="warning-box">
+<div class="label">Why Interval DP?</div>
+Unlike linear DP (where we fill left-to-right), interval DP fills by <strong>gap length</strong>. We first solve all subproblems of length 2, then length 3, and so on. This ensures that when computing dp[i][j], all smaller intervals dp[i][k] and dp[k+1][j] are already solved.
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// dims[] has length n+1 for n matrices
+// Matrix i has dimensions dims[i-1] x dims[i]
+static int matrixChainOrder(int[] dims) {
+    int n = dims.length - 1; // number of matrices
+    int[][] dp = new int[n + 1][n + 1];
+    // length 1: dp[i][i] = 0 (already initialized)
+    for (int len = 2; len &lt;= n; len++) {
+        for (int i = 1; i &lt;= n - len + 1; i++) {
+            int j = i + len - 1;
+            dp[i][j] = Integer.MAX_VALUE;
+            for (int k = i; k &lt; j; k++) {
+                int cost = dp[i][k] + dp[k+1][j]
+                         + dims[i-1] * dims[k] * dims[j];
+                dp[i][j] = Math.min(dp[i][j], cost);
+            }
+        }
+    }
+    return dp[1][n];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int matrix_chain_order(const std::vector&lt;int&gt;&amp; dims) {
+    int n = static_cast&lt;int&gt;(dims.size()) - 1;
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(n + 1, std::vector&lt;int&gt;(n + 1, 0));
+    for (int len = 2; len &lt;= n; ++len) {
+        for (int i = 1; i &lt;= n - len + 1; ++i) {
+            int j = i + len - 1;
+            dp[i][j] = INT_MAX;
+            for (int k = i; k &lt; j; ++k) {
+                int cost = dp[i][k] + dp[k + 1][j]
+                         + dims[i - 1] * dims[k] * dims[j];
+                dp[i][j] = std::min(dp[i][j], cost);
+            }
+        }
+    }
+    return dp[1][n];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def matrix_chain_order(dims: List[int]) -&gt; int:
+    """dims has length n+1 for n matrices.
+    Matrix i has dimensions dims[i-1] x dims[i] (1-indexed)."""
+    n = len(dims) - 1
+    dp = [[0] * (n + 1) for _ in range(n + 1)]
+    for length in range(2, n + 1):       # chain length
+        for i in range(1, n - length + 2):
+            j = i + length - 1
+            dp[i][j] = float("inf")
+            for k in range(i, j):        # split point
+                cost = dp[i][k] + dp[k + 1][j] + dims[i-1] * dims[k] * dims[j]
+                dp[i][j] = min(dp[i][j], cost)
+    return dp[1][n]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn matrix_chain_order(dims: &amp;[usize]) -&gt; usize {
+    let n = dims.len() - 1; // number of matrices
+    let mut dp = vec![vec![0usize; n + 1]; n + 1];
+    for len in 2..=n {
+        for i in 1..=n - len + 1 {
+            let j = i + len - 1;
+            dp[i][j] = usize::MAX;
+            for k in i..j {
+                let cost = dp[i][k] + dp[k + 1][j]
+                         + dims[i - 1] * dims[k] * dims[j];
+                dp[i][j] = dp[i][j].min(cost);
+            }
+        }
+    }
+    dp[1][n]
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Complexity</div>
+Time: O(n&sup3;) -- three nested loops (length, start, split point). Space: O(n&sup2;) for the DP table. This is optimal for the general matrix chain problem.
+</div>
+</div>
+
+<div class="card" id="house-robber">
+<h2><span class="icon">&#127968;</span> House Robber</h2>
+<p>A robber plans to rob houses along a street. Adjacent houses have security systems connected -- if two adjacent houses are robbed on the same night, the police are alerted. Given an array of non-negative integers representing the money in each house, determine the maximum amount you can rob without alerting the police.</p>
+
+<h3>Recurrence</h3>
+<div class="diagram">
+dp[i] = max(
+    dp[i-1],              <span class="highlight">// skip house i</span>
+    dp[i-2] + nums[i]     <span class="highlight">// rob house i (can't rob i-1)</span>
+)
+
+Base cases: dp[0] = nums[0], dp[1] = max(nums[0], nums[1])
+</div>
+
+<h3>Full DP Array</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int rob(int[] nums) {
+    if (nums.length == 0) return 0;
+    if (nums.length == 1) return nums[0];
+    int[] dp = new int[nums.length];
+    dp[0] = nums[0];
+    dp[1] = Math.max(nums[0], nums[1]);
+    for (int i = 2; i &lt; nums.length; i++) {
+        dp[i] = Math.max(dp[i-1], dp[i-2] + nums[i]);
+    }
+    return dp[nums.length - 1];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int rob(const std::vector&lt;int&gt;&amp; nums) {
+    int n = static_cast&lt;int&gt;(nums.size());
+    if (n == 0) return 0;
+    if (n == 1) return nums[0];
+    std::vector&lt;int&gt; dp(n);
+    dp[0] = nums[0];
+    dp[1] = std::max(nums[0], nums[1]);
+    for (int i = 2; i &lt; n; ++i) {
+        dp[i] = std::max(dp[i - 1], dp[i - 2] + nums[i]);
+    }
+    return dp[n - 1];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def rob(nums: List[int]) -&gt; int:
+    if not nums: return 0
+    if len(nums) == 1: return nums[0]
+    dp = [0] * len(nums)
+    dp[0] = nums[0]
+    dp[1] = max(nums[0], nums[1])
+    for i in range(2, len(nums)):
+        dp[i] = max(dp[i - 1], dp[i - 2] + nums[i])
+    return dp[-1]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn rob(nums: &amp;[i32]) -&gt; i32 {
+    match nums.len() {
+        0 =&gt; 0,
+        1 =&gt; nums[0],
+        _ =&gt; {
+            let mut dp = vec![0i32; nums.len()];
+            dp[0] = nums[0];
+            dp[1] = nums[0].max(nums[1]);
+            for i in 2..nums.len() {
+                dp[i] = dp[i - 1].max(dp[i - 2] + nums[i]);
+            }
+            dp[nums.len() - 1]
+        }
+    }
+}</div></div>
+</div>
+</div>
+
+<h4>Space-Optimized to O(1)</h4>
+<p>Since <code>dp[i]</code> only depends on <code>dp[i-1]</code> and <code>dp[i-2]</code>, we only need two variables -- exactly like Climbing Stairs.</p>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// O(1) space -- only two variables needed
+static int robOptimized(int[] nums) {
+    int prev2 = 0, prev1 = 0;
+    for (int num : nums) {
+        int curr = Math.max(prev1, prev2 + num);
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// O(1) space -- only two variables needed
+int rob_optimized(const std::vector&lt;int&gt;&amp; nums) {
+    int prev2 = 0, prev1 = 0;
+    for (int num : nums) {
+        int curr = std::max(prev1, prev2 + num);
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    return prev1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python"># O(1) space -- only two variables needed
+def rob_optimized(nums: List[int]) -&gt; int:
+    prev2, prev1 = 0, 0
+    for num in nums:
+        prev2, prev1 = prev1, max(prev1, prev2 + num)
+    return prev1</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">// O(1) space -- only two variables needed
+fn rob_optimized(nums: &amp;[i32]) -&gt; i32 {
+    let (mut prev2, mut prev1) = (0i32, 0i32);
+    for &amp;num in nums {
+        let curr = prev1.max(prev2 + num);
+        prev2 = prev1;
+        prev1 = curr;
+    }
+    prev1
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Pattern Recognition</div>
+House Robber is a 1D DP where each state depends on the previous two states. This is the same structure as Climbing Stairs and Fibonacci. Whenever you see this pattern, you can always optimize from O(n) space to O(1) by keeping just two variables.
+</div>
+</div>
+
+<div class="card" id="unique-paths">
+<h2><span class="icon">&#128506;</span> Unique Paths</h2>
+<p>A robot is located at the top-left corner of an <code>m x n</code> grid. It can only move right or down. How many unique paths exist to reach the bottom-right corner?</p>
+
+<h3>Recurrence</h3>
+<div class="diagram">
+dp[i][j] = dp[i-1][j] + dp[i][j-1]    <span class="highlight">// from above + from left</span>
+
+Base cases: dp[0][j] = 1, dp[i][0] = 1  <span class="sorted">// only one way along edges</span>
+
+Example (3 x 4 grid):
+  [ <span class="highlight">1</span>,  1,  1,  1 ]
+  [ 1,  2,  3,  4 ]
+  [ 1,  3,  6, <span class="highlight">10</span> ]
+
+Answer: <span class="highlight">10</span> unique paths
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DynamicProgramming.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">static int uniquePaths(int m, int n) {
+    int[][] dp = new int[m][n];
+    // First row and first column are all 1s
+    for (int i = 0; i &lt; m; i++) dp[i][0] = 1;
+    for (int j = 0; j &lt; n; j++) dp[0][j] = 1;
+    for (int i = 1; i &lt; m; i++)
+        for (int j = 1; j &lt; n; j++)
+            dp[i][j] = dp[i-1][j] + dp[i][j-1];
+    return dp[m-1][n-1];
+}
+
+// Space-optimized: O(n) using a single row
+static int uniquePathsOptimized(int m, int n) {
+    int[] dp = new int[n];
+    Arrays.fill(dp, 1);
+    for (int i = 1; i &lt; m; i++)
+        for (int j = 1; j &lt; n; j++)
+            dp[j] += dp[j-1];
+    return dp[n-1];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>dynamic_programming.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">int unique_paths(int m, int n) {
+    std::vector&lt;std::vector&lt;int&gt;&gt; dp(m, std::vector&lt;int&gt;(n, 1));
+    for (int i = 1; i &lt; m; ++i)
+        for (int j = 1; j &lt; n; ++j)
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+    return dp[m - 1][n - 1];
+}
+
+// Space-optimized: O(n) using a single row
+int unique_paths_optimized(int m, int n) {
+    std::vector&lt;int&gt; dp(n, 1);
+    for (int i = 1; i &lt; m; ++i)
+        for (int j = 1; j &lt; n; ++j)
+            dp[j] += dp[j - 1];
+    return dp[n - 1];
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>dynamic_programming.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def unique_paths(m: int, n: int) -&gt; int:
+    dp = [[1] * n for _ in range(m)]
+    for i in range(1, m):
+        for j in range(1, n):
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1]
+    return dp[m - 1][n - 1]
+
+# Space-optimized: O(n) using a single row
+def unique_paths_optimized(m: int, n: int) -&gt; int:
+    dp = [1] * n
+    for i in range(1, m):
+        for j in range(1, n):
+            dp[j] += dp[j - 1]
+    return dp[-1]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>dynamic_programming.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">fn unique_paths(m: usize, n: usize) -&gt; u64 {
+    let mut dp = vec![vec![1u64; n]; m];
+    for i in 1..m {
+        for j in 1..n {
+            dp[i][j] = dp[i - 1][j] + dp[i][j - 1];
+        }
+    }
+    dp[m - 1][n - 1]
+}
+
+// Space-optimized: O(n) using a single row
+fn unique_paths_optimized(m: usize, n: usize) -&gt; u64 {
+    let mut dp = vec![1u64; n];
+    for _ in 1..m {
+        for j in 1..n {
+            dp[j] += dp[j - 1];
+        }
+    }
+    dp[n - 1]
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Math Shortcut</div>
+Unique Paths can also be computed using combinatorics: the answer is C(m+n-2, m-1) since you need exactly (m-1) down moves and (n-1) right moves in any order. However, the DP approach generalizes to grids with obstacles (LeetCode 63).
+</div>
+</div>
+
+<div class="card" id="dp-framework">
+<h2><span class="icon">&#129520;</span> DP Problem-Solving Framework</h2>
+<p>When faced with a DP problem, follow this systematic 6-step approach. This framework works for virtually every DP problem you will encounter in interviews and competitive programming.</p>
+
+<h3>Step 1: Identify the State</h3>
+<p>Ask: <em>What information do I need to uniquely describe a subproblem?</em> This becomes your DP array dimensions.</p>
+<table>
+<thead><tr><th>Problem</th><th>State</th><th>Meaning</th></tr></thead>
+<tbody>
+<tr><td>Climbing Stairs</td><td>dp[i]</td><td>Ways to reach step i</td></tr>
+<tr><td>Knapsack</td><td>dp[i][w]</td><td>Max value using first i items with capacity w</td></tr>
+<tr><td>LCS</td><td>dp[i][j]</td><td>LCS length of first i chars and first j chars</td></tr>
+<tr><td>Edit Distance</td><td>dp[i][j]</td><td>Min ops to convert word1[0..i] to word2[0..j]</td></tr>
+<tr><td>Matrix Chain</td><td>dp[i][j]</td><td>Min cost to multiply matrices i through j</td></tr>
+</tbody>
+</table>
+
+<h3>Step 2: Define the Recurrence</h3>
+<p>Express <code>dp[current]</code> in terms of <code>dp[smaller subproblems]</code>. Look for the <strong>last decision</strong> made and enumerate all choices.</p>
+<div class="diagram">
+<span class="highlight">Common patterns:</span>
+
+<span class="sorted">Take or skip:</span>    dp[i] = max(dp[i-1], dp[i-2] + val[i])      // House Robber
+<span class="sorted">All choices:</span>     dp[i] = min(dp[i - coin] + 1) for each coin  // Coin Change
+<span class="sorted">Two sequences:</span>   dp[i][j] depends on dp[i-1][j-1], dp[i-1][j], dp[i][j-1]  // LCS, Edit Distance
+<span class="sorted">Interval:</span>        dp[i][j] = min(dp[i][k] + dp[k+1][j] + cost) // Matrix Chain
+</div>
+
+<h3>Step 3: Establish Base Cases</h3>
+<p>What are the smallest subproblems you can solve directly?</p>
+<ul class="objectives">
+<li><strong>Empty input:</strong> dp[0] = 0 (or 1 for counting problems)</li>
+<li><strong>Single element:</strong> dp[1] = value of that element</li>
+<li><strong>Grid edges:</strong> First row/column often has a single path</li>
+<li><strong>Intervals of length 1:</strong> dp[i][i] = 0 (no operation needed)</li>
+</ul>
+
+<h3>Step 4: Determine Filling Order</h3>
+<p>Ensure that when you compute dp[i][j], all subproblems it depends on are already computed.</p>
+<div class="warning-box">
+<div class="label">Filling Order Cheat Sheet</div>
+<strong>Linear DP:</strong> Left to right (dp[0], dp[1], ..., dp[n]).<br>
+<strong>2D string DP:</strong> Row by row, left to right within each row.<br>
+<strong>Interval DP:</strong> By increasing interval length.<br>
+<strong>0/1 knapsack (1D):</strong> Inner loop in REVERSE.<br>
+<strong>Unbounded knapsack (1D):</strong> Inner loop FORWARD.
+</div>
+
+<h3>Step 5: Extract the Answer</h3>
+<p>The final answer is not always the last cell!</p>
+<table>
+<thead><tr><th>Problem</th><th>Answer Location</th></tr></thead>
+<tbody>
+<tr><td>Climbing Stairs</td><td>dp[n]</td></tr>
+<tr><td>LIS</td><td>max(dp[0..n-1]) -- not dp[n-1]!</td></tr>
+<tr><td>Knapsack</td><td>dp[n][W]</td></tr>
+<tr><td>Edit Distance</td><td>dp[m][n]</td></tr>
+<tr><td>Coin Change</td><td>dp[amount] (check for impossible)</td></tr>
+</tbody>
+</table>
+
+<h3>Step 6: Optimize Space</h3>
+<p>After getting a correct solution, look for space optimization opportunities:</p>
+<ul class="objectives">
+<li><strong>Row-only dependency:</strong> If dp[i] only depends on dp[i-1], keep two rows &rarr; O(n) space</li>
+<li><strong>Two-variable dependency:</strong> If dp[i] depends on dp[i-1] and dp[i-2], use two variables &rarr; O(1) space</li>
+<li><strong>Diagonal dependency:</strong> For 2D DP, if you need dp[i-1][j-1], store it in a temp variable before overwriting</li>
+</ul>
+
+<div class="insight">
+<div class="label">Interview Tip</div>
+In interviews, always start with the unoptimized version. Explain the recurrence clearly, then offer the space optimization as a follow-up. Interviewers value clear thinking over premature optimization. Show that you understand <em>why</em> the optimization works, not just how to write it.
+</div>
+</div>
+
 <div class="card" id="comparison">
 <h2><span class="icon">&#128202;</span> Complexity Summary</h2>
 <table>
@@ -458,6 +1224,12 @@ else:
 <tr><td>LCS</td><td><span class="badge badge-blue">O(m*n)</span></td><td>O(m*n)</td><td>O(min(m,n))</td></tr>
 <tr><td>Coin Change</td><td><span class="badge badge-blue">O(n*amount)</span></td><td>O(amount)</td><td>O(amount)</td></tr>
 <tr><td>Subset Sum</td><td><span class="badge badge-blue">O(n*target)</span></td><td>O(target)</td><td>O(target)</td></tr>
+<tr><td>LIS (DP)</td><td><span class="badge badge-yellow">O(n&sup2;)</span></td><td>O(n)</td><td>O(n)</td></tr>
+<tr><td>LIS (Binary Search)</td><td><span class="badge badge-green">O(n log n)</span></td><td>O(n)</td><td>O(n)</td></tr>
+<tr><td>Edit Distance</td><td><span class="badge badge-blue">O(m*n)</span></td><td>O(m*n)</td><td>O(min(m,n))</td></tr>
+<tr><td>Matrix Chain</td><td><span class="badge badge-red">O(n&sup3;)</span></td><td>O(n&sup2;)</td><td>O(n&sup2;)</td></tr>
+<tr><td>House Robber</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>O(1)</td></tr>
+<tr><td>Unique Paths</td><td><span class="badge badge-blue">O(m*n)</span></td><td>O(m*n)</td><td>O(n)</td></tr>
 </tbody>
 </table>
 </div>
@@ -465,10 +1237,15 @@ else:
 <div class="card" id="practice">
 <h2><span class="icon">&#128170;</span> Practice Problems</h2>
 <div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Climbing Stairs</strong> -- LeetCode 70. Classic Fibonacci DP.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>House Robber</strong> -- LeetCode 198. 1D DP with O(1) space optimization.</div>
 <div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Coin Change</strong> -- LeetCode 322. Minimum coins to make amount.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Longest Increasing Subsequence</strong> -- LeetCode 300. Try both O(n&sup2;) and O(n log n).</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Unique Paths</strong> -- LeetCode 62. Grid DP, then try LeetCode 63 with obstacles.</div>
 <div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Longest Common Subsequence</strong> -- LeetCode 1143. 2D DP table.</div>
 <div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Partition Equal Subset Sum</strong> -- LeetCode 416. Subset sum variant.</div>
-<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Edit Distance</strong> -- LeetCode 72. Classic string DP.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Edit Distance</strong> -- LeetCode 72. Classic string DP with 3 operations.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Matrix Chain Multiplication</strong> -- Interval DP. Try burst balloons (LeetCode 312) for a twist.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>House Robber II</strong> -- LeetCode 213. Circular arrangement variant.</div>
 </div>
 
 <div class="card" id="summary">

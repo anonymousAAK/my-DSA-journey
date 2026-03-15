@@ -85,18 +85,25 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 
 <div class="page-wrapper">
 <aside class="sidebar" id="sidebar">
-<div class="logo"><h2>DSA Journey</h2><span>Week 17 of 20</span></div>
+<div class="logo"><h2>DSA Journey</h2><span>Week 17 of 30</span></div>
 <nav>
 <a href="#hero">Overview</a>
 <a href="#objectives">Learning Objectives</a>
 <a href="#representations">Graph Representations</a>
+<a href="#repr-comparison">Representation Comparison</a>
 <a href="#bfs">BFS &amp; Shortest Path</a>
+<a href="#shortest-unweighted">Shortest Path (Unweighted)</a>
 <a href="#dfs">DFS</a>
-<a href="#components" class="sub">Connected Components</a>
+<a href="#components">Connected Components</a>
+<a href="#components-full" class="sub">All Components</a>
 <a href="#cycle-detection">Cycle Detection</a>
-<a href="#bipartite" class="sub">Bipartite Check</a>
+<a href="#cycle-directed" class="sub">Directed (3-Color)</a>
+<a href="#bipartite">Bipartite Check</a>
+<a href="#bipartite-full" class="sub">Full BFS Coloring</a>
 <a href="#topological-sort">Topological Sort</a>
-<a href="#kahns" class="sub">Kahn's Algorithm</a>
+<a href="#topo-dfs-full" class="sub">DFS Approach</a>
+<a href="#kahns">Kahn's Algorithm</a>
+<a href="#kahns-full" class="sub">BFS Approach</a>
 <a href="#comparison">Complexity Table</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
@@ -220,6 +227,297 @@ impl Graph {
 </div>
 </div>
 
+<!-- Graph Representation Comparison -->
+<div class="card" id="repr-comparison">
+<h2><span class="icon">&#9878;</span> Graph Representation Comparison</h2>
+<p>Choosing the right representation is critical for performance. Here is a detailed comparison and both implementations in all four languages.</p>
+
+<h3>Detailed Comparison Table</h3>
+<table>
+<thead><tr><th>Operation</th><th>Adjacency Matrix</th><th>Adjacency List</th><th>Winner</th></tr></thead>
+<tbody>
+<tr><td>Storage Space</td><td><span class="badge badge-red">O(V&sup2;)</span></td><td><span class="badge badge-green">O(V + E)</span></td><td>List (sparse)</td></tr>
+<tr><td>Add Edge</td><td><span class="badge badge-green">O(1)</span></td><td><span class="badge badge-green">O(1)</span></td><td>Tie</td></tr>
+<tr><td>Remove Edge</td><td><span class="badge badge-green">O(1)</span></td><td><span class="badge badge-yellow">O(deg)</span></td><td>Matrix</td></tr>
+<tr><td>Check Edge Exists</td><td><span class="badge badge-green">O(1)</span></td><td><span class="badge badge-yellow">O(deg)</span></td><td>Matrix</td></tr>
+<tr><td>Iterate All Neighbors</td><td><span class="badge badge-red">O(V)</span></td><td><span class="badge badge-green">O(deg)</span></td><td>List</td></tr>
+<tr><td>Iterate All Edges</td><td><span class="badge badge-red">O(V&sup2;)</span></td><td><span class="badge badge-green">O(V + E)</span></td><td>List</td></tr>
+<tr><td>Good for Dense Graphs</td><td><span class="badge badge-green">Yes</span></td><td><span class="badge badge-yellow">Okay</span></td><td>Matrix</td></tr>
+<tr><td>Good for Sparse Graphs</td><td><span class="badge badge-red">No</span></td><td><span class="badge badge-green">Yes</span></td><td>List</td></tr>
+</tbody>
+</table>
+
+<div class="insight">
+<div class="label">When to Use Which</div>
+<p><strong>Adjacency Matrix:</strong> Use when the graph is dense (E is close to V&sup2;), when you need frequent O(1) edge existence checks, or for algorithms like Floyd-Warshall. <strong>Adjacency List:</strong> Use for sparse graphs (most real-world graphs), BFS/DFS traversals, and when memory is a concern.</p>
+</div>
+
+<h3>Adjacency Matrix Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>AdjacencyMatrix.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class AdjacencyMatrixGraph {
+    private int V;
+    private boolean[][] matrix;
+
+    AdjacencyMatrixGraph(int v) {
+        V = v;
+        matrix = new boolean[v][v];
+    }
+
+    void addEdge(int u, int v) {
+        matrix[u][v] = true;
+        matrix[v][u] = true; // remove for directed
+    }
+
+    void removeEdge(int u, int v) {
+        matrix[u][v] = false;
+        matrix[v][u] = false;
+    }
+
+    boolean hasEdge(int u, int v) {
+        return matrix[u][v];
+    }
+
+    List&lt;Integer&gt; neighbors(int u) {
+        List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+        for (int v = 0; v &lt; V; v++)
+            if (matrix[u][v]) result.add(v);
+        return result;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>adj_matrix.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class AdjMatrixGraph {
+public:
+    explicit AdjMatrixGraph(int n, bool directed = false)
+        : n_(n), directed_(directed), matrix_(n, std::vector&lt;bool&gt;(n, false)) {}
+
+    void add_edge(int u, int v) {
+        matrix_[u][v] = true;
+        if (!directed_) matrix_[v][u] = true;
+    }
+
+    void remove_edge(int u, int v) {
+        matrix_[u][v] = false;
+        if (!directed_) matrix_[v][u] = false;
+    }
+
+    bool has_edge(int u, int v) const { return matrix_[u][v]; }
+
+    std::vector&lt;int&gt; neighbors(int u) const {
+        std::vector&lt;int&gt; result;
+        for (int v = 0; v &lt; n_; ++v)
+            if (matrix_[u][v]) result.push_back(v);
+        return result;
+    }
+
+private:
+    int n_;
+    bool directed_;
+    std::vector&lt;std::vector&lt;bool&gt;&gt; matrix_;
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>adj_matrix.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class AdjMatrixGraph:
+    def __init__(self, n: int, directed: bool = False) -&gt; None:
+        self.n = n
+        self.directed = directed
+        self.matrix = [[False] * n for _ in range(n)]
+
+    def add_edge(self, u: int, v: int) -&gt; None:
+        self.matrix[u][v] = True
+        if not self.directed:
+            self.matrix[v][u] = True
+
+    def remove_edge(self, u: int, v: int) -&gt; None:
+        self.matrix[u][v] = False
+        if not self.directed:
+            self.matrix[v][u] = False
+
+    def has_edge(self, u: int, v: int) -&gt; bool:
+        return self.matrix[u][v]
+
+    def neighbors(self, u: int) -&gt; List[int]:
+        return [v for v in range(self.n) if self.matrix[u][v]]</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>adj_matrix.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct AdjMatrixGraph {
+    n: usize,
+    directed: bool,
+    matrix: Vec&lt;Vec&lt;bool&gt;&gt;,
+}
+
+impl AdjMatrixGraph {
+    fn new(n: usize, directed: bool) -&gt; Self {
+        AdjMatrixGraph {
+            n, directed,
+            matrix: vec![vec![false; n]; n],
+        }
+    }
+
+    fn add_edge(&amp;mut self, u: usize, v: usize) {
+        self.matrix[u][v] = true;
+        if !self.directed { self.matrix[v][u] = true; }
+    }
+
+    fn remove_edge(&amp;mut self, u: usize, v: usize) {
+        self.matrix[u][v] = false;
+        if !self.directed { self.matrix[v][u] = false; }
+    }
+
+    fn has_edge(&amp;self, u: usize, v: usize) -&gt; bool {
+        self.matrix[u][v]
+    }
+
+    fn neighbors(&amp;self, u: usize) -&gt; Vec&lt;usize&gt; {
+        (0..self.n).filter(|&amp;v| self.matrix[u][v]).collect()
+    }
+}</div></div>
+</div>
+</div>
+
+<h3>Adjacency List Implementation (Weighted)</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>AdjacencyList.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class AdjListGraph {
+    private int V;
+    private List&lt;List&lt;int[]&gt;&gt; adj; // int[] = {neighbor, weight}
+
+    AdjListGraph(int v) {
+        V = v;
+        adj = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; v; i++) adj.add(new ArrayList&lt;&gt;());
+    }
+
+    void addEdge(int u, int v, int w) {
+        adj.get(u).add(new int[]{v, w});
+        adj.get(v).add(new int[]{u, w}); // remove for directed
+    }
+
+    boolean hasEdge(int u, int v) {
+        for (int[] edge : adj.get(u))
+            if (edge[0] == v) return true;
+        return false;
+    }
+
+    List&lt;int[]&gt; neighbors(int u) {
+        return adj.get(u);
+    }
+
+    int degree(int u) {
+        return adj.get(u).size();
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>adj_list.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class AdjListGraph {
+public:
+    explicit AdjListGraph(int n, bool directed = false)
+        : n_(n), directed_(directed), adj_(n) {}
+
+    void add_edge(int u, int v, int w = 1) {
+        adj_[u].emplace_back(v, w);
+        if (!directed_) adj_[v].emplace_back(u, w);
+    }
+
+    bool has_edge(int u, int v) const {
+        for (auto&amp; [to, wt] : adj_[u])
+            if (to == v) return true;
+        return false;
+    }
+
+    const std::vector&lt;std::pair&lt;int,int&gt;&gt;&amp; neighbors(int u) const {
+        return adj_[u];
+    }
+
+    int degree(int u) const {
+        return static_cast&lt;int&gt;(adj_[u].size());
+    }
+
+private:
+    int n_;
+    bool directed_;
+    std::vector&lt;std::vector&lt;std::pair&lt;int,int&gt;&gt;&gt; adj_;
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>adj_list.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class AdjListGraph:
+    def __init__(self, directed: bool = False) -&gt; None:
+        self.directed = directed
+        self.adj: Dict[int, List[Tuple[int, int]]] = defaultdict(list)
+
+    def add_edge(self, u: int, v: int, w: int = 1) -&gt; None:
+        self.adj[u].append((v, w))
+        if not self.directed:
+            self.adj[v].append((u, w))
+
+    def has_edge(self, u: int, v: int) -&gt; bool:
+        return any(to == v for to, _ in self.adj[u])
+
+    def neighbors(self, u: int) -&gt; List[Tuple[int, int]]:
+        return self.adj[u]
+
+    def degree(self, u: int) -&gt; int:
+        return len(self.adj[u])</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>adj_list.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">struct AdjListGraph {
+    n: usize,
+    directed: bool,
+    adj: Vec&lt;Vec&lt;(usize, i64)&gt;&gt;, // (neighbor, weight)
+}
+
+impl AdjListGraph {
+    fn new(n: usize, directed: bool) -&gt; Self {
+        AdjListGraph { n, directed, adj: vec![Vec::new(); n] }
+    }
+
+    fn add_edge(&amp;mut self, u: usize, v: usize, w: i64) {
+        self.adj[u].push((v, w));
+        if !self.directed { self.adj[v].push((u, w)); }
+    }
+
+    fn has_edge(&amp;self, u: usize, v: usize) -&gt; bool {
+        self.adj[u].iter().any(|&amp;(to, _)| to == v)
+    }
+
+    fn neighbors(&amp;self, u: usize) -&gt; &amp;[(usize, i64)] {
+        &amp;self.adj[u]
+    }
+
+    fn degree(&amp;self, u: usize) -&gt; usize {
+        self.adj[u].len()
+    }
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Memory Warning</div>
+<p>An adjacency matrix for V = 10,000 vertices requires 10,000 &times; 10,000 = 100 million entries. For sparse graphs (e.g., social networks with V = 1M), this is impractical. Always default to adjacency lists unless you have a specific reason to use a matrix.</p>
+</div>
+</div>
+
 <!-- BFS -->
 <div class="card" id="bfs">
 <h2><span class="icon">&#128269;</span> BFS -- Breadth-First Search</h2>
@@ -328,6 +626,178 @@ Distances: {0:0, 1:1, 3:1, 2:2, 4:2, 5:3}
 </div>
 </div>
 
+<!-- Shortest Path in Unweighted Graph -->
+<div class="card" id="shortest-unweighted">
+<h2><span class="icon">&#128739;</span> Shortest Path in Unweighted Graph</h2>
+<p>BFS naturally finds the shortest path in an unweighted graph because it explores nodes level by level. The first time a node is reached, the path used is guaranteed to be the shortest. This section provides a complete BFS-based shortest path finder that also <strong>reconstructs the actual path</strong>.</p>
+
+<div class="diagram">
+Graph:  0 -- 1 -- 3 -- 5
+        |         |
+        2 --------4
+
+Shortest path from 0 to 5:
+  BFS explores: 0 &rarr; {1, 2} &rarr; {3, 4} &rarr; {5}
+  Path: 0 &rarr; 1 &rarr; 3 &rarr; 5 (length = <span class="highlight">3</span>)
+
+  Alternative: 0 &rarr; 2 &rarr; 4 &rarr; 3 &rarr; 5 (length = 4, NOT shortest)
+</div>
+
+<div class="insight">
+<div class="label">Path Reconstruction</div>
+<p>To reconstruct the actual path (not just the distance), store a <strong>parent array</strong> during BFS. After BFS completes, trace back from the destination to the source through the parent pointers.</p>
+</div>
+
+<h3>BFS Shortest Path with Path Reconstruction</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ShortestPath.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Returns shortest path from src to dest, or empty list if unreachable
+List&lt;Integer&gt; shortestPath(int src, int dest) {
+    int[] dist = new int[V];
+    int[] parent = new int[V];
+    Arrays.fill(dist, -1);
+    Arrays.fill(parent, -1);
+    dist[src] = 0;
+
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    queue.offer(src);
+
+    while (!queue.isEmpty()) {
+        int u = queue.poll();
+        if (u == dest) break; // early termination
+        for (int v : adj.get(u)) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+                queue.offer(v);
+            }
+        }
+    }
+
+    if (dist[dest] == -1) return Collections.emptyList();
+
+    // Reconstruct path by tracing parent pointers
+    List&lt;Integer&gt; path = new ArrayList&lt;&gt;();
+    for (int at = dest; at != -1; at = parent[at])
+        path.add(at);
+    Collections.reverse(path);
+    return path;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>shortest_path.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Returns {distance, path} from src to dest
+std::pair&lt;int, std::vector&lt;int&gt;&gt; shortest_path(int src, int dest) const {
+    std::vector&lt;int&gt; dist(n_, -1);
+    std::vector&lt;int&gt; parent(n_, -1);
+    dist[src] = 0;
+
+    std::queue&lt;int&gt; q;
+    q.push(src);
+
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        if (u == dest) break;
+        for (auto [v, w] : adj_[u]) {
+            if (dist[v] == -1) {
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+                q.push(v);
+            }
+        }
+    }
+
+    if (dist[dest] == -1) return {-1, {}};
+
+    std::vector&lt;int&gt; path;
+    for (int at = dest; at != -1; at = parent[at])
+        path.push_back(at);
+    std::reverse(path.begin(), path.end());
+    return {dist[dest], path};
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>shortest_path.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def shortest_path(graph: Graph, src: int, dest: int) -&gt; Tuple[int, List[int]]:
+    """Returns (distance, path) or (-1, []) if unreachable."""
+    dist = {src: 0}
+    parent = {src: None}
+    queue = deque([src])
+
+    while queue:
+        u = queue.popleft()
+        if u == dest:
+            break
+        for v in graph.adj[u]:
+            if v not in dist:
+                dist[v] = dist[u] + 1
+                parent[v] = u
+                queue.append(v)
+
+    if dest not in dist:
+        return -1, []
+
+    # Reconstruct path
+    path = []
+    at = dest
+    while at is not None:
+        path.append(at)
+        at = parent[at]
+    path.reverse()
+    return dist[dest], path</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>shortest_path.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Returns (distance, path) from src to dest.
+/// Returns (-1, vec![]) if dest is unreachable.
+fn shortest_path(&amp;self, src: usize, dest: usize) -&gt; (i32, Vec&lt;usize&gt;) {
+    let mut dist = vec![-1i32; self.num_vertices];
+    let mut parent = vec![usize::MAX; self.num_vertices];
+    dist[src] = 0;
+
+    let mut queue = VecDeque::new();
+    queue.push_back(src);
+
+    while let Some(u) = queue.pop_front() {
+        if u == dest { break; }
+        for &amp;v in &amp;self.adj[u] {
+            if dist[v] == -1 {
+                dist[v] = dist[u] + 1;
+                parent[v] = u;
+                queue.push_back(v);
+            }
+        }
+    }
+
+    if dist[dest] == -1 {
+        return (-1, vec![]);
+    }
+
+    let mut path = Vec::new();
+    let mut at = dest;
+    while at != usize::MAX {
+        path.push(at);
+        at = parent[at];
+    }
+    path.reverse();
+    (dist[dest], path)
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Important Limitation</div>
+<p>BFS-based shortest path only works for <strong>unweighted</strong> (or unit-weight) graphs. For weighted graphs, you need Dijkstra's algorithm (non-negative weights) or Bellman-Ford (handles negative weights). These are covered in later weeks.</p>
+</div>
+</div>
+
 <!-- DFS -->
 <div class="card" id="dfs">
 <h2><span class="icon">&#128302;</span> DFS -- Depth-First Search</h2>
@@ -390,6 +860,226 @@ void dfsHelper(int u, boolean[] visited, List&lt;Integer&gt; result) {
     return count;
 }</div></div>
 </div>
+</div>
+</div>
+
+<!-- Connected Components Full -->
+<div class="card" id="components-full">
+<h2><span class="icon">&#128994;</span> Finding All Connected Components</h2>
+<p>Beyond just counting components, we often need to <strong>identify which vertices belong to each component</strong>. This is done by running DFS/BFS from each unvisited vertex and collecting all reachable nodes into a group.</p>
+
+<div class="diagram">
+Graph with 8 vertices:
+  0 -- 1    2 -- 3    6 -- 7
+       |         |
+       4         5
+
+Component 0: {<span class="highlight">0, 1, 4</span>}
+Component 1: {<span class="sorted">2, 3, 5</span>}
+Component 2: {<span class="pivot">6, 7</span>}
+
+Total: <span class="swap">3</span> connected components
+</div>
+
+<h3>Find All Components with Labels</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ConnectedComponents.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Returns a list of components, each component is a list of vertices
+List&lt;List&lt;Integer&gt;&gt; findAllComponents() {
+    boolean[] visited = new boolean[V];
+    List&lt;List&lt;Integer&gt;&gt; components = new ArrayList&lt;&gt;();
+
+    for (int i = 0; i &lt; V; i++) {
+        if (!visited[i]) {
+            List&lt;Integer&gt; component = new ArrayList&lt;&gt;();
+            dfsCollect(i, visited, component);
+            components.add(component);
+        }
+    }
+    return components;
+}
+
+void dfsCollect(int u, boolean[] visited, List&lt;Integer&gt; component) {
+    visited[u] = true;
+    component.add(u);
+    for (int v : adj.get(u)) {
+        if (!visited[v]) {
+            dfsCollect(v, visited, component);
+        }
+    }
+}
+
+// Also useful: label each vertex with its component ID
+int[] componentLabels() {
+    int[] label = new int[V];
+    Arrays.fill(label, -1);
+    int id = 0;
+    for (int i = 0; i &lt; V; i++) {
+        if (label[i] == -1) {
+            dfsLabel(i, label, id);
+            id++;
+        }
+    }
+    return label;
+}
+
+void dfsLabel(int u, int[] label, int id) {
+    label[u] = id;
+    for (int v : adj.get(u))
+        if (label[v] == -1) dfsLabel(v, label, id);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>connected_components.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Returns vector of components (each is a vector of vertex IDs)
+std::vector&lt;std::vector&lt;int&gt;&gt; find_all_components() const {
+    std::vector&lt;bool&gt; visited(n_, false);
+    std::vector&lt;std::vector&lt;int&gt;&gt; components;
+
+    for (int i = 0; i &lt; n_; ++i) {
+        if (!visited[i]) {
+            std::vector&lt;int&gt; comp;
+            dfs_collect(i, visited, comp);
+            components.push_back(std::move(comp));
+        }
+    }
+    return components;
+}
+
+void dfs_collect(int u, std::vector&lt;bool&gt;&amp; visited,
+                 std::vector&lt;int&gt;&amp; comp) const {
+    visited[u] = true;
+    comp.push_back(u);
+    for (auto [v, w] : adj_[u]) {
+        if (!visited[v]) dfs_collect(v, visited, comp);
+    }
+}
+
+// Label each vertex with component ID
+std::vector&lt;int&gt; component_labels() const {
+    std::vector&lt;int&gt; label(n_, -1);
+    int id = 0;
+    for (int i = 0; i &lt; n_; ++i) {
+        if (label[i] == -1) {
+            std::queue&lt;int&gt; q;
+            q.push(i);
+            label[i] = id;
+            while (!q.empty()) {
+                int u = q.front(); q.pop();
+                for (auto [v, w] : adj_[u]) {
+                    if (label[v] == -1) {
+                        label[v] = id;
+                        q.push(v);
+                    }
+                }
+            }
+            ++id;
+        }
+    }
+    return label;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>connected_components.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def find_all_components(graph: Graph) -&gt; List[List[int]]:
+    """Returns a list of components, each being a list of vertices."""
+    visited: Set[int] = set()
+    components: List[List[int]] = []
+
+    def dfs_collect(node: int, component: List[int]) -&gt; None:
+        visited.add(node)
+        component.append(node)
+        for neighbor in graph.adj[node]:
+            if neighbor not in visited:
+                dfs_collect(neighbor, component)
+
+    for v in graph.vertices:
+        if v not in visited:
+            comp: List[int] = []
+            dfs_collect(v, comp)
+            components.append(comp)
+
+    return components
+
+def component_labels(graph: Graph) -&gt; Dict[int, int]:
+    """Assign each vertex a component ID."""
+    label: Dict[int, int] = {}
+    comp_id = 0
+    for v in graph.vertices:
+        if v not in label:
+            queue = deque([v])
+            label[v] = comp_id
+            while queue:
+                u = queue.popleft()
+                for w in graph.adj[u]:
+                    if w not in label:
+                        label[w] = comp_id
+                        queue.append(w)
+            comp_id += 1
+    return label</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>connected_components.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Returns a Vec of components, each component is a Vec of vertex IDs
+fn find_all_components(&amp;self) -&gt; Vec&lt;Vec&lt;usize&gt;&gt; {
+    let mut visited = vec![false; self.num_vertices];
+    let mut components = Vec::new();
+
+    for i in 0..self.num_vertices {
+        if !visited[i] {
+            let mut comp = Vec::new();
+            self.dfs_collect(i, &amp;mut visited, &amp;mut comp);
+            components.push(comp);
+        }
+    }
+    components
+}
+
+fn dfs_collect(&amp;self, u: usize, visited: &amp;mut Vec&lt;bool&gt;,
+               comp: &amp;mut Vec&lt;usize&gt;) {
+    visited[u] = true;
+    comp.push(u);
+    for &amp;v in &amp;self.adj[u] {
+        if !visited[v] {
+            self.dfs_collect(v, visited, comp);
+        }
+    }
+}
+
+/// Label each vertex with its component ID
+fn component_labels(&amp;self) -&gt; Vec&lt;i32&gt; {
+    let mut label = vec![-1i32; self.num_vertices];
+    let mut id = 0i32;
+    for i in 0..self.num_vertices {
+        if label[i] == -1 {
+            let mut stack = vec![i];
+            label[i] = id;
+            while let Some(u) = stack.pop() {
+                for &amp;v in &amp;self.adj[u] {
+                    if label[v] == -1 {
+                        label[v] = id;
+                        stack.push(v);
+                    }
+                }
+            }
+            id += 1;
+        }
+    }
+    label
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Applications</div>
+<p>Connected components are used in social network analysis (friend clusters), image processing (connected pixel regions), network reliability (detecting isolated subnetworks), and as a preprocessing step for many graph algorithms.</p>
 </div>
 </div>
 
@@ -459,6 +1149,289 @@ boolean dfsDetectCycle(int u, int[] state) {
 </div>
 </div>
 
+<!-- Cycle Detection Directed Full -->
+<div class="card" id="cycle-directed">
+<h2><span class="icon">&#128308;</span> Cycle Detection in Directed Graphs -- DFS Coloring</h2>
+<p>Directed cycle detection requires the <strong>three-color (WHITE/GRAY/BLACK) approach</strong> because in directed graphs, visiting an already-visited node does not necessarily mean a cycle -- it could be a cross edge or forward edge. Only a back edge (to a GRAY node currently on the recursion stack) indicates a cycle.</p>
+
+<div class="diagram">
+The Three States:
+  <span class="highlight">WHITE (0)</span> = unvisited, not yet discovered
+  <span class="pivot">GRAY  (1)</span> = in current DFS path (on recursion stack)
+  <span class="sorted">BLACK (2)</span> = fully processed, all descendants explored
+
+Edge Classification in DFS:
+  Tree edge:    WHITE neighbor &rarr; recurse into it
+  Back edge:    <span class="swap">GRAY neighbor &rarr; CYCLE DETECTED!</span>
+  Forward edge: BLACK neighbor &rarr; safe (already processed)
+  Cross edge:   BLACK neighbor &rarr; safe (different branch)
+</div>
+
+<div class="warning-box">
+<div class="label">Common Mistake</div>
+<p>Do NOT use a simple visited boolean for directed graphs. In a directed graph, reaching an already-visited node via a different path is perfectly valid (cross edge). You need the three-color scheme to distinguish back edges from cross/forward edges.</p>
+</div>
+
+<h3>Complete Directed Cycle Detection (All 4 Languages)</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>DirectedCycleDetection.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Detect cycle and optionally return the cycle path
+boolean hasCycleDirected() {
+    int[] color = new int[V]; // 0=WHITE, 1=GRAY, 2=BLACK
+    for (int i = 0; i &lt; V; i++) {
+        if (color[i] == 0) {
+            if (dfsCycleDirected(i, color)) return true;
+        }
+    }
+    return false;
+}
+
+boolean dfsCycleDirected(int u, int[] color) {
+    color[u] = 1; // mark GRAY (entering recursion stack)
+    for (int v : adj.get(u)) {
+        if (color[v] == 1) {
+            // Back edge to a node on the current path
+            return true;
+        }
+        if (color[v] == 0 &amp;&amp; dfsCycleDirected(v, color)) {
+            return true;
+        }
+        // color[v] == 2 (BLACK): already fully processed, skip
+    }
+    color[u] = 2; // mark BLACK (leaving recursion stack)
+    return false;
+}
+
+// Variant: find the actual cycle
+List&lt;Integer&gt; findCycle() {
+    int[] color = new int[V];
+    int[] parent = new int[V];
+    Arrays.fill(parent, -1);
+    for (int i = 0; i &lt; V; i++) {
+        if (color[i] == 0) {
+            int cycleEnd = dfsFindCycle(i, color, parent);
+            if (cycleEnd != -1) {
+                List&lt;Integer&gt; cycle = new ArrayList&lt;&gt;();
+                cycle.add(cycleEnd);
+                for (int at = parent[cycleEnd]; at != cycleEnd; at = parent[at])
+                    cycle.add(at);
+                cycle.add(cycleEnd);
+                Collections.reverse(cycle);
+                return cycle;
+            }
+        }
+    }
+    return Collections.emptyList();
+}
+
+int dfsFindCycle(int u, int[] color, int[] parent) {
+    color[u] = 1;
+    for (int v : adj.get(u)) {
+        if (color[v] == 1) { parent[v] = u; return v; }
+        if (color[v] == 0) {
+            parent[v] = u;
+            int result = dfsFindCycle(v, color, parent);
+            if (result != -1) return result;
+        }
+    }
+    color[u] = 2;
+    return -1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>directed_cycle.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">bool has_cycle_directed() const {
+    // 0=WHITE, 1=GRAY, 2=BLACK
+    std::vector&lt;int&gt; color(n_, 0);
+    for (int i = 0; i &lt; n_; ++i) {
+        if (color[i] == 0 &amp;&amp; dfs_cycle(i, color))
+            return true;
+    }
+    return false;
+}
+
+bool dfs_cycle(int u, std::vector&lt;int&gt;&amp; color) const {
+    color[u] = 1; // GRAY
+    for (auto [v, w] : adj_[u]) {
+        if (color[v] == 1) return true; // back edge
+        if (color[v] == 0 &amp;&amp; dfs_cycle(v, color))
+            return true;
+    }
+    color[u] = 2; // BLACK
+    return false;
+}
+
+// Find actual cycle path
+std::vector&lt;int&gt; find_cycle() const {
+    std::vector&lt;int&gt; color(n_, 0);
+    std::vector&lt;int&gt; parent(n_, -1);
+    int cycle_end = -1;
+
+    for (int i = 0; i &lt; n_ &amp;&amp; cycle_end == -1; ++i) {
+        if (color[i] == 0)
+            cycle_end = dfs_find_cycle(i, color, parent);
+    }
+
+    if (cycle_end == -1) return {};
+    std::vector&lt;int&gt; cycle = {cycle_end};
+    for (int at = parent[cycle_end]; at != cycle_end; at = parent[at])
+        cycle.push_back(at);
+    cycle.push_back(cycle_end);
+    std::reverse(cycle.begin(), cycle.end());
+    return cycle;
+}
+
+int dfs_find_cycle(int u, std::vector&lt;int&gt;&amp; color,
+                   std::vector&lt;int&gt;&amp; parent) const {
+    color[u] = 1;
+    for (auto [v, w] : adj_[u]) {
+        if (color[v] == 1) { parent[v] = u; return v; }
+        if (color[v] == 0) {
+            parent[v] = u;
+            int res = dfs_find_cycle(v, color, parent);
+            if (res != -1) return res;
+        }
+    }
+    color[u] = 2;
+    return -1;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>directed_cycle.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def has_cycle_directed(graph: Graph) -&gt; bool:
+    """Detect cycle in directed graph using 3-color DFS."""
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color: Dict[int, int] = {v: WHITE for v in graph.vertices}
+
+    def dfs(node: int) -&gt; bool:
+        color[node] = GRAY
+        for neighbor in graph.adj[node]:
+            if color.get(neighbor, WHITE) == GRAY:
+                return True  # back edge = cycle
+            if color.get(neighbor, WHITE) == WHITE:
+                if dfs(neighbor):
+                    return True
+        color[node] = BLACK
+        return False
+
+    return any(
+        color[v] == WHITE and dfs(v)
+        for v in graph.vertices
+    )
+
+def find_cycle_directed(graph: Graph) -&gt; List[int]:
+    """Find and return the actual cycle, or [] if none."""
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {v: WHITE for v in graph.vertices}
+    parent: Dict[int, int] = {}
+
+    def dfs(node: int) -&gt; int:
+        color[node] = GRAY
+        for neighbor in graph.adj[node]:
+            if color.get(neighbor, WHITE) == GRAY:
+                parent[neighbor] = node
+                return neighbor
+            if color.get(neighbor, WHITE) == WHITE:
+                parent[neighbor] = node
+                result = dfs(neighbor)
+                if result != -1:
+                    return result
+        color[node] = BLACK
+        return -1
+
+    for v in graph.vertices:
+        if color[v] == WHITE:
+            end = dfs(v)
+            if end != -1:
+                cycle = [end]
+                at = parent[end]
+                while at != end:
+                    cycle.append(at)
+                    at = parent[at]
+                cycle.append(end)
+                cycle.reverse()
+                return cycle
+    return []</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>directed_cycle.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Detect cycle in directed graph using 3-color DFS
+fn has_cycle_directed(&amp;self) -&gt; bool {
+    let mut color = vec![0u8; self.num_vertices]; // 0=W, 1=G, 2=B
+    for i in 0..self.num_vertices {
+        if color[i] == 0 &amp;&amp; self.dfs_cycle_dir(i, &amp;mut color) {
+            return true;
+        }
+    }
+    false
+}
+
+fn dfs_cycle_dir(&amp;self, u: usize, color: &amp;mut Vec&lt;u8&gt;) -&gt; bool {
+    color[u] = 1; // GRAY
+    for &amp;v in &amp;self.adj[u] {
+        if color[v] == 1 { return true; }  // back edge
+        if color[v] == 0 &amp;&amp; self.dfs_cycle_dir(v, color) {
+            return true;
+        }
+    }
+    color[u] = 2; // BLACK
+    false
+}
+
+/// Find the actual cycle, returns empty vec if no cycle
+fn find_cycle_directed(&amp;self) -&gt; Vec&lt;usize&gt; {
+    let mut color = vec![0u8; self.num_vertices];
+    let mut parent = vec![usize::MAX; self.num_vertices];
+
+    for i in 0..self.num_vertices {
+        if color[i] == 0 {
+            if let Some(end) = self.dfs_find_cycle(i, &amp;mut color, &amp;mut parent) {
+                let mut cycle = vec![end];
+                let mut at = parent[end];
+                while at != end {
+                    cycle.push(at);
+                    at = parent[at];
+                }
+                cycle.push(end);
+                cycle.reverse();
+                return cycle;
+            }
+        }
+    }
+    vec![]
+}
+
+fn dfs_find_cycle(&amp;self, u: usize, color: &amp;mut Vec&lt;u8&gt;,
+                  parent: &amp;mut Vec&lt;usize&gt;) -&gt; Option&lt;usize&gt; {
+    color[u] = 1;
+    for &amp;v in &amp;self.adj[u] {
+        if color[v] == 1 { parent[v] = u; return Some(v); }
+        if color[v] == 0 {
+            parent[v] = u;
+            if let Some(end) = self.dfs_find_cycle(v, color, parent) {
+                return Some(end);
+            }
+        }
+    }
+    color[u] = 2;
+    None
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Cycle Detection vs Topological Sort</div>
+<p>Cycle detection and topological sort are closely related. A DAG (Directed Acyclic Graph) has a valid topological ordering if and only if it has no cycles. Kahn's algorithm naturally detects cycles: if the result contains fewer than V vertices, a cycle exists.</p>
+</div>
+</div>
+
 <!-- Bipartite -->
 <div class="card" id="bipartite">
 <h2><span class="icon">&#127912;</span> Bipartite Check</h2>
@@ -516,6 +1489,183 @@ Use BFS with alternating colors. If any neighbor has the same color as the curre
     true
 }</div></div>
 </div>
+</div>
+</div>
+
+<!-- Bipartite Full -->
+<div class="card" id="bipartite-full">
+<h2><span class="icon">&#127752;</span> Bipartite Graph Check -- Full BFS Coloring</h2>
+<p>A graph is bipartite if and only if it contains <strong>no odd-length cycles</strong>. The BFS coloring approach assigns alternating colors (0 and 1) to vertices. If a conflict is found (two adjacent vertices with the same color), the graph is not bipartite.</p>
+
+<div class="diagram">
+Bipartite Example:           NOT Bipartite (odd cycle):
+  Set A: {0, 2, 4}             0 -- 1
+  Set B: {1, 3, 5}             |    |
+                                2 ---+
+  0(A) -- 1(B)
+  |        |               0=<span class="highlight">Red</span>, 1=<span class="sorted">Blue</span>, 2=<span class="swap">Red?</span>
+  2(A) -- 3(B)             But 2 is adjacent to 0 (also Red)!
+  |        |               CONFLICT &rarr; Not bipartite
+  4(A) -- 5(B)
+</div>
+
+<h3>Complete BFS Bipartite Check (All 4 Languages)</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>BipartiteCheck.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Returns true if graph is bipartite, also provides partition
+boolean isBipartite(List&lt;Integer&gt;[] setA, List&lt;Integer&gt;[] setB) {
+    int[] color = new int[V]; // -1=uncolored, 0=setA, 1=setB
+    Arrays.fill(color, -1);
+
+    for (int i = 0; i &lt; V; i++) {
+        if (color[i] != -1) continue;
+
+        // BFS from uncolored vertex
+        Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+        queue.offer(i);
+        color[i] = 0;
+
+        while (!queue.isEmpty()) {
+            int u = queue.poll();
+            for (int v : adj.get(u)) {
+                if (color[v] == -1) {
+                    color[v] = 1 - color[u]; // alternate color
+                    queue.offer(v);
+                } else if (color[v] == color[u]) {
+                    return false; // same color = odd cycle
+                }
+            }
+        }
+    }
+
+    // Partition vertices into two sets
+    if (setA != null &amp;&amp; setB != null) {
+        setA[0] = new ArrayList&lt;&gt;();
+        setB[0] = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; V; i++) {
+            if (color[i] == 0) setA[0].add(i);
+            else setB[0].add(i);
+        }
+    }
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>bipartite.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Returns {is_bipartite, partition} where partition[i] is 0 or 1
+std::pair&lt;bool, std::vector&lt;int&gt;&gt; is_bipartite() const {
+    std::vector&lt;int&gt; color(n_, -1);
+
+    for (int i = 0; i &lt; n_; ++i) {
+        if (color[i] != -1) continue;
+
+        std::queue&lt;int&gt; q;
+        q.push(i);
+        color[i] = 0;
+
+        while (!q.empty()) {
+            int u = q.front(); q.pop();
+            for (auto [v, w] : adj_[u]) {
+                if (color[v] == -1) {
+                    color[v] = 1 - color[u];
+                    q.push(v);
+                } else if (color[v] == color[u]) {
+                    return {false, {}};
+                }
+            }
+        }
+    }
+    return {true, color};
+}
+
+// Get the two vertex sets
+std::pair&lt;std::vector&lt;int&gt;, std::vector&lt;int&gt;&gt; bipartite_sets() const {
+    auto [ok, color] = is_bipartite();
+    if (!ok) return {{}, {}};
+    std::vector&lt;int&gt; a, b;
+    for (int i = 0; i &lt; n_; ++i) {
+        (color[i] == 0 ? a : b).push_back(i);
+    }
+    return {a, b};
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>bipartite.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def is_bipartite(graph: Graph) -&gt; Tuple[bool, List[int], List[int]]:
+    """Returns (is_bipartite, set_a, set_b)."""
+    color: Dict[int, int] = {}
+
+    for start in graph.vertices:
+        if start in color:
+            continue
+
+        queue = deque([start])
+        color[start] = 0
+
+        while queue:
+            u = queue.popleft()
+            for v in graph.adj[u]:
+                if v not in color:
+                    color[v] = 1 - color[u]
+                    queue.append(v)
+                elif color[v] == color[u]:
+                    return False, [], []
+
+    set_a = [v for v, c in color.items() if c == 0]
+    set_b = [v for v, c in color.items() if c == 1]
+    return True, set_a, set_b</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>bipartite.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Returns Some((set_a, set_b)) if bipartite, None otherwise
+fn bipartite_partition(&amp;self) -&gt; Option&lt;(Vec&lt;usize&gt;, Vec&lt;usize&gt;)&gt; {
+    let mut color = vec![-1i32; self.num_vertices];
+
+    for start in 0..self.num_vertices {
+        if color[start] != -1 { continue; }
+
+        let mut queue = VecDeque::new();
+        queue.push_back(start);
+        color[start] = 0;
+
+        while let Some(u) = queue.pop_front() {
+            for &amp;v in &amp;self.adj[u] {
+                if color[v] == -1 {
+                    color[v] = 1 - color[u];
+                    queue.push_back(v);
+                } else if color[v] == color[u] {
+                    return None; // odd cycle
+                }
+            }
+        }
+    }
+
+    let mut set_a = Vec::new();
+    let mut set_b = Vec::new();
+    for (i, &amp;c) in color.iter().enumerate() {
+        if c == 0 { set_a.push(i); }
+        else { set_b.push(i); }
+    }
+    Some((set_a, set_b))
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Disconnected Graphs</div>
+<p>Always handle disconnected graphs! A graph with multiple components is bipartite only if <strong>every</strong> component is bipartite. The outer loop over all uncolored vertices ensures all components are checked.</p>
+</div>
+
+<div class="insight">
+<div class="label">Real-World Applications</div>
+<p>Bipartite checking is used in: job assignment problems (workers vs tasks), graph coloring with 2 colors, matching algorithms (Hungarian method), and detecting conflicts in scheduling systems.</p>
 </div>
 </div>
 
@@ -658,6 +1808,407 @@ Result: [4, 5, 0, 2, 3, 1] (one valid topological order)
     if order.len() == self.num_vertices { Some(order) } else { None }
 }</div></div>
 </div>
+</div>
+</div>
+
+<!-- Topological Sort DFS Full -->
+<div class="card" id="topo-dfs-full">
+<h2><span class="icon">&#128279;</span> Topological Sort -- DFS Approach (All Languages)</h2>
+<p>The DFS-based topological sort works by performing a post-order DFS and reversing the result. Each vertex is added to the output <strong>after</strong> all its descendants have been processed, ensuring dependencies come first.</p>
+
+<div class="diagram">
+DAG:  A &rarr; B &rarr; D
+      |         &uarr;
+      +&rarr; C &rarr;-+
+      |
+      +&rarr; E
+
+DFS from A:
+  Visit A &rarr; Visit B &rarr; Visit D &rarr; push <span class="highlight">D</span>
+  Back to B &rarr; push <span class="highlight">B</span>
+  Back to A &rarr; Visit C &rarr; D already done &rarr; push <span class="highlight">C</span>
+  Back to A &rarr; Visit E &rarr; push <span class="highlight">E</span>
+  push <span class="highlight">A</span>
+
+Post-order stack: [D, B, C, E, A]
+Reversed (topo order): [<span class="sorted">A, E, C, B, D</span>]
+</div>
+
+<div class="insight">
+<div class="label">DFS vs Kahn's</div>
+<p><strong>DFS approach:</strong> Simpler to implement, naturally integrates with cycle detection (3-color). <strong>Kahn's approach:</strong> More intuitive (process nodes with no dependencies first), gives lexicographically smallest order when using a min-heap, and can detect cycles by checking output size.</p>
+</div>
+
+<h3>Complete DFS Topological Sort</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>TopologicalSortDFS.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Returns topological order, or null if cycle detected
+List&lt;Integer&gt; topologicalSortDFS() {
+    int[] color = new int[V]; // 0=WHITE, 1=GRAY, 2=BLACK
+    Deque&lt;Integer&gt; stack = new ArrayDeque&lt;&gt;();
+
+    for (int i = 0; i &lt; V; i++) {
+        if (color[i] == 0) {
+            if (!dfsTopoHelper(i, color, stack)) {
+                return null; // cycle detected
+            }
+        }
+    }
+
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;(V);
+    while (!stack.isEmpty()) result.add(stack.pop());
+    return result;
+}
+
+boolean dfsTopoHelper(int u, int[] color, Deque&lt;Integer&gt; stack) {
+    color[u] = 1; // GRAY: currently processing
+    for (int v : adj.get(u)) {
+        if (color[v] == 1) return false; // back edge = cycle
+        if (color[v] == 0) {
+            if (!dfsTopoHelper(v, color, stack)) return false;
+        }
+    }
+    color[u] = 2; // BLACK: fully processed
+    stack.push(u); // add to stack in post-order
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>topo_sort_dfs.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Returns topological order, or nullopt if cycle detected
+std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_dfs() const {
+    std::vector&lt;int&gt; color(n_, 0); // 0=W, 1=G, 2=B
+    std::vector&lt;int&gt; order;
+    order.reserve(n_);
+
+    for (int i = 0; i &lt; n_; ++i) {
+        if (color[i] == 0) {
+            if (!dfs_topo(i, color, order))
+                return std::nullopt; // cycle
+        }
+    }
+    std::reverse(order.begin(), order.end());
+    return order;
+}
+
+bool dfs_topo(int u, std::vector&lt;int&gt;&amp; color,
+              std::vector&lt;int&gt;&amp; order) const {
+    color[u] = 1; // GRAY
+    for (auto [v, w] : adj_[u]) {
+        if (color[v] == 1) return false; // cycle
+        if (color[v] == 0 &amp;&amp; !dfs_topo(v, color, order))
+            return false;
+    }
+    color[u] = 2; // BLACK
+    order.push_back(u); // post-order
+    return true;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>topo_sort_dfs.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def topological_sort_dfs(graph: Graph) -&gt; Optional[List[int]]:
+    """DFS-based topological sort. Returns None if cycle detected."""
+    WHITE, GRAY, BLACK = 0, 1, 2
+    color = {v: WHITE for v in graph.vertices}
+    order: List[int] = []
+
+    def dfs(node: int) -&gt; bool:
+        color[node] = GRAY
+        for neighbor in graph.adj[node]:
+            nc = color.get(neighbor, WHITE)
+            if nc == GRAY:
+                return False  # cycle detected
+            if nc == WHITE and not dfs(neighbor):
+                return False
+        color[node] = BLACK
+        order.append(node)  # post-order
+        return True
+
+    for v in sorted(graph.vertices):
+        if color[v] == WHITE:
+            if not dfs(v):
+                return None  # cycle exists
+
+    order.reverse()
+    return order</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>topo_sort_dfs.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// DFS-based topological sort. Returns None if cycle detected.
+fn topo_sort_dfs(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    let mut color = vec![0u8; self.num_vertices]; // 0=W, 1=G, 2=B
+    let mut order = Vec::with_capacity(self.num_vertices);
+
+    for i in 0..self.num_vertices {
+        if color[i] == 0 {
+            if !self.dfs_topo(i, &amp;mut color, &amp;mut order) {
+                return None; // cycle
+            }
+        }
+    }
+
+    order.reverse();
+    Some(order)
+}
+
+fn dfs_topo(&amp;self, u: usize, color: &amp;mut Vec&lt;u8&gt;,
+            order: &amp;mut Vec&lt;usize&gt;) -&gt; bool {
+    color[u] = 1; // GRAY
+    for &amp;v in &amp;self.adj[u] {
+        if color[v] == 1 { return false; } // cycle
+        if color[v] == 0 &amp;&amp; !self.dfs_topo(v, color, order) {
+            return false;
+        }
+    }
+    color[u] = 2; // BLACK
+    order.push(u); // post-order
+    true
+}</div></div>
+</div>
+</div>
+</div>
+
+<!-- Kahn's Full -->
+<div class="card" id="kahns-full">
+<h2><span class="icon">&#128640;</span> Kahn's Algorithm -- BFS Topological Sort (All Languages)</h2>
+<p>Kahn's algorithm uses an iterative BFS approach based on in-degrees. It repeatedly removes vertices with no incoming edges, updating the in-degrees of their neighbors. This naturally produces a topological ordering.</p>
+
+<h3>Algorithm Steps</h3>
+<table>
+<thead><tr><th>Step</th><th>Action</th><th>Explanation</th></tr></thead>
+<tbody>
+<tr><td>1</td><td>Compute in-degrees</td><td>Count incoming edges for each vertex</td></tr>
+<tr><td>2</td><td>Enqueue zero in-degree</td><td>Vertices with no dependencies are ready</td></tr>
+<tr><td>3</td><td>Process queue</td><td>Dequeue, add to result, decrement neighbor in-degrees</td></tr>
+<tr><td>4</td><td>Enqueue new zeros</td><td>When in-degree becomes 0, vertex is ready</td></tr>
+<tr><td>5</td><td>Check result size</td><td>If result.size() &lt; V, a cycle exists</td></tr>
+</tbody>
+</table>
+
+<h3>Complete Kahn's Algorithm</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>KahnsAlgorithm.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Kahn's BFS topological sort with cycle detection
+List&lt;Integer&gt; topologicalSortKahn() {
+    // Step 1: compute in-degrees
+    int[] indegree = new int[V];
+    for (int u = 0; u &lt; V; u++)
+        for (int v : adj.get(u))
+            indegree[v]++;
+
+    // Step 2: enqueue all zero-indegree vertices
+    Queue&lt;Integer&gt; queue = new LinkedList&lt;&gt;();
+    for (int i = 0; i &lt; V; i++)
+        if (indegree[i] == 0) queue.offer(i);
+
+    // Step 3-4: process and update
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    while (!queue.isEmpty()) {
+        int u = queue.poll();
+        result.add(u);
+        for (int v : adj.get(u)) {
+            indegree[v]--;
+            if (indegree[v] == 0) queue.offer(v);
+        }
+    }
+
+    // Step 5: cycle check
+    if (result.size() != V) {
+        throw new IllegalStateException("Graph has a cycle!");
+    }
+    return result;
+}
+
+// Variant: lexicographically smallest topological order
+List&lt;Integer&gt; topoSortLexSmallest() {
+    int[] indegree = new int[V];
+    for (int u = 0; u &lt; V; u++)
+        for (int v : adj.get(u)) indegree[v]++;
+    PriorityQueue&lt;Integer&gt; pq = new PriorityQueue&lt;&gt;();
+    for (int i = 0; i &lt; V; i++)
+        if (indegree[i] == 0) pq.offer(i);
+    List&lt;Integer&gt; result = new ArrayList&lt;&gt;();
+    while (!pq.isEmpty()) {
+        int u = pq.poll();
+        result.add(u);
+        for (int v : adj.get(u))
+            if (--indegree[v] == 0) pq.offer(v);
+    }
+    return result.size() == V ? result : null;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>kahns_algorithm.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Kahn's algorithm with cycle detection
+std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_kahn() const {
+    std::vector&lt;int&gt; indegree(n_, 0);
+    for (int u = 0; u &lt; n_; ++u)
+        for (auto [v, w] : adj_[u])
+            ++indegree[v];
+
+    std::queue&lt;int&gt; q;
+    for (int i = 0; i &lt; n_; ++i)
+        if (indegree[i] == 0) q.push(i);
+
+    std::vector&lt;int&gt; order;
+    order.reserve(n_);
+    while (!q.empty()) {
+        int u = q.front(); q.pop();
+        order.push_back(u);
+        for (auto [v, w] : adj_[u])
+            if (--indegree[v] == 0) q.push(v);
+    }
+
+    if (static_cast&lt;int&gt;(order.size()) != n_)
+        return std::nullopt; // cycle exists
+    return order;
+}
+
+// Lexicographically smallest using priority queue
+std::optional&lt;std::vector&lt;int&gt;&gt; topo_sort_lex_smallest() const {
+    std::vector&lt;int&gt; indegree(n_, 0);
+    for (int u = 0; u &lt; n_; ++u)
+        for (auto [v, w] : adj_[u])
+            ++indegree[v];
+
+    std::priority_queue&lt;int, std::vector&lt;int&gt;, std::greater&lt;&gt;&gt; pq;
+    for (int i = 0; i &lt; n_; ++i)
+        if (indegree[i] == 0) pq.push(i);
+
+    std::vector&lt;int&gt; order;
+    while (!pq.empty()) {
+        int u = pq.top(); pq.pop();
+        order.push_back(u);
+        for (auto [v, w] : adj_[u])
+            if (--indegree[v] == 0) pq.push(v);
+    }
+    if (static_cast&lt;int&gt;(order.size()) != n_) return std::nullopt;
+    return order;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>kahns_algorithm.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def topological_sort_kahn(graph: Graph) -&gt; Optional[List[int]]:
+    """Kahn's BFS topological sort. Returns None if cycle exists."""
+    indegree: Dict[int, int] = {v: 0 for v in graph.vertices}
+    for u in graph.vertices:
+        for v in graph.adj[u]:
+            indegree[v] = indegree.get(v, 0) + 1
+
+    # Start with zero-indegree vertices
+    queue = deque(v for v in graph.vertices if indegree[v] == 0)
+    order: List[int] = []
+
+    while queue:
+        u = queue.popleft()
+        order.append(u)
+        for v in graph.adj[u]:
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                queue.append(v)
+
+    if len(order) != len(graph.vertices):
+        return None  # cycle detected
+    return order
+
+def topo_sort_lex_smallest(graph: Graph) -&gt; Optional[List[int]]:
+    """Lexicographically smallest topological order using min-heap."""
+    import heapq
+    indegree = {v: 0 for v in graph.vertices}
+    for u in graph.vertices:
+        for v in graph.adj[u]:
+            indegree[v] = indegree.get(v, 0) + 1
+
+    heap = [v for v in graph.vertices if indegree[v] == 0]
+    heapq.heapify(heap)
+    order = []
+
+    while heap:
+        u = heapq.heappop(heap)
+        order.append(u)
+        for v in graph.adj[u]:
+            indegree[v] -= 1
+            if indegree[v] == 0:
+                heapq.heappush(heap, v)
+
+    return order if len(order) == len(graph.vertices) else None</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>kahns_algorithm.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Kahn's BFS topological sort. Returns None if cycle detected.
+fn topo_sort_kahn(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    let mut indegree = vec![0usize; self.num_vertices];
+    for u in 0..self.num_vertices {
+        for &amp;v in &amp;self.adj[u] {
+            indegree[v] += 1;
+        }
+    }
+
+    let mut queue: VecDeque&lt;usize&gt; = VecDeque::new();
+    for (v, &amp;deg) in indegree.iter().enumerate() {
+        if deg == 0 { queue.push_back(v); }
+    }
+
+    let mut order = Vec::with_capacity(self.num_vertices);
+    while let Some(u) = queue.pop_front() {
+        order.push(u);
+        for &amp;v in &amp;self.adj[u] {
+            indegree[v] -= 1;
+            if indegree[v] == 0 {
+                queue.push_back(v);
+            }
+        }
+    }
+
+    if order.len() == self.num_vertices { Some(order) } else { None }
+}
+
+/// Lexicographically smallest topological order
+fn topo_sort_lex_smallest(&amp;self) -&gt; Option&lt;Vec&lt;usize&gt;&gt; {
+    use std::collections::BinaryHeap;
+    use std::cmp::Reverse;
+
+    let mut indegree = vec![0usize; self.num_vertices];
+    for u in 0..self.num_vertices {
+        for &amp;v in &amp;self.adj[u] { indegree[v] += 1; }
+    }
+
+    let mut heap = BinaryHeap::new();
+    for (v, &amp;deg) in indegree.iter().enumerate() {
+        if deg == 0 { heap.push(Reverse(v)); }
+    }
+
+    let mut order = Vec::with_capacity(self.num_vertices);
+    while let Some(Reverse(u)) = heap.pop() {
+        order.push(u);
+        for &amp;v in &amp;self.adj[u] {
+            indegree[v] -= 1;
+            if indegree[v] == 0 { heap.push(Reverse(v)); }
+        }
+    }
+
+    if order.len() == self.num_vertices { Some(order) } else { None }
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Topological Sort is Not Unique</div>
+<p>A DAG can have <strong>multiple valid topological orderings</strong>. For example, if vertices A and B have no dependency between them, either can come first. Use a min-heap (priority queue) in Kahn's algorithm if you need the lexicographically smallest ordering.</p>
 </div>
 </div>
 

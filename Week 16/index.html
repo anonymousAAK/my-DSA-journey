@@ -110,18 +110,23 @@ summary:hover{color:var(--accent-green)}
 <aside class="sidebar" id="sidebar">
 <div class="logo">
 <h2>DSA Journey</h2>
-<span>Week 16 of 20</span>
+<span>Week 16 of 30</span>
 </div>
 <nav>
 <a href="#hero">Overview</a>
 <a href="#objectives">Learning Objectives</a>
 <a href="#hashing-basics">Hashing Basics</a>
+<a href="#hash-function-design">Hash Function Design</a>
+<a href="#collision-resolution">Collision Resolution</a>
+<a href="#chaining-impl" class="sub">Chaining</a>
+<a href="#open-addressing-impl" class="sub">Open Addressing</a>
 <a href="#two-sum">Two Sum</a>
 <a href="#frequency" class="sub">Frequency Count</a>
 <a href="#group-anagrams">Group Anagrams</a>
 <a href="#prefix-sum">Prefix Sum + HashMap</a>
 <a href="#subarray-sum" class="sub">Subarray Sum = k</a>
 <a href="#longest-consecutive">Longest Consecutive</a>
+<a href="#lru-cache">LRU Cache</a>
 <a href="#comparison">Complexity Table</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
@@ -194,6 +199,581 @@ summary:hover{color:var(--accent-green)}
 <div class="insight">
 <div class="label">Key Insight</div>
 The <strong>load factor</strong> &alpha; = n/m (elements/buckets) controls the tradeoff between space and speed. Java's default threshold of 0.75 means the table resizes when it is 75% full, keeping operations near O(1).
+</div>
+</div>
+
+<!-- Hash Function Design -->
+<div class="card" id="hash-function-design">
+<h2><span class="icon">&#9881;</span> Hash Function Design</h2>
+<p>A good hash function is the foundation of an efficient hash table. The goal is to map arbitrary keys to uniformly distributed integer indices with minimal collisions.</p>
+
+<h3>Properties of a Good Hash Function</h3>
+<ul class="objectives">
+<li><strong>Deterministic:</strong> The same input must always produce the same output</li>
+<li><strong>Uniform distribution:</strong> Outputs should be spread evenly across the hash space, minimizing clustering</li>
+<li><strong>Avalanche effect:</strong> A small change in input should produce a drastically different hash value</li>
+<li><strong>Efficient to compute:</strong> The function must run in O(1) time (constant relative to table size)</li>
+<li><strong>Minimize collisions:</strong> Different keys should map to different indices as often as possible</li>
+</ul>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+For integer keys, a common approach is <code>h(k) = k mod m</code>, where <strong>m</strong> is a prime number not close to a power of 2. For string keys, polynomial rolling hashes (like <code>h = s[0]*p^(n-1) + s[1]*p^(n-2) + ... + s[n-1]</code>) distribute well when <strong>p</strong> is a small prime (31 or 37).
+</div>
+
+<h3>Simple Hash Function Implementation</h3>
+<p>Below is a custom hash function for strings using polynomial rolling -- the same technique behind Java's <code>String.hashCode()</code>.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>HashFunctionDesign.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">// Polynomial rolling hash for strings
+static int customHash(String key, int tableSize) {
+    int hash = 0;
+    int prime = 31;
+    for (int i = 0; i &lt; key.length(); i++) {
+        hash = hash * prime + key.charAt(i);
+        hash %= tableSize;          // keep within bounds
+    }
+    return Math.abs(hash) % tableSize;
+}
+
+// For integer keys -- multiplicative hashing (Knuth)
+static int intHash(int key, int tableSize) {
+    // Knuth's multiplicative method
+    long golden = 2654435769L; // 2^32 * (sqrt(5)-1)/2
+    long hash = (key * golden) &gt;&gt;&gt; 16;
+    return (int)(Math.abs(hash) % tableSize);
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>hash_function.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">// Polynomial rolling hash for strings
+size_t custom_hash(const std::string&amp; key, size_t table_size) {
+    size_t hash = 0;
+    const size_t prime = 31;
+    for (char c : key) {
+        hash = hash * prime + static_cast&lt;size_t&gt;(c);
+    }
+    return hash % table_size;
+}
+
+// FNV-1a hash -- widely used, excellent distribution
+size_t fnv1a_hash(const std::string&amp; key) {
+    size_t hash = 14695981039346656037ULL; // FNV offset basis
+    for (char c : key) {
+        hash ^= static_cast&lt;size_t&gt;(c);
+        hash *= 1099511628211ULL;          // FNV prime
+    }
+    return hash;
+}</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>hash_function.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">def custom_hash(key: str, table_size: int) -&gt; int:
+    """Polynomial rolling hash for strings."""
+    hash_val = 0
+    prime = 31
+    for ch in key:
+        hash_val = hash_val * prime + ord(ch)
+    return hash_val % table_size
+
+def int_hash(key: int, table_size: int) -&gt; int:
+    """Multiplicative hashing using Knuth's golden ratio method."""
+    golden = 2654435769  # 2^32 * (sqrt(5)-1)/2
+    return ((key * golden) &amp; 0xFFFFFFFF) % table_size
+
+# Note: Python's built-in hash() randomises per process (SipHash)
+# for security. Never rely on hash() being stable across runs.</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>hash_function.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">/// Polynomial rolling hash for strings
+fn custom_hash(key: &amp;str, table_size: usize) -&gt; usize {
+    let prime: usize = 31;
+    let mut hash: usize = 0;
+    for byte in key.bytes() {
+        hash = hash.wrapping_mul(prime).wrapping_add(byte as usize);
+    }
+    hash % table_size
+}
+
+/// FNV-1a hash -- fast and well-distributed
+fn fnv1a_hash(key: &amp;str) -&gt; u64 {
+    let mut hash: u64 = 14695981039346656037;
+    for byte in key.bytes() {
+        hash ^= byte as u64;
+        hash = hash.wrapping_mul(1099511628211);
+    }
+    hash
+}</div></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Common Pitfall</div>
+Never use a hash table size that is a power of 2 with a modular hash function unless you also mix the higher bits into the lower bits. Powers of 2 only use the lower bits of the hash, which increases collisions. Java's HashMap handles this internally by applying a secondary bit-spread function.
+</div>
+</div>
+
+<!-- Collision Resolution Deep Dive -->
+<div class="card" id="collision-resolution">
+<h2><span class="icon">&#128279;</span> Collision Resolution: Chaining vs Open Addressing</h2>
+<p>When two keys hash to the same index, we have a <strong>collision</strong>. The two primary strategies for handling collisions have very different performance characteristics.</p>
+
+<h3>Chaining (Separate Chaining)</h3>
+<p>Each bucket holds a linked list (or other container) of all entries that hash to that index.</p>
+
+<div class="diagram" id="chaining-impl">
+Bucket Array:
+&#9484;&#9472;&#9472;&#9472;&#9488;
+&#9474; <span class="highlight">0</span>  &#9474; &rarr; [("apple", 5)] &rarr; [("grape", 2)] &rarr; null
+&#9500;&#9472;&#9472;&#9472;&#9508;
+&#9474; <span class="highlight">1</span>  &#9474; &rarr; [("banana", 7)] &rarr; null
+&#9500;&#9472;&#9472;&#9472;&#9508;
+&#9474; <span class="highlight">2</span>  &#9474; &rarr; null  (empty bucket)
+&#9500;&#9472;&#9472;&#9472;&#9508;
+&#9474; <span class="highlight">3</span>  &#9474; &rarr; [("cherry", 1)] &rarr; [("date", 9)] &rarr; [("fig", 3)] &rarr; null
+&#9500;&#9472;&#9472;&#9472;&#9508;
+&#9474; <span class="highlight">4</span>  &#9474; &rarr; null
+&#9492;&#9472;&#9472;&#9472;&#9496;
+
+Load factor &alpha; = n/m = 6/5 = 1.2
+Average chain length &asymp; &alpha; = 1.2
+</div>
+
+<h4>Chaining Implementation</h4>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>ChainingHashMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class ChainingHashMap&lt;K, V&gt; {
+    private static class Node&lt;K, V&gt; {
+        K key; V value; Node&lt;K, V&gt; next;
+        Node(K k, V v, Node&lt;K, V&gt; n) { key = k; value = v; next = n; }
+    }
+    private Node&lt;K, V&gt;[] buckets;
+    private int size;
+    private static final double LOAD_THRESHOLD = 0.75;
+
+    @SuppressWarnings("unchecked")
+    ChainingHashMap(int capacity) {
+        buckets = new Node[capacity];
+    }
+
+    private int index(K key) {
+        return (key.hashCode() &amp; 0x7fffffff) % buckets.length;
+    }
+
+    void put(K key, V value) {
+        int idx = index(key);
+        for (Node&lt;K, V&gt; n = buckets[idx]; n != null; n = n.next) {
+            if (n.key.equals(key)) { n.value = value; return; }
+        }
+        buckets[idx] = new Node&lt;&gt;(key, value, buckets[idx]); // prepend
+        size++;
+        if ((double) size / buckets.length &gt; LOAD_THRESHOLD) resize();
+    }
+
+    V get(K key) {
+        int idx = index(key);
+        for (Node&lt;K, V&gt; n = buckets[idx]; n != null; n = n.next) {
+            if (n.key.equals(key)) return n.value;
+        }
+        return null;
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        Node&lt;K, V&gt;[] old = buckets;
+        buckets = new Node[old.length * 2];
+        size = 0;
+        for (Node&lt;K, V&gt; head : old)
+            for (Node&lt;K, V&gt; n = head; n != null; n = n.next)
+                put(n.key, n.value);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>chaining_hashmap.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">template &lt;typename K, typename V&gt;
+class ChainingHashMap {
+    struct Node { K key; V value; Node* next; };
+    std::vector&lt;Node*&gt; buckets;
+    size_t sz = 0;
+    static constexpr double LOAD_THRESHOLD = 0.75;
+
+    size_t index(const K&amp; key) const {
+        return std::hash&lt;K&gt;{}(key) % buckets.size();
+    }
+
+    void resize() {
+        auto old = std::move(buckets);
+        buckets.assign(old.size() * 2, nullptr);
+        sz = 0;
+        for (auto* head : old)
+            for (auto* n = head; n;) {
+                auto* next = n-&gt;next;
+                put(n-&gt;key, n-&gt;value);
+                delete n; n = next;
+            }
+    }
+
+public:
+    explicit ChainingHashMap(size_t cap = 16) : buckets(cap, nullptr) {}
+
+    void put(const K&amp; key, const V&amp; value) {
+        size_t idx = index(key);
+        for (auto* n = buckets[idx]; n; n = n-&gt;next)
+            if (n-&gt;key == key) { n-&gt;value = value; return; }
+        buckets[idx] = new Node{key, value, buckets[idx]};
+        ++sz;
+        if (static_cast&lt;double&gt;(sz) / buckets.size() &gt; LOAD_THRESHOLD) resize();
+    }
+
+    V* get(const K&amp; key) {
+        for (auto* n = buckets[index(key)]; n; n = n-&gt;next)
+            if (n-&gt;key == key) return &amp;n-&gt;value;
+        return nullptr;
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>chaining_hashmap.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class ChainingHashMap:
+    def __init__(self, capacity: int = 16):
+        self.buckets: list[list[tuple]] = [[] for _ in range(capacity)]
+        self.size = 0
+        self.LOAD_THRESHOLD = 0.75
+
+    def _index(self, key) -&gt; int:
+        return hash(key) % len(self.buckets)
+
+    def put(self, key, value) -&gt; None:
+        idx = self._index(key)
+        for i, (k, v) in enumerate(self.buckets[idx]):
+            if k == key:
+                self.buckets[idx][i] = (key, value)
+                return
+        self.buckets[idx].append((key, value))
+        self.size += 1
+        if self.size / len(self.buckets) &gt; self.LOAD_THRESHOLD:
+            self._resize()
+
+    def get(self, key):
+        for k, v in self.buckets[self._index(key)]:
+            if k == key:
+                return v
+        return None
+
+    def _resize(self) -&gt; None:
+        old = self.buckets
+        self.buckets = [[] for _ in range(len(old) * 2)]
+        self.size = 0
+        for chain in old:
+            for k, v in chain:
+                self.put(k, v)</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>chaining_hashmap.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
+struct ChainingHashMap&lt;K, V&gt; {
+    buckets: Vec&lt;Vec&lt;(K, V)&gt;&gt;,
+    size: usize,
+}
+
+impl&lt;K: Hash + Eq + Clone, V: Clone&gt; ChainingHashMap&lt;K, V&gt; {
+    fn new(capacity: usize) -&gt; Self {
+        Self { buckets: vec![Vec::new(); capacity], size: 0 }
+    }
+
+    fn index(&amp;self, key: &amp;K) -&gt; usize {
+        let mut hasher = DefaultHasher::new();
+        key.hash(&amp;mut hasher);
+        hasher.finish() as usize % self.buckets.len()
+    }
+
+    fn put(&amp;mut self, key: K, value: V) {
+        let idx = self.index(&amp;key);
+        for pair in &amp;mut self.buckets[idx] {
+            if pair.0 == key { pair.1 = value; return; }
+        }
+        self.buckets[idx].push((key, value));
+        self.size += 1;
+        if self.size * 4 &gt; self.buckets.len() * 3 { self.resize(); }
+    }
+
+    fn get(&amp;self, key: &amp;K) -&gt; Option&lt;&amp;V&gt; {
+        let idx = self.index(key);
+        self.buckets[idx].iter().find(|p| p.0 == *key).map(|p| &amp;p.1)
+    }
+
+    fn resize(&amp;mut self) {
+        let old = std::mem::replace(
+            &amp;mut self.buckets,
+            vec![Vec::new(); self.buckets.len() * 2],
+        );
+        self.size = 0;
+        for chain in old {
+            for (k, v) in chain { self.put(k, v); }
+        }
+    }
+}</div></div>
+</div>
+</div>
+
+<h3>Open Addressing (Linear Probing)</h3>
+<p>All entries live directly in the bucket array. On collision, probe the next slot until an empty one is found.</p>
+
+<div class="diagram" id="open-addressing-impl">
+Insert "apple"(hash=3), "banana"(hash=1), "cherry"(hash=3), "date"(hash=3):
+
+Step 1: put "apple" at index <span class="highlight">3</span>
+  [ _ , _ , _ , <span class="highlight">apple</span>, _ , _ , _ ]
+
+Step 2: put "banana" at index <span class="highlight">1</span>
+  [ _ , <span class="highlight">banana</span>, _ , apple, _ , _ , _ ]
+
+Step 3: "cherry" hashes to 3 &rarr; <span class="swap">occupied!</span> probe 4 &rarr; <span class="highlight">empty</span>
+  [ _ , banana, _ , apple, <span class="highlight">cherry</span>, _ , _ ]
+
+Step 4: "date" hashes to 3 &rarr; <span class="swap">occupied!</span> 4 &rarr; <span class="swap">occupied!</span> 5 &rarr; <span class="highlight">empty</span>
+  [ _ , banana, _ , apple, cherry, <span class="highlight">date</span>, _ ]
+
+Clustering problem: consecutive filled slots slow down probing!
+</div>
+
+<h4>Open Addressing Implementation</h4>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>OpenAddressingMap.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class OpenAddressingMap&lt;K, V&gt; {
+    private K[] keys;
+    private V[] values;
+    private boolean[] occupied;
+    private int size, capacity;
+
+    @SuppressWarnings("unchecked")
+    OpenAddressingMap(int cap) {
+        capacity = cap;
+        keys = (K[]) new Object[cap];
+        values = (V[]) new Object[cap];
+        occupied = new boolean[cap];
+    }
+
+    void put(K key, V value) {
+        if (size * 2 &gt;= capacity) resize();
+        int idx = (key.hashCode() &amp; 0x7fffffff) % capacity;
+        while (occupied[idx]) {
+            if (keys[idx].equals(key)) { values[idx] = value; return; }
+            idx = (idx + 1) % capacity; // linear probe
+        }
+        keys[idx] = key; values[idx] = value;
+        occupied[idx] = true; size++;
+    }
+
+    V get(K key) {
+        int idx = (key.hashCode() &amp; 0x7fffffff) % capacity;
+        while (occupied[idx]) {
+            if (keys[idx].equals(key)) return values[idx];
+            idx = (idx + 1) % capacity;
+        }
+        return null; // not found
+    }
+
+    @SuppressWarnings("unchecked")
+    private void resize() {
+        K[] oldK = keys; V[] oldV = values; boolean[] oldO = occupied;
+        capacity *= 2; size = 0;
+        keys = (K[]) new Object[capacity];
+        values = (V[]) new Object[capacity];
+        occupied = new boolean[capacity];
+        for (int i = 0; i &lt; oldK.length; i++)
+            if (oldO[i]) put(oldK[i], oldV[i]);
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>open_addressing.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">template &lt;typename K, typename V&gt;
+class OpenAddressingMap {
+    enum class State { EMPTY, OCCUPIED, DELETED };
+    struct Slot { K key; V value; State state = State::EMPTY; };
+    std::vector&lt;Slot&gt; table;
+    size_t sz = 0;
+
+    size_t probe(const K&amp; key) const {
+        size_t idx = std::hash&lt;K&gt;{}(key) % table.size();
+        while (table[idx].state == State::OCCUPIED &amp;&amp; table[idx].key != key)
+            idx = (idx + 1) % table.size();
+        return idx;
+    }
+
+public:
+    explicit OpenAddressingMap(size_t cap = 16) : table(cap) {}
+
+    void put(const K&amp; key, const V&amp; value) {
+        if (sz * 2 &gt;= table.size()) resize();
+        size_t idx = probe(key);
+        if (table[idx].state != State::OCCUPIED) ++sz;
+        table[idx] = {key, value, State::OCCUPIED};
+    }
+
+    V* get(const K&amp; key) {
+        size_t idx = probe(key);
+        if (table[idx].state == State::OCCUPIED) return &amp;table[idx].value;
+        return nullptr;
+    }
+
+    void resize() {
+        auto old = std::move(table);
+        table.assign(old.size() * 2, Slot{});
+        sz = 0;
+        for (auto&amp; s : old)
+            if (s.state == State::OCCUPIED) put(s.key, s.value);
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>open_addressing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class OpenAddressingMap:
+    EMPTY, DELETED = object(), object()
+
+    def __init__(self, capacity: int = 16):
+        self.keys = [self.EMPTY] * capacity
+        self.values = [None] * capacity
+        self.size = 0
+        self.capacity = capacity
+
+    def put(self, key, value) -&gt; None:
+        if self.size * 2 &gt;= self.capacity:
+            self._resize()
+        idx = hash(key) % self.capacity
+        while self.keys[idx] is not self.EMPTY:
+            if self.keys[idx] == key:
+                self.values[idx] = value
+                return
+            idx = (idx + 1) % self.capacity  # linear probe
+        self.keys[idx] = key
+        self.values[idx] = value
+        self.size += 1
+
+    def get(self, key):
+        idx = hash(key) % self.capacity
+        while self.keys[idx] is not self.EMPTY:
+            if self.keys[idx] == key:
+                return self.values[idx]
+            idx = (idx + 1) % self.capacity
+        return None
+
+    def _resize(self) -&gt; None:
+        old_keys, old_values = self.keys, self.values
+        self.capacity *= 2
+        self.keys = [self.EMPTY] * self.capacity
+        self.values = [None] * self.capacity
+        self.size = 0
+        for i, k in enumerate(old_keys):
+            if k is not self.EMPTY and k is not self.DELETED:
+                self.put(k, old_values[i])</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>open_addressing.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
+struct OpenAddressingMap&lt;K, V&gt; {
+    slots: Vec&lt;Option&lt;(K, V)&gt;&gt;,
+    size: usize,
+}
+
+impl&lt;K: Hash + Eq + Clone, V: Clone&gt; OpenAddressingMap&lt;K, V&gt; {
+    fn new(capacity: usize) -&gt; Self {
+        Self { slots: (0..capacity).map(|_| None).collect(), size: 0 }
+    }
+
+    fn hash_index(&amp;self, key: &amp;K) -&gt; usize {
+        let mut h = DefaultHasher::new();
+        key.hash(&amp;mut h);
+        h.finish() as usize % self.slots.len()
+    }
+
+    fn put(&amp;mut self, key: K, value: V) {
+        if self.size * 2 &gt;= self.slots.len() { self.resize(); }
+        let mut idx = self.hash_index(&amp;key);
+        loop {
+            match &amp;self.slots[idx] {
+                Some((k, _)) if *k == key =&gt; {
+                    self.slots[idx] = Some((key, value)); return;
+                }
+                None =&gt; {
+                    self.slots[idx] = Some((key, value));
+                    self.size += 1; return;
+                }
+                _ =&gt; idx = (idx + 1) % self.slots.len(),
+            }
+        }
+    }
+
+    fn get(&amp;self, key: &amp;K) -&gt; Option&lt;&amp;V&gt; {
+        let mut idx = self.hash_index(key);
+        loop {
+            match &amp;self.slots[idx] {
+                Some((k, v)) if k == key =&gt; return Some(v),
+                None =&gt; return None,
+                _ =&gt; idx = (idx + 1) % self.slots.len(),
+            }
+        }
+    }
+
+    fn resize(&amp;mut self) {
+        let old = std::mem::replace(
+            &amp;mut self.slots,
+            (0..self.slots.len() * 2).map(|_| None).collect(),
+        );
+        self.size = 0;
+        for slot in old.into_iter().flatten() {
+            self.put(slot.0, slot.1);
+        }
+    }
+}</div></div>
+</div>
+</div>
+
+<h3>Chaining vs Open Addressing Comparison</h3>
+<table>
+<thead><tr><th>Property</th><th>Chaining</th><th>Open Addressing</th></tr></thead>
+<tbody>
+<tr><td>Load factor</td><td>Can exceed 1.0</td><td>Must stay below 1.0 (ideally &lt; 0.7)</td></tr>
+<tr><td>Cache performance</td><td><span class="badge badge-red">Poor</span> -- pointer chasing</td><td><span class="badge badge-green">Good</span> -- contiguous memory</td></tr>
+<tr><td>Deletion</td><td><span class="badge badge-green">Easy</span> -- remove from list</td><td><span class="badge badge-yellow">Tricky</span> -- needs tombstone markers</td></tr>
+<tr><td>Clustering</td><td>No clustering</td><td>Primary/secondary clustering</td></tr>
+<tr><td>Memory overhead</td><td>Pointers per node</td><td>Empty slots (wasted space)</td></tr>
+<tr><td>Used by</td><td>Java HashMap, Go map</td><td>Python dict, Rust HashMap</td></tr>
+</tbody>
+</table>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Modern CPUs strongly favour cache-friendly data structures. Open addressing with linear probing often outperforms chaining in practice despite worse theoretical clustering, because sequential memory access is much faster than following linked-list pointers scattered in memory.
 </div>
 </div>
 
@@ -620,6 +1200,320 @@ Each element is visited at most twice: once as a potential start, and at most on
 </div>
 </div>
 
+<!-- LRU Cache -->
+<div class="card" id="lru-cache">
+<h2><span class="icon">&#128451;</span> LRU Cache</h2>
+<p>Design a data structure that supports <code>get(key)</code> and <code>put(key, value)</code> in <strong>O(1)</strong> time, evicting the <strong>Least Recently Used</strong> item when the cache reaches capacity. This is LeetCode 146 and a top interview question.</p>
+
+<h3>Strategy: HashMap + Doubly Linked List</h3>
+<p>Combine two data structures for O(1) operations:</p>
+<ul class="objectives">
+<li><strong>HashMap</strong> maps each key to its node in the linked list &rarr; O(1) lookup</li>
+<li><strong>Doubly Linked List</strong> maintains access order &rarr; O(1) move-to-front and remove-last</li>
+<li>Most recently used items sit at the <strong>head</strong>; least recently used at the <strong>tail</strong></li>
+<li>On <code>get</code>: move accessed node to front</li>
+<li>On <code>put</code>: insert at front; if over capacity, remove tail node</li>
+</ul>
+
+<div class="diagram">
+Capacity = 3
+
+put(1,A)   Head &harr; <span class="highlight">[1:A]</span> &harr; Tail
+put(2,B)   Head &harr; <span class="highlight">[2:B]</span> &harr; [1:A] &harr; Tail
+put(3,C)   Head &harr; <span class="highlight">[3:C]</span> &harr; [2:B] &harr; [1:A] &harr; Tail
+get(1)     Head &harr; <span class="highlight">[1:A]</span> &harr; [3:C] &harr; [2:B] &harr; Tail  (moved to front)
+put(4,D)   Head &harr; <span class="highlight">[4:D]</span> &harr; [1:A] &harr; [3:C] &harr; Tail  (<span class="swap">[2:B] evicted!</span>)
+
+HashMap: {1 &rarr; node_1, 3 &rarr; node_3, 4 &rarr; node_4}
+</div>
+
+<h3>Implementation</h3>
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="python">Python</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="java">
+<div class="code-header"><span>LRUCache.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="java">class LRUCache {
+    private static class Node {
+        int key, value;
+        Node prev, next;
+        Node(int k, int v) { key = k; value = v; }
+    }
+
+    private final int capacity;
+    private final Map&lt;Integer, Node&gt; map = new HashMap&lt;&gt;();
+    private final Node head = new Node(0, 0); // sentinel
+    private final Node tail = new Node(0, 0); // sentinel
+
+    LRUCache(int capacity) {
+        this.capacity = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    int get(int key) {
+        if (!map.containsKey(key)) return -1;
+        Node node = map.get(key);
+        remove(node);
+        insertAfterHead(node);
+        return node.value;
+    }
+
+    void put(int key, int value) {
+        if (map.containsKey(key)) {
+            Node node = map.get(key);
+            node.value = value;
+            remove(node);
+            insertAfterHead(node);
+        } else {
+            if (map.size() == capacity) {
+                Node lru = tail.prev; // least recently used
+                remove(lru);
+                map.remove(lru.key);
+            }
+            Node node = new Node(key, value);
+            insertAfterHead(node);
+            map.put(key, node);
+        }
+    }
+
+    private void remove(Node n) {
+        n.prev.next = n.next;
+        n.next.prev = n.prev;
+    }
+
+    private void insertAfterHead(Node n) {
+        n.next = head.next;
+        n.prev = head;
+        head.next.prev = n;
+        head.next = n;
+    }
+}</div></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>lru_cache.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="cpp">class LRUCache {
+    struct Node {
+        int key, value;
+        Node* prev; Node* next;
+    };
+
+    int capacity;
+    std::unordered_map&lt;int, Node*&gt; cache;
+    Node* head; // sentinel
+    Node* tail; // sentinel
+
+    void remove(Node* n) {
+        n-&gt;prev-&gt;next = n-&gt;next;
+        n-&gt;next-&gt;prev = n-&gt;prev;
+    }
+
+    void push_front(Node* n) {
+        n-&gt;next = head-&gt;next;
+        n-&gt;prev = head;
+        head-&gt;next-&gt;prev = n;
+        head-&gt;next = n;
+    }
+
+public:
+    LRUCache(int cap) : capacity(cap) {
+        head = new Node{0, 0, nullptr, nullptr};
+        tail = new Node{0, 0, nullptr, nullptr};
+        head-&gt;next = tail;
+        tail-&gt;prev = head;
+    }
+
+    int get(int key) {
+        auto it = cache.find(key);
+        if (it == cache.end()) return -1;
+        Node* node = it-&gt;second;
+        remove(node);
+        push_front(node);
+        return node-&gt;value;
+    }
+
+    void put(int key, int value) {
+        if (auto it = cache.find(key); it != cache.end()) {
+            Node* node = it-&gt;second;
+            node-&gt;value = value;
+            remove(node);
+            push_front(node);
+        } else {
+            if ((int)cache.size() == capacity) {
+                Node* lru = tail-&gt;prev;
+                remove(lru);
+                cache.erase(lru-&gt;key);
+                delete lru;
+            }
+            Node* node = new Node{key, value, nullptr, nullptr};
+            push_front(node);
+            cache[key] = node;
+        }
+    }
+};</div></div>
+</div>
+<div class="code-panel" data-lang="python">
+<div class="code-header"><span>lru_cache.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="python">class Node:
+    __slots__ = ('key', 'value', 'prev', 'next')
+    def __init__(self, key: int = 0, value: int = 0):
+        self.key = key
+        self.value = value
+        self.prev: Node | None = None
+        self.next: Node | None = None
+
+class LRUCache:
+    def __init__(self, capacity: int):
+        self.capacity = capacity
+        self.cache: dict[int, Node] = {}
+        # Sentinel nodes simplify edge cases
+        self.head = Node()
+        self.tail = Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node: Node) -&gt; None:
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _push_front(self, node: Node) -&gt; None:
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key: int) -&gt; int:
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self._remove(node)
+        self._push_front(node)
+        return node.value
+
+    def put(self, key: int, value: int) -&gt; None:
+        if key in self.cache:
+            node = self.cache[key]
+            node.value = value
+            self._remove(node)
+            self._push_front(node)
+        else:
+            if len(self.cache) == self.capacity:
+                lru = self.tail.prev
+                self._remove(lru)
+                del self.cache[lru.key]
+            node = Node(key, value)
+            self._push_front(node)
+            self.cache[key] = node</div></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>lru_cache.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><div class="code-text" data-code="rust">use std::collections::HashMap;
+use std::ptr;
+
+struct Node {
+    key: i32,
+    value: i32,
+    prev: *mut Node,
+    next: *mut Node,
+}
+
+struct LRUCache {
+    capacity: usize,
+    map: HashMap&lt;i32, *mut Node&gt;,
+    head: *mut Node, // sentinel
+    tail: *mut Node, // sentinel
+}
+
+impl LRUCache {
+    fn new(capacity: usize) -&gt; Self {
+        unsafe {
+            let head = Box::into_raw(Box::new(Node {
+                key: 0, value: 0, prev: ptr::null_mut(), next: ptr::null_mut(),
+            }));
+            let tail = Box::into_raw(Box::new(Node {
+                key: 0, value: 0, prev: head, next: ptr::null_mut(),
+            }));
+            (*head).next = tail;
+            LRUCache { capacity, map: HashMap::new(), head, tail }
+        }
+    }
+
+    fn remove(&amp;self, node: *mut Node) {
+        unsafe {
+            (*(*node).prev).next = (*node).next;
+            (*(*node).next).prev = (*node).prev;
+        }
+    }
+
+    fn push_front(&amp;self, node: *mut Node) {
+        unsafe {
+            (*node).next = (*self.head).next;
+            (*node).prev = self.head;
+            (*(*self.head).next).prev = node;
+            (*self.head).next = node;
+        }
+    }
+
+    fn get(&amp;mut self, key: i32) -&gt; i32 {
+        if let Some(&amp;node) = self.map.get(&amp;key) {
+            self.remove(node);
+            self.push_front(node);
+            unsafe { (*node).value }
+        } else {
+            -1
+        }
+    }
+
+    fn put(&amp;mut self, key: i32, value: i32) {
+        if let Some(&amp;node) = self.map.get(&amp;key) {
+            unsafe { (*node).value = value; }
+            self.remove(node);
+            self.push_front(node);
+        } else {
+            if self.map.len() == self.capacity {
+                let lru = unsafe { (*self.tail).prev };
+                self.remove(lru);
+                let lru_key = unsafe { (*lru).key };
+                self.map.remove(&amp;lru_key);
+                unsafe { drop(Box::from_raw(lru)); }
+            }
+            let node = Box::into_raw(Box::new(Node {
+                key, value, prev: ptr::null_mut(), next: ptr::null_mut(),
+            }));
+            self.push_front(node);
+            self.map.insert(key, node);
+        }
+    }
+}</div></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+The sentinel nodes (dummy head and tail) eliminate all null-pointer edge cases. Every real node always has valid <code>prev</code> and <code>next</code> pointers, so <code>remove()</code> and <code>insertAfterHead()</code> never need special-case logic. This is a classic technique for simplifying doubly linked list operations.
+</div>
+
+<div class="warning-box">
+<div class="label">Interview Tip</div>
+LRU Cache is one of the most frequently asked design questions. Interviewers expect you to (1) identify the HashMap + doubly linked list approach, (2) explain why both are needed for O(1), and (3) implement it cleanly with sentinel nodes. Practice until you can write it from memory.
+</div>
+
+<h3>Complexity</h3>
+<table>
+<thead><tr><th>Operation</th><th>Time</th><th>Why</th></tr></thead>
+<tbody>
+<tr><td>get(key)</td><td><span class="badge badge-green">O(1)</span></td><td>HashMap lookup + linked list move</td></tr>
+<tr><td>put(key, value)</td><td><span class="badge badge-green">O(1)</span></td><td>HashMap insert + linked list insert/remove</td></tr>
+<tr><td>Eviction</td><td><span class="badge badge-green">O(1)</span></td><td>Remove tail.prev + delete from HashMap</td></tr>
+<tr><td>Space</td><td>O(capacity)</td><td>HashMap + linked list nodes</td></tr>
+</tbody>
+</table>
+</div>
+
 <!-- Comparison Table -->
 <div class="card" id="comparison">
 <h2><span class="icon">&#128202;</span> Complexity Summary</h2>
@@ -633,6 +1527,7 @@ Each element is visited at most twice: once as a potential start, and at most on
 <tr><td>Group Anagrams</td><td><span class="badge badge-blue">O(n*k log k)</span></td><td>O(n*k)</td><td>Sorted string as key</td></tr>
 <tr><td>Subarray Sum = k</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>Prefix sum + count map</td></tr>
 <tr><td>Longest Consecutive</td><td><span class="badge badge-green">O(n)</span></td><td>O(n)</td><td>HashSet + sequence start</td></tr>
+<tr><td>LRU Cache</td><td><span class="badge badge-green">O(1)</span></td><td>O(capacity)</td><td>HashMap + doubly linked list</td></tr>
 </tbody>
 </table>
 </div>
@@ -660,6 +1555,14 @@ Each element is visited at most twice: once as a potential start, and at most on
 <span class="difficulty badge badge-yellow">Medium</span>
 <strong>Top K Frequent Elements</strong> -- LeetCode 347. Combine frequency count with heap or bucket sort.
 </div>
+<div class="practice-item">
+<span class="difficulty badge badge-yellow">Medium</span>
+<strong>LRU Cache</strong> -- LeetCode 146. HashMap + doubly linked list for O(1) get and put.
+</div>
+<div class="practice-item">
+<span class="difficulty badge badge-red">Hard</span>
+<strong>LFU Cache</strong> -- LeetCode 460. Extension of LRU with frequency-based eviction.
+</div>
 </div>
 
 <!-- Summary -->
@@ -674,6 +1577,8 @@ Each element is visited at most twice: once as a potential start, and at most on
 <tr><td>Prefix Sum + Map</td><td>Count subarrays with given sum</td><td>Subarray Sum = k</td></tr>
 <tr><td>HashSet membership</td><td>O(1) existence check</td><td>Longest Consecutive</td></tr>
 <tr><td>Frequency Map</td><td>Count occurrences</td><td>Top K Frequent</td></tr>
+<tr><td>HashMap + Linked List</td><td>O(1) ordered access with fast lookup</td><td>LRU Cache</td></tr>
+<tr><td>Custom Hash Function</td><td>Need domain-specific key distribution</td><td>Rolling hash, FNV-1a</td></tr>
 </tbody>
 </table>
 
