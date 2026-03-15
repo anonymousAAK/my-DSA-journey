@@ -357,18 +357,9 @@ if __name__ == "__main__":
 
     # --- Digit DP: count without digit 4 -----------------------------------
     print("\n--- Digit DP: Numbers without digit 4 ---")
-    assert count_without_digit_4(10) == 8     # 1-10 except 4 = 8
-    assert count_without_digit_4(50) == 40    # 45 numbers minus 4,14,24,34,40,41,42,43,44,45,46,47,48,49
-    # Actually let's verify: 1..50, total=50, with 4: 4,14,24,34,40,41,42,43,44,45,46,47,48,49 = 14
-    # So 50-14 = 36... let me recalculate
-    # 1-digit: 1..9 without 4 = 8
-    # 2-digit 10..50: tens digit can be 1,2,3,5 (not 4)
-    #   tens=1: 10-19, units without 4 = 9 valid (10,11,12,13,15,16,17,18,19)
-    #   tens=2: same = 9
-    #   tens=3: same = 9
-    #   tens=5: 50 only (tight), units=0 which is not 4 = 1
-    # total 2-digit = 9+9+9+1 = 28
-    # total = 8 + 28 = 36
+    assert count_without_digit_4(10) == 9     # 1-10 except 4 = 9 numbers
+    # 1..50: numbers containing digit 4: {4,14,24,34,40..49} = 14 numbers
+    # 50 - 14 = 36
     result_50 = count_without_digit_4(50)
     print(f"count_without_digit_4(50) = {result_50}")
     assert result_50 == 36
