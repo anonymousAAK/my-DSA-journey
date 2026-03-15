@@ -37,12 +37,11 @@ Output:
 
 */
 
-//Example code 2: Updation part removed
-
+// Example code 2: Update part removed from for(...) - placed inside loop body
 public static void main(String[] args) {
-      for(int i = 0; i < 3; ) {
+      for(int i = 0; i < 3; ) {         // no update in for(...) header
           System.out.println(i);
-          i++;
+          i++;                           // update done manually inside the body
       }
     }
 

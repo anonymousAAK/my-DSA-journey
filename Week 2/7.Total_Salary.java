@@ -1,3 +1,31 @@
+/*
+ * WEEK 2 - CONTROL FLOW
+ * Topic: Total Salary Calculation using If-Else
+ * File: 7.Total_Salary.java
+ *
+ * CONCEPT:
+ * This file demonstrates using if-else-if chains to compute a total salary
+ * based on a basic salary and a grade. Different grades determine different
+ * allowance values. The program also uses Math.round() for rounding.
+ *
+ * KEY POINTS:
+ * - HRA, DA, and PF are calculated as percentages of basic salary
+ * - Allowance depends on grade: A=1700, B=1500, C or others=1300
+ * - totalSalary = basic + hra + da + allowance - pf
+ * - Math.round() rounds a double to the nearest long integer
+ * - Casting with (int) truncates the long to int after rounding
+ *
+ * APPROACH:
+ * 1. Read basic salary and grade from input
+ * 2. Calculate HRA (20%), DA (50%), and PF (11%) from basic
+ * 3. Use if-else-if to determine allowance based on grade
+ * 4. Compute total salary from all components
+ * 5. Round off and print the integer result
+ *
+ * Time Complexity: O(1)
+ * Space Complexity: O(1)
+ */
+
 /*Total Salary
 
 Write a program to calculate the total salary of a person. The user has to enter the basic salary (an integer) and the grade (an uppercase character), 
@@ -39,11 +67,12 @@ import java.util.Scanner;
 public class Solution {
     public static void main(String[] args) {
       Scanner s = new Scanner(System.in);
-      int basic = s.nextInt();
-      char grade = s.next().charAt(0);
-      double hra = 0.2 * basic;
-      double da = 0.5 * basic;
+      int basic = s.nextInt();           // Read basic salary
+      char grade = s.next().charAt(0);   // Read grade character (A, B, or C)
+      double hra = 0.2 * basic;          // House Rent Allowance = 20% of basic
+      double da = 0.5 * basic;           // Dearness Allowance = 50% of basic
       int allowance;
+      // Determine allowance based on grade
       if(grade == 'A') {
           allowance = 1700;
         }
@@ -53,7 +82,8 @@ public class Solution {
       else {
           allowance = 1300;
       }
-      double pf = 0.11 * basic;
+      double pf = 0.11 * basic;            // Provident Fund = 11% of basic
+      // Total = basic + hra + da + allowance - pf
       double totalSalary = basic + hra + da + allowance - pf;
       int ans = (int) Math.round(totalSalary); 
       //An internal function implemented in the Math class(no need to import as it is available as default) to round off the decimal values

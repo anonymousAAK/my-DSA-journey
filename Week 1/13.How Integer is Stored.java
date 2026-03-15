@@ -1,4 +1,27 @@
 /*
+ * WEEK 1 - JAVA FUNDAMENTALS
+ * Topic: How Integers are Stored in Memory
+ * File: 13.How Integer is Stored.java
+ *
+ * CONCEPT:
+ * Explains the binary representation of integers in Java. Positive numbers
+ * are stored as their direct binary equivalent, while negative numbers use
+ * Two's Complement representation. This is fundamental to understanding
+ * integer overflow and bitwise operations.
+ *
+ * KEY POINTS:
+ * - int is a signed 32-bit type (range: -2,147,483,648 to 2,147,483,647)
+ * - Positive integers: directly converted to binary
+ * - Negative integers: stored as Two's Complement
+ * - Two's Complement steps: (1) get binary of absolute value,
+ *   (2) flip all bits (1's complement), (3) add 1
+ * - Two's Complement has only ONE representation for zero (unlike sign-magnitude)
+ * - Subtraction can be performed using addition logic with Two's Complement
+ *
+ * Space Complexity: int always uses exactly 4 bytes (32 bits) regardless of value
+ */
+
+/*
 a) How are integers stored ?
 
 
