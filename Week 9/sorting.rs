@@ -389,7 +389,7 @@ fn main() {
 
     // --- Quickselect ---
     println!("\n--- Quickselect (Kth Smallest) ---");
-    let mut arr = vec![3, 2, 1, 5, 6, 4];
+    let arr = vec![3, 2, 1, 5, 6, 4];
     let k2 = quickselect(&mut arr.clone(), 1); // 2nd smallest (0-indexed)
     assert_eq!(k2, 2);
     println!("2nd smallest in [3,2,1,5,6,4] = {}", k2);

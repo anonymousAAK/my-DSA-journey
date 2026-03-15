@@ -126,7 +126,7 @@ fn kadanes_algorithm(arr: &[i32]) -> (i64, usize, usize) {
     let mut temp_start = 0usize;
 
     for i in 1..arr.len() {
-        if current_sum + arr[i] as i64 < arr[i] as i64 {
+        if current_sum + (arr[i] as i64) < arr[i] as i64 {
             // Starting fresh from index i is better.
             current_sum = arr[i] as i64;
             temp_start = i;

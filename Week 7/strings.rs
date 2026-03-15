@@ -172,27 +172,6 @@ fn run_length_encode(s: &str) -> String {
 /// - Space: O(n)
 fn run_length_decode(s: &str) -> String {
     let mut result = String::new();
-    let mut chars = s.chars();
-
-    while let Some(ch) = chars.next() {
-        // Collect all consecutive digit characters for multi-digit counts.
-        let mut count_str = String::new();
-        // We need to peek — Rust iterators don't have peek built in here,
-        // so we use a Peekable wrapper. For simplicity, we assume single-digit
-        // counts or collect digits manually.
-        // Actually, let's use the Peekable approach:
-        // (But since we already consumed from `chars`, let's collect remaining
-        //  and re-parse.)
-        // Simpler approach: iterate with index on bytes (ASCII assumption).
-        result.push(ch);
-        // The next character(s) should be digits.
-        let _ = count_str; // We'll re-approach below.
-        // Let's use a cleaner method:
-        break; // Break out — we'll implement differently.
-    }
-
-    // Cleaner implementation using peekable on chars.
-    result.clear();
     let mut iter = s.chars().peekable();
     while let Some(ch) = iter.next() {
         if ch.is_alphabetic() {
