@@ -1,0 +1,1343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 29: System Design for Engineers | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}.sidebar nav a.sub{padding-left:40px;font-size:.82rem}.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}.hero .meta .dot{width:8px;height:8px;border-radius:50%}.hero .meta .dot.medium{background:var(--warning)}.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}.card.visible{opacity:1;transform:translateY(0)}.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}.card h2 .icon{font-size:1.3rem}.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}.code-panel{display:none;position:relative}.code-panel.active{display:block}.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}.code-header span{font-size:.75rem;color:var(--text-secondary)}.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}.copy-btn:hover{background:var(--accent-blue);color:#fff}.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}.line-numbers span{display:block;padding:0 12px 0 16px}.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}td{padding:10px 12px;border-bottom:1px solid var(--card-border)}tr:hover td{background:rgba(88,166,255,.03)}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}.diagram .highlight{color:var(--accent-green);font-weight:700}.diagram .swap{color:var(--danger);font-weight:700}.diagram .sorted{color:var(--accent-blue)}.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 29 of 30</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#consistent-hashing">Consistent Hashing</a>
+<a href="#lru-cache">LRU Cache</a>
+<a href="#rate-limiter" class="sub">Rate Limiter</a>
+<a href="#trie-autocomplete">Trie Autocomplete</a>
+<a href="#merkle-tree">Merkle Tree</a>
+<a href="#comparison">Complexity Table</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 29</span>
+<h1>System Design for Engineers</h1>
+<p class="subtitle">Bridge the gap between algorithms and real-world systems. Implement consistent hashing, LRU caches, rate limiters, trie-based autocomplete, and Merkle trees &mdash; core building blocks of distributed systems.</p>
+<div class="meta">
+<span><span class="dot hard"></span> Advanced</span>
+<span>~15 hours estimated</span>
+<span>5 major topics</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Implement consistent hashing with virtual nodes for load balancing</li>
+<li>Build an LRU Cache using a HashMap and doubly linked list</li>
+<li>Design rate limiters using Token Bucket and Sliding Window algorithms</li>
+<li>Create a trie-based autocomplete system with ranking</li>
+<li>Understand Merkle trees for data integrity verification</li>
+</ul>
+</div>
+
+<div class="card" id="consistent-hashing">
+<h2><span class="icon">&#128280;</span> Consistent Hashing</h2>
+<p>Consistent hashing distributes data across nodes in a way that minimizes redistribution when nodes are added or removed. Nodes are placed on a virtual ring using hash values. Each key is assigned to the first node encountered clockwise from its hash position.</p>
+
+<h3>Why Not Simple Modular Hashing?</h3>
+<p>With <code>hash(key) % N</code>, changing N (adding/removing a server) remaps almost every key. Consistent hashing ensures only <code>K/N</code> keys need to move on average (K = total keys, N = nodes).</p>
+
+<div class="diagram">
+Hash Ring (0 to 2^32 - 1):
+
+          Node A (hash=100)
+         /
+    ----&#x25CB;----
+   /    |     \
+  /     |      \
+ &#x25CB;      |       &#x25CB; Node B (hash=300)
+ |      |       |
+ Node D |       |
+ (hash=800)     |
+  \     |      /
+   \    |     /
+    ----&#x25CB;----
+         \
+          Node C (hash=600)
+
+Key "user:42" (hash=<span class="highlight">250</span>) &rarr; maps to <span class="highlight">Node B</span> (next clockwise)
+Key "user:99" (hash=<span class="highlight">650</span>) &rarr; maps to <span class="highlight">Node D</span> (next clockwise)
+</div>
+
+<h3>Virtual Nodes</h3>
+<p>To achieve even distribution, each physical node gets multiple <strong>virtual nodes</strong> (replicas) on the ring. Typically 100-200 virtual nodes per physical node.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>consistent_hashing.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">import hashlib
+from bisect import bisect_right
+
+class ConsistentHash:
+    def __init__(self, nodes=None, replicas=150):
+        self.replicas = replicas
+        self.ring = {}       # hash -> node
+        self.sorted_keys = []
+        if nodes:
+            for node in nodes:
+                self.add_node(node)
+
+    def _hash(self, key):
+        return int(hashlib.md5(key.encode()).hexdigest(), 16)
+
+    def add_node(self, node):
+        for i in range(self.replicas):
+            virtual_key = f"{node}#vn{i}"
+            h = self._hash(virtual_key)
+            self.ring[h] = node
+            self.sorted_keys.append(h)
+        self.sorted_keys.sort()
+
+    def remove_node(self, node):
+        for i in range(self.replicas):
+            virtual_key = f"{node}#vn{i}"
+            h = self._hash(virtual_key)
+            del self.ring[h]
+            self.sorted_keys.remove(h)
+
+    def get_node(self, key):
+        if not self.ring:
+            return None
+        h = self._hash(key)
+        idx = bisect_right(self.sorted_keys, h)
+        if idx == len(self.sorted_keys):
+            idx = 0  # wrap around the ring
+        return self.ring[self.sorted_keys[idx]]
+
+# Usage
+ch = ConsistentHash(["ServerA", "ServerB", "ServerC"])
+print(ch.get_node("user:42"))   # Maps to one server
+print(ch.get_node("session:99")) # Maps to another
+ch.add_node("ServerD")  # Only ~25% of keys remap</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>ConsistentHash.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.security.MessageDigest;
+import java.util.TreeMap;
+
+public class ConsistentHash {
+    private final TreeMap&lt;Long, String&gt; ring = new TreeMap&lt;&gt;();
+    private final int replicas;
+
+    public ConsistentHash(int replicas) {
+        this.replicas = replicas;
+    }
+
+    private long hash(String key) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            byte[] digest = md.digest(key.getBytes());
+            return ((long)(digest[0] &amp; 0xFF) &lt;&lt; 24)
+                 | ((long)(digest[1] &amp; 0xFF) &lt;&lt; 16)
+                 | ((long)(digest[2] &amp; 0xFF) &lt;&lt; 8)
+                 | (digest[3] &amp; 0xFF);
+        } catch (Exception e) { throw new RuntimeException(e); }
+    }
+
+    public void addNode(String node) {
+        for (int i = 0; i &lt; replicas; i++) {
+            long h = hash(node + "#vn" + i);
+            ring.put(h, node);
+        }
+    }
+
+    public void removeNode(String node) {
+        for (int i = 0; i &lt; replicas; i++) {
+            long h = hash(node + "#vn" + i);
+            ring.remove(h);
+        }
+    }
+
+    public String getNode(String key) {
+        if (ring.isEmpty()) return null;
+        long h = hash(key);
+        var entry = ring.ceilingEntry(h);
+        return (entry != null) ? entry.getValue() : ring.firstEntry().getValue();
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>consistent_hash.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;map&gt;
+#include &lt;string&gt;
+#include &lt;functional&gt;
+
+class ConsistentHash {
+    std::map&lt;size_t, std::string&gt; ring;
+    int replicas;
+    std::hash&lt;std::string&gt; hasher;
+
+public:
+    ConsistentHash(int replicas = 150) : replicas(replicas) {}
+
+    void addNode(const std::string&amp; node) {
+        for (int i = 0; i &lt; replicas; i++) {
+            size_t h = hasher(node + "#vn" + std::to_string(i));
+            ring[h] = node;
+        }
+    }
+
+    void removeNode(const std::string&amp; node) {
+        for (int i = 0; i &lt; replicas; i++) {
+            size_t h = hasher(node + "#vn" + std::to_string(i));
+            ring.erase(h);
+        }
+    }
+
+    std::string getNode(const std::string&amp; key) {
+        if (ring.empty()) return "";
+        size_t h = hasher(key);
+        auto it = ring.lower_bound(h);
+        if (it == ring.end()) it = ring.begin();
+        return it-&gt;second;
+    }
+};</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>consistent_hash.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::collections::BTreeMap;
+use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
+struct ConsistentHash {
+    ring: BTreeMap&lt;u64, String&gt;,
+    replicas: usize,
+}
+
+impl ConsistentHash {
+    fn new(replicas: usize) -&gt; Self {
+        ConsistentHash { ring: BTreeMap::new(), replicas }
+    }
+
+    fn hash_key(key: &amp;str) -&gt; u64 {
+        let mut hasher = DefaultHasher::new();
+        key.hash(&amp;mut hasher);
+        hasher.finish()
+    }
+
+    fn add_node(&amp;mut self, node: &amp;str) {
+        for i in 0..self.replicas {
+            let vkey = format!("{}#vn{}", node, i);
+            let h = Self::hash_key(&amp;vkey);
+            self.ring.insert(h, node.to_string());
+        }
+    }
+
+    fn remove_node(&amp;mut self, node: &amp;str) {
+        for i in 0..self.replicas {
+            let vkey = format!("{}#vn{}", node, i);
+            let h = Self::hash_key(&amp;vkey);
+            self.ring.remove(&amp;h);
+        }
+    }
+
+    fn get_node(&amp;self, key: &amp;str) -&gt; Option&lt;&amp;str&gt; {
+        if self.ring.is_empty() { return None; }
+        let h = Self::hash_key(key);
+        let node = self.ring.range(h..).next()
+            .or_else(|| self.ring.iter().next())
+            .map(|(_, v)| v.as_str());
+        node
+    }
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Key Insight</div>
+Consistent hashing is used in Amazon DynamoDB, Apache Cassandra, and CDN load balancers. When a node fails, only its keys (roughly 1/N of total) need to be redistributed.
+</div>
+</div>
+
+<div class="card" id="lru-cache">
+<h2><span class="icon">&#128451;</span> LRU Cache</h2>
+<p>An LRU (Least Recently Used) Cache evicts the least recently accessed item when the cache is full. It requires <strong>O(1)</strong> for both <code>get</code> and <code>put</code> operations, achieved by combining a <strong>HashMap</strong> with a <strong>doubly linked list</strong>.</p>
+
+<h3>How It Works</h3>
+<div class="diagram">
+HashMap: key &rarr; Node pointer
+Doubly Linked List: Most Recent &larr;&rarr; ... &larr;&rarr; Least Recent
+
+<span class="highlight">get(key)</span>:
+  1. Look up node in HashMap &rarr; O(1)
+  2. Move node to front of list &rarr; O(1)
+  3. Return value
+
+<span class="highlight">put(key, value)</span>:
+  1. If key exists: update value, move to front
+  2. If full: remove tail node, delete from HashMap
+  3. Insert new node at front, add to HashMap
+
+Example (capacity=3):
+  put(1,A) &rarr; [<span class="sorted">1:A</span>]
+  put(2,B) &rarr; [<span class="sorted">2:B</span>, 1:A]
+  put(3,C) &rarr; [<span class="sorted">3:C</span>, 2:B, 1:A]
+  get(1)   &rarr; [<span class="sorted">1:A</span>, 3:C, 2:B]     (moved 1 to front)
+  put(4,D) &rarr; [<span class="sorted">4:D</span>, 1:A, 3:C]     (<span class="swap">evicted 2:B</span>)
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>lru_cache.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">class Node:
+    def __init__(self, key=0, val=0):
+        self.key = key
+        self.val = val
+        self.prev = None
+        self.next = None
+
+class LRUCache:
+    def __init__(self, capacity):
+        self.cap = capacity
+        self.cache = {}  # key -> Node
+        # Sentinel nodes to avoid null checks
+        self.head = Node()
+        self.tail = Node()
+        self.head.next = self.tail
+        self.tail.prev = self.head
+
+    def _remove(self, node):
+        node.prev.next = node.next
+        node.next.prev = node.prev
+
+    def _add_front(self, node):
+        node.next = self.head.next
+        node.prev = self.head
+        self.head.next.prev = node
+        self.head.next = node
+
+    def get(self, key):
+        if key not in self.cache:
+            return -1
+        node = self.cache[key]
+        self._remove(node)
+        self._add_front(node)
+        return node.val
+
+    def put(self, key, value):
+        if key in self.cache:
+            self._remove(self.cache[key])
+        node = Node(key, value)
+        self._add_front(node)
+        self.cache[key] = node
+        if len(self.cache) > self.cap:
+            lru = self.tail.prev
+            self._remove(lru)
+            del self.cache[lru.key]
+
+# Usage
+cache = LRUCache(2)
+cache.put(1, 1)
+cache.put(2, 2)
+print(cache.get(1))   # 1
+cache.put(3, 3)        # evicts key 2
+print(cache.get(2))   # -1</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>LRUCache.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.util.HashMap;
+
+public class LRUCache {
+    class Node {
+        int key, val;
+        Node prev, next;
+        Node(int k, int v) { key = k; val = v; }
+    }
+
+    private int capacity;
+    private HashMap&lt;Integer, Node&gt; cache = new HashMap&lt;&gt;();
+    private Node head = new Node(0, 0);
+    private Node tail = new Node(0, 0);
+
+    public LRUCache(int capacity) {
+        this.capacity = capacity;
+        head.next = tail;
+        tail.prev = head;
+    }
+
+    private void remove(Node node) {
+        node.prev.next = node.next;
+        node.next.prev = node.prev;
+    }
+
+    private void addFront(Node node) {
+        node.next = head.next;
+        node.prev = head;
+        head.next.prev = node;
+        head.next = node;
+    }
+
+    public int get(int key) {
+        if (!cache.containsKey(key)) return -1;
+        Node node = cache.get(key);
+        remove(node);
+        addFront(node);
+        return node.val;
+    }
+
+    public void put(int key, int value) {
+        if (cache.containsKey(key)) remove(cache.get(key));
+        Node node = new Node(key, value);
+        addFront(node);
+        cache.put(key, node);
+        if (cache.size() &gt; capacity) {
+            Node lru = tail.prev;
+            remove(lru);
+            cache.remove(lru.key);
+        }
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>lru_cache.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;unordered_map&gt;
+#include &lt;list&gt;
+
+class LRUCache {
+    int capacity;
+    std::list&lt;std::pair&lt;int,int&gt;&gt; dll;  // {key, value}
+    std::unordered_map&lt;int, std::list&lt;std::pair&lt;int,int&gt;&gt;::iterator&gt; cache;
+
+public:
+    LRUCache(int cap) : capacity(cap) {}
+
+    int get(int key) {
+        auto it = cache.find(key);
+        if (it == cache.end()) return -1;
+        dll.splice(dll.begin(), dll, it-&gt;second);
+        return it-&gt;second-&gt;second;
+    }
+
+    void put(int key, int value) {
+        auto it = cache.find(key);
+        if (it != cache.end()) {
+            it-&gt;second-&gt;second = value;
+            dll.splice(dll.begin(), dll, it-&gt;second);
+            return;
+        }
+        if ((int)cache.size() == capacity) {
+            int lru_key = dll.back().first;
+            dll.pop_back();
+            cache.erase(lru_key);
+        }
+        dll.emplace_front(key, value);
+        cache[key] = dll.begin();
+    }
+};</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>lru_cache.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::collections::HashMap;
+
+struct Node {
+    key: i32,
+    val: i32,
+    prev: usize,
+    next: usize,
+}
+
+struct LRUCache {
+    capacity: usize,
+    cache: HashMap&lt;i32, usize&gt;,  // key -&gt; index in nodes
+    nodes: Vec&lt;Node&gt;,
+    head: usize,  // sentinel
+    tail: usize,  // sentinel
+}
+
+impl LRUCache {
+    fn new(capacity: usize) -&gt; Self {
+        let mut nodes = Vec::new();
+        nodes.push(Node { key: 0, val: 0, prev: 0, next: 1 }); // head
+        nodes.push(Node { key: 0, val: 0, prev: 0, next: 1 }); // tail
+        LRUCache { capacity, cache: HashMap::new(), nodes, head: 0, tail: 1 }
+    }
+
+    fn remove(&amp;mut self, idx: usize) {
+        let prev = self.nodes[idx].prev;
+        let next = self.nodes[idx].next;
+        self.nodes[prev].next = next;
+        self.nodes[next].prev = prev;
+    }
+
+    fn add_front(&amp;mut self, idx: usize) {
+        let front = self.nodes[self.head].next;
+        self.nodes[idx].next = front;
+        self.nodes[idx].prev = self.head;
+        self.nodes[front].prev = idx;
+        self.nodes[self.head].next = idx;
+    }
+
+    fn get(&amp;mut self, key: i32) -&gt; i32 {
+        if let Some(&amp;idx) = self.cache.get(&amp;key) {
+            self.remove(idx);
+            self.add_front(idx);
+            self.nodes[idx].val
+        } else {
+            -1
+        }
+    }
+
+    fn put(&amp;mut self, key: i32, value: i32) {
+        if let Some(&amp;idx) = self.cache.get(&amp;key) {
+            self.nodes[idx].val = value;
+            self.remove(idx);
+            self.add_front(idx);
+        } else {
+            if self.cache.len() == self.capacity {
+                let lru = self.nodes[self.tail].prev;
+                self.remove(lru);
+                self.cache.remove(&amp;self.nodes[lru].key);
+            }
+            let idx = self.nodes.len();
+            self.nodes.push(Node { key, val: value, prev: 0, next: 0 });
+            self.cache.insert(key, idx);
+            self.add_front(idx);
+        }
+    }
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Interview Tip</div>
+LRU Cache (LeetCode 146) is one of the most frequently asked interview questions. The key insight is that a HashMap alone gives O(1) lookup but not O(1) ordering; a linked list alone gives O(1) reordering but not O(1) lookup. Combining them gives both.
+</div>
+</div>
+
+<div class="card" id="rate-limiter">
+<h2><span class="icon">&#9201;</span> Rate Limiter</h2>
+<p>Rate limiters control the rate of requests a client can make. Two common algorithms are <strong>Token Bucket</strong> and <strong>Sliding Window Counter</strong>.</p>
+
+<h3>Token Bucket Algorithm</h3>
+<p>A bucket holds tokens (up to a maximum). Tokens are added at a fixed rate. Each request consumes one token. If the bucket is empty, the request is rejected.</p>
+
+<div class="diagram">
+Token Bucket (capacity=5, refill=1/sec):
+
+t=0s: [<span class="highlight">&#x25CF;&#x25CF;&#x25CF;&#x25CF;&#x25CF;</span>] 5 tokens (full)
+t=0s: Request! [<span class="highlight">&#x25CF;&#x25CF;&#x25CF;&#x25CF;</span>] 4 tokens &rarr; <span class="highlight">ALLOWED</span>
+t=0s: Request! [<span class="highlight">&#x25CF;&#x25CF;&#x25CF;</span>] 3 tokens &rarr; <span class="highlight">ALLOWED</span>
+t=1s: Refill   [<span class="highlight">&#x25CF;&#x25CF;&#x25CF;&#x25CF;</span>] 4 tokens
+t=1s: Request! [<span class="highlight">&#x25CF;&#x25CF;&#x25CF;</span>] 3 tokens &rarr; <span class="highlight">ALLOWED</span>
+...burst 3 more...
+t=1s:          [] 0 tokens
+t=1s: Request! [] 0 tokens &rarr; <span class="swap">REJECTED</span>
+</div>
+
+<h3>Sliding Window Counter</h3>
+<p>Track request counts in fixed time windows. Use weighted counts from the current and previous window to approximate a sliding window.</p>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>rate_limiter.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">import time
+
+class TokenBucket:
+    def __init__(self, capacity, refill_rate):
+        self.capacity = capacity
+        self.tokens = capacity
+        self.refill_rate = refill_rate  # tokens per second
+        self.last_refill = time.time()
+
+    def allow_request(self):
+        now = time.time()
+        # Add tokens based on elapsed time
+        elapsed = now - self.last_refill
+        self.tokens = min(self.capacity,
+                         self.tokens + elapsed * self.refill_rate)
+        self.last_refill = now
+
+        if self.tokens >= 1:
+            self.tokens -= 1
+            return True
+        return False
+
+class SlidingWindowCounter:
+    def __init__(self, window_size, max_requests):
+        self.window_size = window_size  # seconds
+        self.max_requests = max_requests
+        self.prev_count = 0
+        self.curr_count = 0
+        self.curr_window_start = 0
+
+    def allow_request(self):
+        now = time.time()
+        curr_window = int(now // self.window_size)
+
+        if curr_window != self.curr_window_start:
+            self.prev_count = self.curr_count if curr_window == self.curr_window_start + 1 else 0
+            self.curr_count = 0
+            self.curr_window_start = curr_window
+
+        # Weighted estimate
+        elapsed_ratio = (now % self.window_size) / self.window_size
+        estimate = self.prev_count * (1 - elapsed_ratio) + self.curr_count
+
+        if estimate < self.max_requests:
+            self.curr_count += 1
+            return True
+        return False</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>RateLimiter.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">public class TokenBucket {
+    private final int capacity;
+    private double tokens;
+    private final double refillRate;
+    private long lastRefillNanos;
+
+    public TokenBucket(int capacity, double refillRate) {
+        this.capacity = capacity;
+        this.tokens = capacity;
+        this.refillRate = refillRate;
+        this.lastRefillNanos = System.nanoTime();
+    }
+
+    public synchronized boolean allowRequest() {
+        long now = System.nanoTime();
+        double elapsed = (now - lastRefillNanos) / 1e9;
+        tokens = Math.min(capacity, tokens + elapsed * refillRate);
+        lastRefillNanos = now;
+
+        if (tokens &gt;= 1) {
+            tokens -= 1;
+            return true;
+        }
+        return false;
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>rate_limiter.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;chrono&gt;
+#include &lt;algorithm&gt;
+
+class TokenBucket {
+    int capacity;
+    double tokens;
+    double refill_rate;
+    std::chrono::steady_clock::time_point last_refill;
+
+public:
+    TokenBucket(int cap, double rate)
+        : capacity(cap), tokens(cap), refill_rate(rate),
+          last_refill(std::chrono::steady_clock::now()) {}
+
+    bool allowRequest() {
+        auto now = std::chrono::steady_clock::now();
+        double elapsed = std::chrono::duration&lt;double&gt;(now - last_refill).count();
+        tokens = std::min((double)capacity, tokens + elapsed * refill_rate);
+        last_refill = now;
+
+        if (tokens &gt;= 1.0) {
+            tokens -= 1.0;
+            return true;
+        }
+        return false;
+    }
+};</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>rate_limiter.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::time::Instant;
+
+struct TokenBucket {
+    capacity: f64,
+    tokens: f64,
+    refill_rate: f64,  // tokens per second
+    last_refill: Instant,
+}
+
+impl TokenBucket {
+    fn new(capacity: u32, refill_rate: f64) -&gt; Self {
+        TokenBucket {
+            capacity: capacity as f64,
+            tokens: capacity as f64,
+            refill_rate,
+            last_refill: Instant::now(),
+        }
+    }
+
+    fn allow_request(&amp;mut self) -&gt; bool {
+        let now = Instant::now();
+        let elapsed = now.duration_since(self.last_refill).as_secs_f64();
+        self.tokens = (self.tokens + elapsed * self.refill_rate).min(self.capacity);
+        self.last_refill = now;
+
+        if self.tokens &gt;= 1.0 {
+            self.tokens -= 1.0;
+            true
+        } else {
+            false
+        }
+    }
+}</pre></div>
+</div>
+</div>
+
+<div class="warning-box">
+<div class="label">Design Consideration</div>
+In distributed systems, rate limiting across multiple servers requires a shared store (e.g., Redis). Use Redis INCR with TTL for simple counters, or Redis + Lua scripts for atomic token bucket operations.
+</div>
+</div>
+
+<div class="card" id="trie-autocomplete">
+<h2><span class="icon">&#128269;</span> Trie-Based Autocomplete</h2>
+<p>A <strong>Trie</strong> (prefix tree) stores strings character by character, enabling O(L) prefix lookups where L is the prefix length. For autocomplete, we extend the trie with <strong>frequency counts</strong> and return top-K suggestions.</p>
+
+<div class="diagram">
+Trie for: ["cat", "car", "card", "care", "dog"]
+
+        (root)
+       /      \
+      c        d
+      |        |
+      a        o
+     / \       |
+    t   r      g*
+    *   |
+       / \
+      d   e
+      *   *
+
+* = end of word
+
+Search "car" &rarr; node at 'r'
+  DFS from 'r': "car"*, "card"*, "care"*
+  Return: ["car", "card", "care"]
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>autocomplete.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">import heapq
+
+class TrieNode:
+    def __init__(self):
+        self.children = {}
+        self.is_end = False
+        self.freq = 0
+
+class AutoComplete:
+    def __init__(self):
+        self.root = TrieNode()
+
+    def insert(self, word, freq=1):
+        node = self.root
+        for ch in word:
+            if ch not in node.children:
+                node.children[ch] = TrieNode()
+            node = node.children[ch]
+        node.is_end = True
+        node.freq += freq
+
+    def _find_prefix(self, prefix):
+        node = self.root
+        for ch in prefix:
+            if ch not in node.children:
+                return None
+            node = node.children[ch]
+        return node
+
+    def _dfs(self, node, path, results):
+        if node.is_end:
+            results.append((node.freq, path))
+        for ch, child in node.children.items():
+            self._dfs(child, path + ch, results)
+
+    def suggest(self, prefix, k=5):
+        node = self._find_prefix(prefix)
+        if not node:
+            return []
+        results = []
+        self._dfs(node, prefix, results)
+        # Return top-k by frequency
+        top_k = heapq.nlargest(k, results, key=lambda x: x[0])
+        return [word for freq, word in top_k]
+
+# Usage
+ac = AutoComplete()
+for word in ["cat", "car", "card", "care", "carbon"]:
+    ac.insert(word, freq=10)
+ac.insert("car", freq=50)  # boost "car"
+print(ac.suggest("car", k=3))  # ['car', 'carbon', 'card']</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>AutoComplete.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.util.*;
+
+public class AutoComplete {
+    class TrieNode {
+        Map&lt;Character, TrieNode&gt; children = new HashMap&lt;&gt;();
+        boolean isEnd;
+        int freq;
+    }
+
+    private TrieNode root = new TrieNode();
+
+    public void insert(String word, int freq) {
+        TrieNode node = root;
+        for (char ch : word.toCharArray()) {
+            node.children.putIfAbsent(ch, new TrieNode());
+            node = node.children.get(ch);
+        }
+        node.isEnd = true;
+        node.freq += freq;
+    }
+
+    public List&lt;String&gt; suggest(String prefix, int k) {
+        TrieNode node = root;
+        for (char ch : prefix.toCharArray()) {
+            if (!node.children.containsKey(ch)) return List.of();
+            node = node.children.get(ch);
+        }
+        // Min-heap of (freq, word)
+        PriorityQueue&lt;int[]&gt; pq = new PriorityQueue&lt;&gt;((a, b) -&gt; a[0] - b[0]);
+        List&lt;String&gt; words = new ArrayList&lt;&gt;();
+        List&lt;Integer&gt; freqs = new ArrayList&lt;&gt;();
+        dfs(node, new StringBuilder(prefix), words, freqs);
+
+        for (int i = 0; i &lt; words.size(); i++) {
+            pq.offer(new int[]{freqs.get(i), i});
+            if (pq.size() &gt; k) pq.poll();
+        }
+        List&lt;String&gt; result = new ArrayList&lt;&gt;();
+        while (!pq.isEmpty()) result.add(0, words.get(pq.poll()[1]));
+        return result;
+    }
+
+    private void dfs(TrieNode node, StringBuilder sb,
+                     List&lt;String&gt; words, List&lt;Integer&gt; freqs) {
+        if (node.isEnd) { words.add(sb.toString()); freqs.add(node.freq); }
+        for (var e : node.children.entrySet()) {
+            sb.append(e.getKey());
+            dfs(e.getValue(), sb, words, freqs);
+            sb.deleteCharAt(sb.length() - 1);
+        }
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>autocomplete.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;string&gt;
+#include &lt;vector&gt;
+#include &lt;unordered_map&gt;
+#include &lt;queue&gt;
+#include &lt;algorithm&gt;
+
+struct TrieNode {
+    std::unordered_map&lt;char, TrieNode*&gt; children;
+    bool is_end = false;
+    int freq = 0;
+};
+
+class AutoComplete {
+    TrieNode* root = new TrieNode();
+
+    void dfs(TrieNode* node, std::string&amp; path,
+             std::vector&lt;std::pair&lt;int,std::string&gt;&gt;&amp; results) {
+        if (node-&gt;is_end)
+            results.push_back({node-&gt;freq, path});
+        for (auto&amp; [ch, child] : node-&gt;children) {
+            path.push_back(ch);
+            dfs(child, path, results);
+            path.pop_back();
+        }
+    }
+
+public:
+    void insert(const std::string&amp; word, int freq = 1) {
+        TrieNode* node = root;
+        for (char ch : word) {
+            if (!node-&gt;children.count(ch))
+                node-&gt;children[ch] = new TrieNode();
+            node = node-&gt;children[ch];
+        }
+        node-&gt;is_end = true;
+        node-&gt;freq += freq;
+    }
+
+    std::vector&lt;std::string&gt; suggest(const std::string&amp; prefix, int k = 5) {
+        TrieNode* node = root;
+        for (char ch : prefix) {
+            if (!node-&gt;children.count(ch)) return {};
+            node = node-&gt;children[ch];
+        }
+        std::vector&lt;std::pair&lt;int,std::string&gt;&gt; results;
+        std::string path = prefix;
+        dfs(node, path, results);
+        std::sort(results.begin(), results.end(),
+                  [](auto&amp; a, auto&amp; b){ return a.first &gt; b.first; });
+        std::vector&lt;std::string&gt; top;
+        for (int i = 0; i &lt; std::min(k, (int)results.size()); i++)
+            top.push_back(results[i].second);
+        return top;
+    }
+};</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>autocomplete.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::collections::HashMap;
+
+struct TrieNode {
+    children: HashMap&lt;char, TrieNode&gt;,
+    is_end: bool,
+    freq: i32,
+}
+
+impl TrieNode {
+    fn new() -&gt; Self {
+        TrieNode { children: HashMap::new(), is_end: false, freq: 0 }
+    }
+}
+
+struct AutoComplete {
+    root: TrieNode,
+}
+
+impl AutoComplete {
+    fn new() -&gt; Self {
+        AutoComplete { root: TrieNode::new() }
+    }
+
+    fn insert(&amp;mut self, word: &amp;str, freq: i32) {
+        let mut node = &amp;mut self.root;
+        for ch in word.chars() {
+            node = node.children.entry(ch).or_insert_with(TrieNode::new);
+        }
+        node.is_end = true;
+        node.freq += freq;
+    }
+
+    fn suggest(&amp;self, prefix: &amp;str, k: usize) -&gt; Vec&lt;String&gt; {
+        let mut node = &amp;self.root;
+        for ch in prefix.chars() {
+            match node.children.get(&amp;ch) {
+                Some(child) =&gt; node = child,
+                None =&gt; return vec![],
+            }
+        }
+        let mut results = Vec::new();
+        Self::dfs(node, &amp;mut prefix.to_string(), &amp;mut results);
+        results.sort_by(|a, b| b.0.cmp(&amp;a.0));
+        results.into_iter().take(k).map(|(_, w)| w).collect()
+    }
+
+    fn dfs(node: &amp;TrieNode, path: &amp;mut String, results: &amp;mut Vec&lt;(i32, String)&gt;) {
+        if node.is_end {
+            results.push((node.freq, path.clone()));
+        }
+        for (&amp;ch, child) in &amp;node.children {
+            path.push(ch);
+            Self::dfs(child, path, results);
+            path.pop();
+        }
+    }
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Optimization</div>
+For production autocomplete systems, pre-compute top-K suggestions at each trie node during insertion. This trades space for query speed &mdash; O(L) lookup instead of O(L + N) where N is the subtree size.
+</div>
+</div>
+
+<div class="card" id="merkle-tree">
+<h2><span class="icon">&#128737;</span> Merkle Tree</h2>
+<p>A <strong>Merkle tree</strong> (hash tree) is a binary tree where each leaf node contains the hash of a data block, and each internal node contains the hash of its children. It enables efficient and secure verification of large data structures.</p>
+
+<h3>How Verification Works</h3>
+<div class="diagram">
+                    <span class="highlight">H(1234)</span>
+                   /          \
+            <span class="sorted">H(12)</span>              <span class="sorted">H(34)</span>
+           /     \           /     \
+        H(D1)   H(D2)    H(D3)   H(D4)
+         |       |        |       |
+        D1      D2       D3      D4
+
+To verify D3 is unchanged:
+  1. Provide: H(D4) and H(12)     (proof path)
+  2. Compute: H(D3)
+  3. Compute: H(34) = H(H(D3) + H(D4))
+  4. Compute: H(1234) = H(H(12) + H(34))
+  5. Compare H(1234) with stored root hash
+
+Only <span class="highlight">O(log n)</span> hashes needed to verify any single block!
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>merkle_tree.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">import hashlib
+
+class MerkleTree:
+    def __init__(self, data_blocks):
+        self.leaves = [self._hash(d) for d in data_blocks]
+        # Pad to power of 2
+        while len(self.leaves) &amp; (len(self.leaves) - 1):
+            self.leaves.append(self._hash(""))
+        self.tree = [None] * (2 * len(self.leaves))
+        self._build()
+
+    def _hash(self, data):
+        return hashlib.sha256(data.encode()).hexdigest()
+
+    def _build(self):
+        n = len(self.leaves)
+        # Fill leaves
+        for i in range(n):
+            self.tree[n + i] = self.leaves[i]
+        # Build up
+        for i in range(n - 1, 0, -1):
+            self.tree[i] = self._hash(
+                self.tree[2 * i] + self.tree[2 * i + 1]
+            )
+
+    @property
+    def root(self):
+        return self.tree[1]
+
+    def get_proof(self, index):
+        """Return sibling hashes from leaf to root."""
+        proof = []
+        n = len(self.leaves)
+        idx = n + index
+        while idx > 1:
+            sibling = idx ^ 1  # flip last bit
+            proof.append(("left" if idx % 2 == 1 else "right",
+                         self.tree[sibling]))
+            idx //= 2
+        return proof
+
+    def verify(self, data, index, proof):
+        """Verify a data block using its proof path."""
+        current = self._hash(data)
+        for side, sibling_hash in proof:
+            if side == "left":
+                current = self._hash(sibling_hash + current)
+            else:
+                current = self._hash(current + sibling_hash)
+        return current == self.root
+
+# Usage
+mt = MerkleTree(["block1", "block2", "block3", "block4"])
+proof = mt.get_proof(2)  # proof for "block3"
+print(mt.verify("block3", 2, proof))  # True
+print(mt.verify("tampered", 2, proof))  # False</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>MerkleTree.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.security.MessageDigest;
+import java.util.*;
+
+public class MerkleTree {
+    private String[] tree;
+    private int leafCount;
+
+    public MerkleTree(String[] dataBlocks) {
+        leafCount = 1;
+        while (leafCount &lt; dataBlocks.length) leafCount *= 2;
+        tree = new String[2 * leafCount];
+
+        for (int i = 0; i &lt; dataBlocks.length; i++)
+            tree[leafCount + i] = hash(dataBlocks[i]);
+        for (int i = dataBlocks.length; i &lt; leafCount; i++)
+            tree[leafCount + i] = hash("");
+        for (int i = leafCount - 1; i &gt;= 1; i--)
+            tree[i] = hash(tree[2*i] + tree[2*i+1]);
+    }
+
+    private String hash(String data) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] digest = md.digest(data.getBytes());
+            StringBuilder sb = new StringBuilder();
+            for (byte b : digest) sb.append(String.format("%02x", b));
+            return sb.toString();
+        } catch (Exception e) { throw new RuntimeException(e); }
+    }
+
+    public String getRoot() { return tree[1]; }
+
+    public List&lt;String[]&gt; getProof(int index) {
+        List&lt;String[]&gt; proof = new ArrayList&lt;&gt;();
+        int idx = leafCount + index;
+        while (idx &gt; 1) {
+            int sibling = idx ^ 1;
+            proof.add(new String[]{
+                idx % 2 == 1 ? "left" : "right", tree[sibling]
+            });
+            idx /= 2;
+        }
+        return proof;
+    }
+
+    public boolean verify(String data, List&lt;String[]&gt; proof) {
+        String current = hash(data);
+        for (String[] p : proof) {
+            if (p[0].equals("left"))
+                current = hash(p[1] + current);
+            else
+                current = hash(current + p[1]);
+        }
+        return current.equals(getRoot());
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>merkle_tree.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;vector&gt;
+#include &lt;string&gt;
+#include &lt;functional&gt;
+#include &lt;sstream&gt;
+#include &lt;iomanip&gt;
+
+class MerkleTree {
+    std::vector&lt;std::string&gt; tree;
+    int leaf_count;
+
+    std::string hash_str(const std::string&amp; data) {
+        // Simplified hash using std::hash
+        size_t h = std::hash&lt;std::string&gt;{}(data);
+        std::stringstream ss;
+        ss &lt;&lt; std::hex &lt;&lt; std::setfill('0') &lt;&lt; std::setw(16) &lt;&lt; h;
+        return ss.str();
+    }
+
+public:
+    MerkleTree(const std::vector&lt;std::string&gt;&amp; blocks) {
+        leaf_count = 1;
+        while (leaf_count &lt; (int)blocks.size()) leaf_count *= 2;
+        tree.resize(2 * leaf_count);
+
+        for (int i = 0; i &lt; (int)blocks.size(); i++)
+            tree[leaf_count + i] = hash_str(blocks[i]);
+        for (int i = blocks.size(); i &lt; leaf_count; i++)
+            tree[leaf_count + i] = hash_str("");
+        for (int i = leaf_count - 1; i &gt;= 1; i--)
+            tree[i] = hash_str(tree[2*i] + tree[2*i+1]);
+    }
+
+    std::string root() const { return tree[1]; }
+
+    // Returns pairs of (side, hash)
+    std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt; get_proof(int index) {
+        std::vector&lt;std::pair&lt;std::string, std::string&gt;&gt; proof;
+        int idx = leaf_count + index;
+        while (idx &gt; 1) {
+            int sibling = idx ^ 1;
+            proof.push_back({idx % 2 == 1 ? "left" : "right", tree[sibling]});
+            idx /= 2;
+        }
+        return proof;
+    }
+
+    bool verify(const std::string&amp; data,
+                const std::vector&lt;std::pair&lt;std::string,std::string&gt;&gt;&amp; proof) {
+        std::string current = hash_str(data);
+        for (auto&amp; [side, h] : proof) {
+            if (side == "left") current = hash_str(h + current);
+            else current = hash_str(current + h);
+        }
+        return current == root();
+    }
+};</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>merkle_tree.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::collections::hash_map::DefaultHasher;
+use std::hash::{Hash, Hasher};
+
+struct MerkleTree {
+    tree: Vec&lt;String&gt;,
+    leaf_count: usize,
+}
+
+impl MerkleTree {
+    fn hash_data(data: &amp;str) -&gt; String {
+        let mut hasher = DefaultHasher::new();
+        data.hash(&amp;mut hasher);
+        format!("{:016x}", hasher.finish())
+    }
+
+    fn new(blocks: &amp;[&amp;str]) -&gt; Self {
+        let mut leaf_count = 1;
+        while leaf_count &lt; blocks.len() { leaf_count *= 2; }
+        let mut tree = vec![String::new(); 2 * leaf_count];
+
+        for (i, block) in blocks.iter().enumerate() {
+            tree[leaf_count + i] = Self::hash_data(block);
+        }
+        for i in blocks.len()..leaf_count {
+            tree[leaf_count + i] = Self::hash_data("");
+        }
+        for i in (1..leaf_count).rev() {
+            let combined = format!("{}{}", tree[2*i], tree[2*i+1]);
+            tree[i] = Self::hash_data(&amp;combined);
+        }
+        MerkleTree { tree, leaf_count }
+    }
+
+    fn root(&amp;self) -&gt; &amp;str { &amp;self.tree[1] }
+
+    fn get_proof(&amp;self, index: usize) -&gt; Vec&lt;(&amp;str, &amp;str)&gt; {
+        let mut proof = Vec::new();
+        let mut idx = self.leaf_count + index;
+        while idx &gt; 1 {
+            let sibling = idx ^ 1;
+            let side = if idx % 2 == 1 { "left" } else { "right" };
+            proof.push((side, self.tree[sibling].as_str()));
+            idx /= 2;
+        }
+        proof
+    }
+
+    fn verify(&amp;self, data: &amp;str, proof: &amp;[(&amp;str, &amp;str)]) -&gt; bool {
+        let mut current = Self::hash_data(data);
+        for &amp;(side, hash) in proof {
+            current = if side == "left" {
+                Self::hash_data(&amp;format!("{}{}", hash, current))
+            } else {
+                Self::hash_data(&amp;format!("{}{}", current, hash))
+            };
+        }
+        current == self.tree[1]
+    }
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Real-World Usage</div>
+Merkle trees are fundamental to Git (verifying repository integrity), Bitcoin (transaction verification in blocks), and distributed databases like Cassandra (anti-entropy repair). They enable verifying data integrity with only O(log n) hash comparisons.
+</div>
+</div>
+
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Complexity Summary</h2>
+<table>
+<thead><tr><th>Data Structure / Algorithm</th><th>Operation</th><th>Time</th><th>Space</th></tr></thead>
+<tbody>
+<tr><td>Consistent Hash</td><td>Lookup / Add / Remove node</td><td><span class="badge badge-green">O(log n)</span></td><td>O(n &times; R)</td></tr>
+<tr><td>LRU Cache</td><td>get / put</td><td><span class="badge badge-green">O(1)</span></td><td>O(capacity)</td></tr>
+<tr><td>Token Bucket</td><td>allow_request</td><td><span class="badge badge-green">O(1)</span></td><td>O(1)</td></tr>
+<tr><td>Sliding Window</td><td>allow_request</td><td><span class="badge badge-green">O(1)</span></td><td>O(1)</td></tr>
+<tr><td>Trie Insert</td><td>insert</td><td><span class="badge badge-green">O(L)</span></td><td>O(L)</td></tr>
+<tr><td>Trie Autocomplete</td><td>suggest (top-K)</td><td><span class="badge badge-yellow">O(L + N log K)</span></td><td>O(N)</td></tr>
+<tr><td>Merkle Tree Build</td><td>build</td><td><span class="badge badge-yellow">O(n)</span></td><td>O(n)</td></tr>
+<tr><td>Merkle Tree Verify</td><td>verify</td><td><span class="badge badge-green">O(log n)</span></td><td>O(log n)</td></tr>
+</tbody>
+</table>
+<p><em>n = number of elements, R = replicas per node, L = string length, N = subtree nodes, K = results count</em></p>
+</div>
+
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>LRU Cache</strong> &mdash; LeetCode 146. Implement get and put in O(1).</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Implement Trie</strong> &mdash; LeetCode 208. Insert, search, startsWith.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Design Add and Search Words</strong> &mdash; LeetCode 211. Trie with wildcard.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Design Search Autocomplete System</strong> &mdash; LeetCode 642. Trie + ranking.</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>LFU Cache</strong> &mdash; LeetCode 460. Extension of LRU with frequency tracking.</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Design HashMap</strong> &mdash; LeetCode 706. Implement from scratch with chaining.</div>
+</div>
+
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary</h2>
+<h3>When to Use What</h3>
+<table>
+<thead><tr><th>Scenario</th><th>Technique</th><th>Key Insight</th></tr></thead>
+<tbody>
+<tr><td>Distribute load across servers</td><td>Consistent Hashing</td><td>Virtual ring + virtual nodes minimizes remapping</td></tr>
+<tr><td>Fast cache with eviction</td><td>LRU Cache</td><td>HashMap + doubly linked list = O(1) for both ops</td></tr>
+<tr><td>Limit API request rate</td><td>Token Bucket / Sliding Window</td><td>Token bucket allows bursts; sliding window is smoother</td></tr>
+<tr><td>Prefix-based search suggestions</td><td>Trie Autocomplete</td><td>Trie gives O(L) prefix lookup; rank by frequency</td></tr>
+<tr><td>Verify data integrity efficiently</td><td>Merkle Tree</td><td>Only O(log n) hashes to verify any single block</td></tr>
+</tbody>
+</table>
+<div class="warning-box">
+<div class="label">System Design Tip</div>
+In interviews, these data structures are building blocks. A cache system uses LRU + consistent hashing. A search engine uses tries + rate limiting. Understanding the individual pieces makes it easy to compose solutions for complex system design questions.
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 28/index.html">&larr; Week 28</a>
+<a href="../Week 30/index.html">Week 30 &rarr;</a>
+</div>
+</main>
+</div>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});const progressBar=document.getElementById('progressBar');window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%'});const backToTop=document.getElementById('backToTop');window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});document.querySelectorAll('.card').forEach(c=>obs.observe(c));document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})})});document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});function highlight(code,lang){code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');return code}document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';const raw=block.textContent;block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang)});document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>
