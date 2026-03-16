@@ -833,11 +833,6 @@ const lang=block.dataset.code||'';
 const raw=block.textContent;
 block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);
 });
-document.querySelectorAll('.code-text').forEach(block=>{
-const lang=block.dataset.code||'';
-const raw=block.textContent;
-block.innerHTML=highlight(block.innerHTML,lang);
-});
 
 // Active sidebar link on scroll
 const sections=document.querySelectorAll('[id]');
