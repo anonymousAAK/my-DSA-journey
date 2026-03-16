@@ -1,0 +1,1243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Week 30: Interview Patterns & Mastery | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;--text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;--gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;--kw:#ff7b72;--str:#a5d6ff;--cmt:#8b949e;--num:#79c0ff;--fn:#d2a8ff;--warning:#d29922;--danger:#f85149;--radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4)}
+html{scroll-behavior:smooth;scroll-padding-top:80px}body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.7;overflow-x:hidden}a{color:var(--accent-blue);text-decoration:none;transition:color .2s}a:hover{color:var(--accent-green)}::selection{background:rgba(88,166,255,.3)}
+.page-wrapper{display:flex;min-height:100vh}.sidebar{position:fixed;top:0;left:0;width:280px;height:100vh;background:var(--card);border-right:1px solid var(--card-border);padding:24px 0;overflow-y:auto;z-index:100;transition:transform .3s ease}.sidebar .logo{padding:0 24px 24px;border-bottom:1px solid var(--card-border);margin-bottom:16px}.sidebar .logo h2{background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;font-size:1.1rem}.sidebar .logo span{font-size:.8rem;color:var(--text-secondary)}.sidebar nav a{display:block;padding:8px 24px;font-size:.9rem;color:var(--text-secondary);border-left:3px solid transparent;transition:all .2s}.sidebar nav a:hover,.sidebar nav a.active{color:var(--accent-blue);border-left-color:var(--accent-blue);background:rgba(88,166,255,.05)}.sidebar nav a.sub{padding-left:40px;font-size:.82rem}.main{margin-left:280px;flex:1;max-width:960px;padding:0 40px 80px}
+.hamburger{display:none;position:fixed;top:16px;left:16px;z-index:200;background:var(--card);border:1px solid var(--card-border);border-radius:8px;padding:10px;cursor:pointer}.hamburger span{display:block;width:22px;height:2px;background:var(--text);margin:5px 0;transition:.3s}.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:90}@media(max-width:900px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.overlay.open{display:block}.hamburger{display:block}.main{margin-left:0;padding:0 20px 60px}}
+.hero{padding:80px 0 40px;text-align:center;position:relative}.hero::after{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:120px;height:3px;background:var(--gradient);border-radius:2px}.hero .week-badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.75rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:16px}.hero h1{font-size:2.8rem;font-weight:800;margin-bottom:12px;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}.hero .subtitle{color:var(--text-secondary);font-size:1.1rem;max-width:600px;margin:0 auto 20px}.hero .meta{display:flex;gap:20px;justify-content:center;flex-wrap:wrap}.hero .meta span{display:flex;align-items:center;gap:6px;font-size:.85rem;color:var(--text-secondary)}.hero .meta .dot{width:8px;height:8px;border-radius:50%}.hero .meta .dot.medium{background:var(--warning)}.hero .meta .dot.hard{background:var(--danger)}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);padding:32px;margin:32px 0;box-shadow:var(--shadow);opacity:0;transform:translateY(20px);transition:opacity .5s,transform .5s}.card.visible{opacity:1;transform:translateY(0)}.card h2{font-size:1.5rem;margin-bottom:16px;display:flex;align-items:center;gap:10px}.card h2 .icon{font-size:1.3rem}.card h3{font-size:1.15rem;margin:24px 0 12px;color:var(--accent-blue)}.card h4{font-size:1rem;margin:18px 0 8px;color:var(--accent-green)}
+.objectives li{padding:6px 0;padding-left:20px;position:relative}.objectives li::before{content:'';position:absolute;left:0;top:14px;width:8px;height:8px;border-radius:50%;background:var(--gradient)}
+.insight{background:rgba(88,166,255,.08);border-left:4px solid var(--accent-blue);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.insight .label{font-weight:700;color:var(--accent-blue);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}.warning-box{background:rgba(210,153,34,.08);border-left:4px solid var(--warning);padding:16px 20px;border-radius:0 8px 8px 0;margin:16px 0}.warning-box .label{font-weight:700;color:var(--warning);font-size:.85rem;text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px}
+.code-viewer{margin:20px 0;border-radius:var(--radius);overflow:hidden;border:1px solid var(--card-border)}.code-tabs{display:flex;background:#13161b;border-bottom:1px solid var(--card-border);overflow-x:auto}.code-tab{padding:10px 20px;font-size:.82rem;font-weight:600;color:var(--text-secondary);cursor:pointer;border:none;background:none;border-bottom:2px solid transparent;transition:all .2s;white-space:nowrap}.code-tab:hover{color:var(--text)}.code-tab.active{color:var(--accent-blue);border-bottom-color:var(--accent-blue)}.code-panel{display:none;position:relative}.code-panel.active{display:block}.code-header{display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:#13161b;border-bottom:1px solid var(--card-border)}.code-header span{font-size:.75rem;color:var(--text-secondary)}.copy-btn{padding:4px 12px;font-size:.75rem;background:var(--card-border);color:var(--text-secondary);border:none;border-radius:6px;cursor:pointer;transition:all .2s}.copy-btn:hover{background:var(--accent-blue);color:#fff}.code-content{display:flex;background:var(--code-bg);overflow-x:auto;font-size:.84rem;line-height:1.65}.line-numbers{padding:16px 0;text-align:right;user-select:none;color:var(--text-secondary);opacity:.4;min-width:40px}.line-numbers span{display:block;padding:0 12px 0 16px}.code-text{padding:16px;flex:1;white-space:pre;font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace}
+table{width:100%;border-collapse:collapse;margin:16px 0;font-size:.88rem}th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:12px;border-bottom:2px solid var(--card-border)}td{padding:10px 12px;border-bottom:1px solid var(--card-border)}tr:hover td{background:rgba(88,166,255,.03)}.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.75rem;font-weight:600}.badge-green{background:rgba(63,185,80,.15);color:var(--accent-green)}.badge-red{background:rgba(248,81,73,.15);color:var(--danger)}.badge-yellow{background:rgba(210,153,34,.15);color:var(--warning)}.badge-blue{background:rgba(88,166,255,.15);color:var(--accent-blue)}
+.diagram{background:var(--code-bg);border:1px solid var(--card-border);border-radius:8px;padding:24px;margin:16px 0;overflow-x:auto;font-family:'SF Mono',Monaco,monospace;font-size:.85rem;line-height:1.8;color:var(--text-secondary)}.diagram .highlight{color:var(--accent-green);font-weight:700}.diagram .swap{color:var(--danger);font-weight:700}.diagram .sorted{color:var(--accent-blue)}.diagram .pivot{color:var(--warning);font-weight:700}
+details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-blue);padding:8px 0;user-select:none}summary:hover{color:var(--accent-green)}.practice-item{background:rgba(63,185,80,.05);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:16px;margin:10px 0}.practice-item .difficulty{font-size:.75rem;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.nav-footer{display:flex;justify-content:space-between;margin-top:60px;padding-top:32px;border-top:1px solid var(--card-border);flex-wrap:wrap;gap:16px}.nav-footer a{padding:12px 24px;border-radius:8px;background:var(--card);border:1px solid var(--card-border);color:var(--text);font-weight:600;transition:all .2s}.nav-footer a:hover{border-color:var(--accent-blue);color:var(--accent-blue)}
+.back-to-top{position:fixed;bottom:30px;right:30px;width:44px;height:44px;border-radius:50%;background:var(--gradient);color:#fff;border:none;cursor:pointer;font-size:1.2rem;display:flex;align-items:center;justify-content:center;opacity:0;visibility:hidden;transition:all .3s;z-index:50;box-shadow:var(--shadow)}.back-to-top.visible{opacity:1;visibility:visible}.back-to-top:hover{transform:scale(1.1)}
+.progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
+@media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
+</style>
+</head>
+<body>
+<div class="progress-bar" id="progressBar"></div>
+<button class="hamburger" id="hamburger" aria-label="Toggle sidebar"><span></span><span></span><span></span></button>
+<div class="overlay" id="overlay"></div>
+<div class="page-wrapper">
+<aside class="sidebar" id="sidebar">
+<div class="logo"><h2>DSA Journey</h2><span>Week 30 of 30</span></div>
+<nav>
+<a href="#hero">Overview</a>
+<a href="#objectives">Learning Objectives</a>
+<a href="#two-pointers">Two Pointers</a>
+<a href="#sliding-window">Sliding Window</a>
+<a href="#fast-slow" class="sub">Fast &amp; Slow Pointers</a>
+<a href="#merge-intervals">Merge Intervals</a>
+<a href="#top-k">Top-K Elements</a>
+<a href="#comparison">Pattern Cheat Sheet</a>
+<a href="#practice">Practice Problems</a>
+<a href="#summary">Summary</a>
+</nav>
+</aside>
+<main class="main">
+<section class="hero" id="hero">
+<span class="week-badge">Week 30</span>
+<h1>Interview Patterns &amp; Mastery</h1>
+<p class="subtitle">Master the five most common coding interview patterns: Two Pointers, Sliding Window, Fast &amp; Slow Pointers, Merge Intervals, and Top-K Elements. These patterns solve 80% of interview questions.</p>
+<div class="meta">
+<span><span class="dot medium"></span> Medium-Hard</span>
+<span>~12 hours estimated</span>
+<span>5 patterns</span>
+</div>
+</section>
+
+<div class="card" id="objectives">
+<h2><span class="icon">&#127919;</span> Learning Objectives</h2>
+<ul class="objectives">
+<li>Recognize and apply the Two Pointers pattern for sorted array/string problems</li>
+<li>Master Sliding Window for subarray/substring optimization problems</li>
+<li>Use Fast &amp; Slow pointers (Floyd's) for cycle detection and linked list problems</li>
+<li>Apply the Merge Intervals pattern for overlapping range problems</li>
+<li>Solve Top-K problems efficiently using heaps</li>
+</ul>
+</div>
+
+<div class="card" id="two-pointers">
+<h2><span class="icon">&#128073;</span> Pattern 1: Two Pointers</h2>
+<p>Use two pointers that move toward each other (or in the same direction) to solve problems on sorted arrays or linked lists in O(n) time instead of O(n&sup2;).</p>
+
+<h3>When to Use</h3>
+<ul>
+<li>Finding pairs in a sorted array (Two Sum II)</li>
+<li>Removing duplicates in-place</li>
+<li>Container with most water, trapping rain water</li>
+<li>Palindrome checking</li>
+</ul>
+
+<div class="diagram">
+Two Sum in Sorted Array: target = 9
+arr = [1, 2, 4, 5, 7, 8, 11]
+       <span class="highlight">L</span>                  <span class="swap">R</span>
+
+Step 1: arr[L] + arr[R] = 1 + 11 = 12 &gt; 9 &rarr; move R left
+       <span class="highlight">L</span>              <span class="swap">R</span>
+Step 2: arr[L] + arr[R] = 1 + 8 = 9 = target &rarr; <span class="highlight">FOUND! [0, 5]</span>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>two_pointers.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">def two_sum_sorted(nums, target):
+    """Two Sum II - Input Array Is Sorted (LC 167)"""
+    left, right = 0, len(nums) - 1
+    while left < right:
+        total = nums[left] + nums[right]
+        if total == target:
+            return [left, right]
+        elif total < target:
+            left += 1
+        else:
+            right -= 1
+    return []
+
+def three_sum(nums):
+    """3Sum - Find all unique triplets that sum to zero (LC 15)"""
+    nums.sort()
+    result = []
+    for i in range(len(nums) - 2):
+        if i > 0 and nums[i] == nums[i-1]:
+            continue  # skip duplicates
+        left, right = i + 1, len(nums) - 1
+        while left < right:
+            total = nums[i] + nums[left] + nums[right]
+            if total == 0:
+                result.append([nums[i], nums[left], nums[right]])
+                while left < right and nums[left] == nums[left+1]:
+                    left += 1
+                while left < right and nums[right] == nums[right-1]:
+                    right -= 1
+                left += 1
+                right -= 1
+            elif total < 0:
+                left += 1
+            else:
+                right -= 1
+    return result
+
+def container_with_most_water(height):
+    """Container With Most Water (LC 11)"""
+    left, right = 0, len(height) - 1
+    max_area = 0
+    while left < right:
+        area = min(height[left], height[right]) * (right - left)
+        max_area = max(max_area, area)
+        if height[left] < height[right]:
+            left += 1
+        else:
+            right -= 1
+    return max_area</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>TwoPointers.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.util.*;
+
+public class TwoPointers {
+    // Two Sum II (LC 167)
+    public int[] twoSumSorted(int[] nums, int target) {
+        int left = 0, right = nums.length - 1;
+        while (left &lt; right) {
+            int sum = nums[left] + nums[right];
+            if (sum == target) return new int[]{left, right};
+            else if (sum &lt; target) left++;
+            else right--;
+        }
+        return new int[]{};
+    }
+
+    // 3Sum (LC 15)
+    public List&lt;List&lt;Integer&gt;&gt; threeSum(int[] nums) {
+        Arrays.sort(nums);
+        List&lt;List&lt;Integer&gt;&gt; result = new ArrayList&lt;&gt;();
+        for (int i = 0; i &lt; nums.length - 2; i++) {
+            if (i &gt; 0 &amp;&amp; nums[i] == nums[i-1]) continue;
+            int left = i + 1, right = nums.length - 1;
+            while (left &lt; right) {
+                int sum = nums[i] + nums[left] + nums[right];
+                if (sum == 0) {
+                    result.add(Arrays.asList(nums[i], nums[left], nums[right]));
+                    while (left &lt; right &amp;&amp; nums[left] == nums[left+1]) left++;
+                    while (left &lt; right &amp;&amp; nums[right] == nums[right-1]) right--;
+                    left++; right--;
+                } else if (sum &lt; 0) left++;
+                else right--;
+            }
+        }
+        return result;
+    }
+
+    // Container With Most Water (LC 11)
+    public int maxArea(int[] height) {
+        int left = 0, right = height.length - 1, maxArea = 0;
+        while (left &lt; right) {
+            int area = Math.min(height[left], height[right]) * (right - left);
+            maxArea = Math.max(maxArea, area);
+            if (height[left] &lt; height[right]) left++;
+            else right--;
+        }
+        return maxArea;
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>two_pointers.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+// Two Sum II (LC 167)
+vector&lt;int&gt; twoSumSorted(vector&lt;int&gt;&amp; nums, int target) {
+    int left = 0, right = nums.size() - 1;
+    while (left &lt; right) {
+        int sum = nums[left] + nums[right];
+        if (sum == target) return {left, right};
+        else if (sum &lt; target) left++;
+        else right--;
+    }
+    return {};
+}
+
+// 3Sum (LC 15)
+vector&lt;vector&lt;int&gt;&gt; threeSum(vector&lt;int&gt;&amp; nums) {
+    sort(nums.begin(), nums.end());
+    vector&lt;vector&lt;int&gt;&gt; result;
+    for (int i = 0; i &lt; (int)nums.size() - 2; i++) {
+        if (i &gt; 0 &amp;&amp; nums[i] == nums[i-1]) continue;
+        int left = i + 1, right = nums.size() - 1;
+        while (left &lt; right) {
+            int sum = nums[i] + nums[left] + nums[right];
+            if (sum == 0) {
+                result.push_back({nums[i], nums[left], nums[right]});
+                while (left &lt; right &amp;&amp; nums[left] == nums[left+1]) left++;
+                while (left &lt; right &amp;&amp; nums[right] == nums[right-1]) right--;
+                left++; right--;
+            } else if (sum &lt; 0) left++;
+            else right--;
+        }
+    }
+    return result;
+}
+
+// Container With Most Water (LC 11)
+int maxArea(vector&lt;int&gt;&amp; height) {
+    int left = 0, right = height.size() - 1, maxA = 0;
+    while (left &lt; right) {
+        int area = min(height[left], height[right]) * (right - left);
+        maxA = max(maxA, area);
+        if (height[left] &lt; height[right]) left++;
+        else right--;
+    }
+    return maxA;
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>two_pointers.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">// Two Sum II (LC 167)
+fn two_sum_sorted(nums: &amp;[i32], target: i32) -&gt; Vec&lt;usize&gt; {
+    let (mut left, mut right) = (0, nums.len() - 1);
+    while left &lt; right {
+        let sum = nums[left] + nums[right];
+        if sum == target { return vec![left, right]; }
+        else if sum &lt; target { left += 1; }
+        else { right -= 1; }
+    }
+    vec![]
+}
+
+// Container With Most Water (LC 11)
+fn max_area(height: &amp;[i32]) -&gt; i32 {
+    let (mut left, mut right) = (0, height.len() - 1);
+    let mut max_a = 0;
+    while left &lt; right {
+        let area = height[left].min(height[right]) * (right - left) as i32;
+        max_a = max_a.max(area);
+        if height[left] &lt; height[right] { left += 1; }
+        else { right -= 1; }
+    }
+    max_a
+}
+
+// 3Sum (LC 15)
+fn three_sum(nums: &amp;mut Vec&lt;i32&gt;) -&gt; Vec&lt;Vec&lt;i32&gt;&gt; {
+    nums.sort();
+    let mut result = Vec::new();
+    for i in 0..nums.len().saturating_sub(2) {
+        if i &gt; 0 &amp;&amp; nums[i] == nums[i-1] { continue; }
+        let (mut left, mut right) = (i + 1, nums.len() - 1);
+        while left &lt; right {
+            let sum = nums[i] + nums[left] + nums[right];
+            if sum == 0 {
+                result.push(vec![nums[i], nums[left], nums[right]]);
+                while left &lt; right &amp;&amp; nums[left] == nums[left+1] { left += 1; }
+                while left &lt; right &amp;&amp; nums[right] == nums[right-1] { right -= 1; }
+                left += 1; right -= 1;
+            } else if sum &lt; 0 { left += 1; }
+            else { right -= 1; }
+        }
+    }
+    result
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Pattern Recognition</div>
+If the problem involves a sorted array and asks about pairs/triplets, or if it asks to find something that satisfies a condition where you can eliminate possibilities by moving one end, think Two Pointers.
+</div>
+</div>
+
+<div class="card" id="sliding-window">
+<h2><span class="icon">&#128295;</span> Pattern 2: Sliding Window</h2>
+<p>Maintain a window (subarray/substring) that expands or contracts to find an optimal solution. Converts O(n&sup2;) brute force into O(n).</p>
+
+<h3>Two Variants</h3>
+<ul>
+<li><strong>Fixed-size window:</strong> Max sum subarray of size K</li>
+<li><strong>Variable-size window:</strong> Smallest subarray with sum &ge; target</li>
+</ul>
+
+<div class="diagram">
+Longest Substring Without Repeating Chars: "abcabcbb"
+
+Window: [<span class="highlight">a</span>]bcabcbb          len=1, max=1
+Window: [<span class="highlight">ab</span>]cabcbb         len=2, max=2
+Window: [<span class="highlight">abc</span>]abcbb         len=3, max=3
+Window: a[<span class="highlight">bca</span>]bcbb         'a' repeats, shrink left, len=3, max=3
+Window: ab[<span class="highlight">cab</span>]cbb         'b' repeats, shrink left, len=3, max=3
+Window: abc[<span class="highlight">abc</span>]bb         'c' repeats, shrink left, len=3, max=3
+Window: abca[<span class="highlight">bc</span>]bb         'a' removed, shrink, len=2
+Window: abcab[<span class="highlight">cb</span>]b         shrink, len=2
+Window: abcabc[<span class="highlight">b</span>]b         shrink, len=1
+
+Answer: <span class="highlight">3</span> ("abc")
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>sliding_window.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">def length_of_longest_substring(s):
+    """Longest Substring Without Repeating Characters (LC 3)"""
+    char_index = {}
+    left = 0
+    max_len = 0
+    for right in range(len(s)):
+        if s[right] in char_index and char_index[s[right]] >= left:
+            left = char_index[s[right]] + 1
+        char_index[s[right]] = right
+        max_len = max(max_len, right - left + 1)
+    return max_len
+
+def min_window(s, t):
+    """Minimum Window Substring (LC 76)"""
+    from collections import Counter
+    need = Counter(t)
+    missing = len(t)
+    left = 0
+    best = (0, float('inf'))
+
+    for right, char in enumerate(s):
+        if need[char] > 0:
+            missing -= 1
+        need[char] -= 1
+
+        while missing == 0:  # valid window
+            if right - left < best[1] - best[0]:
+                best = (left, right)
+            need[s[left]] += 1
+            if need[s[left]] > 0:
+                missing += 1
+            left += 1
+
+    return "" if best[1] == float('inf') else s[best[0]:best[1]+1]
+
+def max_sum_subarray_k(nums, k):
+    """Maximum sum subarray of size k (fixed window)"""
+    window_sum = sum(nums[:k])
+    max_sum = window_sum
+    for i in range(k, len(nums)):
+        window_sum += nums[i] - nums[i - k]
+        max_sum = max(max_sum, window_sum)
+    return max_sum</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>SlidingWindow.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.util.*;
+
+public class SlidingWindow {
+    // Longest Substring Without Repeating Characters (LC 3)
+    public int lengthOfLongestSubstring(String s) {
+        Map&lt;Character, Integer&gt; charIndex = new HashMap&lt;&gt;();
+        int left = 0, maxLen = 0;
+        for (int right = 0; right &lt; s.length(); right++) {
+            char c = s.charAt(right);
+            if (charIndex.containsKey(c) &amp;&amp; charIndex.get(c) &gt;= left) {
+                left = charIndex.get(c) + 1;
+            }
+            charIndex.put(c, right);
+            maxLen = Math.max(maxLen, right - left + 1);
+        }
+        return maxLen;
+    }
+
+    // Minimum Window Substring (LC 76)
+    public String minWindow(String s, String t) {
+        int[] need = new int[128];
+        for (char c : t.toCharArray()) need[c]++;
+        int missing = t.length(), left = 0, bestL = 0, bestLen = Integer.MAX_VALUE;
+
+        for (int right = 0; right &lt; s.length(); right++) {
+            if (need[s.charAt(right)]-- &gt; 0) missing--;
+            while (missing == 0) {
+                if (right - left + 1 &lt; bestLen) {
+                    bestLen = right - left + 1;
+                    bestL = left;
+                }
+                if (++need[s.charAt(left++)] &gt; 0) missing++;
+            }
+        }
+        return bestLen == Integer.MAX_VALUE ? "" : s.substring(bestL, bestL + bestLen);
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>sliding_window.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;string&gt;
+#include &lt;unordered_map&gt;
+#include &lt;algorithm&gt;
+using namespace std;
+
+// Longest Substring Without Repeating Characters (LC 3)
+int lengthOfLongestSubstring(string s) {
+    unordered_map&lt;char, int&gt; charIndex;
+    int left = 0, maxLen = 0;
+    for (int right = 0; right &lt; (int)s.size(); right++) {
+        if (charIndex.count(s[right]) &amp;&amp; charIndex[s[right]] &gt;= left)
+            left = charIndex[s[right]] + 1;
+        charIndex[s[right]] = right;
+        maxLen = max(maxLen, right - left + 1);
+    }
+    return maxLen;
+}
+
+// Minimum Window Substring (LC 76)
+string minWindow(string s, string t) {
+    int need[128] = {};
+    for (char c : t) need[c]++;
+    int missing = t.size(), left = 0, bestL = 0, bestLen = INT_MAX;
+
+    for (int right = 0; right &lt; (int)s.size(); right++) {
+        if (need[s[right]]-- &gt; 0) missing--;
+        while (missing == 0) {
+            if (right - left + 1 &lt; bestLen) {
+                bestLen = right - left + 1;
+                bestL = left;
+            }
+            if (++need[s[left++]] &gt; 0) missing++;
+        }
+    }
+    return bestLen == INT_MAX ? "" : s.substr(bestL, bestLen);
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>sliding_window.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::collections::HashMap;
+
+// Longest Substring Without Repeating Characters (LC 3)
+fn length_of_longest_substring(s: &amp;str) -&gt; usize {
+    let mut char_index: HashMap&lt;char, usize&gt; = HashMap::new();
+    let mut left = 0;
+    let mut max_len = 0;
+    let chars: Vec&lt;char&gt; = s.chars().collect();
+
+    for right in 0..chars.len() {
+        if let Some(&amp;prev) = char_index.get(&amp;chars[right]) {
+            if prev &gt;= left { left = prev + 1; }
+        }
+        char_index.insert(chars[right], right);
+        max_len = max_len.max(right - left + 1);
+    }
+    max_len
+}
+
+// Max sum subarray of size k
+fn max_sum_subarray_k(nums: &amp;[i32], k: usize) -&gt; i32 {
+    let mut window_sum: i32 = nums[..k].iter().sum();
+    let mut max_sum = window_sum;
+    for i in k..nums.len() {
+        window_sum += nums[i] - nums[i - k];
+        max_sum = max_sum.max(window_sum);
+    }
+    max_sum
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Pattern Recognition</div>
+If the problem asks for the "longest/shortest subarray/substring" with some condition, think Sliding Window. Use a HashMap or array to track window state.
+</div>
+</div>
+
+<div class="card" id="fast-slow">
+<h2><span class="icon">&#128007;</span> Pattern 3: Fast &amp; Slow Pointers (Floyd's)</h2>
+<p>Two pointers move at different speeds. The fast pointer moves 2 steps while the slow pointer moves 1 step. If there's a cycle, they will meet. Also used to find the middle of a linked list.</p>
+
+<h3>Applications</h3>
+<ul>
+<li>Cycle detection in linked lists</li>
+<li>Finding the start of a cycle</li>
+<li>Finding the middle of a linked list</li>
+<li>Happy number detection</li>
+</ul>
+
+<div class="diagram">
+Linked List Cycle Detection:
+
+1 &rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5
+              &uarr;         |
+              |         &darr;
+              8 &larr; 7 &larr; 6
+
+Step 1: slow=1, fast=1
+Step 2: slow=2, fast=3
+Step 3: slow=3, fast=5
+Step 4: slow=4, fast=7
+Step 5: slow=5, fast=3
+Step 6: slow=6, fast=5
+Step 7: slow=7, fast=7  &rarr; <span class="highlight">MEET! Cycle exists</span>
+
+Finding cycle start:
+  Reset slow to head, keep fast at meeting point
+  Both move 1 step at a time &rarr; they meet at cycle start (<span class="highlight">node 3</span>)
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>fast_slow.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">class ListNode:
+    def __init__(self, val=0, next=None):
+        self.val = val
+        self.next = next
+
+def has_cycle(head):
+    """Linked List Cycle (LC 141)"""
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            return True
+    return False
+
+def detect_cycle_start(head):
+    """Linked List Cycle II (LC 142) - Find cycle start"""
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+        if slow == fast:
+            # Reset slow to head, both move 1 step
+            slow = head
+            while slow != fast:
+                slow = slow.next
+                fast = fast.next
+            return slow  # cycle start
+    return None
+
+def find_middle(head):
+    """Middle of Linked List (LC 876)"""
+    slow = fast = head
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+    return slow
+
+def is_happy(n):
+    """Happy Number (LC 202)"""
+    def get_next(num):
+        total = 0
+        while num > 0:
+            digit = num % 10
+            total += digit * digit
+            num //= 10
+        return total
+
+    slow = n
+    fast = get_next(n)
+    while fast != 1 and slow != fast:
+        slow = get_next(slow)
+        fast = get_next(get_next(fast))
+    return fast == 1</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>FastSlow.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">public class FastSlow {
+    static class ListNode {
+        int val;
+        ListNode next;
+        ListNode(int val) { this.val = val; }
+    }
+
+    // Linked List Cycle (LC 141)
+    public boolean hasCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null &amp;&amp; fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) return true;
+        }
+        return false;
+    }
+
+    // Linked List Cycle II (LC 142)
+    public ListNode detectCycle(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null &amp;&amp; fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+            if (slow == fast) {
+                slow = head;
+                while (slow != fast) {
+                    slow = slow.next;
+                    fast = fast.next;
+                }
+                return slow;
+            }
+        }
+        return null;
+    }
+
+    // Middle of Linked List (LC 876)
+    public ListNode middleNode(ListNode head) {
+        ListNode slow = head, fast = head;
+        while (fast != null &amp;&amp; fast.next != null) {
+            slow = slow.next;
+            fast = fast.next.next;
+        }
+        return slow;
+    }
+
+    // Happy Number (LC 202)
+    public boolean isHappy(int n) {
+        int slow = n, fast = getNext(n);
+        while (fast != 1 &amp;&amp; slow != fast) {
+            slow = getNext(slow);
+            fast = getNext(getNext(fast));
+        }
+        return fast == 1;
+    }
+
+    private int getNext(int n) {
+        int total = 0;
+        while (n &gt; 0) {
+            int d = n % 10;
+            total += d * d;
+            n /= 10;
+        }
+        return total;
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>fast_slow.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">struct ListNode {
+    int val;
+    ListNode* next;
+    ListNode(int v) : val(v), next(nullptr) {}
+};
+
+// Linked List Cycle (LC 141)
+bool hasCycle(ListNode* head) {
+    ListNode *slow = head, *fast = head;
+    while (fast &amp;&amp; fast-&gt;next) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+        if (slow == fast) return true;
+    }
+    return false;
+}
+
+// Linked List Cycle II (LC 142)
+ListNode* detectCycle(ListNode* head) {
+    ListNode *slow = head, *fast = head;
+    while (fast &amp;&amp; fast-&gt;next) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+        if (slow == fast) {
+            slow = head;
+            while (slow != fast) {
+                slow = slow-&gt;next;
+                fast = fast-&gt;next;
+            }
+            return slow;
+        }
+    }
+    return nullptr;
+}
+
+// Middle of Linked List (LC 876)
+ListNode* middleNode(ListNode* head) {
+    ListNode *slow = head, *fast = head;
+    while (fast &amp;&amp; fast-&gt;next) {
+        slow = slow-&gt;next;
+        fast = fast-&gt;next-&gt;next;
+    }
+    return slow;
+}
+
+// Happy Number (LC 202)
+int getNext(int n) {
+    int total = 0;
+    while (n &gt; 0) {
+        int d = n % 10;
+        total += d * d;
+        n /= 10;
+    }
+    return total;
+}
+
+bool isHappy(int n) {
+    int slow = n, fast = getNext(n);
+    while (fast != 1 &amp;&amp; slow != fast) {
+        slow = getNext(slow);
+        fast = getNext(getNext(fast));
+    }
+    return fast == 1;
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>fast_slow.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">// Happy Number (LC 202) - Floyd's on number sequence
+fn get_next(mut n: i32) -&gt; i32 {
+    let mut total = 0;
+    while n &gt; 0 {
+        let d = n % 10;
+        total += d * d;
+        n /= 10;
+    }
+    total
+}
+
+fn is_happy(n: i32) -&gt; bool {
+    let mut slow = n;
+    let mut fast = get_next(n);
+    while fast != 1 &amp;&amp; slow != fast {
+        slow = get_next(slow);
+        fast = get_next(get_next(fast));
+    }
+    fast == 1
+}
+
+// Find Duplicate Number (LC 287) - Floyd's on array
+fn find_duplicate(nums: &amp;[i32]) -&gt; i32 {
+    let mut slow = nums[0] as usize;
+    let mut fast = nums[0] as usize;
+
+    loop {
+        slow = nums[slow] as usize;
+        fast = nums[nums[fast] as usize] as usize;
+        if slow == fast { break; }
+    }
+
+    slow = nums[0] as usize;
+    while slow != fast {
+        slow = nums[slow] as usize;
+        fast = nums[fast] as usize;
+    }
+    slow as i32
+}</pre></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="merge-intervals">
+<h2><span class="icon">&#128197;</span> Pattern 4: Merge Intervals</h2>
+<p>Sort intervals by start time, then merge overlapping ones. This pattern applies to any problem involving ranges, scheduling, or overlapping periods.</p>
+
+<div class="diagram">
+Input intervals: [[1,3], [2,6], [8,10], [15,18]]
+
+Sort by start: [1,3] [2,6] [8,10] [15,18]
+
+Merge process:
+  [<span class="highlight">1,3</span>] + [<span class="highlight">2,6</span>] &rarr; overlap (3 &ge; 2) &rarr; merge to [<span class="sorted">1,6</span>]
+  [<span class="sorted">1,6</span>] + [8,10] &rarr; no overlap (6 &lt; 8) &rarr; keep [<span class="sorted">1,6</span>], start [8,10]
+  [8,10] + [15,18] &rarr; no overlap &rarr; keep [8,10], start [15,18]
+
+Result: [[<span class="sorted">1,6</span>], [8,10], [15,18]]
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>merge_intervals.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">def merge(intervals):
+    """Merge Intervals (LC 56)"""
+    intervals.sort(key=lambda x: x[0])
+    merged = [intervals[0]]
+    for start, end in intervals[1:]:
+        if start <= merged[-1][1]:
+            merged[-1][1] = max(merged[-1][1], end)
+        else:
+            merged.append([start, end])
+    return merged
+
+def insert(intervals, new_interval):
+    """Insert Interval (LC 57)"""
+    result = []
+    i = 0
+    # Add all intervals before new_interval
+    while i < len(intervals) and intervals[i][1] < new_interval[0]:
+        result.append(intervals[i])
+        i += 1
+    # Merge overlapping intervals
+    while i < len(intervals) and intervals[i][0] <= new_interval[1]:
+        new_interval[0] = min(new_interval[0], intervals[i][0])
+        new_interval[1] = max(new_interval[1], intervals[i][1])
+        i += 1
+    result.append(new_interval)
+    # Add remaining
+    result.extend(intervals[i:])
+    return result
+
+def min_meeting_rooms(intervals):
+    """Meeting Rooms II (LC 253)"""
+    import heapq
+    if not intervals:
+        return 0
+    intervals.sort(key=lambda x: x[0])
+    heap = [intervals[0][1]]  # end times
+    for start, end in intervals[1:]:
+        if start >= heap[0]:
+            heapq.heappop(heap)
+        heapq.heappush(heap, end)
+    return len(heap)</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>MergeIntervals.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.util.*;
+
+public class MergeIntervals {
+    // Merge Intervals (LC 56)
+    public int[][] merge(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -&gt; a[0] - b[0]);
+        List&lt;int[]&gt; merged = new ArrayList&lt;&gt;();
+        merged.add(intervals[0]);
+        for (int i = 1; i &lt; intervals.length; i++) {
+            int[] last = merged.get(merged.size() - 1);
+            if (intervals[i][0] &lt;= last[1]) {
+                last[1] = Math.max(last[1], intervals[i][1]);
+            } else {
+                merged.add(intervals[i]);
+            }
+        }
+        return merged.toArray(new int[0][]);
+    }
+
+    // Meeting Rooms II (LC 253)
+    public int minMeetingRooms(int[][] intervals) {
+        Arrays.sort(intervals, (a, b) -&gt; a[0] - b[0]);
+        PriorityQueue&lt;Integer&gt; heap = new PriorityQueue&lt;&gt;();
+        heap.offer(intervals[0][1]);
+        for (int i = 1; i &lt; intervals.length; i++) {
+            if (intervals[i][0] &gt;= heap.peek())
+                heap.poll();
+            heap.offer(intervals[i][1]);
+        }
+        return heap.size();
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>merge_intervals.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;vector&gt;
+#include &lt;algorithm&gt;
+#include &lt;queue&gt;
+using namespace std;
+
+// Merge Intervals (LC 56)
+vector&lt;vector&lt;int&gt;&gt; merge(vector&lt;vector&lt;int&gt;&gt;&amp; intervals) {
+    sort(intervals.begin(), intervals.end());
+    vector&lt;vector&lt;int&gt;&gt; merged = {intervals[0]};
+    for (int i = 1; i &lt; (int)intervals.size(); i++) {
+        if (intervals[i][0] &lt;= merged.back()[1]) {
+            merged.back()[1] = max(merged.back()[1], intervals[i][1]);
+        } else {
+            merged.push_back(intervals[i]);
+        }
+    }
+    return merged;
+}
+
+// Meeting Rooms II (LC 253)
+int minMeetingRooms(vector&lt;vector&lt;int&gt;&gt;&amp; intervals) {
+    sort(intervals.begin(), intervals.end());
+    priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; heap;
+    heap.push(intervals[0][1]);
+    for (int i = 1; i &lt; (int)intervals.size(); i++) {
+        if (intervals[i][0] &gt;= heap.top()) heap.pop();
+        heap.push(intervals[i][1]);
+    }
+    return heap.size();
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>merge_intervals.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">// Merge Intervals (LC 56)
+fn merge(intervals: &amp;mut Vec&lt;Vec&lt;i32&gt;&gt;) -&gt; Vec&lt;Vec&lt;i32&gt;&gt; {
+    intervals.sort();
+    let mut merged: Vec&lt;Vec&lt;i32&gt;&gt; = vec![intervals[0].clone()];
+    for interval in intervals.iter().skip(1) {
+        let last = merged.last_mut().unwrap();
+        if interval[0] &lt;= last[1] {
+            last[1] = last[1].max(interval[1]);
+        } else {
+            merged.push(interval.clone());
+        }
+    }
+    merged
+}
+
+// Insert Interval (LC 57)
+fn insert(intervals: Vec&lt;Vec&lt;i32&gt;&gt;, new_interval: Vec&lt;i32&gt;) -&gt; Vec&lt;Vec&lt;i32&gt;&gt; {
+    let mut result = Vec::new();
+    let mut new_int = new_interval;
+    let mut i = 0;
+
+    while i &lt; intervals.len() &amp;&amp; intervals[i][1] &lt; new_int[0] {
+        result.push(intervals[i].clone());
+        i += 1;
+    }
+    while i &lt; intervals.len() &amp;&amp; intervals[i][0] &lt;= new_int[1] {
+        new_int[0] = new_int[0].min(intervals[i][0]);
+        new_int[1] = new_int[1].max(intervals[i][1]);
+        i += 1;
+    }
+    result.push(new_int);
+    while i &lt; intervals.len() {
+        result.push(intervals[i].clone());
+        i += 1;
+    }
+    result
+}</pre></div>
+</div>
+</div>
+</div>
+
+<div class="card" id="top-k">
+<h2><span class="icon">&#127942;</span> Pattern 5: Top-K Elements</h2>
+<p>Use a <strong>min-heap of size K</strong> to efficiently find the K largest elements, or a <strong>max-heap</strong> for the K smallest. This gives O(n log k) instead of O(n log n) from sorting.</p>
+
+<h3>Key Insight</h3>
+<p>For "K largest": maintain a min-heap of size K. The root is always the smallest among the K largest. For "K smallest": use a max-heap of size K.</p>
+
+<div class="diagram">
+Find 3 largest from: [3, 1, 5, 12, 2, 11]
+
+Min-heap (size 3):
+  Add 3:  [3]
+  Add 1:  [1, 3]
+  Add 5:  [1, 3, 5]
+  Add 12: [3, 5, 12]      (evict 1, since 12 &gt; min=1)
+  Add 2:  [3, 5, 12]      (skip 2, since 2 &lt; min=3)
+  Add 11: [5, 11, 12]     (evict 3, since 11 &gt; min=3)
+
+Result: heap contains <span class="highlight">[5, 11, 12]</span> = top 3 largest
+Kth largest = heap root = <span class="highlight">5</span>
+</div>
+
+<div class="code-viewer">
+<div class="code-tabs">
+<button class="code-tab active" data-lang="python">Python</button>
+<button class="code-tab" data-lang="java">Java</button>
+<button class="code-tab" data-lang="cpp">C++</button>
+<button class="code-tab" data-lang="rust">Rust</button>
+</div>
+<div class="code-panel active" data-lang="python">
+<div class="code-header"><span>top_k.py</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="python">import heapq
+from collections import Counter
+
+def find_kth_largest(nums, k):
+    """Kth Largest Element in an Array (LC 215)"""
+    heap = []
+    for num in nums:
+        heapq.heappush(heap, num)
+        if len(heap) > k:
+            heapq.heappop(heap)
+    return heap[0]
+
+def top_k_frequent(nums, k):
+    """Top K Frequent Elements (LC 347)"""
+    count = Counter(nums)
+    # Min-heap of size k based on frequency
+    return heapq.nlargest(k, count.keys(), key=count.get)
+
+def k_closest_points(points, k):
+    """K Closest Points to Origin (LC 973)"""
+    # Max-heap (negate distance) of size k
+    heap = []
+    for x, y in points:
+        dist = -(x*x + y*y)  # negate for max-heap
+        if len(heap) < k:
+            heapq.heappush(heap, (dist, x, y))
+        elif dist > heap[0][0]:
+            heapq.heapreplace(heap, (dist, x, y))
+    return [[x, y] for _, x, y in heap]
+
+def find_median(nums):
+    """Find Median from Data Stream (LC 295)"""
+    small = []  # max-heap (negated)
+    large = []  # min-heap
+
+    for num in nums:
+        heapq.heappush(small, -num)
+        # Balance: move largest from small to large
+        heapq.heappush(large, -heapq.heappop(small))
+        # Keep small >= large in size
+        if len(large) > len(small):
+            heapq.heappush(small, -heapq.heappop(large))
+
+    if len(small) > len(large):
+        return -small[0]
+    return (-small[0] + large[0]) / 2.0</pre></div>
+</div>
+<div class="code-panel" data-lang="java">
+<div class="code-header"><span>TopK.java</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="java">import java.util.*;
+
+public class TopK {
+    // Kth Largest Element (LC 215)
+    public int findKthLargest(int[] nums, int k) {
+        PriorityQueue&lt;Integer&gt; heap = new PriorityQueue&lt;&gt;();
+        for (int num : nums) {
+            heap.offer(num);
+            if (heap.size() &gt; k) heap.poll();
+        }
+        return heap.peek();
+    }
+
+    // Top K Frequent Elements (LC 347)
+    public int[] topKFrequent(int[] nums, int k) {
+        Map&lt;Integer, Integer&gt; count = new HashMap&lt;&gt;();
+        for (int n : nums) count.merge(n, 1, Integer::sum);
+
+        PriorityQueue&lt;int[]&gt; heap = new PriorityQueue&lt;&gt;((a,b) -&gt; a[1] - b[1]);
+        for (var e : count.entrySet()) {
+            heap.offer(new int[]{e.getKey(), e.getValue()});
+            if (heap.size() &gt; k) heap.poll();
+        }
+        return heap.stream().mapToInt(a -&gt; a[0]).toArray();
+    }
+
+    // Find Median from Data Stream (LC 295)
+    PriorityQueue&lt;Integer&gt; small = new PriorityQueue&lt;&gt;(Collections.reverseOrder());
+    PriorityQueue&lt;Integer&gt; large = new PriorityQueue&lt;&gt;();
+
+    public void addNum(int num) {
+        small.offer(num);
+        large.offer(small.poll());
+        if (large.size() &gt; small.size())
+            small.offer(large.poll());
+    }
+
+    public double findMedian() {
+        if (small.size() &gt; large.size()) return small.peek();
+        return (small.peek() + large.peek()) / 2.0;
+    }
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="cpp">
+<div class="code-header"><span>top_k.cpp</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="cpp">#include &lt;vector&gt;
+#include &lt;queue&gt;
+#include &lt;unordered_map&gt;
+using namespace std;
+
+// Kth Largest Element (LC 215)
+int findKthLargest(vector&lt;int&gt;&amp; nums, int k) {
+    priority_queue&lt;int, vector&lt;int&gt;, greater&lt;int&gt;&gt; heap;
+    for (int num : nums) {
+        heap.push(num);
+        if ((int)heap.size() &gt; k) heap.pop();
+    }
+    return heap.top();
+}
+
+// Top K Frequent Elements (LC 347)
+vector&lt;int&gt; topKFrequent(vector&lt;int&gt;&amp; nums, int k) {
+    unordered_map&lt;int, int&gt; count;
+    for (int n : nums) count[n]++;
+
+    auto cmp = [](pair&lt;int,int&gt;&amp; a, pair&lt;int,int&gt;&amp; b) {
+        return a.second &gt; b.second;
+    };
+    priority_queue&lt;pair&lt;int,int&gt;, vector&lt;pair&lt;int,int&gt;&gt;, decltype(cmp)&gt; heap(cmp);
+
+    for (auto&amp; [num, freq] : count) {
+        heap.push({num, freq});
+        if ((int)heap.size() &gt; k) heap.pop();
+    }
+    vector&lt;int&gt; result;
+    while (!heap.empty()) {
+        result.push_back(heap.top().first);
+        heap.pop();
+    }
+    return result;
+}</pre></div>
+</div>
+<div class="code-panel" data-lang="rust">
+<div class="code-header"><span>top_k.rs</span><button class="copy-btn">Copy</button></div>
+<div class="code-content"><div class="line-numbers"></div><pre class="code-text" data-code="rust">use std::collections::{BinaryHeap, HashMap};
+use std::cmp::Reverse;
+
+// Kth Largest Element (LC 215)
+fn find_kth_largest(nums: &amp;[i32], k: usize) -&gt; i32 {
+    let mut heap: BinaryHeap&lt;Reverse&lt;i32&gt;&gt; = BinaryHeap::new();
+    for &amp;num in nums {
+        heap.push(Reverse(num));
+        if heap.len() &gt; k { heap.pop(); }
+    }
+    heap.peek().unwrap().0
+}
+
+// Top K Frequent Elements (LC 347)
+fn top_k_frequent(nums: &amp;[i32], k: usize) -&gt; Vec&lt;i32&gt; {
+    let mut count: HashMap&lt;i32, usize&gt; = HashMap::new();
+    for &amp;n in nums { *count.entry(n).or_insert(0) += 1; }
+
+    let mut heap: BinaryHeap&lt;Reverse&lt;(usize, i32)&gt;&gt; = BinaryHeap::new();
+    for (&amp;num, &amp;freq) in &amp;count {
+        heap.push(Reverse((freq, num)));
+        if heap.len() &gt; k { heap.pop(); }
+    }
+    heap.into_iter().map(|Reverse((_, n))| n).collect()
+}</pre></div>
+</div>
+</div>
+
+<div class="insight">
+<div class="label">Pattern Recognition</div>
+Whenever you see "K largest", "K smallest", "K most frequent", or "K closest", think heap. Use a min-heap of size K for K largest, and a max-heap of size K for K smallest.
+</div>
+</div>
+
+<div class="card" id="comparison">
+<h2><span class="icon">&#128202;</span> Pattern Cheat Sheet</h2>
+<table>
+<thead><tr><th>Pattern</th><th>When to Use</th><th>Time</th><th>Key Data Structure</th></tr></thead>
+<tbody>
+<tr><td>Two Pointers</td><td>Sorted array, pair finding, partitioning</td><td><span class="badge badge-green">O(n)</span></td><td>Two indices</td></tr>
+<tr><td>Sliding Window</td><td>Subarray/substring with constraint</td><td><span class="badge badge-green">O(n)</span></td><td>HashMap / Counter</td></tr>
+<tr><td>Fast &amp; Slow</td><td>Cycle detection, middle of list</td><td><span class="badge badge-green">O(n)</span></td><td>Two pointers at diff speeds</td></tr>
+<tr><td>Merge Intervals</td><td>Overlapping ranges, scheduling</td><td><span class="badge badge-yellow">O(n log n)</span></td><td>Sort + linear scan</td></tr>
+<tr><td>Top-K Elements</td><td>K largest/smallest/frequent</td><td><span class="badge badge-yellow">O(n log k)</span></td><td>Heap (PriorityQueue)</td></tr>
+</tbody>
+</table>
+
+<h3>Quick Decision Guide</h3>
+<div class="diagram">
+"Find pair in sorted array"      &rarr; <span class="highlight">Two Pointers</span>
+"Longest/shortest subarray..."   &rarr; <span class="highlight">Sliding Window</span>
+"Detect cycle / find middle"     &rarr; <span class="highlight">Fast &amp; Slow</span>
+"Overlapping intervals"          &rarr; <span class="highlight">Merge Intervals</span>
+"K largest / most frequent"      &rarr; <span class="highlight">Top-K (Heap)</span>
+"Subsets / permutations"         &rarr; <span class="sorted">Backtracking</span> (Week 20)
+"Shortest path in graph"         &rarr; <span class="sorted">BFS/Dijkstra</span> (Week 17)
+"Optimal substructure"           &rarr; <span class="sorted">Dynamic Programming</span> (Week 18)
+</div>
+</div>
+
+<div class="card" id="practice">
+<h2><span class="icon">&#128170;</span> Practice Problems</h2>
+<h3>Two Pointers</h3>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Valid Palindrome</strong> &mdash; LeetCode 125</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>3Sum</strong> &mdash; LeetCode 15</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Trapping Rain Water</strong> &mdash; LeetCode 42</div>
+<h3>Sliding Window</h3>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Longest Substring Without Repeating Characters</strong> &mdash; LeetCode 3</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Minimum Window Substring</strong> &mdash; LeetCode 76</div>
+<h3>Fast &amp; Slow</h3>
+<div class="practice-item"><span class="difficulty badge badge-green">Easy</span> <strong>Linked List Cycle</strong> &mdash; LeetCode 141</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Find the Duplicate Number</strong> &mdash; LeetCode 287</div>
+<h3>Merge Intervals</h3>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Merge Intervals</strong> &mdash; LeetCode 56</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Insert Interval</strong> &mdash; LeetCode 57</div>
+<h3>Top-K</h3>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Kth Largest Element</strong> &mdash; LeetCode 215</div>
+<div class="practice-item"><span class="difficulty badge badge-yellow">Medium</span> <strong>Top K Frequent Elements</strong> &mdash; LeetCode 347</div>
+<div class="practice-item"><span class="difficulty badge badge-red">Hard</span> <strong>Find Median from Data Stream</strong> &mdash; LeetCode 295</div>
+</div>
+
+<div class="card" id="summary">
+<h2><span class="icon">&#128214;</span> Summary &amp; Congratulations!</h2>
+<p>You've completed the entire 30-week DSA Journey! Here's a final recap of all patterns covered:</p>
+<table>
+<thead><tr><th>Week</th><th>Topic</th><th>Core Patterns</th></tr></thead>
+<tbody>
+<tr><td>1-5</td><td>Foundations</td><td>Arrays, loops, functions, recursion</td></tr>
+<tr><td>6-8</td><td>Core Data Structures</td><td>Arrays, strings, 2D arrays, sorting</td></tr>
+<tr><td>9-12</td><td>Searching &amp; Linked Lists</td><td>Binary search, linked lists, stacks, queues</td></tr>
+<tr><td>13-15</td><td>Trees &amp; Recursion</td><td>BST, tree traversals, divide &amp; conquer</td></tr>
+<tr><td>16-17</td><td>Hashing &amp; Graphs</td><td>HashMaps, BFS, DFS, shortest paths</td></tr>
+<tr><td>18-20</td><td>Dynamic Programming</td><td>Memoization, tabulation, greedy, backtracking</td></tr>
+<tr><td>21-24</td><td>Advanced Topics</td><td>Advanced trees, graphs, tries, research algorithms</td></tr>
+<tr><td>25-28</td><td>Specialized Topics</td><td>String algorithms, network flow, geometry, game theory</td></tr>
+<tr><td>29-30</td><td>System Design &amp; Patterns</td><td>System design building blocks, interview patterns</td></tr>
+</tbody>
+</table>
+<div class="warning-box">
+<div class="label">Final Advice</div>
+Mastering DSA is not about memorizing solutions &mdash; it's about recognizing patterns. When you see a new problem, ask: "Which pattern does this resemble?" Practice identifying patterns before jumping into code. Solve at least 2-3 problems per pattern to build muscle memory. Good luck on your interviews!
+</div>
+</div>
+
+<div class="nav-footer">
+<a href="../Week 29/index.html">&larr; Week 29</a>
+<a href="../README.md">Back to README</a>
+</div>
+</main>
+</div>
+<button class="back-to-top" id="backToTop" aria-label="Back to top">&#8593;</button>
+<script>
+const hamburger=document.getElementById('hamburger'),sidebar=document.getElementById('sidebar'),overlay=document.getElementById('overlay');hamburger.addEventListener('click',()=>{sidebar.classList.toggle('open');overlay.classList.toggle('open')});overlay.addEventListener('click',()=>{sidebar.classList.remove('open');overlay.classList.remove('open')});const progressBar=document.getElementById('progressBar');window.addEventListener('scroll',()=>{const h=document.documentElement,b=document.body;const st=h.scrollTop||b.scrollTop;const sh=h.scrollHeight||b.scrollHeight;const p=(st/(sh-h.clientHeight))*100;progressBar.style.width=p+'%'});const backToTop=document.getElementById('backToTop');window.addEventListener('scroll',()=>{backToTop.classList.toggle('visible',window.scrollY>400)});backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add('visible')})},{threshold:0.08});document.querySelectorAll('.card').forEach(c=>obs.observe(c));document.querySelectorAll('.code-viewer').forEach(viewer=>{const tabs=viewer.querySelectorAll('.code-tab');const panels=viewer.querySelectorAll('.code-panel');tabs.forEach(tab=>{tab.addEventListener('click',()=>{const lang=tab.dataset.lang;tabs.forEach(t=>t.classList.remove('active'));panels.forEach(p=>p.classList.remove('active'));tab.classList.add('active');viewer.querySelector(`.code-panel[data-lang="${lang}"]`).classList.add('active')})})});document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click',()=>{const code=btn.closest('.code-panel').querySelector('.code-text').textContent;navigator.clipboard.writeText(code).then(()=>{btn.textContent='Copied!';setTimeout(()=>btn.textContent='Copy',2000)})})});document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});function highlight(code,lang){code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements)\b/g;const kwCpp=/\b(void|int|long|bool|auto|const|if|else|for|while|return|break|new|class|public|private|template|typename|using|namespace|include|vector|string|size_t|static|true|false)\b/g;const kwPy=/\b(def|class|if|else|elif|for|while|return|break|import|from|in|not|and|or|None|True|False|range|len|self|assert|lambda|yield|raise|pass|is)\b/g;const kwRs=/\b(fn|let|mut|if|else|for|while|return|break|use|struct|impl|pub|self|match|loop|in|true|false|usize|i32|u64|Vec|Some|None|Option|assert_eq|assert|where|as|const|mod|type|enum)\b/g;let kw=kwJava;if(lang==='cpp')kw=kwCpp;if(lang==='python')kw=kwPy;if(lang==='rust')kw=kwRs;code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');return code}document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';const raw=block.textContent;block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang)});document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.innerHTML,lang)});const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
+</script>
+</body>
+</html>
