@@ -1090,7 +1090,7 @@ nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
 function highlight(code,lang){
 // Comments
 code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
-code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+if(lang==='python'){code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');}
 // Strings
 code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
 // Numbers
@@ -1112,7 +1112,7 @@ return code;
 document.querySelectorAll('.code-text').forEach(block=>{
 const lang=block.dataset.code||'';
 const raw=block.textContent;
-block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);
+block.innerHTML=highlight(raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),lang);
 // Re-escape for display but keep spans
 });
 

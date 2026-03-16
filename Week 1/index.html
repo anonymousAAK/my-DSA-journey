@@ -813,7 +813,7 @@ nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('');
 // Syntax highlighting
 function highlight(code,lang){
 code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
-code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+if(lang==='python'){code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');}
 code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
 code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
 const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|switch|case|default|throw|throws|final|extends|implements|package|double|float|byte|short|char|String|Scanner)\b/g;
@@ -831,7 +831,7 @@ return code;
 document.querySelectorAll('.code-text').forEach(block=>{
 const lang=block.dataset.code||'';
 const raw=block.textContent;
-block.innerHTML=highlight(raw.replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/&lt;/g,'<').replace(/&gt;/g,'>'),lang);
+block.innerHTML=highlight(raw.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),lang);
 });
 
 // Active sidebar link on scroll

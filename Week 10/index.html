@@ -925,7 +925,7 @@ document.querySelectorAll('.copy-btn').forEach(btn=>{btn.addEventListener('click
 document.querySelectorAll('.code-text').forEach(block=>{const lines=block.textContent.split('\n');const nums=block.previousElementSibling;nums.innerHTML=lines.map((_,i)=>`<span>${i+1}</span>`).join('')});
 function highlight(code,lang){
 code=code.replace(/(\/\/.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
-code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');
+if(lang==='python'){code=code.replace(/(#.*$)/gm,'<span style="color:#8b949e;font-style:italic">$1</span>');}
 code=code.replace(/(&quot;[^&]*?&quot;|"[^"]*?")/g,'<span style="color:#a5d6ff">$1</span>');
 code=code.replace(/\b(\d+)\b/g,'<span style="color:#79c0ff">$1</span>');
 const kwJava=/\b(static|void|int|long|boolean|if|else|for|while|return|break|new|class|public|private|import|List|ArrayList|Math)\b/g;
@@ -937,6 +937,7 @@ code=code.replace(kw,'<span style="color:#ff7b72">$1</span>');
 code=code.replace(/\b([a-zA-Z_]\w*)\s*\(/g,'<span style="color:#d2a8ff">$1</span>(');
 return code;
 }
+document.querySelectorAll('.code-text').forEach(block=>{const lang=block.dataset.code||'';block.innerHTML=highlight(block.textContent.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'),lang);});
 const sections=document.querySelectorAll('[id]');const navLinks=document.querySelectorAll('.sidebar nav a');
 window.addEventListener('scroll',()=>{let current='';sections.forEach(s=>{if(window.scrollY>=s.offsetTop-100)current=s.id});navLinks.forEach(a=>{a.classList.remove('active');if(a.getAttribute('href')==='#'+current)a.classList.add('active')})});
 </script>
