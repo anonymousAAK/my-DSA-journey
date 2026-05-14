@@ -1,0 +1,54 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: For Loop Variations
+File: 2.for_loop_variations.html
+
+CONCEPT:
+Same omission flexibility as C++/Java -- any of `init; cond; update` can be empty.
+Multiple loop variables via comma operator (rarely used in JS).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - For loop variations</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>For Loop Variations</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  // 1) init outside
+  let i = 0;
+  for (; i < 3; i++) log("i =", i);
+
+  // 2) update inside body
+  for (let j = 0; j < 3; ) { log("j =", j); j++; }
+
+  // 3) condition removed -- infinite (capped)
+  let k = 0, safety = 0;
+  for (;; k++) {
+    if (++safety > 3) break;
+    log("k =", k);
+  }
+
+  // 4) Two counters via comma
+  for (let a = 0, b = 4; a < 5 && b >= 0; a++, b--) {
+    log(`(a=${a}, b=${b})`);
+  }
+
+  // 5) infinite loop pattern
+  let n = 0;
+  for (;;) { if (++n >= 3) { log("stopped at n=", n); break; } }
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - `for (;;)` and `while (true)` both create infinite loops.
+ - The comma operator works in JS for loop headers exactly like C/C++.
+-->

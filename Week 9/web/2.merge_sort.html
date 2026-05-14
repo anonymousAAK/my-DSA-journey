@@ -1,0 +1,137 @@
+<!--
+  WEEK 9 - WEB DSA
+  Topic: Merge Sort
+  File: 2.merge_sort.html
+
+  CONCEPT:
+    Recursive divide-and-conquer: split, sort halves, merge.
+
+  KEY POINTS:
+    - Stable; O(n log n) all cases; O(n) auxiliary space.
+    - Inversion counting reuses the merge step.
+
+  ALGORITHM / APPROACH:
+    See Java/Python; identical logic in JS.
+
+  WEB-SPECIFIC NOTES:
+    - Array.prototype.slice copies a range.
+    - Recursion is fine for moderate input sizes; very large recursions
+      may need iterative bottom-up.
+
+  DRY RUN:
+    [38,27,43,3,9,82,10] -> [3,9,10,27,38,43,82]
+    Inversions of [2,4,1,3,5] = 3.
+
+  COMPLEXITY:
+    Time: O(n log n)  Space: O(n)  Stable.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 9 - Merge Sort</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 9 - Merge Sort</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function merge(arr, left, mid, right) {
+    const L = arr.slice(left, mid + 1);
+    const R = arr.slice(mid + 1, right + 1);
+    let i = 0, j = 0, k = left;
+    while (i < L.length && j < R.length) {
+      if (L[i] <= R[j]) arr[k++] = L[i++];
+      else              arr[k++] = R[j++];
+    }
+    while (i < L.length) arr[k++] = L[i++];
+    while (j < R.length) arr[k++] = R[j++];
+  }
+
+  function mergeSortRange(arr, left, right) {
+    if (left >= right) return;
+    const mid = left + ((right - left) >> 1);
+    mergeSortRange(arr, left, mid);
+    mergeSortRange(arr, mid + 1, right);
+    merge(arr, left, mid, right);
+  }
+
+  function mergeSort(arr) {
+    if (arr.length === 0) return;
+    mergeSortRange(arr, 0, arr.length - 1);
+  }
+
+  function mergeCount(arr, left, mid, right) {
+    const L = arr.slice(left, mid + 1);
+    const R = arr.slice(mid + 1, right + 1);
+    let inv = 0, i = 0, j = 0, k = left;
+    while (i < L.length && j < R.length) {
+      if (L[i] <= R[j]) arr[k++] = L[i++];
+      else {
+        inv += L.length - i;
+        arr[k++] = R[j++];
+      }
+    }
+    while (i < L.length) arr[k++] = L[i++];
+    while (j < R.length) arr[k++] = R[j++];
+    return inv;
+  }
+
+  function mergeSortCount(arr, left, right) {
+    if (left >= right) return 0;
+    const mid = left + ((right - left) >> 1);
+    let inv = mergeSortCount(arr, left, mid);
+    inv += mergeSortCount(arr, mid + 1, right);
+    inv += mergeCount(arr, left, mid, right);
+    return inv;
+  }
+
+  function countInversions(arr) {
+    if (arr.length === 0) return 0;
+    const copy = arr.slice();
+    return mergeSortCount(copy, 0, copy.length - 1);
+  }
+
+  const arr = [38, 27, 43, 3, 9, 82, 10];
+  log(`Before: [${arr}]`);
+  mergeSort(arr);
+  log(`After:  [${arr}]`);
+
+  const single = [5];
+  mergeSort(single);
+  log(`\nSingle: [${single}]`);
+
+  const already = [1, 2, 3, 4, 5];
+  mergeSort(already);
+  log(`Already sorted: [${already}]`);
+
+  const reverse = [5, 4, 3, 2, 1];
+  mergeSort(reverse);
+  log(`Reverse sorted: [${reverse}]`);
+
+  log("\n=== Count Inversions ===");
+  for (const t of [[2,4,1,3,5], [5,3,1,4,2], [1,2,3]]) {
+    log(`[${t}] -> inversions: ${countInversions(t)}`);
+  }
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - arr.slice(a, b) replaces Arrays.copyOfRange.
+    - JS Number is a double; equality comparisons in merge are exact for ints below 2^53.
+    - Array.prototype.sort is stable as of ECMAScript 2019.
+-->

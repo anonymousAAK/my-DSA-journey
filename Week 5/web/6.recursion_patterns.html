@@ -1,0 +1,85 @@
+<!--
+WEEK 5 - WEB FUNCTIONS & RECURSION
+Topic: Common Recursion Patterns
+File: 6.recursion_patterns.html
+
+PATTERNS:
+ 1. Linear recursion -- reverse a string
+ 2. Tail recursion w/ accumulator -- factorial
+ 3. Mutual recursion -- is_even / is_odd
+ 4. Helper / accumulator -- digit sum
+ 5. Subsets (backtracking foundation)
+ 6. Palindrome via two pointers
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 5 - Patterns</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Recursion Patterns</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  // 1. Linear: reverse a string
+  function reverseStr(s) {
+    return s.length === 0 ? "" : reverseStr(s.slice(1)) + s[0];
+  }
+
+  // 2. Tail recursion with accumulator
+  function factTail(n, acc = 1n) {
+    if (n <= 1n) return acc;
+    return factTail(n - 1n, n * acc);
+  }
+
+  // 3. Mutual recursion
+  function isEven(n) { return n === 0 ? true  : isOdd (n - 1); }
+  function isOdd (n) { return n === 0 ? false : isEven(n - 1); }
+
+  // 4. Helper -- digit sum
+  function digitSum(n) {
+    if (n === 0) return 0;
+    return (n % 10) + digitSum(Math.trunc(n / 10));
+  }
+
+  // 5. Subsets
+  function subsets(arr, idx = 0, current = []) {
+    if (idx === arr.length) { log("{" + current.join(",") + "}"); return; }
+    subsets(arr, idx + 1, current);
+    subsets(arr, idx + 1, [...current, arr[idx]]);
+  }
+
+  // 6. Palindrome
+  function isPalindrome(s, l = 0, r = s.length - 1) {
+    if (l >= r) return true;
+    if (s[l] !== s[r]) return false;
+    return isPalindrome(s, l + 1, r - 1);
+  }
+
+  log("reverse('hello') =", reverseStr("hello"));
+  log("factTail(5)     =", factTail(5n).toString());
+  log("factTail(10)    =", factTail(10n).toString());
+  log("isEven(4) =", isEven(4));
+  log("isOdd(7)  =", isOdd(7));
+  log("digitSum(1234) =", digitSum(1234));
+
+  log("\nAll subsets of [1, 2, 3]:");
+  subsets([1, 2, 3]);
+
+  log("\nisPalindrome('racecar') =", isPalindrome("racecar"));
+  log("isPalindrome('hello')   =", isPalindrome("hello"));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS has NO tail-call optimisation in V8/SpiderMonkey -- deep tail recursion still
+   eats stack frames.
+ - Spread `[...current, arr[idx]]` is the immutable extend pattern.
+ - `s.slice(1)` is O(n) every call -- watch out for quadratic recursion costs.
+-->

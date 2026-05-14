@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 11 - Singly Linked List</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+  pre  { background: #111; color: #d8e1ff; padding: 1rem; border-radius: 8px; overflow:auto; }
+  .list-vis { display:flex; flex-wrap:wrap; gap:.5rem; align-items:center; margin: 1rem 0;}
+  .node { background:#3498db; color:white; padding:.5rem .8rem; border-radius:6px; font-family:monospace;}
+  .arrow { color:#666; font-weight:bold; }
+  .null { color:#999; font-family: monospace; }
+  button { margin: .25rem; padding: .4rem .8rem; cursor: pointer; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<h1>Week 11 — Singly Linked List (JavaScript)</h1>
+<!--
+  WEEK 11 - WEB DSA
+  Topic: Singly Linked List - Complete Implementation
+  File: 1.SinglyLinkedList.html
+
+  CONCEPT: Visual playground for a singly linked list. Buttons mutate the
+  list and we re-render the chain of nodes plus a transcript of each
+  operation in the <pre> block below.
+
+  KEY POINTS:
+    - Same operations as the Java/Python/C++/Rust files.
+    - Each node renders as a <span class="node">; arrows separate them.
+    - State changes are appended to the #out element AND console.log'd.
+
+  ALGORITHM / APPROACH:
+    Implementation is the textbook one (insertAtHead/Tail/Index, delete,
+    reverse iterative & recursive, find middle via slow/fast pointers).
+    The render() function walks head -> tail building the DOM.
+
+  WEB-SPECIFIC NOTES:
+    - JavaScript objects are reference types so we can mutate next pointers
+      directly, much like Java.
+    - No types — the same Node "class" works for any payload.
+    - Recursion depth limit: V8 typically allows >10,000 — fine for demo.
+
+  DRY RUN:
+    Example 1: insertAtTail 1,2,3 then insertAtHead 0
+      [] -> [1] -> [1,2] -> [1,2,3] -> [0,1,2,3]
+    Example 2: reverseIterative on [0,1,2,3,4,5]
+      iterates prev/curr/next swap -> [5,4,3,2,1,0]
+
+  COMPLEXITY:
+    insert/delete head: O(1); insert tail / by index / by value: O(n)
+    reverse: O(n) time, O(1) space (iterative)
+-->
+<div id="vis" class="list-vis"></div>
+<div>
+  <button onclick="op_insertHead()">insertAtHead(rand)</button>
+  <button onclick="op_insertTail()">insertAtTail(rand)</button>
+  <button onclick="op_insertIdx()">insertAtIndex(2, 99)</button>
+  <button onclick="op_delHead()">deleteHead</button>
+  <button onclick="op_delVal()">deleteByValue(99)</button>
+  <button onclick="op_reverseIt()">reverseIterative</button>
+  <button onclick="op_reverseRec()">reverseRecursive</button>
+  <button onclick="op_middle()">findMiddle</button>
+  <button onclick="op_clear()">clear</button>
+  <button onclick="op_resetDemo()">reset demo</button>
+</div>
+<h2>Transcript</h2>
+<pre id="out"></pre>
+
+<script>
+class Node {
+  constructor(data) { this.data = data; this.next = null; }
+}
+
+class LinkedList {
+  constructor() { this.head = null; }
+
+  insertAtHead(d) { const n = new Node(d); n.next = this.head; this.head = n; }
+
+  insertAtTail(d) {
+    const n = new Node(d);
+    if (!this.head) { this.head = n; return; }
+    let c = this.head;
+    while (c.next) c = c.next;
+    c.next = n;
+  }
+
+  insertAtIndex(i, d) {
+    if (i === 0) return this.insertAtHead(d);
+    let c = this.head;
+    for (let k = 0; k < i - 1 && c; k++) c = c.next;
+    if (!c) throw new Error("Index out of bounds");
+    const n = new Node(d);
+    n.next = c.next;
+    c.next = n;
+  }
+
+  deleteHead() { if (this.head) this.head = this.head.next; }
+
+  deleteByValue(v) {
+    if (!this.head) return false;
+    if (this.head.data === v) { this.head = this.head.next; return true; }
+    let c = this.head;
+    while (c.next) {
+      if (c.next.data === v) { c.next = c.next.next; return true; }
+      c = c.next;
+    }
+    return false;
+  }
+
+  size() { let n=0,c=this.head; while(c){n++;c=c.next;} return n; }
+
+  contains(v) { for (let c=this.head;c;c=c.next) if (c.data===v) return true; return false; }
+
+  reverseIterative() {
+    let prev=null, curr=this.head, next;
+    while (curr) { next=curr.next; curr.next=prev; prev=curr; curr=next; }
+    this.head = prev;
+  }
+
+  reverseRecursive() {
+    const helper = (node) => {
+      if (!node || !node.next) return node;
+      const nh = helper(node.next);
+      node.next.next = node;
+      node.next = null;
+      return nh;
+    };
+    this.head = helper(this.head);
+  }
+
+  findMiddle() {
+    let slow=this.head, fast=this.head;
+    while (fast && fast.next) { slow=slow.next; fast=fast.next.next; }
+    return slow;
+  }
+
+  hasCycle() {
+    let slow=this.head, fast=this.head;
+    while (fast && fast.next) {
+      slow=slow.next; fast=fast.next.next;
+      if (slow === fast) return true;
+    }
+    return false;
+  }
+
+  toArray() { const a=[]; for (let c=this.head;c;c=c.next) a.push(c.data); return a; }
+}
+
+const list = new LinkedList();
+const out = document.getElementById("out");
+const vis = document.getElementById("vis");
+
+function log(msg) {
+  console.log(msg);
+  out.textContent += msg + "\n";
+  out.scrollTop = out.scrollHeight;
+}
+
+function render() {
+  vis.innerHTML = "";
+  const head = document.createElement("span");
+  head.className = "null"; head.textContent = "HEAD";
+  vis.appendChild(head);
+  let c = list.head;
+  while (c) {
+    const arrow = document.createElement("span");
+    arrow.className = "arrow"; arrow.textContent = "→";
+    vis.appendChild(arrow);
+    const n = document.createElement("span");
+    n.className = "node"; n.textContent = c.data;
+    vis.appendChild(n);
+    c = c.next;
+  }
+  const arrow = document.createElement("span");
+  arrow.className = "arrow"; arrow.textContent = "→";
+  vis.appendChild(arrow);
+  const nul = document.createElement("span");
+  nul.className = "null"; nul.textContent = "NULL";
+  vis.appendChild(nul);
+}
+
+function op_insertHead() {
+  const v = Math.floor(Math.random()*100);
+  list.insertAtHead(v);
+  log(`insertAtHead(${v}) -> [${list.toArray().join(",")}]`);
+  render();
+}
+function op_insertTail() {
+  const v = Math.floor(Math.random()*100);
+  list.insertAtTail(v);
+  log(`insertAtTail(${v}) -> [${list.toArray().join(",")}]`);
+  render();
+}
+function op_insertIdx() {
+  try {
+    list.insertAtIndex(2, 99);
+    log(`insertAtIndex(2,99) -> [${list.toArray().join(",")}]`);
+  } catch (e) { log("error: " + e.message); }
+  render();
+}
+function op_delHead() { list.deleteHead(); log(`deleteHead -> [${list.toArray().join(",")}]`); render(); }
+function op_delVal() { const ok = list.deleteByValue(99); log(`deleteByValue(99) -> ${ok} -> [${list.toArray().join(",")}]`); render(); }
+function op_reverseIt() { list.reverseIterative(); log(`reverseIterative -> [${list.toArray().join(",")}]`); render(); }
+function op_reverseRec() { list.reverseRecursive(); log(`reverseRecursive -> [${list.toArray().join(",")}]`); render(); }
+function op_middle() { const m = list.findMiddle(); log(`findMiddle -> ${m? m.data : "null"}`); }
+function op_clear() { list.head = null; log("cleared"); render(); }
+function op_resetDemo() {
+  list.head = null;
+  for (const v of [1,2,3,4,5]) list.insertAtTail(v);
+  log("reset to [1,2,3,4,5]");
+  render();
+}
+
+op_resetDemo();
+log("Initial size: " + list.size());
+log("Contains 3: " + list.contains(3));
+log("Middle: " + list.findMiddle().data);
+log("hasCycle: " + list.hasCycle());
+</script>
+
+<!--
+NOTES (vs. Java):
+- JavaScript objects are reference types just like Java; mutating .next is
+  straightforward.
+- No null-pointer exceptions — but accessing .data on null still throws a
+  TypeError. We guard with explicit null checks.
+- Garbage collected (V8) so no manual delete needed.
+- The DOM provides a much richer "console" — we render the chain visually
+  in addition to logging text.
+-->
+</body>
+</html>

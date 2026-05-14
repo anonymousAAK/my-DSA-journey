@@ -1,0 +1,87 @@
+<!--
+WEEK 1 - WEB (HTML+JS) FUNDAMENTALS
+Topic: Web Development / JS Toolchain Setup
+File: 1.installation.html
+
+CONCEPT:
+Unlike Java/C++/Rust, "running" JavaScript only requires a browser. The
+browser itself is the runtime — no compiler to install. For server-side or
+build tooling install Node.js (which bundles npm).
+
+KEY POINTS:
+ - Browser  : Chrome / Firefox / Edge / Safari — F12 opens DevTools console.
+ - Editor   : VS Code is the de-facto standard.
+ - Node.js  : https://nodejs.org — includes `node` CLI and `npm`.
+ - Verify   : `node --version` && `npm --version`
+ - Quick start: save this file and double-click to open in a browser.
+ - For React/Vite/Next.js: `npm create vite@latest myapp`.
+
+SYNTAX:
+ <!DOCTYPE html><html><body>...</body></html>
+ <script>console.log("hi");</script>
+
+WEB-SPECIFIC NOTES vs Java:
+ - HTML structures content; JS adds behaviour; CSS adds presentation.
+ - Output can go to (a) the DOM (visible) or (b) console (DevTools).
+ - No installation needed to run; just open the HTML file.
+
+DRY RUN:
+ 1. Save as 1.installation.html, open in browser.
+ 2. Output appears in the <pre id="out"> block AND the console (F12).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Web Setup</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; overflow: auto; }
+    h1   { font-size: 1.4rem; }
+    h2   { font-size: 1.1rem; margin-top: 2rem; }
+    li   { margin: 0.25rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Week 1 - Web / JS Toolchain Setup</h1>
+  <p>Output (DOM + console):</p>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...args) => {
+        const line = args.map(a => typeof a === "object" ? JSON.stringify(a) : String(a)).join(" ");
+        out.textContent += line + "\n";
+        console.log(...args);
+      };
+
+      log("=== JavaScript Environment Check ===");
+      log("User Agent      :", navigator.userAgent);
+      log("Platform        :", navigator.platform || "(unknown)");
+      log("Language        :", navigator.language);
+      log("Online          :", navigator.onLine);
+      log("Cookies enabled :", navigator.cookieEnabled);
+
+      log("");
+      log("=== Setup Checklist ===");
+      [
+        "1. Install a modern browser (Chrome / Firefox / Edge / Safari).",
+        "2. Install Node.js from https://nodejs.org for tooling + npm.",
+        "3. Verify with `node --version` and `npm --version`.",
+        "4. Install VS Code + the JavaScript/TypeScript extension.",
+        "5. Open this HTML file in a browser - DevTools (F12) shows the console.",
+        "6. For SPA frameworks: npm create vite@latest myapp"
+      ].forEach(step => log(step));
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java/C++/Rust need compilers; JavaScript needs only a browser.
+ - The browser doubles as runtime + UI; DevTools console replaces stdout.
+ - For non-browser JS (servers, scripts), use Node.js or Deno or Bun.
+ - This file uses ONLY vanilla JS (no frameworks) so it runs anywhere.
+-->

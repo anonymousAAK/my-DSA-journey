@@ -1,0 +1,67 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: If-Else Conditional Statements
+File: 2.if_else.html
+
+CONCEPT:
+JS if/else looks much like Java's. Conditions are evaluated for truthiness
+(0/""/null/undefined/NaN are falsy; everything else is truthy).
+
+KEY POINTS:
+ - `if (cond) { ... } else if (cond) { ... } else { ... }`
+ - Truthy/falsy coercion means `if (arr.length)` is a common idiom.
+ - Ternary: `cond ? a : b`.
+ - `switch (x) { case ...: break; }` works for primitives AND strings.
+
+DRY RUN:
+ a=10, b=15 -> a>b false -> "b is greater"
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - If/Else</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>If / Else</h1>
+<label>a <input id="a" type="number" value="10"></label>
+<label>b <input id="b" type="number" value="15"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+  const render = () => {
+    out.textContent = "";
+    const a = Number(document.getElementById("a").value);
+    const b = Number(document.getElementById("b").value);
+    if (a > b) log("a is greater");
+    else       log("b is greater");
+    log("max via ternary =", a > b ? a : b);
+
+    // switch on a string
+    const grade = "B";
+    switch (grade) {
+      case "A": log("Excellent"); break;
+      case "B":
+      case "C": log("Good"); break;
+      default:  log("Try harder");
+    }
+
+    // truthiness demo
+    [0, 1, "", "hi", null, undefined, [], [0], {}].forEach(v =>
+      log(`Boolean(${JSON.stringify(v)}) = ${Boolean(v)}`));
+  };
+  render();
+  document.getElementById("a").addEventListener("input", render);
+  document.getElementById("b").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java doesn't have truthy/falsy coercion -- you must compare explicitly.
+ - JS's switch matches strings (Java 7+ does too); C++ does NOT.
+ - For exhaustive multi-branch logic, prefer functions + lookup tables.
+-->

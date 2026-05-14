@@ -1,0 +1,82 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Data Types in JavaScript
+File: 9.data_types.html
+
+CONCEPT:
+JavaScript has SEVEN primitive types plus the Object type:
+  - number      (64-bit float; both ints and decimals)
+  - bigint      (arbitrary precision integers)
+  - string      (immutable UTF-16 sequence)
+  - boolean
+  - undefined   (uninitialised)
+  - null        (intentional absence)
+  - symbol      (unique identifier; advanced use)
+Everything else (arrays, functions, dates...) is an Object.
+
+KEY POINTS:
+ - `typeof x` returns a string describing the type.
+ - `typeof null === "object"` is a famous legacy bug.
+ - `Array.isArray(x)` distinguishes arrays from plain objects.
+ - No `char` type — single characters are length-1 strings.
+ - `NaN` is a number ("Not a Number"); `NaN !== NaN`!
+
+SYNTAX:
+ typeof 42       // "number"
+ typeof "hi"      // "string"
+ typeof true      // "boolean"
+ typeof null      // "object"  (legacy bug)
+ typeof undefined // "undefined"
+ typeof []        // "object"
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Data Types</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+    table{ border-collapse: collapse; margin-top: 1rem; }
+    th,td{ border: 1px solid #888; padding: .25rem .5rem; }
+  </style>
+</head>
+<body>
+  <h1>JavaScript Data Types</h1>
+  <pre id="out"></pre>
+  <table id="t"><thead><tr><th>value</th><th>typeof</th><th>Array.isArray</th></tr></thead><tbody></tbody></table>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; console.log(...a); };
+
+      const samples = [42, 3.14, "hello", true, null, undefined, [1,2,3], {a:1}, 2n ** 100n, NaN];
+      const tb = document.querySelector("#t tbody");
+      for (const v of samples) {
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td>${typeof v === "string" ? `"${v}"` : String(v)}</td>
+                        <td>${typeof v}</td>
+                        <td>${Array.isArray(v)}</td>`;
+        tb.appendChild(tr);
+        log(`${typeof v === "string" ? `"${v}"` : String(v)} -> typeof = ${typeof v}`);
+      }
+
+      log("");
+      log("Number.MAX_SAFE_INTEGER =", Number.MAX_SAFE_INTEGER);  // 2^53 - 1
+      log("2n**100n =", (2n ** 100n).toString());                  // exact big int
+      log("NaN === NaN ->", NaN === NaN);                          // false!
+      log("Number.isNaN(NaN) ->", Number.isNaN(NaN));              // true
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS has no distinct int/long/float/double — `number` covers them all (with 53-bit safe ints).
+ - `bigint` (suffix `n`) gives exact integers of any size.
+ - `null` vs `undefined`: undefined is "never assigned"; null is "intentionally empty".
+ - `typeof null === "object"` is a kept-for-compatibility legacy bug.
+ - Strings, arrays, functions, dates, regex etc. live under the Object umbrella.
+-->

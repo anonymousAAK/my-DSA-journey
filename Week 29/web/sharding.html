@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 29 - Sharding</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Sharding Strategies</h1>
+
+<div class="doc">
+<p><strong>WEEK 29 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Partition data across N nodes via range,
+hash, or directory schemes; each trades range-query support, balance,
+and rebalance cost.</p>
+<p><strong>KEY POINTS:</strong> Range supports scans; Hash spreads
+uniformly; Directory offers per-key control.</p>
+<p><strong>ALGORITHM:</strong> Range: binary search by key. Hash:
+hash(key) mod N. Directory: explicit map lookup.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> Use SubtleCrypto (async) for
+cross-process stable hashes; we use a tiny FNV-1a 32-bit hash for
+synchronous demo simplicity.</p>
+<p><strong>DRY RUN:</strong> Range boundaries ["c","m","t"]; "apple"->0,
+"cat"->1, "mango"->2, "tiger"->3.</p>
+<p><strong>COMPLEXITY:</strong> Range O(log shards); Hash O(L); Dir O(1).</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+class RangeShardRouter {
+  constructor(boundaries) { this.b = [...boundaries].sort(); }
+  route(key) {
+    // upper_bound
+    let lo = 0, hi = this.b.length;
+    while (lo < hi) {
+      const m = (lo + hi) >> 1;
+      if (this.b[m] <= key) lo = m + 1; else hi = m;
+    }
+    return lo;
+  }
+}
+
+function fnv1a(s) {
+  let h = 0x811c9dc5 >>> 0;
+  for (let i = 0; i < s.length; i++) {
+    h ^= s.charCodeAt(i);
+    h = (h * 0x01000193) >>> 0;
+  }
+  return h;
+}
+
+class HashShardRouter {
+  constructor(n) { this.n = n; }
+  route(key) { return fnv1a(key) % this.n; }
+}
+
+class DirectoryShardRouter {
+  constructor() { this.map = new Map(); }
+  assign(k, s) { this.map.set(k, s); }
+  route(k) { return this.map.has(k) ? this.map.get(k) : -1; }
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const rng = new RangeShardRouter(["c", "m", "t"]);
+for (const k of ["apple","banana","cat","mango","tiger"])
+  log("range " + k.padStart(8) + " -> shard " + rng.route(k));
+
+const hsh = new HashShardRouter(4);
+for (const k of ["user:42","user:43","order:99","session:xyz"])
+  log("hash  " + k.padStart(14) + " -> shard " + hsh.route(k));
+
+const dr = new DirectoryShardRouter();
+dr.assign("hot-customer:Acme", 0);
+dr.assign("hot-customer:Globex", 1);
+log("dir   hot-customer:Acme -> shard " + dr.route("hot-customer:Acme"));
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * JS lacks a synchronous SHA hash; we use a small FNV-1a for stable
+    cross-process hashing in demos. Use SubtleCrypto in production.
+-->
+</body>
+</html>

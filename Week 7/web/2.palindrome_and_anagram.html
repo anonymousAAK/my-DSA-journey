@@ -1,0 +1,136 @@
+<!--
+  WEEK 7 - WEB DSA
+  Topic: Palindrome & Anagram
+  File: 2.palindrome_and_anagram.html
+
+  CONCEPT:
+    Palindrome: same forwards and backwards.
+    Anagram   : same characters with same multiplicities.
+
+  KEY POINTS:
+    - Two-pointer palindrome runs in O(n) time, O(1) space.
+    - Three anagram approaches: sort, frequency-array, Map.
+    - 's === [...s].reverse().join("")' is the Pythonic short-cut.
+
+  ALGORITHM / APPROACH:
+    See Java/Python sources; same logic ported to JS.
+
+  WEB-SPECIFIC NOTES:
+    - JS strings indexable with s[i]; for Unicode-safe iteration use [...s].
+    - To lowercase a single char: s[i].toLowerCase().
+
+  DRY RUN:
+    "racecar" -> palindrome (true)
+    "race a car" ignoring punctuation -> false
+    "listen"/"silent" sorted both = "eilnst" -> anagram (true)
+
+  COMPLEXITY:
+    Palindrome    : O(n)
+    Sort anagram  : O(n log n)
+    Freq anagram  : O(n)
+    Map  anagram  : O(n)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 7 - Palindrome & Anagram</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 7 - Palindrome & Anagram</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function isPalindrome(s) {
+    let l = 0, r = s.length - 1;
+    while (l < r) {
+      if (s[l] !== s[r]) return false;
+      l++; r--;
+    }
+    return true;
+  }
+
+  function isAlnum(c) {
+    return /[A-Za-z0-9]/.test(c);
+  }
+
+  function isPalindromeIgnoreNonAlpha(s) {
+    let l = 0, r = s.length - 1;
+    while (l < r) {
+      while (l < r && !isAlnum(s[l])) l++;
+      while (l < r && !isAlnum(s[r])) r--;
+      if (s[l].toLowerCase() !== s[r].toLowerCase()) return false;
+      l++; r--;
+    }
+    return true;
+  }
+
+  function isAnagramSort(a, b) {
+    if (a.length !== b.length) return false;
+    return [...a].sort().join('') === [...b].sort().join('');
+  }
+
+  function isAnagramFreq(a, b) {
+    if (a.length !== b.length) return false;
+    const freq = new Array(26).fill(0);
+    const A = 'a'.charCodeAt(0);
+    for (const c of a) freq[c.charCodeAt(0) - A]++;
+    for (const c of b) {
+      const i = c.charCodeAt(0) - A;
+      freq[i]--;
+      if (freq[i] < 0) return false;
+    }
+    return true;
+  }
+
+  function isAnagramMap(a, b) {
+    if (a.length !== b.length) return false;
+    const m = new Map();
+    for (const c of a) m.set(c, (m.get(c) || 0) + 1);
+    for (const c of b) {
+      const cur = m.get(c) || 0;
+      if (cur === 0) return false;
+      m.set(c, cur - 1);
+    }
+    return true;
+  }
+
+  log("=== Palindrome ===");
+  for (const t of ["racecar", "hello", "level", "madam", "a", ""]) {
+    log(`isPalindrome("${t}") = ${isPalindrome(t)}`);
+  }
+
+  log("\nisPalindromeIgnoreNonAlpha:");
+  log(`"A man, a plan, a canal: Panama" = ${isPalindromeIgnoreNonAlpha("A man, a plan, a canal: Panama")}`);
+  log(`"race a car" = ${isPalindromeIgnoreNonAlpha("race a car")}`);
+
+  log("\n=== Anagram ===");
+  const pairs = [["listen","silent"], ["eat","tea"], ["hello","world"], ["anagram","nagaram"]];
+  for (const [a, b] of pairs) {
+    log(`"${a}" vs "${b}":`);
+    log(`  Sort: ${isAnagramSort(a, b)}`);
+    log(`  Freq: ${isAnagramFreq(a, b)}`);
+    log(`  Map:  ${isAnagramMap(a, b)}`);
+  }
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - Map (insertion-ordered hashmap) replaces HashMap.
+    - charCodeAt + Array indexing reproduces the freq[26] trick.
+    - Spread + sort (`[...s].sort()`) is the JS sorted-string idiom.
+-->

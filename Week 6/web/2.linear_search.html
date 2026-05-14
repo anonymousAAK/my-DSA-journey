@@ -1,0 +1,110 @@
+<!--
+  WEEK 6 - WEB DSA
+  Topic: Linear Search
+  File: 2.linear_search.html
+
+  CONCEPT:
+    Sequentially scan an array for a target. Works on any ordering.
+
+  KEY POINTS:
+    - Returns the first index, or -1 if not present.
+    - Variants: last index, count, single-pass min/max.
+    - Array.prototype.indexOf is the built-in equivalent.
+
+  ALGORITHM / APPROACH:
+    for (let i = 0; i < arr.length; i++)
+      if (arr[i] === target) return i;
+    return -1;
+
+  WEB-SPECIFIC NOTES:
+    - Use === to avoid type-coercion surprises.
+    - Output piped to console + <pre>.
+    - findIndex / indexOf are the standard library ways.
+
+  DRY RUN:
+    arr = [4,2,7,1,9,3,7,5]
+    search(7) -> 2
+    search(6) -> -1
+    last(7)   -> 6
+
+  COMPLEXITY:
+    Best : O(1)   Worst : O(n)   Space: O(1)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 6 - Linear Search</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 6 - Linear Search</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function linearSearch(arr, target) {
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] === target) return i;
+    }
+    return -1;
+  }
+
+  function linearSearchLast(arr, target) {
+    let last = -1;
+    for (let i = 0; i < arr.length; i++) {
+      if (arr[i] === target) last = i;
+    }
+    return last;
+  }
+
+  function countOccurrences(arr, target) {
+    let count = 0;
+    for (const v of arr) if (v === target) count++;
+    return count;
+  }
+
+  function findMinMax(arr) {
+    if (arr.length === 0) throw new Error("Empty array");
+    let mn = arr[0], mx = arr[0];
+    for (const v of arr) {
+      if (v < mn) mn = v;
+      if (v > mx) mx = v;
+    }
+    return [mn, mx];
+  }
+
+  const arr = [4, 2, 7, 1, 9, 3, 7, 5];
+  log(`Array: [${arr}]`);
+  log(`linearSearch(7) = ${linearSearch(arr, 7)}`);             // 2
+  log(`linearSearch(6) = ${linearSearch(arr, 6)}`);             // -1
+  log(`linearSearchLast(7) = ${linearSearchLast(arr, 7)}`);     // 6
+  log(`countOccurrences(7) = ${countOccurrences(arr, 7)}`);     // 2
+  log(`countOccurrences(6) = ${countOccurrences(arr, 6)}`);     // 0
+  const [mn, mx] = findMinMax(arr);
+  log(`Min = ${mn}, Max = ${mx}`);                              // 1, 9
+
+  // Standard library
+  log(`arr.indexOf(7) = ${arr.indexOf(7)}`);
+  log(`arr.lastIndexOf(7) = ${arr.lastIndexOf(7)}`);
+  log(`Math.min/max = ${Math.min(...arr)}, ${Math.max(...arr)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - indexOf / lastIndexOf are built-in linear searches.
+    - Math.min/max with spread give a one-liner min/max.
+    - Destructuring ([mn, mx] = ...) replaces the int[]{min,max} pattern.
+-->

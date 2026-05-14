@@ -1,0 +1,139 @@
+<!--
+  WEEK 6 - WEB DSA
+  Topic: Dutch National Flag + Missing / Duplicate
+  File: 5.dutch_national_flag_and_missing.html
+
+  CONCEPT:
+    A) Dutch flag — three-pointer partition over {0,1,2}.
+    B) Missing number — sum and XOR variants.
+    C) Find duplicate — Floyd's tortoise & hare on indices.
+
+  KEY POINTS:
+    - All three problems run in O(n) time and O(1) extra space.
+    - JS numbers are 53-bit safe integers — sum-formula approach is fine
+      for typical inputs.
+
+  ALGORITHM / APPROACH:
+    See Java/Python implementations; identical logic.
+
+  WEB-SPECIFIC NOTES:
+    - Bitwise ^ in JS coerces operands to 32-bit signed integers.
+    - Be aware: very large XOR chains can yield negative values due to
+      that coercion.
+    - Output rendered to <pre> via textContent.
+
+  DRY RUN:
+    Dutch on [2,0,2,1,1,0]: -> [0,0,1,1,2,2]
+    Missing on [3,0,1] -> 2
+    Duplicate on [1,3,4,2,2] -> 2
+
+  COMPLEXITY:
+    All: O(n) time, O(1) space.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 6 - Dutch Flag & Missing</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 6 - Dutch Flag & Missing/Duplicate</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function dutchFlag(arr) {
+    let low = 0, mid = 0, high = arr.length - 1;
+    while (mid <= high) {
+      if (arr[mid] === 0) {
+        [arr[low], arr[mid]] = [arr[mid], arr[low]];
+        low++; mid++;
+      } else if (arr[mid] === 1) {
+        mid++;
+      } else {
+        [arr[mid], arr[high]] = [arr[high], arr[mid]];
+        high--;
+      }
+    }
+  }
+
+  function missingNumberSum(arr) {
+    const n = arr.length;
+    const expected = n * (n + 1) / 2;
+    let actual = 0;
+    for (const v of arr) actual += v;
+    return expected - actual;
+  }
+
+  function missingNumberXor(arr) {
+    const n = arr.length;
+    let x = 0;
+    for (let i = 0; i <= n; i++) x ^= i;
+    for (const v of arr) x ^= v;
+    return x;
+  }
+
+  function findDuplicate(arr) {
+    let slow = arr[0], fast = arr[0];
+    do {
+      slow = arr[slow];
+      fast = arr[arr[fast]];
+    } while (slow !== fast);
+    slow = arr[0];
+    while (slow !== fast) {
+      slow = arr[slow];
+      fast = arr[fast];
+    }
+    return slow;
+  }
+
+  // Dutch flag
+  const colors = [2, 0, 2, 1, 1, 0];
+  log(`Before: [${colors}]`);
+  dutchFlag(colors);
+  log(`After:  [${colors}]`);
+
+  const colors2 = [2, 2, 2, 0, 0, 1];
+  dutchFlag(colors2);
+  log(`Sorted: [${colors2}]`);
+
+  // Missing
+  const arr1 = [3, 0, 1];
+  log(`\narr = [${arr1}]`);
+  log(`Missing (sum): ${missingNumberSum(arr1)}`);
+  log(`Missing (XOR): ${missingNumberXor(arr1)}`);
+
+  const arr2 = [9, 6, 4, 2, 3, 5, 7, 0, 1];
+  log(`\narr = [${arr2}]`);
+  log(`Missing (sum): ${missingNumberSum(arr2)}`);
+  log(`Missing (XOR): ${missingNumberXor(arr2)}`);
+
+  // Duplicate
+  const dup = [1, 3, 4, 2, 2];
+  log(`\narr = [${dup}]`);
+  log(`Duplicate: ${findDuplicate(dup)}`);
+
+  const dup2 = [3, 1, 3, 4, 2];
+  log(`arr = [${dup2}]`);
+  log(`Duplicate: ${findDuplicate(dup2)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - JS bitwise ops use 32-bit signed semantics — fine for these examples.
+    - Destructuring swap removes temp variables.
+    - JS Number is safe to 2^53 - 1 for the sum-formula approach.
+-->

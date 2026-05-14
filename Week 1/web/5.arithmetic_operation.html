@@ -1,0 +1,80 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Arithmetic Operations and Operator Precedence
+File: 5.arithmetic_operation.html
+
+CONCEPT:
+JS provides + - * / % ** for arithmetic. Numbers are 64-bit floats by
+default, so `/` between integer-looking values still returns a float:
+10/6 === 1.6666666666666667. Use `Math.floor(a/b)` or `a/b | 0` for
+truncating division.
+
+KEY POINTS:
+ - All Number values are IEEE 754 doubles -> no int overflow at 2^31.
+ - `**` is exponentiation (ES2016+).
+ - Integer division: use `Math.trunc(a/b)`, `Math.floor(a/b)`, or `(a/b) | 0`.
+ - `%` follows sign of dividend (matches Java).
+ - For exact decimal math use Decimal.js or BigInt (no built-in).
+
+SYNTAX:
+ 10 / 6           -> 1.6666...
+ Math.trunc(10/6) -> 1
+ 10 % 6            -> 4
+ 2 ** 10          -> 1024
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Arithmetic</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Arithmetic in JavaScript</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; console.log(...a); };
+
+      const a = 3, b = 10;
+
+      // /: true (float) division
+      log("b / (2*a)        =", b / (2 * a));            // 1.666...
+      log("Math.trunc(b/(2*a)) =", Math.trunc(b / (2 * a))); // 1
+      log("Math.floor(b/(2*a)) =", Math.floor(b / (2 * a))); // 1
+      log("(b / (2*a)) | 0     =", (b / (2 * a)) | 0);        // 1
+
+      log("b % (2*a)        =", b % (2 * a));            // 4
+      log("2 ** 10          =", 2 ** 10);                // 1024
+
+      log("10 + 20 * 30     =", 10 + 20 * 30);           // 610
+      log("(10 + 20) * 30   =", (10 + 20) * 30);         // 900
+
+      // 53-bit precision -- big ints lose precision unless BigInt is used
+      log("2 ** 53           =", 2 ** 53);
+      log("2 ** 53 + 1       =", 2 ** 53 + 1, "  // SAME as 2**53 due to FP precision");
+      log("(2n ** 53n) + 1n  =", (2n ** 53n) + 1n);
+
+      // Special float values
+      log("1 / 0   =", 1 / 0);    // Infinity
+      log("-1 / 0  =", -1 / 0);   // -Infinity
+      log("0 / 0   =", 0 / 0);    // NaN
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java: int / int truncates; JS / always returns a float.
+ - Integer overflow does NOT exist for Number, but precision is limited to 53 bits.
+ - Use BigInt (note the `n` suffix) for exact integer math above 2^53.
+ - `Math.floor` and `Math.trunc` differ for negatives:
+     Math.floor(-7/2) === -4   (Python's //)
+     Math.trunc(-7/2) === -3   (Java's int /)
+-->

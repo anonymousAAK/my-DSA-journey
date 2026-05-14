@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 23 - Advanced DP</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 23 - Advanced Dynamic Programming</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 23 - WEB ADVANCED DSA
+ * Topic: Advanced DP (Bitmask / Tree / Digit DP / LIS)
+ * File: 1.AdvancedDP.html
+ *
+ * CONCEPT:
+ *   - Bitmask DP: encode subsets as integers (n <= ~20).
+ *   - Tree DP: post-order recursion; subproblem = subtree.
+ *   - Digit DP: count numbers in [1..N] with property P, build digit-by-digit.
+ *   - LIS: patience sorting reaches O(n log n).
+ *
+ * KEY POINTS:
+ *   - JS bitwise ops are 32-bit; safe for n <= 30 masks.
+ *   - For LIS we implement lower_bound manually.
+ *
+ * ALGORITHM / APPROACH:
+ *   See sibling files; identical recurrences.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - Render results to <pre id="out">.
+ *   - Use simple recursion + memo via Map / nested arrays.
+ *
+ * DRY RUN:
+ *   TSP for the 4-city matrix in script: optimal cost = 80.
+ *   countNoFour(10) -> 9. LIS([10,9,2,5,3,7,101,18]) -> 4.
+ *
+ * COMPLEXITY:
+ *   TSP O(n^2 * 2^n). Tree DP O(n). Digit DP O(D*10). LIS O(n log n).
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+function tspMinCost(dist) {
+  const n = dist.length;
+  const FULL = (1 << n) - 1;
+  const INF = 1e15;
+  const dp = Array.from({length: 1 << n}, () => new Array(n).fill(INF));
+  dp[1][0] = 0;
+  for (let mask = 1; mask <= FULL; mask++) {
+    for (let u = 0; u < n; u++) {
+      if (!(mask & (1 << u)) || dp[mask][u] === INF) continue;
+      for (let v = 0; v < n; v++) {
+        if (mask & (1 << v)) continue;
+        const nm = mask | (1 << v);
+        const c = dp[mask][u] + dist[u][v];
+        if (c < dp[nm][v]) dp[nm][v] = c;
+      }
+    }
+  }
+  let ans = Infinity;
+  for (let u = 1; u < n; u++) ans = Math.min(ans, dp[FULL][u] + dist[u][0]);
+  return ans;
+}
+
+function maxIndepSet(weight, children) {
+  const n = weight.length;
+  const dp = Array.from({length:n}, () => [0, 0]);
+  const visited = new Array(n).fill(false);
+  function dfs(u) {
+    visited[u] = true;
+    dp[u][1] = weight[u];
+    dp[u][0] = 0;
+    for (const c of children[u]) {
+      if (!visited[c]) {
+        dfs(c);
+        dp[u][1] += dp[c][0];
+        dp[u][0] += Math.max(dp[c][0], dp[c][1]);
+      }
+    }
+  }
+  dfs(0);
+  return Math.max(dp[0][0], dp[0][1]);
+}
+
+function countNoFour(N) {
+  const digits = String(N).split('').map(Number);
+  const L = digits.length;
+  // Memo only for !tight && started
+  const memo = new Array(L).fill(null);
+  function rec(pos, tight, started) {
+    if (pos === L) return started ? 1 : 0;
+    if (!tight && started && memo[pos] !== null) return memo[pos];
+    const limit = tight ? digits[pos] : 9;
+    let total = 0;
+    for (let d = 0; d <= limit; d++) {
+      if (d === 4) continue;
+      total += rec(pos + 1, tight && (d === limit), started || (d !== 0));
+    }
+    if (!tight && started) memo[pos] = total;
+    return total;
+  }
+  return rec(0, true, false);
+}
+
+function lisOptimal(nums) {
+  const tails = [];
+  for (const x of nums) {
+    let lo = 0, hi = tails.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (tails[mid] < x) lo = mid + 1;
+      else hi = mid;
+    }
+    tails[lo] = x;
+    if (lo === tails.length - 1 && tails.length > 0) {} // already set
+    if (lo === tails.length) tails.push(x);
+  }
+  // The lo===tails.length case after assignment is buggy; redo cleanly:
+  tails.length = 0;
+  for (const x of nums) {
+    let lo = 0, hi = tails.length;
+    while (lo < hi) {
+      const mid = (lo + hi) >> 1;
+      if (tails[mid] < x) lo = mid + 1;
+      else hi = mid;
+    }
+    if (lo === tails.length) tails.push(x);
+    else tails[lo] = x;
+  }
+  return tails.length;
+}
+
+log('=== TSP with Bitmask DP ===');
+const dist4 = [
+  [0,10,15,20],
+  [10,0,35,25],
+  [15,35,0,30],
+  [20,25,30,0]
+];
+log('TSP (4 cities):', tspMinCost(dist4));
+
+log('\n=== Max Independent Set on Tree ===');
+const weights = [1,2,3,4,5];
+const children = [[1,2],[3,4],[],[],[]];
+log('Max weight independent set:', maxIndepSet(weights, children));
+
+log('\n=== Digit DP: Count numbers without digit 4 ===');
+log('Count in [1..10]: ', countNoFour(10));
+log('Count in [1..40]: ', countNoFour(40));
+log('Count in [1..100]:', countNoFour(100));
+
+log('\n=== LIS O(n log n) ===');
+for (const t of [[10,9,2,5,3,7,101,18],[0,1,0,3,2,3],[7,7,7,7,7]])
+  log(JSON.stringify(t), '-> LIS =', lisOptimal(t));
+</script>
+</body>
+</html>

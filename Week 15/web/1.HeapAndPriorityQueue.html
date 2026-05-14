@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 15 - Heap & Priority Queue</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+  pre  { background: #111; color: #d8e1ff; padding: 1rem; border-radius: 8px; overflow:auto; }
+  svg  { background: #fafafa; border: 1px solid #ddd; border-radius: 8px; }
+  .nd  { fill: #c0392b; }
+  .nd-hl { fill: #f39c12; }
+  .lbl { fill: white; font: bold 14px monospace; text-anchor: middle; dominant-baseline: middle; }
+  .edge { stroke: #777; stroke-width: 2; }
+  .arr { font-family: monospace; padding:.4rem; background:#f4f4f4; border-radius:6px; }
+  button { margin: .25rem; padding: .4rem .8rem; cursor: pointer; }
+  input { padding: .3rem; width: 5rem; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<h1>Week 15 — Heap & Priority Queue (JavaScript)</h1>
+<!--
+  WEEK 15 - WEB DSA
+  Topic: Heap, Heap Sort, Priority Queue Applications
+  File: 1.HeapAndPriorityQueue.html
+
+  CONCEPT:
+    Visualize a binary max-heap as both an array AND a tree. Insert/extract
+    operations animate sift-up / sift-down by highlighting nodes.
+
+  KEY POINTS:
+    - Same array indexing: parent=(i-1)/2, left=2i+1, right=2i+2.
+    - Insert: append + sift up.
+    - extractMax: swap root with last, shrink, sift down.
+
+  ALGORITHM / APPROACH:
+    Hand-rolled MaxHeap class; render() shows both array form (row of cells)
+    and tree form (SVG).
+
+  WEB-SPECIFIC NOTES:
+    - JS doesn't have a built-in priority queue; this teaching version is
+      what production code typically rolls.
+    - Layout for the tree: position i at (x = (i - level_start + 0.5) /
+      level_count * width, y = level * spacing).
+
+  DRY RUN:
+    Insert 5,3,7,1,9,2,8 -> after sifting: [9,7,8,1,3,2,5].
+    extractMax repeatedly: 9 8 7 5 3 2 1.
+
+  COMPLEXITY:
+    insert / extractMax: O(log n). buildHeap: O(n).
+-->
+
+<h2>Max-Heap</h2>
+<div><svg id="svg" width="800" height="280"></svg></div>
+<div>array: <span id="arr" class="arr"></span></div>
+<div style="margin-top:.5rem;">
+  <input id="val" type="number" value="6">
+  <button onclick="op_insert()">insert</button>
+  <button onclick="op_extract()">extractMax</button>
+  <button onclick="op_peek()">peek</button>
+  <button onclick="resetDemo()">reset (5,3,7,1,9,2,8)</button>
+</div>
+
+<h2>Kth Largest</h2>
+<div>
+  array <input id="kArr" value="3 2 1 5 6 4" style="width: 12rem">
+  k <input id="kVal" type="number" value="2" style="width:3rem">
+  <button onclick="op_kth()">run</button>
+</div>
+
+<h2>Median from Stream</h2>
+<div>
+  <input id="mfVal" type="number" value="5">
+  <button onclick="mf_add()">addNum</button>
+  <button onclick="mf_median()">findMedian</button>
+  <button onclick="mf_reset()">reset MedianFinder</button>
+</div>
+
+<h2>Transcript</h2>
+<pre id="out"></pre>
+
+<script>
+const out = document.getElementById("out");
+function log(m){ console.log(m); out.textContent += m + "\n"; out.scrollTop = out.scrollHeight; }
+
+class MaxHeap {
+  constructor(){ this.data = []; }
+  parent(i){ return (i-1)>>1; }
+  left(i){ return 2*i+1; }
+  right(i){ return 2*i+2; }
+  siftUp(i){
+    while (i>0 && this.data[this.parent(i)] < this.data[i]){
+      const p = this.parent(i);
+      [this.data[i], this.data[p]] = [this.data[p], this.data[i]];
+      i = p;
+    }
+  }
+  siftDown(i){
+    const n = this.data.length;
+    while (true){
+      const l = this.left(i), r = this.right(i);
+      let largest = i;
+      if (l<n && this.data[l]>this.data[largest]) largest = l;
+      if (r<n && this.data[r]>this.data[largest]) largest = r;
+      if (largest === i) return;
+      [this.data[i], this.data[largest]] = [this.data[largest], this.data[i]];
+      i = largest;
+    }
+  }
+  insert(x){ this.data.push(x); this.siftUp(this.data.length-1); }
+  extractMax(){
+    if (!this.data.length) throw new Error("empty");
+    const top = this.data[0];
+    const last = this.data.pop();
+    if (this.data.length){ this.data[0] = last; this.siftDown(0); }
+    return top;
+  }
+  peek(){ return this.data[0]; }
+}
+
+const heap = new MaxHeap();
+
+function render(){
+  const svg = document.getElementById("svg");
+  svg.innerHTML = "";
+  document.getElementById("arr").textContent = "[" + heap.data.join(", ") + "]";
+
+  const n = heap.data.length;
+  if (!n) return;
+  const pos = [];
+  for (let i = 0; i < n; i++){
+    const depth = Math.floor(Math.log2(i+1));
+    const levelStart = (1 << depth) - 1;
+    const levelSize = 1 << depth;
+    const x = ((i - levelStart) + 0.5) / levelSize * 780 + 10;
+    const y = 30 + depth * 70;
+    pos.push({x, y});
+  }
+  // edges
+  for (let i = 1; i < n; i++){
+    const p = pos[(i-1)>>1];
+    const c = pos[i];
+    const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+    ln.setAttribute("x1",p.x); ln.setAttribute("y1",p.y);
+    ln.setAttribute("x2",c.x); ln.setAttribute("y2",c.y);
+    ln.setAttribute("class","edge");
+    svg.appendChild(ln);
+  }
+  // nodes
+  for (let i = 0; i < n; i++){
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",pos[i].x); c.setAttribute("cy",pos[i].y); c.setAttribute("r",20);
+    c.setAttribute("class", i === 0 ? "nd-hl" : "nd");
+    svg.appendChild(c);
+    const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",pos[i].x); t.setAttribute("y",pos[i].y); t.setAttribute("class","lbl");
+    t.textContent = heap.data[i]; svg.appendChild(t);
+  }
+}
+
+function op_insert(){ const v = +document.getElementById("val").value; heap.insert(v); log(`insert(${v})`); render(); }
+function op_extract(){
+  try { const v = heap.extractMax(); log(`extractMax = ${v}`); render(); }
+  catch(e){ log("error: " + e.message); }
+}
+function op_peek(){ log(`peek = ${heap.peek()}`); }
+
+function resetDemo(){
+  heap.data.length = 0;
+  for (const x of [5,3,7,1,9,2,8]) heap.insert(x);
+  log("reset: inserted 5,3,7,1,9,2,8 -> [" + heap.data.join(",") + "]");
+  render();
+}
+
+// kth largest using min-heap of size k (we just use heap class + sort trick)
+function kthLargest(arr, k){
+  // min-heap via negation
+  class MinHeap {
+    constructor(){ this.d = []; }
+    push(x){ this.d.push(x); let i = this.d.length-1; while (i>0){ const p=(i-1)>>1; if (this.d[p]>this.d[i]){ [this.d[p],this.d[i]]=[this.d[i],this.d[p]]; i=p; } else break; } }
+    pop(){ const top = this.d[0]; const last = this.d.pop(); if (this.d.length){ this.d[0]=last; let i=0; const n=this.d.length; while(true){ const l=2*i+1,r=2*i+2; let s=i; if (l<n&&this.d[l]<this.d[s])s=l; if (r<n&&this.d[r]<this.d[s])s=r; if (s===i) break; [this.d[i],this.d[s]]=[this.d[s],this.d[i]]; i=s; } } return top; }
+    peek(){ return this.d[0]; }
+    size(){ return this.d.length; }
+  }
+  const mh = new MinHeap();
+  for (const x of arr){ mh.push(x); if (mh.size() > k) mh.pop(); }
+  return mh.peek();
+}
+
+function op_kth(){
+  const arr = document.getElementById("kArr").value.trim().split(/\s+/).map(Number);
+  const k = +document.getElementById("kVal").value;
+  log(`kthLargest([${arr.join(",")}], ${k}) = ${kthLargest(arr, k)}`);
+}
+
+// Median finder
+class MedianFinder {
+  constructor(){
+    this.lower = new MaxHeap();
+    this.upper = new MaxHeap();  // will store negatives -> behaves min
+    this.upper.pushNeg = (v) => this.upper.insert(-v);
+    this.upper.popNeg  = () => -this.upper.extractMax();
+    this.upper.peekNeg = () => -this.upper.peek();
+    this.upper.size    = () => this.upper.data.length;
+  }
+  addNum(x){
+    this.lower.insert(x);
+    this.upper.pushNeg(this.lower.extractMax());
+    if (this.upper.size() > this.lower.data.length){
+      this.lower.insert(this.upper.popNeg());
+    }
+  }
+  findMedian(){
+    if (this.lower.data.length > this.upper.size()) return this.lower.peek();
+    return (this.lower.peek() + this.upper.peekNeg()) / 2;
+  }
+}
+
+let mf = new MedianFinder();
+function mf_add(){
+  const v = +document.getElementById("mfVal").value;
+  mf.addNum(v); log(`MedianFinder.addNum(${v}) -> median = ${mf.findMedian()}`);
+}
+function mf_median(){ log(`median = ${mf.findMedian()}`); }
+function mf_reset(){ mf = new MedianFinder(); log("MedianFinder reset"); }
+
+resetDemo();
+log("\nDemo: extracting all elements should yield 9 8 7 5 3 2 1.");
+</script>
+
+<!--
+NOTES (vs. Java):
+- JS doesn't ship a priority queue; the hand-rolled heap is what most code
+  uses. Libraries like 'tiny-binary-heap' provide drop-in versions.
+- Visualization makes the heap structure tangible: array form vs. tree form
+  side by side.
+- For min-heap we just negate values inside the MedianFinder's "upper" half.
+-->
+</body>
+</html>

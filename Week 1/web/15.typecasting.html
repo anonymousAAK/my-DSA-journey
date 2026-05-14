@@ -1,0 +1,82 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Typecasting (Type Coercion) in JavaScript
+File: 15.typecasting.html
+
+CONCEPT:
+JavaScript performs IMPLICIT coercion all over the place (`+`, `==`, etc.).
+To control conversions explicitly use the type constructors:
+ - Number(x)   / parseInt(x, 10) / parseFloat(x)
+ - String(x)
+ - Boolean(x)
+ - BigInt(x)
+
+KEY POINTS:
+ - `Number("100")`     -> 100;  `Number("abc")` -> NaN.
+ - `parseInt("100.5")` -> 100  (parses prefix; stops at non-digit).
+ - `(100.04 | 0)`       -> 100 (32-bit truncation trick; matches Java `(int) d`).
+ - `Math.trunc(100.04)`-> 100 (works for any range; preferred).
+ - `(100.04).toString()` -> "100.04".
+ - `==` does coercion; `===` does NOT — prefer `===`.
+
+SYNTAX:
+ Number(s); String(n); Boolean(x); BigInt(n);
+ Math.trunc(d);   // double -> int (Java-style truncation)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Typecasting</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Typecasting in JS</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+      const i = 100;
+      const l1 = i;                    // already a number; nothing to do
+      const d  = 100.04;
+      const l2 = Math.trunc(d);         // Java: (long) d
+      const l3 = d | 0;                 // 32-bit truncation (works for |val|<2^31)
+
+      log("i           =", i);
+      log("l1 (no cast)=", l1);
+      log("d           =", d);
+      log("l2 (trunc)  =", l2);
+      log("l3 (| 0)    =", l3);
+
+      log("Math.trunc(-100.99) =", Math.trunc(-100.99));   // -100 (toward zero)
+      log("Math.floor(-100.99) =", Math.floor(-100.99));   // -101 (Python-style)
+
+      log("\n=== String <-> Number ===");
+      log("Number('123')     =", Number('123'));
+      log("Number('123abc')  =", Number('123abc'));        // NaN
+      log("parseInt('123abc')=", parseInt('123abc', 10)); // 123
+      log("String(123)        =", String(123));
+
+      log("\n=== Implicit (avoid where possible) ===");
+      log("'5' - 1   =", '5' - 1);       // 4   (-> number)
+      log("'5' + 1   =", '5' + 1);       // "51" (-> string)
+      log("'5' == 5  =", '5' == 5);     // true  (loose)
+      log("'5' === 5 =", '5' === 5);    // false (strict)
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java requires explicit casts for narrowing; JS happily coerces in many ops.
+ - Always prefer `===` over `==` to avoid surprising coercions.
+ - `Math.trunc` (toward 0) matches Java's `(int)`; `Math.floor` matches Python's `//`.
+ - `parseInt` accepts a radix — pass `10` to avoid the (mostly-removed) "0x" auto-mode.
+-->

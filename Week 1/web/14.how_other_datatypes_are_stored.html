@@ -1,0 +1,74 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: How Floats and Characters are Stored
+File: 14.how_other_datatypes_are_stored.html
+
+CONCEPT:
+JS Numbers are always 64-bit IEEE 754 doubles. There is NO separate float
+type. Single characters are length-1 strings; the code-point comes from
+`s.charCodeAt(0)` (UTF-16 code unit) or `s.codePointAt(0)` (full Unicode).
+
+KEY POINTS:
+ - `(0.1 + 0.2).toFixed(20)` reveals IEEE 754 round-off.
+ - `"A".charCodeAt(0)` returns 65 (Java's `(int) 'A'`).
+ - `String.fromCharCode(65)` returns "A".
+ - JS strings are UTF-16; some Unicode code points span TWO code units.
+
+SYNTAX:
+ "A".charCodeAt(0)        // 65
+ String.fromCharCode(65)  // "A"
+ "🚀".codePointAt(0)      // 128640 (correct full code point)
+ "🚀".length              // 2 (it's a surrogate pair in UTF-16!)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Other types</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>How Floats and "Chars" are Stored</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+      log("=== Floats (always 64-bit IEEE 754) ===");
+      log("0.1 + 0.2          =", (0.1 + 0.2));                  // 0.30000000000000004
+      log("(0.1+0.2).toFixed(20) =", (0.1 + 0.2).toFixed(20));    // see the rounding
+      log("Number.EPSILON      =", Number.EPSILON);
+      log("Number.MAX_VALUE    =", Number.MAX_VALUE);
+      log("1/0                  =", 1 / 0);                        // Infinity
+
+      log("\n=== \"Characters\" (length-1 strings, UTF-16) ===");
+      const ch1 = String.fromCharCode(88);   // "X"
+      const ch2 = "Y";
+      log(`fromCharCode(88) = '${ch1}'`);
+      log(`'Y'.charCodeAt(0) = ${ch2.charCodeAt(0)}`);
+
+      // Java-equivalent demos
+      log("'a' + 1     =", "a".charCodeAt(0) + 1);          // 98
+      log("'a' + 'b'  =", "a".charCodeAt(0) + "b".charCodeAt(0)); // 195
+
+      log("\n=== Unicode beyond BMP needs codePointAt ===");
+      log("'🚀'.length            =", "🚀".length);            // 2 (surrogate pair)
+      log("'🚀'.charCodeAt(0)      =", "🚀".charCodeAt(0));     // high surrogate only
+      log("'🚀'.codePointAt(0)     =", "🚀".codePointAt(0));    // full code point
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java's char is a UTF-16 code unit (16 bits); same as charCodeAt in JS.
+ - For "real" character iteration in JS use `for (const ch of "🚀ab") {...}` —
+   it yields full code points, NOT code units.
+ - JS has no float / double distinction — every Number is a double.
+-->

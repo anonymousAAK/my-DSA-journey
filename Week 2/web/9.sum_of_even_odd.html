@@ -1,0 +1,71 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Sum of Even / Odd Digits
+File: 9.sum_of_even_odd.html
+
+PROBLEM:
+ Output sum of even digits and sum of odd digits separated by a space.
+
+KEY POINTS:
+ - Two ways: math via % and / OR string-based via [...str].
+ - Use Math.trunc when dividing JS numbers if you want to discard the decimal.
+ - Beware: bitwise `| 0` only works for |n| < 2^31.
+
+DRY RUN:
+ 13245 -> "6 9"
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Sum even/odd</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Sum of Even / Odd Digits</h1>
+<label>n <input id="n" type="number" value="13245"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function sums(n) {
+    n = Math.abs(n);
+    let even = 0, odd = 0;
+    while (n > 0) {
+      const d = n % 10;
+      if (d % 2 === 0) even += d; else odd += d;
+      n = Math.trunc(n / 10);
+    }
+    return [even, odd];
+  }
+
+  // String-based alternative
+  function sumsStr(n) {
+    let even = 0, odd = 0;
+    for (const c of String(Math.abs(n))) {
+      const d = Number(c);
+      if (d % 2 === 0) even += d; else odd += d;
+    }
+    return [even, odd];
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    const [e, o] = sums(n);
+    log(`${e} ${o}    (math)`);
+    const [es, os] = sumsStr(n);
+    log(`${es} ${os}    (string)`);
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - In JS, integer math beyond 2^53 needs BigInt.
+ - For very long numbers, the string approach is more reliable.
+-->

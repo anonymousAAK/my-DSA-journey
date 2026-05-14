@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 17 - Graph Representations (JS)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 980px; }
+  pre { background:#0b1021; color:#d6deeb; padding:1rem; border-radius:.5rem;
+        overflow:auto; font-family: ui-monospace, Menlo, monospace; font-size:.85rem; }
+  h1, h2 { color:#1e293b; }
+</style>
+</head>
+<body>
+<h1>Week 17 - Graph Representations + BFS / DFS</h1>
+<p>Adjacency list + matrix views, BFS, DFS, components, cycle, bipartite check.</p>
+<pre id="out"></pre>
+
+<script>
+/*
+WEEK 17 - WEB (JavaScript) DSA
+Topic: Graph Representations + BFS / DFS
+File: 1.GraphRepresentations.html
+
+CONCEPT:
+    A graph G = (V, E) is a vertex set and an edge set. Two storage forms:
+        Adjacency LIST   : Array of Arrays of neighbour indices.   O(V+E).
+        Adjacency MATRIX : V x V grid, mat[u][v] = 1 if edge.       O(V^2).
+    Lists win for sparse graphs (which is most real graphs).
+
+KEY POINTS:
+    - BFS = FIFO queue, level-by-level, shortest unweighted path. O(V+E).
+    - DFS = recursion, depth-first. O(V+E). Foundation for components,
+      cycle detection, topo sort.
+    - Cycle in undirected graph: visited neighbour that isn't the parent.
+    - Bipartite: 2-colour BFS; conflict means odd cycle exists.
+
+ALGORITHM / APPROACH:
+    Standard textbook BFS / DFS templates as in the Java reference.
+
+JS-SPECIFIC NOTES:
+    - JS lacks a built-in queue; we use an array index (`head`) instead of
+      .shift() to keep BFS O(V + E).
+    - Arrow functions plus closures simplify recursive DFS — capture `visited`
+      in scope without an extra parameter.
+    - For graph data we use plain Arrays of Arrays (adj) and typed arrays
+      (Uint8Array) for visited flags when speed matters.
+
+DRY RUN:
+    Edges (undirected): 0-1,1-2,2-5,5-4,4-3,3-0,1-4
+        BFS(0) -> [0,1,3,2,4,5]
+        DFS(0) -> [0,1,2,5,4,3]
+        distances from 0 -> [0,1,2,1,2,2]
+
+    Disconnected: edges {0-1,1-2,3-4} with vertex 5 isolated -> 3 components.
+
+COMPLEXITY:
+    Build O(V+E); BFS/DFS O(V+E); components/cycle/bipartite O(V+E).
+*/
+
+const out = document.getElementById('out');
+const log = (...a) => {
+  const line = a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+  out.textContent += line + '\n';
+  console.log(...a);
+};
+
+class Graph {
+  constructor(v) {
+    this.V = v;
+    this.adj = Array.from({length: v}, () => []);
+  }
+  addEdge(u, v) { this.adj[u].push(v); this.adj[v].push(u); }
+  addDirectedEdge(u, v) { this.adj[u].push(v); }
+
+  bfs(src) {
+    const visited = new Uint8Array(this.V);
+    const order = [];
+    const q = [src]; let head = 0;
+    visited[src] = 1;
+    while (head < q.length) {
+      const u = q[head++];
+      order.push(u);
+      for (const v of this.adj[u]) if (!visited[v]) { visited[v] = 1; q.push(v); }
+    }
+    return order;
+  }
+
+  shortestDistances(src) {
+    const dist = new Array(this.V).fill(-1);
+    dist[src] = 0;
+    const q = [src]; let head = 0;
+    while (head < q.length) {
+      const u = q[head++];
+      for (const v of this.adj[u]) if (dist[v] === -1) {
+        dist[v] = dist[u] + 1; q.push(v);
+      }
+    }
+    return dist;
+  }
+
+  dfs(src) {
+    const visited = new Uint8Array(this.V);
+    const order = [];
+    const go = (u) => {
+      visited[u] = 1; order.push(u);
+      for (const v of this.adj[u]) if (!visited[v]) go(v);
+    };
+    go(src);
+    return order;
+  }
+
+  countComponents() {
+    const visited = new Uint8Array(this.V);
+    const go = (u) => { visited[u] = 1; for (const v of this.adj[u]) if (!visited[v]) go(v); };
+    let count = 0;
+    for (let i = 0; i < this.V; i++) if (!visited[i]) { go(i); count++; }
+    return count;
+  }
+
+  hasCycle() {
+    const visited = new Uint8Array(this.V);
+    const go = (u, parent) => {
+      visited[u] = 1;
+      for (const v of this.adj[u]) {
+        if (!visited[v]) { if (go(v, u)) return true; }
+        else if (v !== parent) return true;
+      }
+      return false;
+    };
+    for (let i = 0; i < this.V; i++) if (!visited[i] && go(i, -1)) return true;
+    return false;
+  }
+
+  isBipartite() {
+    const color = new Int8Array(this.V); // 0 unvisited, 1 / -1
+    for (let s = 0; s < this.V; s++) {
+      if (color[s] !== 0) continue;
+      color[s] = 1;
+      const q = [s]; let head = 0;
+      while (head < q.length) {
+        const u = q[head++];
+        for (const v of this.adj[u]) {
+          if (color[v] === 0) { color[v] = -color[u]; q.push(v); }
+          else if (color[v] === color[u]) return false;
+        }
+      }
+    }
+    return true;
+  }
+}
+
+class GraphMatrix {
+  constructor(v) {
+    this.V = v;
+    this.mat = Array.from({length: v}, () => new Uint8Array(v));
+  }
+  addEdge(u, v) { this.mat[u][v] = 1; this.mat[v][u] = 1; }
+  neighbours(u) {
+    const out = [];
+    for (let v = 0; v < this.V; v++) if (this.mat[u][v]) out.push(v);
+    return out;
+  }
+}
+
+// ---------- driver ----------
+const g = new Graph(6);
+[[0,1],[1,2],[2,5],[5,4],[4,3],[3,0],[1,4]].forEach(([u,v]) => g.addEdge(u,v));
+log('BFS from 0:', g.bfs(0));
+log('DFS from 0:', g.dfs(0));
+log('Distances from 0:', g.shortestDistances(0));
+log('Components:', g.countComponents());
+log('Has cycle:', g.hasCycle());
+log('Bipartite:', g.isBipartite());
+
+const g2 = new Graph(6);
+g2.addEdge(0,1); g2.addEdge(1,2); g2.addEdge(3,4);
+log('\nDisconnected components:', g2.countComponents());  // 3
+log('BFS from 0:', g2.bfs(0));
+
+const bip = new Graph(5);
+for (const u of [0,1]) for (const v of [2,3,4]) bip.addEdge(u,v);
+log('\nK_{2,3} bipartite:', bip.isBipartite());           // true
+
+const tri = new Graph(3);
+tri.addEdge(0,1); tri.addEdge(1,2); tri.addEdge(2,0);
+log('Triangle bipartite:', tri.isBipartite());            // false
+
+const m = new GraphMatrix(4);
+m.addEdge(0,1); m.addEdge(1,2); m.addEdge(2,3);
+log('\nMatrix neighbours of 1:', m.neighbours(1));
+
+/*
+NOTES (JavaScript vs Java):
+  - JS has no native queue; we use array + head index to keep BFS O(V+E).
+    Calling .shift() repeatedly would degrade to O(V*E) since shift() is O(n).
+  - Closures capture visited/order naturally — no helper-method ceremony.
+  - Uint8Array for visited flags is compact and fast.
+  - Recursion limit (~10k frames in V8) is similar to other engines; for very
+    deep graphs, switch to an explicit stack.
+*/
+</script>
+</body>
+</html>

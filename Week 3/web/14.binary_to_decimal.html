@@ -1,0 +1,42 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Binary to Decimal
+File: 14.binary_to_decimal.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Bin2Dec</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Binary -&gt; Decimal</h1>
+<label>n (binary-looking int) <input id="n" type="number" value="1100"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function binToDec(n) {
+    let dec = 0, p = 1;
+    while (n > 0) { dec += (n % 10) * p; p *= 2; n = Math.trunc(n / 10); }
+    return dec;
+  }
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    log("loop      :", binToDec(n));
+    log("parseInt  :", parseInt(String(n), 2));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - `parseInt(s, 2)` is the built-in equivalent (operates on STRING).
+ - For numbers beyond 53-bit safe range, store as a string and use BigInt.
+-->

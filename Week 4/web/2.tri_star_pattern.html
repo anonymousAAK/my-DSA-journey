@@ -1,0 +1,35 @@
+<!--
+WEEK 4 - WEB PATTERN PROBLEMS
+Topic: Triangular Star Pattern
+File: 2.tri_star_pattern.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 4 - Tri star</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px;font-family:monospace}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Triangular Stars</h1>
+<label>N <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const render = () => {
+    const n = Number(document.getElementById("n").value);
+    let s = "";
+    for (let i = 1; i <= n; i++) s += "*".repeat(i) + "\n";
+    out.textContent = s;
+    console.log(s);
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS String.repeat(n) is the canonical row builder.
+-->

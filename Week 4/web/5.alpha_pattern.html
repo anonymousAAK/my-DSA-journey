@@ -1,0 +1,38 @@
+<!--
+WEEK 4 - WEB PATTERN PROBLEMS
+Topic: Alpha Pattern
+File: 5.alpha_pattern.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 4 - Alpha</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px;font-family:monospace}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Alpha Pattern</h1>
+<label>N <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const render = () => {
+    const n = Number(document.getElementById("n").value);
+    let s = "";
+    for (let i = 1; i <= n; i++) {
+      const ch = String.fromCharCode("A".charCodeAt(0) + i - 1);
+      s += ch.repeat(i) + "\n";
+    }
+    out.textContent = s;
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - String.fromCharCode is the JS equivalent of Java's (char) cast.
+ - "A".charCodeAt(0) === 65.
+-->

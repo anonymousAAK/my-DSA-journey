@@ -1,0 +1,75 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: console.log vs document.write vs DOM output
+File: 3.better_hello_world.html
+
+CONCEPT:
+JavaScript has multiple ways to "print":
+  - console.log / console.error / console.warn -> DevTools console
+  - document.write       -> writes raw HTML into the page (legacy; avoid)
+  - element.textContent  -> safe DOM text update
+  - element.innerHTML    -> DOM update including HTML (XSS risk!)
+
+KEY POINTS:
+ - `console.log(...)` accepts any number of args (auto-separated by spaces).
+ - There is no built-in "print without newline" (each console.log is a new line);
+   to keep things on one line use `process.stdout.write` (Node) or
+   accumulate then write once (browser).
+ - DOM updates show on the page; console only in DevTools.
+ - Backticks (`...`) create template literals with ${...} interpolation.
+
+SYNTAX:
+ console.log("a", "b");          // "a b" in console
+ el.textContent = "text";        // safe DOM update
+ el.textContent += "more";        // append
+
+DRY RUN:
+ Three calls log three lines; setting textContent overrides; += appends.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - print vs println</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>print / println in JS</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log    = (...a) => { out.textContent += a.join(" ") + "\n"; console.log(...a); };
+      const write  = (...a) => { out.textContent += a.join(" "); /* no newline */ };
+
+      log("--- println-style (own newline) ---");
+      log("Hello World");
+      log("Hello World");
+      log("Hello World");
+
+      log("\n--- print-style (no newline) ---");
+      write("Hello World");
+      write("Hello World");
+      write("Hello World");
+      log("");           // end the line
+
+      log("\n--- separators ---");
+      log("X", "Y", "Z");       // "X Y Z" (console.log uses space sep)
+      log(["X","Y","Z"].join("-"));  // custom separator "-"
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java's print/println vs JS's console.log + manual concatenation.
+ - To suppress newlines in browsers, append to a buffer; in Node use
+   process.stdout.write.
+ - For mixed types: console.log(obj) shows a structured object; textContent
+   needs explicit JSON.stringify / String(...).
+-->

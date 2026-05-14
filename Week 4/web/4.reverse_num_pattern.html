@@ -1,0 +1,38 @@
+<!--
+WEEK 4 - WEB PATTERN PROBLEMS
+Topic: Reverse Number Pattern
+File: 4.reverse_num_pattern.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 4 - Reverse num</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px;font-family:monospace}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Reverse Number Pattern</h1>
+<label>N <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const render = () => {
+    const n = Number(document.getElementById("n").value);
+    let s = "";
+    for (let i = 1; i <= n; i++) {
+      for (let j = i; j >= 1; j--) s += j;
+      s += "\n";
+    }
+    out.textContent = s;
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Inner loop counts down from i to 1.
+ - Functional alternative: Array.from({length:i}, (_, k) => i-k).join("").
+-->

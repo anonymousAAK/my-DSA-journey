@@ -1,0 +1,68 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Average of Three Numbers
+File: 12.average_of_two_numbers.html
+
+CONCEPT:
+Read a name and three integers, then print the name and the average. In JS
+all arithmetic operates on 64-bit floats, so `/` already gives a true mean
+without needing to cast.
+
+KEY POINTS:
+ - (a + b + c) / 3 -> float (always; JS has no int / int truncation).
+ - `Math.trunc((a+b+c)/3)` mimics Java's int average.
+ - `Math.round((a+b+c)/3)` rounds to the nearest integer.
+ - `(a+b+c).toFixed(2)` returns a fixed-precision STRING.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Average</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+    input{ padding: .25rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Average of Three Numbers</h1>
+  <label>Name: <input id="name" value="Bob"></label>
+  <label>a: <input id="a" type="number" value="10"></label>
+  <label>b: <input id="b" type="number" value="11"></label>
+  <label>c: <input id="c" type="number" value="12"></label>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+      const render = () => {
+        out.textContent = "";
+        const name = document.getElementById("name").value;
+        const a = Number(document.getElementById("a").value);
+        const b = Number(document.getElementById("b").value);
+        const c = Number(document.getElementById("c").value);
+
+        const avg = (a + b + c) / 3;
+        log(name);
+        log("true average       =", avg);
+        log("trunc (Java int /) =", Math.trunc(avg));
+        log("rounded             =", Math.round(avg));
+        log("toFixed(4)          =", avg.toFixed(4));
+      };
+      render();
+      ["name","a","b","c"].forEach(id =>
+        document.getElementById(id).addEventListener("input", render));
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS `/` is always float division; use Math.trunc / Math.floor for int-style.
+ - `toFixed(n)` returns a STRING with `n` decimals (note: rounding is bankers').
+ - Sum overflow is irrelevant here because Number can represent up to 2^53 exactly.
+-->

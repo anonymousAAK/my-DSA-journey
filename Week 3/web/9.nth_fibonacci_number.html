@@ -1,0 +1,48 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Nth Fibonacci
+File: 9.nth_fibonacci_number.html
+
+KEY POINTS:
+ - Iterative O(n) loop with two rolling variables.
+ - Use BigInt for exact results past 2^53 (~ fib(78)).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Fibonacci</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Nth Fibonacci</h1>
+<label>n <input id="n" type="number" value="10"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function fibBig(n) {
+    let a = 0n, b = 1n;
+    for (let i = 0; i < n; i++) [a, b] = [b, a + b];
+    return a;
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    log(`fib(${n}) = ${fibBig(n).toString()}`);
+    const seq = Array.from({length: 11}, (_, i) => fibBig(i).toString());
+    log("first 11:", seq.join(" "));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - BigInt avoids precision loss; the trade-off is slower per-op cost.
+ - Tuple destructuring [a, b] = [b, a + b] is the JS swap idiom.
+-->

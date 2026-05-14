@@ -1,0 +1,61 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Data Types Review
+File: 1.data_types_review.html
+
+CONCEPT:
+JavaScript has ONE numeric type (Number, 64-bit float) plus BigInt for
+arbitrary integers. Many of Java's primitive-type concerns simply do not
+apply -- there is no "byte overflow" because there are no fixed-width
+integers in the language by default.
+
+KEY POINTS:
+ - 6 / 4 -> 1.5  (float; NOT integer-truncated like Java).
+ - Math.trunc(6/4) -> 1  to match Java's int / int.
+ - 55.5 % 10 -> 5.5 (modulo on floats just works in JS).
+ - Relational ops return booleans.
+
+DRY RUN:
+ 6 / 4 = 1.5; Math.trunc -> 1
+ 55.5 % 10 = 5.5
+ 55 % 10 = 5
+ 5 > 6 = false
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Types review</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Data Types Review</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; console.log(...a); };
+
+  log("--- Example 1: No fixed-width byte ---");
+  log("50 * 50 =", 50 * 50, "  (Number can hold this without overflow)");
+
+  log("\n--- Example 2: 6/4 doesn't truncate in JS ---");
+  const a = 6 / 4;            // 1.5
+  const b = Math.trunc(6 / 4); // 1
+  log(`6/4 = ${a}, Math.trunc(6/4) = ${b}, a + b = ${a + b}`);
+
+  log("\n--- Example 3: modulo on float and int ---");
+  log("55.5 % 10 =", 55.5 % 10);
+  log("55   % 10 =", 55 % 10);
+
+  log("\n--- Example 4: relational returns bool ---");
+  log("(5 > 6) =", 5 > 6);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS Number is 64-bit float -- no byte overflow, but only 53-bit safe integers.
+ - JS `/` is always float; use Math.trunc / Math.floor for Java-style int division.
+ - Unlike C++, `%` works on floats natively in JS.
+-->

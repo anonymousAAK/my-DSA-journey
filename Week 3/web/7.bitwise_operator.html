@@ -1,0 +1,58 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Bitwise Operators
+File: 7.bitwise_operator.html
+
+CONCEPT:
+JS bitwise operators (& | ^ ~ << >> >>>) operate on 32-bit signed integers.
+Numbers are silently TRUNCATED to int32 first. For 53-bit-safe ints use
+`& 0xFFFFFFFF`-style masks; for 64-bit use BigInt.
+
+KEY POINTS:
+ - JS HAS the unsigned right shift `>>>` (unlike C++ / Rust / Python).
+ - Bitwise ops return int32 even for fractional inputs.
+ - For BigInt use the same operators on BigInt values: `0xFFn & 0x0Fn`.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Bitwise</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Bitwise Operators</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const a = 19, b = 28;       // 10011 & 11100
+  const bin = n => (n >>> 0).toString(2).padStart(8, "0");
+
+  log("a       =", bin(a), "(", a, ")");
+  log("b       =", bin(b), "(", b, ")");
+  log("a & b   =", a & b, "  (" + bin(a & b) + ")");
+  log("a | b   =", a | b);
+  log("a ^ b   =", a ^ b);
+  log("~a      =", ~a, "  // -(a+1)");
+  log("a << 2  =", a << 2);
+  log("a >> 2  =", a >> 2);
+  log("-4>>>28 =", -4 >>> 28, "  // unsigned right shift (32-bit)");
+
+  log("\n--- bit tricks ---");
+  let x = 0b10110;
+  log("count ones (loop) :", (() => { let n = x, c = 0; while (n) { c += n & 1; n >>>= 1; } return c; })());
+  log("set   bit 0       :", bin(x | (1 << 0)));
+  log("clear bit 1       :", bin(x & ~(1 << 1)));
+  log("flip  bit 4       :", bin(x ^ (1 << 4)));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - All bitwise ops in JS coerce to int32 -- watch out for big values.
+ - Use BigInt for 64-bit bit math; same operator tokens.
+ - JS retains `>>>` from Java (unique among non-Java langs covered here).
+-->

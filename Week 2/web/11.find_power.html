@@ -1,0 +1,71 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: x^n via repeated multiplication
+File: 11.find_power.html
+
+PROBLEM:
+ Compute x^n. 0^0 = 1.
+
+KEY POINTS:
+ - JS has the `**` operator: `x ** n`.
+ - For huge integer results use BigInt: `(BigInt(x) ** BigInt(n))`.
+ - Math.pow returns a Number (may lose precision).
+ - Fast power (O(log n)) is shown for completeness.
+
+DRY RUN:
+ 2^10 = 1024
+ 3^20 = 3486784401  (within safe integer range, but exceeds i32)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Power</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>x^n</h1>
+<label>x <input id="x" type="number" value="2"></label>
+<label>n <input id="n" type="number" value="10"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function linearPow(x, n) {
+    let ans = 1n;
+    const bx = BigInt(x);
+    for (let i = 0; i < n; i++) ans *= bx;
+    return ans;
+  }
+  function fastPow(x, n) {
+    if (n === 0) return 1n;
+    if (n % 2 === 0) {
+      const h = fastPow(x, n / 2);
+      return h * h;
+    }
+    return BigInt(x) * fastPow(x, n - 1);
+  }
+  const render = () => {
+    out.textContent = "";
+    const x = Number(document.getElementById("x").value);
+    const n = Number(document.getElementById("n").value);
+    log(`${x}^${n} (linear) = ${linearPow(x, n).toString()}`);
+    log(`${x}^${n} (fast)  = ${fastPow(x, n).toString()}`);
+    log(`${x}^${n} (** op) = ${(BigInt(x) ** BigInt(n)).toString()}`);
+    log(`${x}^${n} (Math.pow, double) = ${Math.pow(x, n)}`);
+  };
+  render();
+  document.getElementById("x").addEventListener("input", render);
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS Number is 64-bit float -- only 53-bit safe integers. For exact big
+   results use BigInt (literal suffix `n` or BigInt(...)).
+ - `**` operator works on both Number and BigInt.
+ - Math.pow is convenient but loses precision quickly for big results.
+-->

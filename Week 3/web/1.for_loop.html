@@ -1,0 +1,57 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: For Loop Basics
+File: 1.for_loop.html
+
+CONCEPT:
+JS supports both the C-style `for (init; cond; update)` and Java-style
+`for (let i of iterable)` forms. Plus `for (let k in obj)` for object keys.
+
+KEY POINTS:
+ - `for (let i = 0; i < n; i++)` -- counter loop.
+ - `for (const v of arr)` -- iterate values.
+ - `for (const k in obj)` -- iterate enumerable string keys (ALSO inherited!).
+ - `arr.forEach(fn)`, `arr.map(fn)`, `arr.filter(fn)` -- functional.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - For loop</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>For Loop in JS</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  log("--- C-style ---");
+  for (let i = 0; i < 3; i++) log(`Inside for loop : ${i}`);
+  log("Done");
+
+  log("\n--- for...of ---");
+  const arr = ["a", "b", "c"];
+  for (const v of arr) log("v =", v);
+
+  log("\n--- for...in (keys) ---");
+  for (const k in arr) log("k =", k);
+
+  log("\n--- forEach ---");
+  arr.forEach((v, i) => log(`${i}: ${v}`));
+
+  log("\n--- entries / map / filter ---");
+  for (const [i, v] of arr.entries()) log(`entry ${i} ${v}`);
+  log("squares:", [1,2,3,4,5].map(x => x*x).join(" "));
+  log("evens  :", [1,2,3,4,5].filter(x => x % 2 === 0).join(" "));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS has both indexed and iterator-style for loops.
+ - `for...in` includes INHERITED keys -- usually you want `for...of` or `Object.keys`.
+ - Array methods (.forEach/.map/.filter/.reduce) are the functional alternatives.
+-->

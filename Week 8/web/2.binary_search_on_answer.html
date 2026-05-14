@@ -1,0 +1,132 @@
+<!--
+  WEEK 8 - WEB DSA
+  Topic: Binary Search on the Answer
+  File: 2.binary_search_on_answer.html
+
+  CONCEPT:
+    Binary-search the *answer* space using a monotonic predicate.
+
+  KEY POINTS:
+    - Template: lo..hi over plausible answers; if pred(mid) hi=mid else lo=mid+1.
+    - Problems: integer sqrt, Koko bananas, ship-packages-in-D-days.
+
+  ALGORITHM / APPROACH:
+    See Java implementation; identical logic.
+
+  WEB-SPECIFIC NOTES:
+    - Math.floor and Math.ceil keep integer arithmetic explicit.
+    - Math.max(...arr) gives the max of an array via spread.
+
+  DRY RUN:
+    sqrt(17) -> 4
+    Koko [3,6,7,11] H=8 -> 4
+    Ship 1..10 D=5 -> 15
+
+  COMPLEXITY:
+    O(log(range) * predicate cost).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 8 - Binary Search on Answer</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 8 - Binary Search on the Answer</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function sqrtInt(n) {
+    if (n < 2) return n;
+    let lo = 1, hi = Math.floor(n / 2);
+    while (lo < hi) {
+      const mid = lo + Math.floor((hi - lo + 1) / 2);
+      if (mid * mid <= n) lo = mid;
+      else hi = mid - 1;
+    }
+    return lo;
+  }
+
+  function canFinish(piles, h, speed) {
+    let hours = 0;
+    for (const p of piles) hours += Math.ceil(p / speed);
+    return hours <= h;
+  }
+
+  function minEatingSpeed(piles, h) {
+    let lo = 1, hi = Math.max(...piles);
+    while (lo < hi) {
+      const mid = lo + Math.floor((hi - lo) / 2);
+      if (canFinish(piles, h, mid)) hi = mid;
+      else lo = mid + 1;
+    }
+    return lo;
+  }
+
+  function canShip(weights, days, capacity) {
+    let currentLoad = 0, daysNeeded = 1;
+    for (const w of weights) {
+      if (w > capacity) return false;
+      if (currentLoad + w > capacity) {
+        daysNeeded++;
+        currentLoad = 0;
+      }
+      currentLoad += w;
+    }
+    return daysNeeded <= days;
+  }
+
+  function minShipCapacity(weights, days) {
+    let lo = Math.max(...weights);
+    let hi = weights.reduce((a, b) => a + b, 0);
+    while (lo < hi) {
+      const mid = lo + Math.floor((hi - lo) / 2);
+      if (canShip(weights, days, mid)) hi = mid;
+      else lo = mid + 1;
+    }
+    return lo;
+  }
+
+  log("=== Integer Square Root ===");
+  for (const n of [0, 1, 4, 8, 9, 16, 17, 100]) {
+    log(`sqrt(${n}) = ${sqrtInt(n)}`);
+  }
+
+  log("\n=== Koko Eating Bananas ===");
+  const piles = [3, 6, 7, 11];
+  log(`Piles: [${piles}]`);
+  log(`Min speed for H=8: ${minEatingSpeed(piles, 8)}`);
+
+  const piles2 = [30, 11, 23, 4, 20];
+  log(`Piles: [${piles2}]`);
+  log(`Min speed for H=5: ${minEatingSpeed(piles2, 5)}`);
+  log(`Min speed for H=6: ${minEatingSpeed(piles2, 6)}`);
+
+  log("\n=== Ship Packages ===");
+  const weights = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+  log(`Weights: [${weights}]`);
+  log(`Min capacity for D=5 days:  ${minShipCapacity(weights, 5)}`);
+  log(`Min capacity for D=10 days: ${minShipCapacity(weights, 10)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - Math.max(...arr) + Array.reduce do the bound work.
+    - Math.ceil(p / speed) is direct; in integer-only languages we use
+      (p + speed - 1) / speed.
+    - JS double precision is plenty for sqrt(2^31), but cap values accordingly.
+-->

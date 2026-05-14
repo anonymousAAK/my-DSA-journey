@@ -1,0 +1,61 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Total Salary
+File: 7.total_salary.html
+
+PROBLEM:
+ total = basic + hra + da + allow - pf
+ hra=20%, da=50%, pf=11%, allow={A:1700,B:1500,else:1300}
+ Round to nearest integer.
+
+KEY POINTS:
+ - JS `Math.round` rounds half-AWAY-FROM-ZERO for positives (matches Java for >=0).
+ - Use a lookup object for the grade table.
+
+DRY RUN:
+ basic=10000 grade='A' -> 17600
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Salary</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Total Salary</h1>
+<label>basic <input id="basic" type="number" value="10000"></label>
+<label>grade <input id="grade" maxlength="1" value="A"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const ALLOW = { A: 1700, B: 1500 };
+
+  const render = () => {
+    out.textContent = "";
+    const basic = Number(document.getElementById("basic").value);
+    const grade = document.getElementById("grade").value.toUpperCase();
+    const hra = 0.20 * basic;
+    const da  = 0.50 * basic;
+    const pf  = 0.11 * basic;
+    const allow = ALLOW[grade] ?? 1300;
+    const total = basic + hra + da + allow - pf;
+    log("hra =", hra, " da =", da, " pf =", pf, " allow =", allow);
+    log("total =", total);
+    log("rounded =", Math.round(total));
+  };
+  render();
+  document.getElementById("basic").addEventListener("input", render);
+  document.getElementById("grade").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - `??` (nullish coalescing) returns 1300 if the lookup is null/undefined.
+ - Math.round in JS rounds half-up toward +infinity for positives (and away from
+   zero for negatives), matching Java's Math.round for non-negative inputs.
+-->

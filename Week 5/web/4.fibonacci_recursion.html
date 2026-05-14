@@ -1,0 +1,73 @@
+<!--
+WEEK 5 - WEB FUNCTIONS & RECURSION
+Topic: Fibonacci -- Naive, Memoised, Iterative
+File: 4.fibonacci_recursion.html
+
+KEY POINTS:
+ - Naive O(2^n) -- demonstrate, never use.
+ - Memoisation via Map<n, BigInt>.
+ - Iterative bottom-up O(1) extra space.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 5 - Fibonacci</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Fibonacci -- 3 ways</h1>
+<label>n <input id="n" type="number" value="10"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function fibNaive(n) {
+    if (n <= 1) return BigInt(n);
+    return fibNaive(n - 1) + fibNaive(n - 2);
+  }
+  const memo = new Map();
+  function fibMemo(n) {
+    if (n <= 1) return BigInt(n);
+    if (memo.has(n)) return memo.get(n);
+    const v = fibMemo(n - 1) + fibMemo(n - 2);
+    memo.set(n, v);
+    return v;
+  }
+  function fibIter(n) {
+    if (n <= 1) return BigInt(n);
+    let a = 0n, b = 1n;
+    for (let i = 2; i <= n; i++) [a, b] = [b, a + b];
+    return b;
+  }
+
+  let calls = 0;
+  function fibCount(n) {
+    calls++;
+    if (n <= 1) return BigInt(n);
+    return fibCount(n - 1) + fibCount(n - 2);
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    log("first 10:", Array.from({length: 10}, (_, i) => fibIter(i).toString()).join(" "));
+    log(`fib(${n})`);
+    log("  Naive  :", fibNaive(n).toString());
+    log("  Memo   :", fibMemo(n).toString());
+    log("  Iter   :", fibIter(n).toString());
+    calls = 0; fibCount(5);
+    log("\nfib_naive(5) makes", calls, "recursive calls");
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - BigInt avoids the 2^53 safe-integer wall.
+ - For n > 35 the naive algorithm becomes unbearably slow; rely on memo or iter.
+-->

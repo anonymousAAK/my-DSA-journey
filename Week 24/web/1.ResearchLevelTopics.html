@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 24 - Research-Level Topics</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 24 - Research-Level Topics</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 24 - WEB ADVANCED DSA
+ * Topic: Amortized, Skip List, Bloom, Reservoir, Count-Min
+ * File: 1.ResearchLevelTopics.html
+ *
+ * CONCEPT:
+ *   Five techniques as in the Java reference: dynamic-array doubling,
+ *   skip list, Bloom filter, reservoir sampling, Count-Min sketch.
+ *
+ * KEY POINTS:
+ *   - Doubling capacity gives amortized O(1) push.
+ *   - Skip list uses geometric promotion; expected O(log n) ops.
+ *   - Bloom: false positives, no false negatives.
+ *   - Reservoir step probability: k/(i+1).
+ *   - Count-Min: estimate = row-wise minimum of hashed bins.
+ *
+ * ALGORITHM / APPROACH:
+ *   See sibling files; identical control flow.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - Use a seeded LCG for reproducibility.
+ *   - Output to <pre id="out"> in addition to console.log.
+ *
+ * DRY RUN:
+ *   100 pushes give amortized ~1.27 copies/op.
+ *   Skip list sorted output [3,6,7,9,12,17,19,21,25,26].
+ *   Bloom: 'apple' true, 'mango' usually false.
+ *
+ * COMPLEXITY:
+ *   See Java reference; identical asymptotics.
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+// Seeded LCG for reproducibility
+function makeRng(seed) {
+  let s = BigInt(seed || 1);
+  return {
+    nextU(){ s = (s * 6364136223846793005n + 1442695040888963407n) & ((1n<<64n)-1n); return s; },
+    nextF(){ const u = this.nextU(); return Number(u >> 11n) / Math.pow(2,53); },
+    nextRange(lo, hi){ const span = BigInt(hi - lo + 1); return lo + Number(this.nextU() % span); }
+  };
+}
+
+// ---------- Dynamic Array ----------
+class DynamicArray {
+  constructor(){ this.data = new Array(1).fill(0); this.size = 0; this.capacity = 1; this.totalCopies = 0; }
+  push(x) {
+    if (this.size === this.capacity) {
+      const nd = new Array(this.capacity * 2).fill(0);
+      for (let i = 0; i < this.size; i++) { nd[i] = this.data[i]; this.totalCopies++; }
+      this.data = nd; this.capacity *= 2;
+    }
+    this.data[this.size++] = x;
+  }
+  amortized(){ return this.totalCopies / Math.max(this.size, 1); }
+}
+
+// ---------- Skip List ----------
+const SL_MAX_LEVEL = 16, SL_P = 0.5;
+class SkipList {
+  constructor() {
+    this.head = { val: -Infinity, next: new Array(SL_MAX_LEVEL + 1).fill(null) };
+    this.currentLevel = 0;
+    this.rng = makeRng(42);
+  }
+  _randomLevel() { let lvl = 0; while (this.rng.nextF() < SL_P && lvl < SL_MAX_LEVEL) lvl++; return lvl; }
+  insert(val) {
+    const update = new Array(SL_MAX_LEVEL + 1).fill(null);
+    let cur = this.head;
+    for (let i = this.currentLevel; i >= 0; i--) {
+      while (cur.next[i] && cur.next[i].val < val) cur = cur.next[i];
+      update[i] = cur;
+    }
+    const lvl = this._randomLevel();
+    if (lvl > this.currentLevel) {
+      for (let i = this.currentLevel + 1; i <= lvl; i++) update[i] = this.head;
+      this.currentLevel = lvl;
+    }
+    const node = { val, next: new Array(lvl + 1).fill(null) };
+    for (let i = 0; i <= lvl; i++) { node.next[i] = update[i].next[i]; update[i].next[i] = node; }
+  }
+  search(val) {
+    let cur = this.head;
+    for (let i = this.currentLevel; i >= 0; i--)
+      while (cur.next[i] && cur.next[i].val < val) cur = cur.next[i];
+    return cur.next[0] !== null && cur.next[0].val === val;
+  }
+  toArray() {
+    const out = [];
+    let cur = this.head.next[0];
+    while (cur) { out.push(cur.val); cur = cur.next[0]; }
+    return out;
+  }
+}
+
+// ---------- Bloom Filter ----------
+function djb2(s) { let h = 5381; for (const c of s) h = ((h << 5) + h + c.charCodeAt(0)) | 0; return Math.abs(h); }
+class BloomFilter {
+  constructor(size) { this.size = size; this.bits = new Array(size).fill(false); }
+  h1(s){ return djb2(s) % this.size; }
+  h2(s){ return Math.abs(djb2(s) * 31 + 17) % this.size; }
+  add(s){ this.bits[this.h1(s)] = true; this.bits[this.h2(s)] = true; }
+  mightContain(s){ return this.bits[this.h1(s)] && this.bits[this.h2(s)]; }
+}
+
+// ---------- Reservoir Sampling ----------
+function reservoirSample(stream, k) {
+  const rng = makeRng(42);
+  const reservoir = stream.slice(0, k);
+  for (let i = k; i < stream.length; i++) {
+    const j = rng.nextRange(0, i);
+    if (j < k) reservoir[j] = stream[i];
+  }
+  return reservoir;
+}
+
+// ---------- Count-Min Sketch ----------
+class CountMinSketch {
+  constructor(d, w) {
+    this.d = d; this.w = w;
+    this.table = Array.from({length:d}, () => new Array(w).fill(0));
+    const rng = makeRng(42);
+    this.seeds = Array.from({length:d}, () => Number(rng.nextU() & 0xffffffffn));
+  }
+  idx(x, row){ let h = (x ^ this.seeds[row]) % this.w; if (h < 0) h += this.w; return h; }
+  add(x){ for (let r = 0; r < this.d; r++) this.table[r][this.idx(x, r)]++; }
+  estimate(x){ let m = Infinity; for (let r = 0; r < this.d; r++) m = Math.min(m, this.table[r][this.idx(x, r)]); return m; }
+}
+
+log('=== Amortized Analysis: Dynamic Array ===');
+const da = new DynamicArray();
+for (let i = 0; i < 100; i++) da.push(i);
+log(`After 100 pushes: total copies = ${da.totalCopies}, amortized = ${da.amortized().toFixed(2)} per op`);
+
+log('\n=== Skip List ===');
+const sl = new SkipList();
+for (const x of [3,6,7,9,12,19,17,26,21,25]) sl.insert(x);
+log('SkipList:', sl.toArray());
+log('search(19):', sl.search(19));
+log('search(15):', sl.search(15));
+
+log('\n=== Bloom Filter ===');
+const bf = new BloomFilter(1000);
+for (const w of ['apple','banana','cherry','date','elderberry']) bf.add(w);
+log("'apple' in filter:",  bf.mightContain('apple'));
+log("'cherry' in filter:", bf.mightContain('cherry'));
+log("'mango' in filter:",  bf.mightContain('mango'));
+log("'xyz' in filter:",    bf.mightContain('xyz'));
+
+log('\n=== Reservoir Sampling ===');
+const stream = Array.from({length:20}, (_,i) => i + 1);
+log('Sample of 5 from stream [1..20]:', reservoirSample(stream, 5));
+
+log('\n=== Count-Min Sketch ===');
+const cms = new CountMinSketch(3, 100);
+for (const x of [1,1,1,2,2,3,4,1,2,1,5,1,2,3,3,3]) cms.add(x);
+for (const v of [1,2,3,5,9]) log(`Estimated frequency of ${v}:`, cms.estimate(v));
+</script>
+</body>
+</html>

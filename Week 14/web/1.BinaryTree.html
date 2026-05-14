@@ -1,0 +1,198 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 14 - Binary Tree</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+  pre  { background: #111; color: #d8e1ff; padding: 1rem; border-radius: 8px; overflow:auto; }
+  svg  { background: #fafafa; border: 1px solid #ddd; border-radius: 8px; }
+  .nd  { fill: #3498db; }
+  .nd-hl { fill: #e74c3c; }
+  .lbl { fill: white; font: bold 14px monospace; text-anchor: middle; dominant-baseline: middle; }
+  .edge { stroke: #777; stroke-width: 2; }
+  button { margin: .25rem; padding: .4rem .8rem; cursor: pointer; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<h1>Week 14 — Binary Tree (JavaScript)</h1>
+<!--
+  WEEK 14 - WEB DSA
+  Topic: Binary Tree - Structure, Traversals, Properties
+  File: 1.BinaryTree.html
+
+  CONCEPT:
+    Visualize a complete sample tree of depth 3. Buttons trigger traversals
+    that highlight nodes in order; we also report height, count, diameter.
+
+  KEY POINTS:
+    - Layout: each node placed at (x = mid of allotted band, y = depth*spacing).
+    - Traversals animate by highlighting nodes one by one (setTimeout).
+
+  ALGORITHM / APPROACH:
+    Same algorithms as Java/Python/C++/Rust files. JS uses object literals
+    {val,left,right} for nodes.
+
+  WEB-SPECIFIC NOTES:
+    - SVG for the tree visualization; circles for nodes, lines for edges.
+    - We compute positions via a simple recursive layout pass.
+
+  DRY RUN:
+    Sample tree: 1 / 2,3 / 4,5,6,7. Inorder = 4 2 5 1 6 3 7.
+
+  COMPLEXITY:
+    All traversals O(n). Layout is O(n) too.
+-->
+
+<div><svg id="svg" width="800" height="320"></svg></div>
+<div>
+  <button onclick="runInorder()">Inorder</button>
+  <button onclick="runPreorder()">Preorder</button>
+  <button onclick="runPostorder()">Postorder</button>
+  <button onclick="runLevel()">Level-order</button>
+  <button onclick="doMirror()">Mirror</button>
+  <button onclick="resetTree()">Reset</button>
+</div>
+<h2>Properties</h2>
+<div id="props"></div>
+<h2>Transcript</h2>
+<pre id="out"></pre>
+
+<script>
+const out = document.getElementById("out");
+function log(m){ console.log(m); out.textContent += m + "\n"; out.scrollTop = out.scrollHeight; }
+
+function buildSample(){
+  const n = v => ({val:v, left:null, right:null});
+  const r = n(1);
+  r.left = n(2); r.right = n(3);
+  r.left.left = n(4); r.left.right = n(5);
+  r.right.left = n(6); r.right.right = n(7);
+  return r;
+}
+
+let tree = buildSample();
+
+function layout(root){
+  // Place each node at (x,y) using a recursive layout.
+  const positions = new Map();
+  function go(n, lo, hi, depth){
+    if (!n) return;
+    const x = (lo + hi) / 2;
+    positions.set(n, { x, y: 40 + depth*70 });
+    go(n.left,  lo, x, depth+1);
+    go(n.right, x, hi, depth+1);
+  }
+  go(root, 20, 780, 0);
+  return positions;
+}
+
+function draw(highlightSet){
+  const svg = document.getElementById("svg");
+  svg.innerHTML = "";
+  const pos = layout(tree);
+  // edges first
+  function drawEdges(n){
+    if (!n) return;
+    const p = pos.get(n);
+    for (const c of [n.left, n.right]) {
+      if (c) {
+        const cp = pos.get(c);
+        const ln = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        ln.setAttribute("x1", p.x); ln.setAttribute("y1", p.y);
+        ln.setAttribute("x2", cp.x); ln.setAttribute("y2", cp.y);
+        ln.setAttribute("class", "edge");
+        svg.appendChild(ln);
+        drawEdges(c);
+      }
+    }
+  }
+  drawEdges(tree);
+  // nodes
+  function drawNodes(n){
+    if (!n) return;
+    const p = pos.get(n);
+    const c = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+    c.setAttribute("cx", p.x); c.setAttribute("cy", p.y); c.setAttribute("r", 20);
+    c.setAttribute("class", highlightSet && highlightSet.has(n) ? "nd-hl" : "nd");
+    svg.appendChild(c);
+    const t = document.createElementNS("http://www.w3.org/2000/svg", "text");
+    t.setAttribute("x", p.x); t.setAttribute("y", p.y); t.setAttribute("class", "lbl");
+    t.textContent = n.val;
+    svg.appendChild(t);
+    drawNodes(n.left); drawNodes(n.right);
+  }
+  drawNodes(tree);
+}
+
+function inorderArr(n, out){ if (!n) return; inorderArr(n.left, out); out.push(n); inorderArr(n.right, out); }
+function preorderArr(n, out){ if (!n) return; out.push(n); preorderArr(n.left, out); preorderArr(n.right, out); }
+function postorderArr(n, out){ if (!n) return; postorderArr(n.left, out); postorderArr(n.right, out); out.push(n); }
+function levelOrderArr(root){
+  const out = []; if (!root) return out;
+  const q = [root];
+  while (q.length){
+    const lvl = []; const k = q.length;
+    for (let i = 0; i < k; i++){
+      const n = q.shift(); lvl.push(n);
+      if (n.left) q.push(n.left);
+      if (n.right) q.push(n.right);
+    }
+    out.push(lvl);
+  }
+  return out;
+}
+
+function animate(seq, label){
+  const set = new Set();
+  log(`${label}: ${seq.map(n => n.val).join(", ")}`);
+  let i = 0;
+  function step(){
+    if (i >= seq.length){ draw(); return; }
+    set.add(seq[i++]); draw(set);
+    setTimeout(step, 400);
+  }
+  step();
+}
+
+function runInorder(){ const a=[]; inorderArr(tree, a); animate(a, "Inorder"); }
+function runPreorder(){ const a=[]; preorderArr(tree, a); animate(a, "Preorder"); }
+function runPostorder(){ const a=[]; postorderArr(tree, a); animate(a, "Postorder"); }
+function runLevel(){
+  const lvls = levelOrderArr(tree);
+  log("Level-order: " + JSON.stringify(lvls.map(l => l.map(n => n.val))));
+  // animate flat order
+  animate(lvls.flat(), "Level-order");
+}
+function doMirror(){
+  function mirror(n){ if (!n) return; [n.left, n.right] = [n.right, n.left]; mirror(n.left); mirror(n.right); }
+  mirror(tree); draw(); log("Mirrored.");
+}
+function resetTree(){ tree = buildSample(); draw(); log("Reset."); updateProps(); }
+
+function height(n){ if (!n) return 0; return 1 + Math.max(height(n.left), height(n.right)); }
+function countNodes(n){ if (!n) return 0; return 1 + countNodes(n.left) + countNodes(n.right); }
+function diameter(root){
+  let best = 0;
+  function go(n){ if (!n) return 0; const l = go(n.left), r = go(n.right); best = Math.max(best, l+r); return 1+Math.max(l,r); }
+  go(root); return best;
+}
+function updateProps(){
+  document.getElementById("props").textContent =
+    `Height: ${height(tree)}  |  Node count: ${countNodes(tree)}  |  Diameter: ${diameter(tree)}`;
+}
+
+resetTree();
+</script>
+
+<!--
+NOTES (vs. Java):
+- We render an SVG tree visualization in addition to logging traversal
+  orders. The Java demo only printed lists; here we animate them.
+- Object literals replace static inner Node classes.
+- destructuring [a,b] = [b,a] replaces the temp-variable swap.
+-->
+</body>
+</html>

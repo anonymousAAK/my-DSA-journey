@@ -1,0 +1,142 @@
+<!--
+  WEEK 9 - WEB DSA
+  Topic: Bubble / Selection / Insertion Sort
+  File: 1.bubble_selection_insertion.html
+
+  CONCEPT:
+    Three O(n^2) elementary sorts; differ in stability, swap count, and
+    best-case behaviour.
+
+  KEY POINTS:
+    Bubble:    O(n) best with early-stop; stable.
+    Selection: O(n) swaps; not stable.
+    Insertion: O(n) best on nearly-sorted; stable.
+
+  ALGORITHM / APPROACH:
+    See Java; identical logic.
+
+  WEB-SPECIFIC NOTES:
+    - Destructuring swap [a[i], a[j]] = [a[j], a[i]].
+    - Array.prototype.sort uses Timsort (V8 since 7.0); stable since 2019.
+
+  DRY RUN:
+    [64,25,12,22,11]:
+      bubble pass1: [25,12,22,11,64]
+      bubble pass2: [12,22,11,25,64]
+      bubble pass3: [12,11,22,25,64]
+      bubble pass4: [11,12,22,25,64] (done)
+
+  COMPLEXITY:
+    Bubble    : O(n^2) avg/worst, O(n) best, O(1) space, stable.
+    Selection : O(n^2), O(1) space, not stable.
+    Insertion : O(n^2) avg/worst, O(n) best, O(1) space, stable.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 9 - Bubble / Selection / Insertion</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 9 - Bubble / Selection / Insertion Sort</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function bubbleSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+      let swapped = false;
+      for (let j = 0; j < n - 1 - i; j++) {
+        if (arr[j] > arr[j + 1]) {
+          [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];
+          swapped = true;
+        }
+      }
+      if (!swapped) break;
+    }
+  }
+
+  function selectionSort(arr) {
+    const n = arr.length;
+    for (let i = 0; i < n - 1; i++) {
+      let minIdx = i;
+      for (let j = i + 1; j < n; j++) {
+        if (arr[j] < arr[minIdx]) minIdx = j;
+      }
+      if (minIdx !== i) [arr[i], arr[minIdx]] = [arr[minIdx], arr[i]];
+    }
+  }
+
+  function insertionSort(arr) {
+    for (let i = 1; i < arr.length; i++) {
+      const key = arr[i];
+      let j = i - 1;
+      while (j >= 0 && arr[j] > key) {
+        arr[j + 1] = arr[j];
+        j--;
+      }
+      arr[j + 1] = key;
+    }
+  }
+
+  function countInversions(arr) {
+    let count = 0;
+    for (let i = 0; i < arr.length; i++) {
+      for (let j = i + 1; j < arr.length; j++) {
+        if (arr[i] > arr[j]) count++;
+      }
+    }
+    return count;
+  }
+
+  const base = [64, 25, 12, 22, 11];
+
+  let arr1 = [...base];
+  log("Bubble Sort:");
+  log(`Before: [${arr1}]`);
+  bubbleSort(arr1);
+  log(`After:  [${arr1}]`);
+
+  let arr2 = [...base];
+  log("\nSelection Sort:");
+  log(`Before: [${arr2}]`);
+  selectionSort(arr2);
+  log(`After:  [${arr2}]`);
+
+  let arr3 = [...base];
+  log("\nInsertion Sort:");
+  log(`Before: [${arr3}]`);
+  insertionSort(arr3);
+  log(`After:  [${arr3}]`);
+
+  const already = [1, 2, 3, 4, 5];
+  log("\nAlready sorted — bubble sort:");
+  log(`Before: [${already}]`);
+  bubbleSort(already);
+  log(`After:  [${already}]`);
+
+  const inv = [5, 3, 1, 4, 2];
+  log(`\nArray: [${inv}]`);
+  log(`Inversions: ${countInversions(inv)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - Spread (`[...base]`) clones the array shallowly.
+    - Destructuring assignment swaps without temporaries.
+    - Array.prototype.sort with a numeric compareFn is the built-in stable sort.
+-->

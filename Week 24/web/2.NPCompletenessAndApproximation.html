@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 24 - NP-Completeness & Approximation</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 24 - NP-Completeness & Approximation Algorithms</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 24 - WEB ADVANCED DSA
+ * Topic: NP-Completeness and Approximation Algorithms
+ * File: 2.NPCompletenessAndApproximation.html
+ *
+ * CONCEPT:
+ *   For NP-Complete problems we use approximation algorithms with
+ *   provable ratios:
+ *     - Vertex Cover: 2-approximation (maximal matching).
+ *     - Set Cover:    O(log n) greedy.
+ *     - Metric TSP:   2-approximation via MST + DFS preorder.
+ *
+ * KEY POINTS:
+ *   - Vertex cover greedy: for any uncovered edge add both endpoints.
+ *   - Set cover greedy: choose set covering most uncovered elements.
+ *   - Metric TSP needs triangle inequality so MST-based shortcuts hold.
+ *
+ * ALGORITHM / APPROACH:
+ *   See sibling files; identical control flow.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - Use Sets and arrays directly; render to <pre id="out">.
+ *
+ * DRY RUN:
+ *   Vertex cover on edges {(0,1),(0,2),(1,3),(2,3),(3,4)} -> {0,1,2,3}.
+ *
+ * COMPLEXITY:
+ *   Vertex cover O(E). Set cover ~O(|sets|*|U|) per iteration.
+ *   TSP 2-approx O(V^2) Prim + O(V) DFS.
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+function vertexCover2Approx(V, edges) {
+  const covered = new Array(V).fill(false);
+  const cover = new Set();
+  for (const [u, v] of edges) {
+    if (!covered[u] && !covered[v]) {
+      covered[u] = covered[v] = true;
+      cover.add(u); cover.add(v);
+    }
+  }
+  return cover;
+}
+
+function setcoverGreedy(universeSize, sets) {
+  const uncovered = new Set(); for (let i = 0; i < universeSize; i++) uncovered.add(i);
+  const chosen = [];
+  while (uncovered.size) {
+    let bestIdx = -1, bestCnt = 0;
+    for (let i = 0; i < sets.length; i++) {
+      let cnt = 0;
+      for (const x of sets[i]) if (uncovered.has(x)) cnt++;
+      if (cnt > bestCnt) { bestCnt = cnt; bestIdx = i; }
+    }
+    if (bestIdx === -1) break;
+    chosen.push(bestIdx);
+    for (const x of sets[bestIdx]) uncovered.delete(x);
+  }
+  return chosen;
+}
+
+function tsp2Approx(dist) {
+  const n = dist.length;
+  const inMST = new Array(n).fill(false);
+  const parent = new Array(n).fill(-1);
+  const key = new Array(n).fill(Infinity);
+  key[0] = 0;
+  for (let i = 0; i < n - 1; i++) {
+    let u = -1;
+    for (let v = 0; v < n; v++) if (!inMST[v] && (u === -1 || key[v] < key[u])) u = v;
+    inMST[u] = true;
+    for (let v = 0; v < n; v++) if (!inMST[v] && dist[u][v] < key[v]) { key[v] = dist[u][v]; parent[v] = u; }
+  }
+  const mst = Array.from({length:n}, () => []);
+  for (let i = 1; i < n; i++) { mst[parent[i]].push(i); mst[i].push(parent[i]); }
+  const visited = new Array(n).fill(false);
+  const tour = [];
+  const stack = [0];
+  while (stack.length) {
+    const u = stack.pop();
+    if (visited[u]) continue;
+    visited[u] = true;
+    tour.push(u);
+    for (let i = mst[u].length - 1; i >= 0; i--) if (!visited[mst[u][i]]) stack.push(mst[u][i]);
+  }
+  let cost = 0;
+  for (let i = 0; i < n; i++) cost += dist[tour[i]][tour[(i + 1) % n]];
+  log('TSP 2-Approx tour:', tour, ', cost:', cost);
+  return tour;
+}
+
+log('=== Vertex Cover (2-approximation) ===');
+const edges = [[0,1],[0,2],[1,3],[2,3],[3,4]];
+const cover = vertexCover2Approx(5, edges);
+log('2-approx vertex cover:', Array.from(cover).sort((a,b)=>a-b));
+log('Cover size:', cover.size);
+
+log('\n=== Set Cover (greedy) ===');
+const sets = [new Set([0,1,2]), new Set([3,4,5]), new Set([4,5,6,7]), new Set([0,3,8]), new Set([2,7,9])];
+log('Chosen set indices:', setcoverGreedy(10, sets));
+
+log('\n=== TSP 2-Approximation (metric) ===');
+const dist = [
+  [0,10,15,20],
+  [10,0,35,25],
+  [15,35,0,30],
+  [20,25,30,0]
+];
+tsp2Approx(dist);
+log('(Optimal tour cost for this instance: 80)');
+
+log('\n=== P vs NP Key Points ===');
+log('- P: problems solvable in poly time (sorting, shortest path, MST)');
+log('- NP: problems verifiable in poly time (TSP, vertex cover, 3-SAT)');
+log('- NP-Hard: at least as hard as NP-Complete problems');
+log('- If P=NP, all encryption would break (RSA, AES rely on hard problems)');
+log('- Most believe P!=NP (Clay Millennium Prize: $1M for proof)');
+log('- Approximation algorithms: practical solutions with quality guarantees');
+</script>
+</body>
+</html>

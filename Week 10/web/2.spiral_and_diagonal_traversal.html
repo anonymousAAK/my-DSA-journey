@@ -1,0 +1,147 @@
+<!--
+  WEEK 10 - WEB DSA
+  Topic: Spiral & Diagonal Traversal + Sorted-Matrix Search
+  File: 2.spiral_and_diagonal_traversal.html
+
+  CONCEPT:
+    Spiral: walk the perimeter inward, shrinking four boundaries.
+    Diagonal: alternate direction per anti-diagonal index.
+    Sorted-matrix search: top-right corner walk in O(m + n).
+
+  KEY POINTS:
+    - Spiral uses four bound variables (top, bottom, left, right).
+    - Diagonal index d ranges 0..m+n-2; even d goes up-right.
+    - Sorted-matrix search eliminates a row or column per step.
+
+  ALGORITHM / APPROACH:
+    See Java/Python sources; identical logic.
+
+  WEB-SPECIFIC NOTES:
+    - JS numbers are doubles; safe for typical learning inputs.
+    - Output rendered to <pre> via textContent.
+
+  DRY RUN:
+    Spiral on 3x4 -> [1,2,3,4,8,12,11,10,9,5,6,7]
+    Diagonal on 3x3 -> [1, 2,4, 7,5,3, 6,8, 9]
+
+  COMPLEXITY:
+    Spiral / Diagonal: O(m*n).
+    Sorted search    : O(m + n).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 10 - Spiral & Diagonal</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 10 - Spiral & Diagonal Traversal</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function spiralOrder(mat) {
+    const result = [];
+    if (!mat.length || !mat[0].length) return result;
+    let top = 0, bottom = mat.length - 1;
+    let left = 0, right = mat[0].length - 1;
+    while (top <= bottom && left <= right) {
+      for (let i = left; i <= right; i++) result.push(mat[top][i]);
+      top++;
+      for (let i = top; i <= bottom; i++) result.push(mat[i][right]);
+      right--;
+      if (top <= bottom) {
+        for (let i = right; i >= left; i--) result.push(mat[bottom][i]);
+        bottom--;
+      }
+      if (left <= right) {
+        for (let i = bottom; i >= top; i--) result.push(mat[i][left]);
+        left++;
+      }
+    }
+    return result;
+  }
+
+  function diagonalOrder(mat) {
+    const m = mat.length, n = mat[0].length;
+    const result = [];
+    for (let d = 0; d < m + n - 1; d++) {
+      if (d % 2 === 0) {
+        let r = Math.min(d, m - 1);
+        let c = d - r;
+        while (r >= 0 && c < n) {
+          result.push(mat[r][c]);
+          r--; c++;
+        }
+      } else {
+        let c = Math.min(d, n - 1);
+        let r = d - c;
+        while (c >= 0 && r < m) {
+          result.push(mat[r][c]);
+          r++; c--;
+        }
+      }
+    }
+    return result;
+  }
+
+  function searchSortedMatrix(mat, target) {
+    if (!mat.length || !mat[0].length) return false;
+    let row = 0, col = mat[0].length - 1;
+    while (row < mat.length && col >= 0) {
+      if (mat[row][col] === target) return true;
+      else if (mat[row][col] > target) col--;
+      else row++;
+    }
+    return false;
+  }
+
+  const mat = [
+    [1, 2, 3, 4],
+    [5, 6, 7, 8],
+    [9, 10, 11, 12]
+  ];
+
+  log("Matrix:");
+  for (const row of mat) log(`[${row}]`);
+  log(`\nSpiral order: [${spiralOrder(mat)}]`);
+
+  const sq = [[1,2,3],[4,5,6],[7,8,9]];
+  log("\nSquare matrix:");
+  for (const row of sq) log(`[${row}]`);
+  log(`Spiral:   [${spiralOrder(sq)}]`);
+  log(`Diagonal: [${diagonalOrder(sq)}]`);
+
+  const sorted = [
+    [ 1,  4,  7, 11, 15],
+    [ 2,  5,  8, 12, 19],
+    [ 3,  6,  9, 16, 22],
+    [10, 13, 14, 17, 24],
+    [18, 21, 23, 26, 30]
+  ];
+  log("\nSearch in sorted matrix:");
+  log(`Search 5:  ${searchSortedMatrix(sorted, 5)}`);
+  log(`Search 20: ${searchSortedMatrix(sorted, 20)}`);
+  log(`Search 1:  ${searchSortedMatrix(sorted, 1)}`);
+  log(`Search 30: ${searchSortedMatrix(sorted, 30)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - JS handles the descending for-loop (i-- to left) with no fuss.
+    - Math.min from the global object equivalents Java's Math.min.
+    - The sorted-matrix walk has identical logic across all our languages.
+-->

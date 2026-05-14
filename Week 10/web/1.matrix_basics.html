@@ -1,0 +1,148 @@
+<!--
+  WEEK 10 - WEB DSA
+  Topic: Matrix Basics
+  File: 1.matrix_basics.html
+
+  CONCEPT:
+    A 2D matrix as an array of arrays. Operations: print, transpose
+    (square in-place + general), row reverse, 90° CW/CCW rotation,
+    naive matrix multiplication.
+
+  KEY POINTS:
+    - In-place transpose only on square matrices.
+    - 90° CW = transpose + reverse rows.
+    - 90° CCW = reverse rows + transpose.
+    - Multiplication is O(m*n*k) naive.
+
+  ALGORITHM / APPROACH:
+    See Java/Python sources; same logic in JS.
+
+  WEB-SPECIFIC NOTES:
+    - Allocate inner arrays in a loop or with Array.from to avoid aliasing.
+    - Array.prototype.reverse() reverses in place.
+    - For numerical workloads, libraries like math.js or TF.js help.
+
+  DRY RUN:
+    [[1,2,3],[4,5,6],[7,8,9]]
+        transpose -> [[1,4,7],[2,5,8],[3,6,9]]
+        rotate CW -> [[7,4,1],[8,5,2],[9,6,3]]
+    [[1,2],[3,4]] x [[5,6],[7,8]] = [[19,22],[43,50]]
+
+  COMPLEXITY:
+    Transpose      : O(rows*cols)
+    Rotation       : O(n^2)
+    Multiplication : O(m*n*k)
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 10 - Matrix Basics</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 10 - Matrix Basics</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function printMatrix(mat) {
+    for (const row of mat) log(`[${row}]`);
+    log("");
+  }
+
+  function transposeSquare(mat) {
+    const n = mat.length;
+    for (let i = 0; i < n; i++) {
+      for (let j = i + 1; j < n; j++) {
+        [mat[i][j], mat[j][i]] = [mat[j][i], mat[i][j]];
+      }
+    }
+  }
+
+  function transpose(mat) {
+    const rows = mat.length, cols = mat[0].length;
+    const result = Array.from({ length: cols }, () => new Array(rows).fill(0));
+    for (let i = 0; i < rows; i++) {
+      for (let j = 0; j < cols; j++) {
+        result[j][i] = mat[i][j];
+      }
+    }
+    return result;
+  }
+
+  function reverseRows(mat) {
+    for (const row of mat) row.reverse();
+  }
+
+  function rotate90CW(mat) {
+    transposeSquare(mat);
+    reverseRows(mat);
+  }
+
+  function rotate90CCW(mat) {
+    reverseRows(mat);
+    transposeSquare(mat);
+  }
+
+  function multiply(A, B) {
+    const m = A.length, k = A[0].length, n = B[0].length;
+    const C = Array.from({ length: m }, () => new Array(n).fill(0));
+    for (let i = 0; i < m; i++) {
+      for (let j = 0; j < n; j++) {
+        for (let p = 0; p < k; p++) {
+          C[i][j] += A[i][p] * B[p][j];
+        }
+      }
+    }
+    return C;
+  }
+
+  const mat = [
+    [1, 2, 3],
+    [4, 5, 6],
+    [7, 8, 9],
+  ];
+  log("Original:");
+  printMatrix(mat);
+
+  const mat2 = mat.map(r => [...r]);
+  transposeSquare(mat2);
+  log("Transposed (square, in-place):");
+  printMatrix(mat2);
+
+  const nonSquare = [[1,2,3],[4,5,6]];
+  log("Non-square (2x3):");
+  printMatrix(nonSquare);
+  log("Transposed (3x2):");
+  printMatrix(transpose(nonSquare));
+
+  const mat3 = mat.map(r => [...r]);
+  rotate90CW(mat3);
+  log("Rotated 90° CW:");
+  printMatrix(mat3);
+
+  const A = [[1,2],[3,4]];
+  const B = [[5,6],[7,8]];
+  log("A x B:");
+  printMatrix(multiply(A, B));
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - Use Array.from({length: n}, () => ...) to allocate independent inner arrays.
+    - Spread (`[...r]`) clones a row shallowly.
+    - Numeric heavy lifting belongs in math.js, ndarray, or WebGL/TF.js.
+-->

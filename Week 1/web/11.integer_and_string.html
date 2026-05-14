@@ -1,0 +1,65 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Mixing Integer and String + Concatenation
+File: 11.integer_and_string.html
+
+CONCEPT:
+JS's `+` operator concatenates when EITHER operand is a string. The integer
+is silently coerced via String(...) at the point of concatenation. This is
+the SAME behaviour as Java's `+`.
+
+KEY POINTS:
+ - "abc" + 1   -> "abc1"      (auto string conversion)
+ - 1 + 2 + "x" -> "3x"         (left-to-right: 3 + "x")
+ - "x" + 1 + 2 -> "x12"        (everything becomes string after first +)
+ - Use template literals for clarity: `${str} ${num}`.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Int + String</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+    input{ padding: .25rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Integer + String Concatenation</h1>
+  <label>name:   <input id="name" value="Alice"></label>
+  <label>number: <input id="num"  type="number" value="30"></label>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out  = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+      const render = () => {
+        out.textContent = "";
+        const name = document.getElementById("name").value;
+        const n    = Number(document.getElementById("num").value);
+
+        log("plus operator     :", name + " " + n);          // string concat
+        log("template literal  :", `${name} ${n}`);
+        log("Array.join         :", [name, n].join(" "));
+
+        // Common pitfall: left-to-right evaluation
+        log("1 + 2 + ' items' :", 1 + 2 + " items");          // "3 items"
+        log("'items: ' + 1 + 2:", "items: " + 1 + 2);         // "items: 12"
+      };
+      render();
+      document.getElementById("name").addEventListener("input", render);
+      document.getElementById("num").addEventListener("input", render);
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java auto-coerces just like JS.
+ - Python REQUIRES explicit str(...) conversion — it's strict, not lenient.
+ - Backtick template literals are the cleanest way to mix variables and text.
+-->

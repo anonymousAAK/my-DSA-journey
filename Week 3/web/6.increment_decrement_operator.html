@@ -1,0 +1,48 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Increment / Decrement
+File: 6.increment_decrement_operator.html
+
+KEY POINTS:
+ - JS has full pre/post ++ and -- (same as C/C++/Java).
+ - Behaviour matches Java: postfix returns OLD value; prefix returns NEW.
+ - Operand evaluation order is well-defined left-to-right (unlike C++).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - ++ / --</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Increment / Decrement</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  let a = 5;
+  log("initial a =", a);
+  log("a++ =", a++); log("a =", a);   // 5, then 6
+  log("++a =", ++a); log("a =", a);   // 7, 7
+  log("a-- =", a--); log("a =", a);   // 7, 6
+  log("--a =", --a); log("a =", a);   // 5, 5
+
+  log("\n--- in loops ---");
+  const arr = [10, 20, 30, 40, 50];
+  let s = "i++: ";
+  for (let i = 0; i < arr.length; i++) s += arr[i] + " ";
+  log(s);
+  s = "++i: ";
+  for (let i = 0; i < arr.length; ++i) s += arr[i] + " ";
+  log(s);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS, Java, and C++ all support ++/--; Python and Rust do not.
+ - In a for-loop header, `i++` and `++i` produce the same overall effect.
+-->
