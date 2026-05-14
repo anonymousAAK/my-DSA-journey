@@ -32,7 +32,7 @@ Every week includes a beautifully designed **interactive HTML page** (`index.htm
 | **Responsive** | Mobile-friendly with hamburger menu |
 | **Print-Ready** | Clean print styles for offline study |
 
-> Open any `Week N/index.html` in your browser to start learning!
+> Open `Week N/web/index.html` in your browser to start learning!
 
 ---
 
@@ -45,9 +45,23 @@ Every week includes a beautifully designed **interactive HTML page** (`index.htm
 | **C++** | `.cpp` | Modern C++17, STL-heavy, competitive programming style |
 | **Rust** | `.rs` | Ownership-safe, uses `std::collections`, idiomatic iterators |
 
-Each week folder contains all four languages side by side. Pick your preferred language or study all four to understand trade-offs!
+Each week now has dedicated language subfolders: `java/`, `python/`, `cpp/`, `rust/`, plus `web/` for the interactive page. This keeps parity across languages and makes it easier to study one language deeply week by week.
 
 ---
+
+
+### Folder Structure (per week)
+
+```
+Week N/
+├── java/      # Java lessons and problems (detailed, step-by-step)
+├── python/    # Python equivalents with idiomatic patterns
+├── cpp/       # C++17/STL implementations
+├── rust/      # Rust ownership-safe implementations
+└── web/       # Interactive weekly notes (index.html)
+```
+
+This layout supports going as deep in every language as the Java track, week by week.
 
 ## Table of Contents
 
@@ -102,10 +116,12 @@ Hashing   Trees    Adv Trees  Adv Graph  Research  Sys Design
 2. **Intermediate**: Jump to Week 8 (Searching) or Week 11 (Linked Lists) depending on your comfort level.
 3. **Advanced**: Weeks 18-24 cover DP, advanced graphs, and research-level topics.
 4. **Interview prep**: Follow the Interview Prep learning path above, then do Week 30.
-5. Each week folder contains implementations in Java, Python, C++, and Rust.
+5. Each week folder is organized into `java`, `python`, `cpp`, `rust`, and `web` subfolders.
 6. Every file includes: Problem statement → Approach/Pseudocode → Implementation → Complexity Analysis.
 7. **Language learners**: Compare implementations across languages to understand design differences.
-8. **Open the HTML pages**: Each week has an `index.html` with interactive explanations, diagrams, and code you can copy directly.
+8. **Open the HTML pages**: Each week has `web/index.html` with interactive explanations, diagrams, and code you can copy directly.
+
+9. Each `Week N/README.md` now mirrors the Java topic roadmap and defines what “detailed parity” means for Python/C++/Rust.
 
 ---
 
