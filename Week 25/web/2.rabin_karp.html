@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 25 - Rabin-Karp</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 25 - Rabin-Karp (rolling hash)</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 25 - WEB ADVANCED DSA
+ * Topic: Rabin-Karp String Matching (rolling hash)
+ * File: 2.rabin_karp.html
+ *
+ * CONCEPT:
+ *   Slide a length-m window of T and compare its rolling-hash fingerprint
+ *   to the hash of P; on a hash collision verify literally. Expected
+ *   runtime O(n + m).
+ *
+ * KEY POINTS:
+ *   - Polynomial rolling hash mod a prime, BASE = 256.
+ *   - h = BASE^(m-1) mod PRIME — used to subtract the outgoing character.
+ *   - Always verify on hash match.
+ *   - Worst case O(n*m) under adversarial input.
+ *
+ * ALGORITHM / APPROACH:
+ *   h = BASE^(m-1) mod PRIME
+ *   compute pHash and the first tHash
+ *   for i in 0..n-m:
+ *       if pHash === tHash and T[i..i+m] === P: report i
+ *       tHash = (BASE * (tHash - T[i]*h) + T[i+m]) mod PRIME
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - All arithmetic stays within Number (safe < 2^53).
+ *   - charCodeAt(i) replaces text.charAt(i).
+ *
+ * DRY RUN:
+ *   P = "AAA", T = "AAAAAA". Each window shares the same fingerprint -> matches [0,1,2,3].
+ *
+ * COMPLEXITY:
+ *   Time  : O(n + m) expected, O(n*m) worst.
+ *   Space : O(1) extra.
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+function search(text, pattern) {
+  const BASE = 256, PRIME = 1_000_000_007;
+  const results = [];
+  const n = text.length, m = pattern.length;
+  if (m === 0 || m > n) return results;
+  let h = 1;
+  for (let i = 0; i < m - 1; i++) h = (h * BASE) % PRIME;
+  let pHash = 0, tHash = 0;
+  for (let i = 0; i < m; i++) {
+    pHash = (BASE * pHash + pattern.charCodeAt(i)) % PRIME;
+    tHash = (BASE * tHash + text.charCodeAt(i))    % PRIME;
+  }
+  for (let i = 0; i <= n - m; i++) {
+    if (pHash === tHash) {
+      let ok = true;
+      for (let j = 0; j < m; j++) {
+        if (text[i + j] !== pattern[j]) { ok = false; break; }
+      }
+      if (ok) results.push(i);
+    }
+    if (i < n - m) {
+      tHash = (BASE * (tHash - text.charCodeAt(i) * h) + text.charCodeAt(i + m)) % PRIME;
+      if (tHash < 0) tHash += PRIME;
+    }
+  }
+  return results;
+}
+
+log('=== Rabin-Karp Pattern Matching (Web/JS) ===');
+const text = 'ABABDABACDABABCABAB';
+const pattern = 'ABABCABAB';
+log('Text   :', text);
+log('Pattern:', pattern);
+log('Matches:', search(text, pattern));    // [10]
+
+log('\n--- Overlapping matches ---');
+const t2 = 'AAAAAA', p2 = 'AAA';
+log('Text   :', t2);
+log('Pattern:', p2);
+log('Matches:', search(t2, p2));            // [0,1,2,3]
+
+/*
+ * NOTES (vs Java baseline):
+ *   - JS Numbers are IEEE-754 doubles (53-bit mantissa). BASE * tHash *
+ *     m_max stays within safe range as long as BASE * PRIME < 2^53; with
+ *     BASE=256 and PRIME=1e9+7 we sit at ~2.56e11, comfortably below 2^53.
+ *   - For very large alphabets switch PRIME or move to BigInt.
+ */
+</script>
+</body>
+</html>
