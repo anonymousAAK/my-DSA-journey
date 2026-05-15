@@ -72,3 +72,31 @@ xdg-open web/<file>.html   # Linux
 - **14. Binary to Decimal**
 - **15. Decimal to Binary**
 - **16. Check no Sequence**
+
+## Tradeoff Matrix
+
+Flagship topic: computing the Nth Fibonacci number.
+
+| Approach | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| Naive recursion `fib(n-1)+fib(n-2)` | O(φⁿ) | O(n) stack | Low | Never for n > ~40 — pedagogy only |
+| Iterative (two variables) | O(n) | O(1) | Low | Default choice for all practical n |
+| Memoized recursion | O(n) | O(n) | Medium | When you also need intermediate values |
+| Matrix exponentiation | O(log n) | O(1) | High | Astronomical n with modular arithmetic |
+| Binet's formula | O(1) | O(1) | Low | When n is tiny and float error is OK |
+
+## Anti-patterns to avoid
+
+- **Using `int` for Fibonacci past F(46)** — F(47) overflows a signed 32-bit int. Switch to `long` (good up to F(92)) or `BigInteger` for arbitrary n.
+- **Computing primality with `for i in 2..n`** — checking up to `sqrt(n)` is enough, since any factor larger than √n must pair with a smaller one. Wasting the upper half makes a 10× difference even on toy inputs.
+- **Building a decimal number from a binary string with `s += digit * Math.pow(2, i)`** — `Math.pow` returns `double` and you'll lose precision on long strings. Multiply-accumulate with `int`/`long` instead.
+- **Forgetting that `break` only exits the innermost loop** — if you're inside a nested loop and want to bail out of both, you need a labeled break or a flag, not a single `break`.
+- **Bitwise vs logical operators** — `&` and `&&` are different. `&` evaluates both sides; `&&` short-circuits. Mixing them up causes either subtle slowness or NullPointerExceptions on the right operand.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach Fibonacci to someone with only one minute, what's the one sentence you'd use?
+- Did `break` or `continue` ever surprise you in a nested loop? How did you fix it?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?

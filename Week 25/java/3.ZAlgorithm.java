@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ZAlgorithm {
+class ZAlgorithm {
 
     /** Compute the Z-array for s. */
     public static int[] zFunction(String s) {

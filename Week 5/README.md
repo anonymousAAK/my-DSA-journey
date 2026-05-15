@@ -52,3 +52,35 @@ xdg-open web/<file>.html   # Linux
 - **4. FibonacciRecursion**
 - **5. TowerOfHanoi**
 - **6. RecursionPatterns**
+
+## Tradeoff Matrix
+
+Flagship topic: solving the Tower of Hanoi (recursion).
+
+| Approach | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| Classic recursion (move n-1, move 1, move n-1) | O(2ⁿ) | O(n) stack | Low | The canonical solution — clearest expression of the recurrence |
+| Iterative (binary counter / Frame–Stewart) | O(2ⁿ) | O(1) | High | When stack depth is a real concern |
+| Bitwise enumeration of moves | O(2ⁿ) | O(1) | High | Curiosity / understanding the move sequence |
+
+| Approach (Fibonacci recursion) | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| Plain recursion | O(φⁿ) | O(n) | Low | Pedagogy only |
+| Memoized recursion | O(n) | O(n) | Medium | When you also need a recursion-shaped solution |
+| Tail-recursion-style iteration | O(n) | O(1) | Low | Production |
+
+## Anti-patterns to avoid
+
+- **Calling a recursive method without a base case** — the first recursive call you write should immediately return on the smallest input. Without that, you get StackOverflowError instantly.
+- **Putting the base case after the recursive call** — order matters. The check must run *before* recursing, or you recurse one extra level into invalid input.
+- **Confusing "what the function returns" with "what it prints"** — pick one contract per method. Methods that both print and return are hard to test and hard to compose.
+- **Method overloading by argument *order* of the same types** — `foo(int a, int b)` and `foo(int b, int a)` are the same signature. Overloads must differ in count or types.
+- **Believing recursion is "elegant" therefore always correct** — elegant code with exponential complexity is still exponentially slow. Verify the recurrence's complexity before celebrating.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach Tower of Hanoi to someone with only one minute, what's the one sentence you'd use?
+- Did writing the base case first vs last make a difference for you? Why?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?

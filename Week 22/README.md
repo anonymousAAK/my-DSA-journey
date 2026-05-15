@@ -44,3 +44,39 @@ xdg-open web/<file>.html   # Linux
 
 - **1. ShortestPaths**
 - **2. MinimumSpanningTree**
+
+## Tradeoff Matrix
+
+Flagship topic: Shortest paths and Minimum Spanning Trees.
+
+| Approach (shortest path) | Time | Space | Restrictions | When to prefer |
+|----------|------|-------|--------------|----------------|
+| BFS | O(V + E) | O(V) | Unweighted / unit weights | Unweighted SSSP |
+| Dijkstra (binary heap) | O((V + E) log V) | O(V) | Non-negative weights | Default for weighted SSSP |
+| Dijkstra (Fibonacci heap) | O(E + V log V) | O(V) | Non-negative weights | Theory; rarely worth the constants in practice |
+| Bellman–Ford | O(V·E) | O(V) | Detects negative cycles | Negative weights, or you need cycle detection |
+| SPFA (queue-based BF) | O(V·E) worst, fast avg | O(V) | Same as BF | Practical Bellman–Ford on sparse graphs |
+| Floyd–Warshall | O(V³) | O(V²) | All pairs | Dense, V ≤ ~400 |
+| 0-1 BFS | O(V + E) | O(V) | Weights in {0, 1} | Faster than Dijkstra for binary weights |
+
+| Approach (MST) | Time | Space | When to prefer |
+|----------|------|-------|----------------|
+| Kruskal (Union-Find) | O(E log E) | O(V) | Sparse graphs, edge list available |
+| Prim (binary heap) | O((V+E) log V) | O(V) | Dense graphs, adjacency list |
+| Borůvka | O(E log V) | O(V) | Parallelizable, theoretical interest |
+
+## Anti-patterns to avoid
+
+- **Running Dijkstra on a graph with negative edges** — relaxation is no longer monotone; popped nodes might still be reducible. Use Bellman–Ford, or transform with Johnson's algorithm.
+- **Reusing a `dist[]` array without re-initializing to `+∞`** — leftover values from a previous run look like reachable nodes. Reset (or use a `Map`) every call.
+- **Pushing duplicates into the heap and forgetting to skip stale entries** — when you find a shorter path, the old (longer) heap entry is still there. Either implement decrease-key, or check `if (d > dist[u]) continue;` on each pop.
+- **Kruskal without Union-Find** — cycle detection via DFS on every edge is O(V·E). Union-Find with path compression turns it into nearly O(α(V)).
+- **Floyd–Warshall with the loops in the wrong order** — the `k` (intermediate) loop must be the *outermost*. Putting it inside breaks the dynamic-programming invariant and gives wrong answers on most graphs.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach Dijkstra's relaxation step to someone with only one minute, what's the one sentence you'd use?
+- Looking at last week's anti-patterns list, did you commit any of them this week? Why?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?

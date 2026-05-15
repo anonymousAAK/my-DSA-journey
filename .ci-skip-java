@@ -1,0 +1,20 @@
+# Pedagogical fragment files — code snippets / syntax demos, not standalone
+# Java programs. They intentionally contain pseudocode (e.g. for-loop syntax
+# with placeholder identifiers) or commentary outside any class. They are not
+# meant to compile and are skipped by CI.
+Week 1/java/6.Taking_Input.java
+Week 1/java/9.Data_Types.java
+Week 1/java/11.Integer_and_String.java
+Week 1/java/13.How Integer is Stored.java
+Week 1/java/14. How other datatype are stores.java
+Week 1/java/15.Typecasting.java
+Week 2/java/1.Data_Types_review.java
+Week 2/java/2.If_else.java
+Week 2/java/4.While_Loop.java
+Week 2/java/5.Infinite_Loop.java
+Week 3/java/1.For_loop.java
+Week 3/java/2.For_loop_variations.java
+Week 3/java/3.Break.java
+Week 3/java/4.Continue.java
+Week 3/java/5.Scope_of_Variable.java
+Week 3/java/7.Bitwise_Operator.java

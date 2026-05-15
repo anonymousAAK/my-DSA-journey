@@ -61,12 +61,19 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-java@v4
         with: { distribution: temurin, java-version: "21" }
-      - name: Compile every Java file
+      - name: Compile every Java file (skipping pedagogical fragments)
         run: |
           set -e
           mkdir -p /tmp/java-out
           fail=0
+          # .ci-skip-java lists pedagogical fragment files (pseudocode / syntax demos
+          # outside any class) that are not standalone programs and intentionally
+          # do not compile. Lines starting with # are comments.
+          skip_pattern=$(grep -v '^#' .ci-skip-java | grep -v '^$' || true)
           while IFS= read -r -d '' f; do
+            if [ -n "$skip_pattern" ] && grep -qxF "$f" .ci-skip-java; then
+              continue
+            fi
             if ! javac -d /tmp/java-out "$f" 2>>/tmp/java-errors.log; then
               echo "FAIL: $f"; fail=1
             fi

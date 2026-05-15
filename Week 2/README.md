@@ -62,3 +62,30 @@ xdg-open web/<file>.html   # Linux
 - **9. Sum of Even Odd**
 - **10. Factors**
 - **11. Find Power**
+
+## Tradeoff Matrix
+
+Flagship topic: computing `a^b` (Find_Power).
+
+| Approach | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| Repeated multiplication (`for i in 1..b`) | O(b) | O(1) | Low | Tiny exponents, learning loops |
+| `Math.pow(a, b)` | O(1) amortized | O(1) | Lowest | When `double` precision is acceptable |
+| Fast exponentiation (binary) | O(log b) | O(1) iterative / O(log b) recursive | Medium | Large `b`, modular exponentiation |
+| Lookup table | O(1) | O(range) | Low | Fixed small domain (e.g. powers of 2 up to 30) |
+
+## Anti-patterns to avoid
+
+- **Using `Math.pow` for integer answers** — it returns `double`, and `(int) Math.pow(10, 18)` will give you a wrong, off-by-a-few value because doubles only carry ~15 significant digits. Roll your own loop or use `BigInteger.pow`.
+- **Infinite `while` loops because the update is missing or wrong-signed** — `while (n > 0)` with `n--` works; `while (n > 0)` with `n++` runs forever. Always read your loop body and ask "does this make progress toward the exit condition?".
+- **Off-by-one in `for (int i = 0; i <= n; i++)` vs `i < n`** — running one iteration too many is the single most common arithmetic bug. Decide whether `n` is inclusive or exclusive *before* you write the loop.
+- **Using `if (x = 0)` instead of `==`** — Java will reject this for booleans but it still trips C-trained brains. Read the condition aloud: "if x equals zero", not "if x is zero".
+- **Treating `char` as a string** — `'A'` is not `"A"`. They behave differently in concatenation and switch statements.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach `if/else` vs `while` in one sentence, what would you say?
+- Did your loops ever run one too many or one too few times? How did you debug it?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?

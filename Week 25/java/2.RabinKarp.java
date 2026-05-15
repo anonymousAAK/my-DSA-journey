@@ -47,7 +47,7 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class RabinKarp {
+class RabinKarp {
 
     private static final int BASE  = 256;
     private static final long PRIME = 1_000_000_007L;

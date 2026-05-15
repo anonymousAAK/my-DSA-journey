@@ -85,6 +85,7 @@ This layout supports going as deep in every language as the Java track, week by 
 - [Learning Paths](#learning-paths)
 - [How to Use This Guide](#how-to-use-this-guide)
 - [Curriculum Overview](#curriculum-overview)
+- [How It All Connects (Concept Map)](#how-it-all-connects-concept-map)
 - [Week-by-Week Breakdown](#week-by-week-breakdown)
 - [Complexity Reference](#complexity-reference)
 - [Data Structure Reference](#data-structure-reference)
@@ -157,6 +158,118 @@ Hashing   Trees    Adv Trees  Adv Graph  Research  Sys Design
 | **Phase 8: Research Level** | 23–24 | Advanced DP, NP-completeness, approximation, randomized algorithms | Research |
 | **Phase 9: Specialist Topics** | 25–27 | Advanced strings, network flow, computational geometry | Research |
 | **Phase 10: Mastery** | 28–30 | Game theory, system design, interview patterns | Expert |
+
+---
+
+## How It All Connects (Concept Map)
+
+The 30-week sequence is a teaching order, not a dependency order. The actual conceptual structure is a **graph**, not a list — many topics descend from common ancestors, and the same idea reappears in different costumes (memoized recursion = DP, monotonic queue = "what BFS does to a sliding window", caching = hashing under pressure).
+
+The map below is the mental model worth carrying. When you're stuck on a Week 23 problem, the right move is often to fall back to a Week 5 idea (recursion) or a Week 16 idea (hashing) and rebuild from there.
+
+```mermaid
+graph LR
+  REC[Recursion] --> TREES[Trees: BST / BT]
+  TREES --> DP[DP: memoized recursion]
+  DP --> TAB[Tabulation / bottom-up DP]
+  DP --> BITDP[Bitmask DP]
+  BT[Backtracking] --> DP
+  BT --> REC
+
+  ARR[Arrays] --> PFX[Prefix sums]
+  PFX --> SEG[Segment tree / BIT]
+  ARR --> TP[Two pointers]
+  TP --> SW[Sliding window]
+  SW --> MQ[Monotonic queue / deque]
+
+  HASH[Hashing] --> CACHE[Caching]
+  CACHE --> LRU[LRU / LFU]
+  LRU --> CH[Consistent hashing]
+  CH --> SHARD[Sharding / distributed]
+
+  GR[Graphs] --> BFSDFS[BFS / DFS]
+  BFSDFS --> SP[Shortest paths: Dijkstra / Bellman-Ford]
+  SP --> MST[MST: Kruskal / Prim]
+  MST --> FLOW[Network flow]
+
+  GREEDY[Greedy] --> INT[Interval scheduling]
+  GREEDY --> HUFF[Huffman]
+  GREEDY --> MST
+
+  TREES --> SEG
+  HASH --> TP
+  BFSDFS --> TREES
+```
+
+### ASCII fallback
+
+```
+                  +-----------+
+                  | Recursion |
+                  +-----+-----+
+                        |
+              +---------+----------+
+              v                    v
+        +-----------+        +--------------+
+        |   Trees   |------->| Backtracking |
+        | (BST, BT) |        +------+-------+
+        +-----+-----+               |
+              |                     v
+              v             +-----------------+
+        +-----------+       |  DP (memoized   |
+        | Segment   |       |    recursion)   |
+        | Tree / BIT|       +--------+--------+
+        +-----------+                |
+              ^               +------+------+
+              |               v             v
+        +-----+-----+    +---------+   +-----------+
+        |  Prefix   |    |Tabulation|  |Bitmask DP |
+        |   sums    |    +---------+   +-----------+
+        +-----+-----+
+              ^
+              |
+        +-----+-----+      +---------+      +-----------+
+        |  Arrays   +----->|  Two    +----->|  Sliding  |
+        +-----------+      |Pointers |      |  Window   |
+                           +---------+      +-----+-----+
+                                                  |
+                                                  v
+                                          +---------------+
+                                          | Monotonic     |
+                                          | Queue / Deque |
+                                          +---------------+
+
+        +---------+     +---------+     +---------+     +----------+     +---------+
+        | Hashing +---->| Caching +---->| LRU/LFU +---->|Consistent+---->|Sharding |
+        +---------+     +---------+     +---------+     | Hashing  |     +---------+
+                                                        +----------+
+
+        +--------+      +-----------+      +-------------------+      +------+      +------+
+        | Graphs +----->| BFS / DFS +----->| Shortest Paths    +----->| MST  +----->| Flow |
+        +--------+      +-----------+      | (Dijkstra/B-Ford) |      +------+      +------+
+                                           +-------------------+
+
+        +---------+      +---------------------+
+        | Greedy  +----->| Interval scheduling |
+        +----+----+      +---------------------+
+             |
+             +---------> Huffman
+             |
+             +---------> MST (shared with graphs)
+```
+
+**How to read it.** Arrows point from foundation toward application. If you're studying a topic on the right and feeling lost, walk left along the arrows — that's the prerequisite you're missing. If you've mastered a topic on the left and want to know where it leads, walk right.
+
+A few of the most useful cross-links the curriculum surfaces:
+
+- **Recursion → DP.** Every DP solution is "memoized recursion done carefully." If you can write the recurrence, you can write the DP. Weeks 5 → 18 → 23.
+- **Arrays → Prefix sums → Segment tree.** Same problem, three power levels. Prefix sums handle static range sums in O(1); segment trees handle the same with point updates in O(log N). Weeks 6 → 21.
+- **Hashing → Caching → System design.** Hashing isn't a Week 16 topic that ends there — it underpins LRU caches (Week 11), consistent hashing (Week 16 intro / Week 29 implementation), and sharding decisions at distributed scale. Same idea, three orders of magnitude of complexity.
+- **Two pointers → Sliding window → Monotonic deque.** A *generalization* chain. Two pointers is the parent; sliding window is the special case where pointers monotonically advance; monotonic deque is the extension that handles "max in window" in amortized O(1). Weeks 30 / 6 / 13.
+- **Backtracking → DP.** Backtracking with overlapping subproblems *is* DP. The moment you notice the search tree visits the same state twice, you're ready to memoize. Weeks 20 → 18 → 23.
+- **Greedy and MST.** Kruskal's algorithm is a greedy algorithm with a correctness proof (the cut property). Greedy isn't a separate planet from graphs — it's how some of the prettiest graph algorithms work. Weeks 19 → 22.
+
+The curriculum walks this graph in a roughly bottom-up topological order, but the *map* is what you should hold in your head.
 
 ---
 

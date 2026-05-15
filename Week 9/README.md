@@ -46,3 +46,32 @@ xdg-open web/<file>.html   # Linux
 - **1. BubbleSelectionInsertion**
 - **2. MergeSort**
 - **3. QuickSort**
+
+## Tradeoff Matrix
+
+Flagship topic: sorting algorithms (Bubble / Selection / Insertion / Merge / Quick).
+
+| Approach | Time (avg) | Time (worst) | Space | Stable? | When to prefer |
+|----------|------|------|-------|---------|----------------|
+| Bubble sort | O(N²) | O(N²) | O(1) | Yes | Teaching only — never in production |
+| Selection sort | O(N²) | O(N²) | O(1) | No | When writes are expensive (minimizes swaps) |
+| Insertion sort | O(N²) | O(N²) | O(1) | Yes | Nearly-sorted data, small N (~16), inner loop of hybrid sorts |
+| Merge sort | O(N log N) | O(N log N) | O(N) | Yes | Stability matters, linked lists, external sorting |
+| Quick sort (random pivot) | O(N log N) | O(N²) | O(log N) | No | General-purpose in-memory, cache-friendly |
+| Heap sort | O(N log N) | O(N log N) | O(1) | No | Worst-case guarantees with O(1) space |
+
+## Anti-patterns to avoid
+
+- **Picking the first or last element as quicksort pivot on sorted input** — degrades to O(N²). Randomize or use median-of-three to defeat adversarial inputs.
+- **Treating merge sort's "merge" as the hard part and sloppily slicing arrays** — repeatedly copying sub-arrays turns O(N log N) memory into O(N²). Pass index ranges, not new arrays.
+- **Believing "stable" means "fast"** — stability is about preserving order of equal keys, nothing about speed. Quick sort is faster than merge sort on average yet unstable.
+- **Sorting a `List<Integer>` and assuming primitive performance** — boxing/unboxing adds significant overhead and breaks cache locality. Use `int[]` and `Arrays.sort` when performance matters.
+- **Calling `Arrays.sort` on primitive arrays expecting a stable sort** — Java's `Arrays.sort(int[])` uses dual-pivot quicksort and is *not* stable. `Arrays.sort(Object[])` uses TimSort and *is* stable.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach the merge step of merge sort to someone with only one minute, what's the one sentence you'd use?
+- Looking at last week's anti-patterns list, did you commit any of them this week? Why?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?
