@@ -1,0 +1,60 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Reading Mixed-Type Input
+File: 10.multiple_input.html
+
+CONCEPT:
+Read an integer and a string from the same input field (or different inputs)
+and display them on the same line. Mirrors Java's pattern of reading int +
+String tokens with Scanner.
+
+KEY POINTS:
+ - Multiple inputs can be combined with `${...}` template literals.
+ - JS auto-coerces with `+`: 42 + "hello" -> "42hello" (string mode).
+ - DOM updates can happen on every keystroke (event-driven).
+
+SYNTAX:
+ const [tok1, tok2] = raw.split(/\s+/);
+ const n = Number(tok1);
+ out.textContent = `${n}${tok2}`;
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Mixed input</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+    input{ padding: .25rem; font-size: 1rem; }
+  </style>
+</head>
+<body>
+  <h1>Mixed-type input</h1>
+  <label>Tokens (int word): <input id="in" type="text" value="42 hello"></label>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out  = document.getElementById("out");
+      const el   = document.getElementById("in");
+      const render = () => {
+        const [t1, t2 = ""] = el.value.split(/\s+/).filter(Boolean);
+        const a = Number(t1);
+        out.textContent  = `print(a) then println(str): ${a}${t2}\n`;
+        out.textContent += `template-literal style    : ${a} ${t2}\n`;
+        console.log({ a, str: t2 });
+      };
+      render();
+      el.addEventListener("input", render);
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS auto-converts numbers to strings when concatenating with +.
+ - For Java's `print(a) + println(s)` write them sequentially without an
+   intervening newline character — exactly what `${a}${t2}` does.
+-->

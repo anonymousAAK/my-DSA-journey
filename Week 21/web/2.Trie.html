@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 21 - Trie & Maximum XOR</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 21 - Trie (Prefix Tree) & Maximum XOR</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 21 - WEB ADVANCED DSA
+ * Topic: Trie (Prefix Tree) + Binary Trie for Maximum XOR
+ * File: 2.Trie.html
+ *
+ * CONCEPT:
+ *   Trie indexes words by prefix. Operations are O(m) per word. A binary
+ *   trie over integer bits computes max XOR of any pair greedily in
+ *   O(n * B), B = bit length of the largest element.
+ *
+ * KEY POINTS:
+ *   - Each node has up to 26 children, an is_end flag, and a wordCount.
+ *   - Autocomplete = walk to prefix, DFS-collect terminals beneath it.
+ *   - Delete = unset is_end and prune empty branches recursively.
+ *   - Binary trie greedy: prefer opposite bit at each level.
+ *
+ * ALGORITHM / APPROACH:
+ *   insert / search / startsWith: walk; mark / read terminal flag.
+ *   maxXOR(nums): build binary trie of all bits MSB->LSB; greedy walk.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - Use plain object {} as the children map for simplicity.
+ *   - Render an ASCII outline of the trie to <pre id="out">.
+ *
+ * DRY RUN:
+ *   Insert "apple", "app", "application", "apply", "apt", "banana", "band".
+ *   search("app")  -> true; search("ap") -> false.
+ *   autocomplete("app") -> ["app","apple","application","apply"].
+ *   maxXOR([3,10,5,25,2,8]) -> 28 (5 ^ 25).
+ *
+ * COMPLEXITY:
+ *   Trie ops: O(m). maxXOR: O(n * B).
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+class TrieNode {
+  constructor() { this.children = {}; this.isEnd = false; this.wordCount = 0; }
+}
+
+class Trie {
+  constructor() { this.root = new TrieNode(); }
+  insert(word) {
+    let n = this.root;
+    for (const c of word) {
+      if (!n.children[c]) n.children[c] = new TrieNode();
+      n = n.children[c]; n.wordCount++;
+    }
+    n.isEnd = true;
+  }
+  _walk(s) { let n = this.root; for (const c of s) { if (!n.children[c]) return null; n = n.children[c]; } return n; }
+  search(w) { const n = this._walk(w); return !!n && n.isEnd; }
+  startsWith(p) { return this._walk(p) !== null; }
+  countWithPrefix(p) { const n = this._walk(p); return n ? n.wordCount : 0; }
+  autocomplete(p) {
+    const node = this._walk(p);
+    if (!node) return [];
+    const out = [];
+    const dfs = (n, buf) => {
+      if (n.isEnd) out.push(buf);
+      for (const c of Object.keys(n.children).sort()) dfs(n.children[c], buf + c);
+    };
+    dfs(node, p);
+    return out;
+  }
+  delete(word) { return this._del(this.root, word, 0); }
+  _del(node, word, i) {
+    if (i === word.length) { if (!node.isEnd) return false; node.isEnd = false; return true; }
+    const c = word[i]; if (!node.children[c]) return false;
+    const ok = this._del(node.children[c], word, i + 1);
+    if (ok) {
+      node.children[c].wordCount--;
+      const child = node.children[c];
+      if (!child.isEnd && Object.keys(child.children).length === 0 && child.wordCount === 0) {
+        delete node.children[c];
+      }
+    }
+    return ok;
+  }
+}
+
+function asciiTrie(node, prefix = '', isLast = true, out = []) {
+  out.push(prefix + (isLast ? '└─ ' : '├─ ') + (prefix === '' ? '(root)' : '*') + (node.isEnd ? ' [END]' : ''));
+  const keys = Object.keys(node.children).sort();
+  keys.forEach((k, i) => {
+    const child = node.children[k];
+    const branchPrefix = prefix + (isLast ? '   ' : '│  ');
+    out.push(branchPrefix + (i === keys.length - 1 ? '└─ ' : '├─ ') + k);
+    asciiTrie(child, branchPrefix + (i === keys.length - 1 ? '   ' : '│  '), true, out);
+  });
+  return out.join('\n');
+}
+
+function maxXOR(nums) {
+  if (!nums.length) return 0;
+  const mx = Math.max(...nums);
+  let bits = 0; while ((1 << bits) <= mx) bits++; if (bits === 0) bits = 1;
+  const trie = [[0, 0]];
+  for (const x of nums) {
+    let node = 0;
+    for (let b = bits - 1; b >= 0; b--) {
+      const bit = (x >> b) & 1;
+      if (trie[node][bit] === 0) { trie.push([0, 0]); trie[node][bit] = trie.length - 1; }
+      node = trie[node][bit];
+    }
+  }
+  let best = 0;
+  for (const x of nums) {
+    let node = 0, cur = 0;
+    for (let b = bits - 1; b >= 0; b--) {
+      const bit = (x >> b) & 1;
+      const want = 1 - bit;
+      if (trie[node][want] !== 0) { cur |= 1 << b; node = trie[node][want]; }
+      else node = trie[node][bit];
+    }
+    if (cur > best) best = cur;
+  }
+  return best;
+}
+
+const trie = new Trie();
+['apple','app','application','apply','apt','banana','band'].forEach(w => trie.insert(w));
+
+log('=== Trie (ASCII view, partial) ===');
+log(asciiTrie(trie.root));
+log('');
+log("search('apple')     :", trie.search('apple'));
+log("search('app')       :", trie.search('app'));
+log("search('ap')        :", trie.search('ap'));
+log("startsWith('app')   :", trie.startsWith('app'));
+log("startsWith('xyz')   :", trie.startsWith('xyz'));
+log("autocomplete('app') :", trie.autocomplete('app'));
+log("autocomplete('ban') :", trie.autocomplete('ban'));
+log("autocomplete('z')   :", trie.autocomplete('z'));
+
+trie.delete('app');
+log('\nAfter delete("app"):');
+log("search('app')   :", trie.search('app'));
+log("search('apple') :", trie.search('apple'));
+
+log('\n=== Maximum XOR ===');
+log('maxXOR([3,10,5,25,2,8]) =', maxXOR([3,10,5,25,2,8])); // 28
+log('maxXOR([0,1,2])         =', maxXOR([0,1,2]));         // 3
+</script>
+</body>
+</html>

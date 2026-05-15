@@ -1,0 +1,67 @@
+<!--
+WEEK 5 - WEB FUNCTIONS & RECURSION
+Topic: Method Overloading
+File: 2.method_overloading.html
+
+CONCEPT:
+JS HAS NO METHOD OVERLOADING. The last definition wins. To dispatch on
+arity / type, inspect arguments at runtime or use rest parameters.
+
+KEY POINTS:
+ - Two functions with the same name OVERWRITE each other.
+ - `arguments.length` (in non-arrow) or `args.length` (rest) drives dispatch.
+ - For type-based dispatch, use `typeof x === "..."` or instanceof.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 5 - Overloading</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Overloading via dispatch</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function add(...args) {
+    if (args.length === 2 && typeof args[0] === "string") {
+      return args.join("");
+    }
+    return args.reduce((a, b) => a + b, 0);
+  }
+  log("add(2, 3)        =", add(2, 3));
+  log("add(1, 2, 3)     =", add(1, 2, 3));
+  log("add(1.5, 2.5)    =", add(1.5, 2.5));
+  log("add('hello', 'world') =", add("hello", "world"));
+
+  // Type-based dispatch (manual)
+  function double(value) {
+    if (typeof value === "number")  return value * 2;
+    if (typeof value === "string")  return value + value;
+    if (Array.isArray(value))       return value.concat(value);
+    throw new TypeError(`don't know how to double ${typeof value}`);
+  }
+  log("double(5)        =", double(5));
+  log("double('ab')     =", JSON.stringify(double("ab")));
+  log("double([1,2,3])  =", JSON.stringify(double([1,2,3])));
+
+  // Print collection (duck typing)
+  function printArray(arr) {
+    log("[" + arr.map(x => JSON.stringify(x)).join(", ") + "]");
+  }
+  printArray([1, 2, 3]);
+  printArray([1.1, 2.2, 3.3]);
+  printArray(["a", "b", "c"]);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS dispatch is RUNTIME -- as in Python, you switch on type/arity manually.
+ - For library APIs, prefer separate function names over runtime dispatch.
+ - TypeScript adds COMPILE-TIME signature overloads for type-checking only.
+-->

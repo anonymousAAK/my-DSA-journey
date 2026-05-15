@@ -1,0 +1,68 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Fahrenheit -> Celsius Table
+File: 6.fahrenheit_to_celsius_table.html
+
+PROBLEM:
+ Print (F, C) pairs for F in S..E stepping by W.
+ C = (F - 32) * 5 / 9.
+
+KEY POINTS:
+ - JS / always produces float; use Math.trunc to mimic Java's int truncation.
+ - Build the table in a DOM <table> for nice presentation.
+
+DRY RUN:
+ S=32 E=212 W=20 -> 32, 52, 72, ..., 212 rows.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - F->C Table</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}
+pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}
+table{border-collapse:collapse;margin-top:1rem}
+th,td{border:1px solid #888;padding:.25rem .75rem;text-align:right}
+input{padding:.25rem;width:5rem}
+</style>
+</head>
+<body>
+<h1>Fahrenheit -&gt; Celsius Table</h1>
+<label>S <input id="S" type="number" value="32"></label>
+<label>E <input id="E" type="number" value="212"></label>
+<label>W <input id="W" type="number" value="20"></label>
+<table id="t"><thead><tr><th>F</th><th>C (int)</th><th>C (precise)</th></tr></thead><tbody></tbody></table>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const tb  = document.querySelector("#t tbody");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const render = () => {
+    out.textContent = ""; tb.innerHTML = "";
+    const S = Number(document.getElementById("S").value);
+    const E = Number(document.getElementById("E").value);
+    const W = Number(document.getElementById("W").value);
+    if (W <= 0) { log("step W must be > 0"); return; }
+    for (let F = S; F <= E; F += W) {
+      const cInt = Math.trunc((F - 32) * 5 / 9);
+      const cFlt = (F - 32) * 5 / 9;
+      const tr = document.createElement("tr");
+      tr.innerHTML = `<td>${F}</td><td>${cInt}</td><td>${cFlt.toFixed(4)}</td>`;
+      tb.appendChild(tr);
+      log(`${F} ${cInt}   (precise ${cFlt.toFixed(4)})`);
+    }
+  };
+  render();
+  ["S","E","W"].forEach(id =>
+    document.getElementById(id).addEventListener("input", render));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - The DOM table is a more user-friendly output than text alone.
+ - Math.trunc((F-32)*5/9) matches Java's int arithmetic exactly.
+-->

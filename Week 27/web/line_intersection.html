@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 27 - Line Segment Intersection</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+  canvas { border: 1px solid #ccc; background: #fff; }
+</style>
+</head>
+<body>
+<h1>Line Segment Intersection</h1>
+
+<div class="doc">
+<p><strong>WEEK 27 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Two segments AB and CD intersect iff
+endpoints straddle each other in cross-product orientation, or one
+endpoint lies on the other segment (collinear case).</p>
+<p><strong>KEY POINTS:</strong> ccw() orientation; four o1..o4 signs;
+on-segment fallback; O(1) per query.</p>
+<p><strong>ALGORITHM:</strong> compute o1..o4; proper intersection when
+signs differ on both pairs; else check on-segment fallbacks.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> JS doubles work; for large
+integer coordinates consider BigInt to avoid floating error.</p>
+<p><strong>DRY RUN:</strong> AB=(0,0)-(4,4), CD=(0,4)-(4,0) ->
+intersects at (2,2).</p>
+<p><strong>COMPLEXITY:</strong> Time O(1); Space O(1).</p>
+</div>
+
+<canvas id="cv" width="500" height="400"></canvas>
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+function ccw(a, b, c) {
+  const v = (b[0]-a[0]) * (c[1]-a[1]) - (b[1]-a[1]) * (c[0]-a[0]);
+  return Math.sign(v);
+}
+
+function onSegment(p, q, r) {
+  return Math.min(p[0],q[0]) <= r[0] && r[0] <= Math.max(p[0],q[0])
+      && Math.min(p[1],q[1]) <= r[1] && r[1] <= Math.max(p[1],q[1]);
+}
+
+function segmentsIntersect(a, b, c, d) {
+  const o1 = ccw(a, b, c), o2 = ccw(a, b, d);
+  const o3 = ccw(c, d, a), o4 = ccw(c, d, b);
+  if (o1 !== o2 && o3 !== o4) return true;
+  if (o1 === 0 && onSegment(a, b, c)) return true;
+  if (o2 === 0 && onSegment(a, b, d)) return true;
+  if (o3 === 0 && onSegment(c, d, a)) return true;
+  if (o4 === 0 && onSegment(c, d, b)) return true;
+  return false;
+}
+
+function lineIntersection(a, b, c, d) {
+  const denom = (a[0]-b[0]) * (c[1]-d[1]) - (a[1]-b[1]) * (c[0]-d[0]);
+  if (denom === 0) return null;
+  const t = ((a[0]-c[0]) * (c[1]-d[1]) - (a[1]-c[1]) * (c[0]-d[0])) / denom;
+  return [a[0] + t * (b[0]-a[0]), a[1] + t * (b[1]-a[1])];
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const a = [0,0], b = [4,4], c = [0,4], d = [4,0];
+log("Segments intersect:", segmentsIntersect(a, b, c, d));
+log("Intersection point:", JSON.stringify(lineIntersection(a, b, c, d)));
+
+const e = [0,0], f = [5,0], g = [0,1], h = [5,1];
+log("Parallel intersect:", segmentsIntersect(e, f, g, h));
+log("Lines parallel:", lineIntersection(e, f, g, h) === null);
+
+// Render
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const SX = 80, OY = 380;
+function px(p) { return [40 + p[0]*SX, OY - p[1]*SX]; }
+function line(p, q, color) {
+  ctx.strokeStyle = color;
+  ctx.lineWidth = 2;
+  ctx.beginPath();
+  const A = px(p), B = px(q);
+  ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.stroke();
+}
+line(a, b, "#48a");
+line(c, d, "#c33");
+const ip = lineIntersection(a, b, c, d);
+if (ip) {
+  ctx.fillStyle = "#0a0";
+  const [X, Y] = px(ip);
+  ctx.beginPath(); ctx.arc(X, Y, 6, 0, 2*Math.PI); ctx.fill();
+}
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * Java's geometry.java has no segment-intersection; we add it here.
+  * Math.sign + double arithmetic gives the orientation cleanly.
+-->
+</body>
+</html>

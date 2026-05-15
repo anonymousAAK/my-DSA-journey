@@ -1,0 +1,75 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: How Integers are Stored in Memory (binary, two's complement)
+File: 13.how_integer_is_stored.html
+
+CONCEPT:
+JavaScript Numbers are 64-bit IEEE 754 floats, NOT machine integers, but
+the bitwise operators (& | ^ ~ << >>) coerce operands to 32-bit signed
+integers FIRST. So the same two's-complement story applies for those ops.
+
+KEY POINTS:
+ - `(n >>> 0).toString(2).padStart(32, "0")` -> unsigned 32-bit binary.
+ - For negative n, `~n + 1` derives the two's complement.
+ - BigInts have arbitrary precision but no fixed bit width — must mask manually.
+ - `Number.MAX_SAFE_INTEGER` = 2^53 - 1 (precision boundary for exact ints).
+
+SYNTAX:
+ (4 >>> 0).toString(2).padStart(32, "0")
+ (-4 >>> 0).toString(2).padStart(32, "0")    // shows the two's complement
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Integer storage</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>How Integers Are Stored (32-bit two's complement)</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+      const bin = n => (n >>> 0).toString(2).padStart(32, "0");
+
+      log("=== +4 ===");
+      log("decimal :", 4);
+      log("32-bit  :", bin(4));
+
+      log("\n=== -4 (two's complement) ===");
+      log("decimal :", -4);
+      log("32-bit  :", bin(-4));
+
+      log("\n=== Derivation of -4 ===");
+      const step1 = bin(4);
+      const step2 = [...step1].map(b => b === "0" ? "1" : "0").join("");
+      const step3 = bin((parseInt(step2, 2) + 1) >>> 0);
+      log("step1 (+4)        =", step1);
+      log("step2 (~4)        =", step2);
+      log("step3 (step2 + 1) =", step3);
+      log("matches bin(-4) ? ", step3 === bin(-4));
+
+      log("\n=== JS-specific quirks ===");
+      log("Number.MAX_SAFE_INTEGER =", Number.MAX_SAFE_INTEGER);  // 2^53-1
+      log("Bitwise ops coerce to 32-bit signed int:");
+      log("  (2**40) | 0  =", (2 ** 40) | 0, "  // loses high bits");
+      log("Use BigInt for full-precision integer storage:");
+      log("  (1n << 200n).toString() =", (1n << 200n).toString());
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS bitwise ops silently TRUNCATE to 32 bits — beware on big numbers.
+ - For 64-bit bitwise math, use BigInt with explicit masks (e.g. `n & 0xFFFFFFFFn`).
+ - `(n >>> 0)` is the idiomatic trick to view a Number as a 32-bit unsigned int.
+-->

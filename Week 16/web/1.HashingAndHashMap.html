@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 16 - Hashing & HashMap (JS)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 980px; }
+  pre { background:#0b1021; color:#d6deeb; padding:1rem; border-radius:.5rem;
+        overflow:auto; font-family: ui-monospace, Menlo, monospace; font-size:.85rem; }
+  h1, h2 { color:#1e293b; }
+  h2 { border-bottom:1px solid #cbd5e1; padding-bottom:.2rem; margin-top:1.4rem; }
+</style>
+</head>
+<body>
+<h1>Week 16 - Hashing & HashMap</h1>
+<p>Five classic hash-table problems. Output appears below; full trace also goes to the console.</p>
+<pre id="out"></pre>
+
+<script>
+/*
+WEEK 16 - WEB (JavaScript) DSA
+Topic: Hashing Fundamentals + Classic HashMap Problems
+File: 1.HashingAndHashMap.html
+
+CONCEPT:
+    JavaScript ships two hash-style containers:
+      - Object literals (string/symbol keys, prototype chain in the way).
+      - Map / Set (any value as key, deterministic insertion order, .size).
+    Both are O(1) average for lookup / insert / delete.
+
+KEY POINTS:
+    - Prefer `Map` over `{}` when keys can be non-strings or you need .size.
+    - Iteration order on Map = insertion order; on Set = insertion order.
+    - For frequency tables, `map.get(k) ?? 0` + `map.set(...)` is idiomatic.
+    - For canonical anagram keys, sort the characters and join into a string.
+
+ALGORITHM / APPROACH:
+    Identical to other languages: pick the right key, lookup in O(1), update.
+
+JS-SPECIFIC NOTES:
+    - Use `??` (nullish coalescing) to default missing entries to 0/[].
+    - `[...map.values()]` materializes an iterator into an array.
+    - Sorting strings: `[...str].sort().join('')`.
+    - All numbers are 64-bit doubles; sums of int32s fit safely.
+
+DRY RUN:
+    twoSum([2,7,11,15], 9) -> seen={}; (i=0)->{2:0}; (i=1) 9-7=2 hit -> [0,1]
+    longestConsecutive([100,4,200,1,3,2])
+       set = {100,4,200,1,3,2}
+       start at 1 (0 not in set): 1,2,3,4 length=4 -> answer 4
+
+COMPLEXITY:
+    twoSum O(n)/O(n)
+    frequency O(n)/O(n)
+    groupAnagrams O(n*k log k)/O(n*k)
+    hasZeroSumSubarray O(n)/O(n)
+    subarraySum O(n)/O(n)
+    longestConsecutive O(n)/O(n)
+*/
+
+const out = document.getElementById('out');
+const log = (...a) => {
+  const line = a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+  out.textContent += line + '\n';
+  console.log(...a);
+};
+
+// PROBLEM 1: Two Sum
+function twoSum(nums, target) {
+  const seen = new Map();                        // value -> index
+  for (let i = 0; i < nums.length; i++) {
+    const complement = target - nums[i];
+    if (seen.has(complement)) return [seen.get(complement), i];
+    seen.set(nums[i], i);
+  }
+  return [-1, -1];
+}
+
+// PROBLEM 2: Frequency
+function frequency(arr) {
+  const f = new Map();
+  for (const x of arr) f.set(x, (f.get(x) ?? 0) + 1);
+  return Object.fromEntries(f);                  // pretty-print as object
+}
+
+// PROBLEM 3: Group Anagrams
+function groupAnagrams(strs) {
+  const groups = new Map();
+  for (const s of strs) {
+    const key = [...s].sort().join('');
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(s);
+  }
+  return [...groups.values()];
+}
+
+// PROBLEM 4: Subarray With Zero Sum
+function hasZeroSumSubarray(arr) {
+  const seen = new Set([0]);                     // empty prefix
+  let sum = 0;
+  for (const x of arr) {
+    sum += x;
+    if (seen.has(sum)) return true;
+    seen.add(sum);
+  }
+  return false;
+}
+
+function subarraySum(nums, k) {
+  const counts = new Map([[0, 1]]);
+  let sum = 0, total = 0;
+  for (const x of nums) {
+    sum += x;
+    total += counts.get(sum - k) ?? 0;
+    counts.set(sum, (counts.get(sum) ?? 0) + 1);
+  }
+  return total;
+}
+
+// PROBLEM 5: Longest Consecutive Sequence
+function longestConsecutive(nums) {
+  const s = new Set(nums);
+  let best = 0;
+  for (const x of s) {
+    if (!s.has(x - 1)) {                         // start of a run
+      let length = 1;
+      while (s.has(x + length)) length++;
+      if (length > best) best = length;
+    }
+  }
+  return best;
+}
+
+// ---------- driver ----------
+log('=== Two Sum ===');
+log(twoSum([2,7,11,15], 9));   // [0,1]
+log(twoSum([3,2,4], 6));       // [1,2]
+
+log('\n=== Frequency Count ===');
+log(frequency([1,3,2,3,1,1,4]));
+
+log('\n=== Group Anagrams ===');
+for (const g of groupAnagrams(['eat','tea','tan','ate','nat','bat'])) log(g);
+
+log('\n=== Subarray With Zero Sum ===');
+log(hasZeroSumSubarray([4,2,-3,1,6]));  // true
+log(hasZeroSumSubarray([4,2,0,1,6]));   // true
+log(hasZeroSumSubarray([-3,2,3,1,6]));  // false
+
+log('\n=== Subarray Sum == k ===');
+log(subarraySum([1,1,1], 2));           // 2
+log(subarraySum([1,2,3], 3));           // 2
+
+log('\n=== Longest Consecutive Sequence ===');
+log(longestConsecutive([100,4,200,1,3,2]));         // 4
+log(longestConsecutive([0,3,7,2,5,8,4,6,0,1]));     // 9
+
+/*
+NOTES (JavaScript vs Java):
+  - Java HashMap requires generic types; JS Map keys/values are untyped.
+  - JS `Map` preserves insertion order; Java HashMap order is unspecified
+    (use LinkedHashMap for ordering).
+  - Plain objects {} stringify keys ("1" === 1 confusion); always use Map
+    for non-string keys.
+  - JS doesn't expose load factor or rehash threshold — engines manage that.
+  - `??` defaults null/undefined; Java needs getOrDefault / merge.
+*/
+</script>
+</body>
+</html>

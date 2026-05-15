@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 25 - String Algorithms</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1, h2 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 25 - String Algorithms (KMP, Rabin-Karp, Z-Algorithm)</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 25 - WEB ADVANCED DSA
+ * Topic: String Algorithms (KMP, Rabin-Karp, Z-Algorithm)
+ * File: string_algorithms.html
+ *
+ * CONCEPT:
+ *   Three linear-time pattern-matching algorithms over arbitrary text:
+ *     1. KMP: precomputes the LPS array; mismatch falls back via lps[j-1].
+ *     2. Rabin-Karp: rolling-hash sliding window; verify on hash match.
+ *     3. Z-Algorithm: Z[i] = longest prefix-matching substring at i; pattern
+ *        match via concat = pattern + '$' + text and Z[i] == |P|.
+ *
+ * KEY POINTS:
+ *   - KMP and Z run in O(n+m); Rabin-Karp expected O(n+m).
+ *   - LPS construction is itself a KMP self-application on the pattern.
+ *   - Rolling hash uses big prime modulus to keep collision rate low.
+ *
+ * ALGORITHM / APPROACH:
+ *   See sibling files (java/python/cpp/rust); identical structure.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - JS uses BigInt is unnecessary here; modulus = 1_000_000_007 fits in
+ *     53-bit doubles for our short patterns/text.
+ *   - charCodeAt(i) replaces text.charAt(i) for character codes.
+ *   - Output goes to <pre id="out"> and console.log.
+ *
+ * DRY RUN (Z-array for "aabxaab"):
+ *   z = [0, 1, 0, 0, 3, 1, 0].
+ * DRY RUN (KMP on text "ABABDABACDABABCABAB", pattern "ABABCABAB"):
+ *   lps = [0,0,1,2,0,1,2,3,4]; single match at index 10.
+ *
+ * COMPLEXITY:
+ *   KMP/Z: O(n+m). Rabin-Karp: O(n+m) expected, O(n*m) worst-case.
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+// ---------------- KMP ----------------
+function kmpBuildLPS(pattern) {
+  const m = pattern.length;
+  const lps = new Array(m).fill(0);
+  let length = 0, i = 1;
+  while (i < m) {
+    if (pattern[i] === pattern[length]) {
+      length++;
+      lps[i] = length;
+      i++;
+    } else {
+      if (length !== 0) length = lps[length - 1];
+      else { lps[i] = 0; i++; }
+    }
+  }
+  return lps;
+}
+
+function kmpSearch(text, pattern) {
+  const results = [];
+  const n = text.length, m = pattern.length;
+  if (m === 0) return results;
+  const lps = kmpBuildLPS(pattern);
+  let i = 0, j = 0;
+  while (i < n) {
+    if (text[i] === pattern[j]) { i++; j++; }
+    if (j === m) {
+      results.push(i - j);
+      j = lps[j - 1];
+    } else if (i < n && text[i] !== pattern[j]) {
+      if (j !== 0) j = lps[j - 1];
+      else i++;
+    }
+  }
+  return results;
+}
+
+// ---------------- Rabin-Karp ----------------
+function rabinKarp(text, pattern) {
+  const BASE = 256, PRIME = 1_000_000_007;
+  const results = [];
+  const n = text.length, m = pattern.length;
+  if (m === 0 || m > n) return results;
+  let h = 1;
+  for (let i = 0; i < m - 1; i++) h = (h * BASE) % PRIME;
+  let pHash = 0, tHash = 0;
+  for (let i = 0; i < m; i++) {
+    pHash = (BASE * pHash + pattern.charCodeAt(i)) % PRIME;
+    tHash = (BASE * tHash + text.charCodeAt(i))    % PRIME;
+  }
+  for (let i = 0; i <= n - m; i++) {
+    if (pHash === tHash) {
+      let ok = true;
+      for (let j = 0; j < m; j++) if (text[i + j] !== pattern[j]) { ok = false; break; }
+      if (ok) results.push(i);
+    }
+    if (i < n - m) {
+      tHash = (BASE * (tHash - text.charCodeAt(i) * h) + text.charCodeAt(i + m)) % PRIME;
+      if (tHash < 0) tHash += PRIME;
+    }
+  }
+  return results;
+}
+
+// ---------------- Z-algorithm ----------------
+function zFunction(s) {
+  const n = s.length;
+  const z = new Array(n).fill(0);
+  let l = 0, r = 0;
+  for (let i = 1; i < n; i++) {
+    if (i < r) z[i] = Math.min(r - i, z[i - l]);
+    while (i + z[i] < n && s[z[i]] === s[i + z[i]]) z[i]++;
+    if (i + z[i] > r) { l = i; r = i + z[i]; }
+  }
+  return z;
+}
+
+function zSearch(text, pattern) {
+  if (!pattern) return [];
+  const concat = pattern + '$' + text;
+  const z = zFunction(concat);
+  const m = pattern.length;
+  const out = [];
+  for (let i = m + 1; i < concat.length; i++) if (z[i] === m) out.push(i - m - 1);
+  return out;
+}
+
+log('============================================================');
+log('Week 25 - String Algorithms  (Web/JS)');
+log('============================================================');
+
+const text = 'ABABDABACDABABCABAB';
+const pattern = 'ABABCABAB';
+log('\nText   :', text);
+log('Pattern:', pattern, '\n');
+
+log('[KMP]        Matches at indices :', kmpSearch(text, pattern));
+log('[Rabin-Karp] Matches at indices :', rabinKarp(text, pattern));
+log('[Z-algo]     Matches at indices :', zSearch(text, pattern));
+
+log('\n--- Overlapping-match example ---');
+const text2 = 'AAAAAA', pattern2 = 'AAA';
+log('Text   :', text2);
+log('Pattern:', pattern2);
+log('[KMP]        Matches at indices :', kmpSearch(text2, pattern2));
+log('[Rabin-Karp] Matches at indices :', rabinKarp(text2, pattern2));
+log('[Z-algo]     Matches at indices :', zSearch(text2, pattern2));
+
+log('\n--- Z-array demo ---');
+const demo = 'aabxaab';
+log('String  :', demo);
+log('Z-array :', zFunction(demo));
+</script>
+</body>
+</html>

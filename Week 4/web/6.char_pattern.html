@@ -1,0 +1,38 @@
+<!--
+WEEK 4 - WEB PATTERN PROBLEMS
+Topic: Character Pattern (consecutive letters)
+File: 6.char_pattern.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 4 - Char</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px;font-family:monospace}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Character Pattern</h1>
+<label>N <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const A = "A".charCodeAt(0);
+  const render = () => {
+    const n = Number(document.getElementById("n").value);
+    let s = "";
+    for (let i = 1; i <= n; i++) {
+      for (let j = 0; j < i; j++) s += String.fromCharCode(A + i - 1 + j);
+      s += "\n";
+    }
+    out.textContent = s;
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - The character depends on row AND column.
+-->

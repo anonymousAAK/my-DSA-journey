@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 30 - Top K Elements</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Top-K Elements Pattern</h1>
+
+<div class="doc">
+<p><strong>WEEK 30 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Find K largest / most-frequent elements via
+min-heap (O(n log K)), bucket sort by frequency (O(n)), or quickselect
+(O(n) expected).</p>
+<p><strong>KEY POINTS:</strong> Min-heap of size K keeps largest;
+buckets of frequency are bounded by n; quickselect partitions in place.</p>
+<p><strong>ALGORITHM:</strong> see code for findKthLargest, topKFrequent
+(heap and bucket), quickselectKthLargest.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> JS lacks a built-in heap; we
+ship a small MinHeap class. For top-K frequent, Map gives O(1) tally.</p>
+<p><strong>DRY RUN:</strong> findKthLargest [3,2,1,5,6,4],k=2 -> 5.
+topKFrequent [1,1,1,2,2,3],k=2 -> [1, 2] (any order).</p>
+<p><strong>COMPLEXITY:</strong> Heap O(n log K); Bucket O(n);
+Quickselect O(n) expected.</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+class MinHeap {
+  constructor(cmp = (a, b) => a - b) { this.a = []; this.cmp = cmp; }
+  push(x) { this.a.push(x); this._up(this.a.length - 1); }
+  peek()  { return this.a[0]; }
+  pop()   {
+    const t = this.a[0], last = this.a.pop();
+    if (this.a.length) { this.a[0] = last; this._down(0); }
+    return t;
+  }
+  size() { return this.a.length; }
+  _up(i) {
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (this.cmp(this.a[i], this.a[p]) < 0) {
+        [this.a[i], this.a[p]] = [this.a[p], this.a[i]];
+        i = p;
+      } else break;
+    }
+  }
+  _down(i) {
+    for (;;) {
+      const l = 2*i+1, r = 2*i+2; let best = i;
+      if (l < this.a.length && this.cmp(this.a[l], this.a[best]) < 0) best = l;
+      if (r < this.a.length && this.cmp(this.a[r], this.a[best]) < 0) best = r;
+      if (best === i) break;
+      [this.a[i], this.a[best]] = [this.a[best], this.a[i]];
+      i = best;
+    }
+  }
+}
+
+function findKthLargest(nums, k) {
+  const h = new MinHeap();
+  for (const x of nums) {
+    h.push(x);
+    if (h.size() > k) h.pop();
+  }
+  return h.peek();
+}
+
+function topKFrequentHeap(nums, k) {
+  const freq = new Map();
+  for (const x of nums) freq.set(x, (freq.get(x) || 0) + 1);
+  const h = new MinHeap((a, b) => a[0] - b[0]);
+  for (const [v, c] of freq) {
+    h.push([c, v]);
+    if (h.size() > k) h.pop();
+  }
+  const out = [];
+  while (h.size()) out.push(h.pop()[1]);
+  return out;
+}
+
+function topKFrequentBucket(nums, k) {
+  const freq = new Map();
+  for (const x of nums) freq.set(x, (freq.get(x) || 0) + 1);
+  const buckets = Array.from({length: nums.length + 1}, () => []);
+  for (const [v, c] of freq) buckets[c].push(v);
+  const out = [];
+  for (let i = buckets.length - 1; i >= 0 && out.length < k; i--)
+    for (const v of buckets[i]) {
+      out.push(v);
+      if (out.length === k) return out;
+    }
+  return out;
+}
+
+function quickselectKthLargest(nums, k) {
+  nums = [...nums];
+  const target = nums.length - k;
+  function partition(lo, hi) {
+    const pivot = nums[(lo + hi) >> 1];
+    let i = lo, j = hi;
+    while (i <= j) {
+      while (nums[i] < pivot) i++;
+      while (nums[j] > pivot) j--;
+      if (i <= j) { [nums[i], nums[j]] = [nums[j], nums[i]]; i++; j--; }
+    }
+    return i;
+  }
+  let lo = 0, hi = nums.length - 1;
+  while (lo < hi) {
+    const idx = partition(lo, hi);
+    if (idx <= target) lo = idx; else hi = idx - 1;
+  }
+  return nums[target];
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+log("Kth largest k=2:", findKthLargest([3,2,1,5,6,4], 2));
+log("Top 2 frequent (heap):  ", JSON.stringify(topKFrequentHeap([1,1,1,2,2,3], 2).sort()));
+log("Top 2 frequent (bucket):", JSON.stringify(topKFrequentBucket([1,1,1,2,2,3], 2).sort()));
+log("Quickselect kth=2:", quickselectKthLargest([3,2,1,5,6,4], 2));
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * JS has no PriorityQueue; MinHeap class replicates the API.
+  * Adds quickselect as a third top-K algorithm.
+-->
+</body>
+</html>

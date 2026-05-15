@@ -1,0 +1,47 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Sum or Product of First N Naturals
+File: 11.sum_or_product.html
+
+KEY POINTS:
+ - sum  closed form: n*(n+1)/2 (BigInt for safety beyond 2^53).
+ - product (factorial) explodes -> use BigInt.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Sum/Product</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Sum or Product</h1>
+<label>N <input id="n" type="number" value="5"></label>
+<label>C <input id="c" type="number" value="1"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const sum     = n => (BigInt(n) * (BigInt(n) + 1n) / 2n).toString();
+  const product = n => { let p = 1n; for (let i = 1n; i <= BigInt(n); i++) p *= i; return p.toString(); };
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    const c = Number(document.getElementById("c").value);
+    if (c === 1)      log(sum(n));
+    else if (c === 2) log(product(n));
+    else              log(-1);
+  };
+  render();
+  ["n", "c"].forEach(id => document.getElementById(id).addEventListener("input", render));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - BigInt avoids the 2^53 safe-integer ceiling.
+ - Convert with .toString() before concatenation to avoid mixing types.
+-->

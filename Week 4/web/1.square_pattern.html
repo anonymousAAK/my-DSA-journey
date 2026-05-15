@@ -1,0 +1,45 @@
+<!--
+WEEK 4 - WEB PATTERN PROBLEMS
+Topic: Square Pattern
+File: 1.square_pattern.html
+
+PATTERN (N=4): 4 rows of "4444"
+
+KEY POINTS:
+ - Use a <pre> block to preserve whitespace.
+ - String.repeat is the cleanest builder.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 4 - Square pattern</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px;font-family:monospace}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Square Pattern</h1>
+<label>N <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const render = () => {
+    const n = Number(document.getElementById("n").value);
+    let s = "";
+    for (let i = 0; i < n; i++) {
+      for (let j = 0; j < n; j++) s += n;
+      s += "\n";
+    }
+    out.textContent = s;
+    console.log(s);
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - The <pre> tag preserves spaces and newlines unchanged.
+ - For huge N, build into one big string then assign once -- faster than DOM mutation per row.
+-->

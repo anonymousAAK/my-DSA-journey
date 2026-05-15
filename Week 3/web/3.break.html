@@ -1,0 +1,52 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: break Statement
+File: 3.break.html
+
+KEY POINTS:
+ - JS supports labelled break: `outer: for (...) { break outer; }`.
+ - Without a label, break exits only the innermost loop / switch.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Break</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>break</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  for (let i = 1; i < 10; i++) {
+    log(i);
+    if (i === 5) break;
+  }
+
+  log("--- nested ---");
+  for (let x = 1; x <= 3; x++) {
+    log("outer", x);
+    for (let y = 1; y <= 5; y++) {
+      log("  in y=", y);
+      if (y === 1) break;
+    }
+  }
+
+  log("--- labelled break ---");
+  outer: for (let x = 1; x <= 3; x++) {
+    for (let y = 1; y <= 5; y++) {
+      if (x * y === 4) { log("found", x, y); break outer; }
+    }
+  }
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS supports labelled break/continue (Java does too; C++ doesn't).
+ - Use sparingly; deep nesting is usually a refactor smell.
+-->

@@ -1,0 +1,80 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Variables (let / const / var) and Addition
+File: 4.add_two_numbers.html
+
+CONCEPT:
+JavaScript has three ways to declare variables:
+  - `let`    - block-scoped, can be reassigned
+  - `const`  - block-scoped, CANNOT be reassigned (but mutable objects can still mutate)
+  - `var`    - function-scoped (legacy; avoid)
+
+JS is DYNAMICALLY TYPED: a name can hold any value.
+
+KEY POINTS:
+ - All number values are 64-bit IEEE 754 doubles (no separate int / long).
+ - BigInt (`1n`) gives arbitrary-precision integers when needed.
+ - `+` adds numbers OR concatenates strings — the meaning depends on operand types.
+ - Names follow C-style rules; reserved keywords cannot be used.
+
+SYNTAX:
+ let a = 10;
+ const b = 25;
+ const c = a + b;     // 35
+
+DRY RUN:
+ a=10, b=25, c=35.
+ a + "10" -> "1010" (string concatenation kicks in).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Add two numbers</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Variables and Addition</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; console.log(...a); };
+
+      let a = 10;
+      const b = 25;
+      const c = a + b;
+      log("a + b =", c);
+
+      // `let` allows reassignment
+      a = 100;
+      log("After a = 100, a =", a);
+
+      // `const` forbids reassignment (would throw TypeError)
+      try { eval("const z = 1; z = 2"); } catch (e) { log("const reassignment error:", e.message); }
+
+      // Number is always 64-bit float; BigInt opts in to arbitrary precision
+      log("Number.MAX_SAFE_INTEGER =", Number.MAX_SAFE_INTEGER);
+      log("2n ** 100n =", (2n ** 100n).toString());
+
+      // The + operator: number+number = sum; string anywhere = concat
+      log("1 + 2     =", 1 + 2);          // 3
+      log("'1' + 2   =", '1' + 2);         // "12"  <-- string concat
+      log("1 + '2'   =", 1 + '2');         // "12"
+      log("1 + 2 + '3' =", 1 + 2 + '3');   // "33" (left to right: 3+'3'='33')
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS has no static type declarations (TypeScript adds them).
+ - `Number` IS always a 64-bit float -> only 53 bits of integer precision.
+ - Use `BigInt` (suffix `n` or `BigInt(...)`) for exact large integers.
+ - `var` predates `let`/`const`; modern code should avoid it.
+-->

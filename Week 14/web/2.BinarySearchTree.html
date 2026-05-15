@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 14 - Binary Search Tree</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 1000px; margin: 2rem auto; padding: 0 1rem; }
+  pre  { background: #111; color: #d8e1ff; padding: 1rem; border-radius: 8px; overflow:auto; }
+  svg  { background: #fafafa; border: 1px solid #ddd; border-radius: 8px; }
+  .nd  { fill: #16a085; }
+  .nd-hl { fill: #e74c3c; }
+  .lbl { fill: white; font: bold 14px monospace; text-anchor: middle; dominant-baseline: middle; }
+  .edge { stroke: #777; stroke-width: 2; }
+  button { margin: .25rem; padding: .4rem .8rem; cursor: pointer; }
+  input { padding: .3rem; width: 5rem; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+</style>
+</head>
+<body>
+<h1>Week 14 — Binary Search Tree (JavaScript)</h1>
+<!--
+  WEEK 14 - WEB DSA
+  Topic: Binary Search Tree (BST)
+  File: 2.BinarySearchTree.html
+
+  CONCEPT:
+    Interactive BST. Insert and delete buttons rebuild the tree; the SVG
+    re-renders after each mutation. Search animates the path from root.
+
+  KEY POINTS:
+    - Insert keeps BST invariant: left < node < right.
+    - Delete handles three cases (leaf, one child, two children).
+    - LCA / kth-smallest provided too.
+
+  ALGORITHM / APPROACH: same as the Java/Python/C++/Rust files.
+
+  WEB-SPECIFIC NOTES:
+    - We re-layout after each operation since the structure may change.
+    - Empty tree handled with an explicit message in the SVG.
+
+  DRY RUN:
+    Insert 5,3,7,1,4,6,8 -> inorder 1 3 4 5 6 7 8.
+    Delete 3 (two children): replace with successor 4.
+    Delete 5 (root): replace with successor 6.
+
+  COMPLEXITY:
+    insert/search/delete: O(h).
+-->
+
+<div><svg id="svg" width="900" height="320"></svg></div>
+<div>
+  value <input id="val" type="number" value="10">
+  <button onclick="op_insert()">insert</button>
+  <button onclick="op_delete()">delete</button>
+  <button onclick="op_search()">search</button>
+</div>
+<div>
+  p <input id="lcap" type="number" value="1">
+  q <input id="lcaq" type="number" value="4">
+  <button onclick="op_lca()">LCA</button>
+  k <input id="kth" type="number" value="2">
+  <button onclick="op_kth()">kth smallest</button>
+</div>
+<div>
+  <button onclick="resetBST()">reset</button>
+  <button onclick="op_validate()">isValidBST</button>
+</div>
+
+<h2>Inorder (sorted)</h2>
+<div id="sorted" style="font-family: monospace; padding:.5rem;"></div>
+
+<h2>Transcript</h2>
+<pre id="out"></pre>
+
+<script>
+const out = document.getElementById("out");
+function log(m){ console.log(m); out.textContent += m + "\n"; out.scrollTop = out.scrollHeight; }
+
+let root = null;
+function insert(node, v){
+  if (!node) return { val: v, left: null, right: null };
+  if (v < node.val) node.left = insert(node.left, v);
+  else if (v > node.val) node.right = insert(node.right, v);
+  return node;
+}
+function search(node, v){
+  if (!node) return null;
+  if (v === node.val) return node;
+  return v < node.val ? search(node.left, v) : search(node.right, v);
+}
+function minNode(node){ while (node.left) node = node.left; return node; }
+function del(node, v){
+  if (!node) return null;
+  if (v < node.val) node.left = del(node.left, v);
+  else if (v > node.val) node.right = del(node.right, v);
+  else {
+    if (!node.left) return node.right;
+    if (!node.right) return node.left;
+    const s = minNode(node.right); node.val = s.val;
+    node.right = del(node.right, s.val);
+  }
+  return node;
+}
+function inorderArr(n, a){ if (!n) return; inorderArr(n.left, a); a.push(n.val); inorderArr(n.right, a); }
+function isValid(n, lo, hi){
+  if (!n) return true;
+  if (n.val <= lo || n.val >= hi) return false;
+  return isValid(n.left, lo, n.val) && isValid(n.right, n.val, hi);
+}
+function lca(n, p, q){
+  while (n) {
+    if (p < n.val && q < n.val) n = n.left;
+    else if (p > n.val && q > n.val) n = n.right;
+    else return n.val;
+  }
+  return null;
+}
+function kthSmallest(root, k){
+  const stack = []; let cur = root, cnt = 0;
+  while (cur || stack.length){
+    while (cur) { stack.push(cur); cur = cur.left; }
+    cur = stack.pop();
+    if (++cnt === k) return cur.val;
+    cur = cur.right;
+  }
+  return null;
+}
+
+function layout(){
+  const pos = new Map();
+  function go(n, lo, hi, depth){
+    if (!n) return;
+    const x = (lo+hi)/2;
+    pos.set(n, {x, y: 40+depth*70});
+    go(n.left, lo, x, depth+1);
+    go(n.right, x, hi, depth+1);
+  }
+  go(root, 20, 880, 0);
+  return pos;
+}
+function draw(highlightSet){
+  const svg = document.getElementById("svg");
+  svg.innerHTML = "";
+  if (!root) { const t = document.createElementNS("http://www.w3.org/2000/svg","text"); t.setAttribute("x",440); t.setAttribute("y",160); t.setAttribute("text-anchor","middle"); t.textContent = "(empty BST)"; svg.appendChild(t); return; }
+  const pos = layout();
+  function edges(n){
+    if (!n) return;
+    const p = pos.get(n);
+    for (const c of [n.left, n.right]){
+      if (c){
+        const cp = pos.get(c);
+        const ln = document.createElementNS("http://www.w3.org/2000/svg","line");
+        ln.setAttribute("x1",p.x); ln.setAttribute("y1",p.y);
+        ln.setAttribute("x2",cp.x); ln.setAttribute("y2",cp.y);
+        ln.setAttribute("class","edge"); svg.appendChild(ln);
+        edges(c);
+      }
+    }
+  }
+  edges(root);
+  function nodes(n){
+    if (!n) return;
+    const p = pos.get(n);
+    const c = document.createElementNS("http://www.w3.org/2000/svg","circle");
+    c.setAttribute("cx",p.x); c.setAttribute("cy",p.y); c.setAttribute("r",20);
+    c.setAttribute("class", highlightSet && highlightSet.has(n) ? "nd-hl" : "nd");
+    svg.appendChild(c);
+    const t = document.createElementNS("http://www.w3.org/2000/svg","text");
+    t.setAttribute("x",p.x); t.setAttribute("y",p.y); t.setAttribute("class","lbl");
+    t.textContent = n.val; svg.appendChild(t);
+    nodes(n.left); nodes(n.right);
+  }
+  nodes(root);
+  const a = []; inorderArr(root, a);
+  document.getElementById("sorted").textContent = a.join(" ");
+}
+
+function op_insert(){
+  const v = +document.getElementById("val").value;
+  root = insert(root, v);
+  log(`insert(${v})`); draw();
+}
+function op_delete(){
+  const v = +document.getElementById("val").value;
+  root = del(root, v); log(`delete(${v})`); draw();
+}
+function op_search(){
+  const v = +document.getElementById("val").value;
+  // animate path
+  const set = new Set();
+  let cur = root;
+  function step(){
+    if (!cur) { log(`search(${v}) = not found`); draw(); return; }
+    set.add(cur); draw(set);
+    if (cur.val === v) { log(`search(${v}) = found`); return; }
+    cur = v < cur.val ? cur.left : cur.right;
+    setTimeout(step, 400);
+  }
+  step();
+}
+function op_lca(){
+  const p = +document.getElementById("lcap").value;
+  const q = +document.getElementById("lcaq").value;
+  log(`LCA(${p},${q}) = ${lca(root, p, q)}`);
+}
+function op_kth(){
+  const k = +document.getElementById("kth").value;
+  log(`kthSmallest(${k}) = ${kthSmallest(root, k)}`);
+}
+function op_validate(){
+  log("isValidBST = " + isValid(root, -Infinity, Infinity));
+}
+function resetBST(){
+  root = null;
+  for (const v of [5,3,7,1,4,6,8]) root = insert(root, v);
+  log("reset: inserted 5,3,7,1,4,6,8"); draw();
+}
+
+resetBST();
+</script>
+
+<!--
+NOTES (vs. Java):
+- Closures replace mutable wrapper arrays for kthSmallest's counter (we use
+  `let cnt` instead of `int[] count`).
+- Sentinels for validate use ±Infinity (JS numbers are 64-bit floats).
+- Visualization adds a layer the Java demo didn't have.
+-->
+</body>
+</html>

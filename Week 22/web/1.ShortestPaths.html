@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 22 - Shortest Paths</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 22 - Shortest Paths (Dijkstra, Bellman-Ford, Floyd-Warshall)</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 22 - WEB ADVANCED DSA
+ * Topic: Shortest Path Algorithms
+ * File: 1.ShortestPaths.html
+ *
+ * CONCEPT:
+ *   Dijkstra (non-negative weights), Bellman-Ford (allows negatives,
+ *   detects neg cycles), Floyd-Warshall (all-pairs DP).
+ *
+ * KEY POINTS:
+ *   - JS lacks a built-in priority queue; we use a tiny binary-heap class.
+ *   - Bellman-Ford needs V-1 passes plus a final pass to detect cycles.
+ *   - Floyd-Warshall: triple nested loop with k as the outermost.
+ *
+ * ALGORITHM / APPROACH:
+ *   See file headers for Java/Python/C++ siblings. Same recurrences.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - We render results to <pre id="out"> and console.log.
+ *   - Use Number.POSITIVE_INFINITY as a sentinel for INF.
+ *
+ * DRY RUN (Dijkstra, undirected):
+ *   V=5, edges (0,1,4),(0,2,1),(2,1,2),(1,3,1),(2,3,5),(3,4,3).
+ *   Final dist from 0: [0, 3, 1, 4, 7].
+ *
+ * COMPLEXITY:
+ *   Dijkstra: O((V+E) log V), Bellman-Ford: O(V*E), Floyd-Warshall: O(V^3).
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+class MinHeap {
+  constructor() { this.a = []; }
+  size() { return this.a.length; }
+  push(x) { this.a.push(x); this._up(this.a.length - 1); }
+  pop() {
+    const top = this.a[0];
+    const last = this.a.pop();
+    if (this.a.length) { this.a[0] = last; this._down(0); }
+    return top;
+  }
+  _up(i) {
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (this.a[p][0] <= this.a[i][0]) break;
+      [this.a[p], this.a[i]] = [this.a[i], this.a[p]];
+      i = p;
+    }
+  }
+  _down(i) {
+    const n = this.a.length;
+    while (true) {
+      let l = 2*i + 1, r = 2*i + 2, s = i;
+      if (l < n && this.a[l][0] < this.a[s][0]) s = l;
+      if (r < n && this.a[r][0] < this.a[s][0]) s = r;
+      if (s === i) break;
+      [this.a[s], this.a[i]] = [this.a[i], this.a[s]];
+      i = s;
+    }
+  }
+}
+
+const INF = Number.POSITIVE_INFINITY;
+
+function dijkstra(adj, src, V) {
+  const dist = new Array(V).fill(INF);
+  dist[src] = 0;
+  const pq = new MinHeap();
+  pq.push([0, src]);
+  while (pq.size()) {
+    const [d, u] = pq.pop();
+    if (d > dist[u]) continue;
+    for (const [v, w] of adj[u]) {
+      if (d + w < dist[v]) {
+        dist[v] = d + w;
+        pq.push([dist[v], v]);
+      }
+    }
+  }
+  return dist;
+}
+
+function bellmanFord(V, edges, src) {
+  const dist = new Array(V).fill(INF);
+  dist[src] = 0;
+  for (let i = 0; i < V - 1; i++) {
+    let updated = false;
+    for (const [u, v, w] of edges) {
+      if (dist[u] + w < dist[v]) { dist[v] = dist[u] + w; updated = true; }
+    }
+    if (!updated) break;
+  }
+  for (const [u, v, w] of edges) {
+    if (dist[u] + w < dist[v]) { log('Negative weight cycle detected!'); return null; }
+  }
+  return dist;
+}
+
+function floydWarshall(V, edges) {
+  const d = Array.from({length:V}, () => new Array(V).fill(INF));
+  for (let i = 0; i < V; i++) d[i][i] = 0;
+  for (const [u, v, w] of edges) d[u][v] = Math.min(d[u][v], w);
+  for (let k = 0; k < V; k++)
+    for (let i = 0; i < V; i++)
+      if (d[i][k] !== INF)
+        for (let j = 0; j < V; j++)
+          if (d[k][j] !== INF && d[i][k] + d[k][j] < d[i][j])
+            d[i][j] = d[i][k] + d[k][j];
+  for (let i = 0; i < V; i++) if (d[i][i] < 0) { log('Negative cycle!'); return null; }
+  return d;
+}
+
+log('=== Dijkstra ===');
+const V = 5;
+const adj = Array.from({length:V}, () => []);
+const edges = [[0,1,4],[0,2,1],[2,1,2],[1,3,1],[2,3,5],[3,4,3]];
+for (const [u,v,w] of edges) { adj[u].push([v,w]); adj[v].push([u,w]); }
+log('Shortest distances from 0:', dijkstra(adj, 0, V));
+
+log('\n=== Bellman-Ford ===');
+const bf = [[0,1,-1],[0,2,4],[1,2,3],[1,3,2],[1,4,2],[3,2,5],[3,1,1],[4,3,-3]];
+log('Shortest distances from 0:', bellmanFord(5, bf, 0));
+
+log('\n=== Floyd-Warshall ===');
+const fw = [[0,1,3],[0,3,7],[1,0,8],[1,2,2],[2,0,5],[2,3,1],[3,0,2]];
+const ap = floydWarshall(4, fw);
+log('All-pairs shortest paths:');
+for (const row of ap) log('  ' + row.map(v => (v === INF ? 'INF' : String(v)).padStart(4)).join(''));
+</script>
+</body>
+</html>

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 27 - Closest Pair</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+  canvas { border: 1px solid #ccc; background: #fff; }
+</style>
+</head>
+<body>
+<h1>Closest Pair of Points (Divide &amp; Conquer)</h1>
+
+<div class="doc">
+<p><strong>WEEK 27 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Divide-and-conquer to find the smallest pairwise
+Euclidean distance among n points in O(n log n).</p>
+<p><strong>KEY POINTS:</strong> sort by x; recurse; combine via a strip
+of width 2d sorted by y; each strip point looks at ~7 neighbours.</p>
+<p><strong>ALGORITHM:</strong> base case <=3 -> brute; else recurse on
+halves and merge via strip scan.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> Math.hypot is numerically stable.
+Use slice() to copy point ranges since we mutate locally.</p>
+<p><strong>DRY RUN:</strong> [(2,3),(12,30),(40,50),(5,1),(12,10),(3,4)]
+-> ~1.4142 (between (2,3) and (3,4)).</p>
+<p><strong>COMPLEXITY:</strong> Time O(n log n); Space O(n).</p>
+</div>
+
+<canvas id="cv" width="500" height="400"></canvas>
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+function dist(a, b) { return Math.hypot(a[0]-b[0], a[1]-b[1]); }
+
+function solve(pts, l, r) {
+  if (r - l < 3) {
+    let best = Infinity;
+    for (let i = l; i <= r; i++)
+      for (let j = i+1; j <= r; j++)
+        best = Math.min(best, dist(pts[i], pts[j]));
+    return best;
+  }
+  const mid = (l + r) >> 1;
+  const midX = pts[mid][0];
+  let d = Math.min(solve(pts, l, mid), solve(pts, mid+1, r));
+  const strip = [];
+  for (let i = l; i <= r; i++)
+    if (Math.abs(pts[i][0] - midX) < d) strip.push(pts[i]);
+  strip.sort((a, b) => a[1] - b[1]);
+  for (let i = 0; i < strip.length; i++)
+    for (let j = i+1; j < strip.length && strip[j][1] - strip[i][1] < d; j++)
+      d = Math.min(d, dist(strip[i], strip[j]));
+  return d;
+}
+
+function closestPair(points) {
+  if (points.length < 2) return Infinity;
+  const pts = [...points].sort((a, b) => a[0] - b[0]);
+  return solve(pts, 0, pts.length - 1);
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const pts = [[2,3],[12,30],[40,50],[5,1],[12,10],[3,4]];
+log("Closest pair distance:", closestPair(pts).toFixed(4));
+
+// Visualise
+const cv = document.getElementById("cv");
+const ctx = cv.getContext("2d");
+const sx = 8, oy = 380;
+function px(p) { return [10 + p[0]*sx, oy - p[1]*sx]; }
+ctx.fillStyle = "#48a";
+for (const p of pts) {
+  const [x, y] = px(p);
+  ctx.beginPath(); ctx.arc(x, y, 5, 0, 2*Math.PI); ctx.fill();
+}
+// Highlight nearest pair (brute force find for rendering)
+let best = Infinity, bp = null;
+for (let i = 0; i < pts.length; i++)
+  for (let j = i+1; j < pts.length; j++) {
+    const dd = dist(pts[i], pts[j]);
+    if (dd < best) { best = dd; bp = [pts[i], pts[j]]; }
+  }
+if (bp) {
+  ctx.strokeStyle = "#c33"; ctx.lineWidth = 2;
+  ctx.beginPath();
+  const A = px(bp[0]), B = px(bp[1]);
+  ctx.moveTo(A[0], A[1]); ctx.lineTo(B[0], B[1]); ctx.stroke();
+}
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * Math.hypot replaces Math.sqrt + Math.pow.
+  * Spread + sort makes copying easy without mutating input.
+  * Canvas overlay highlights the winning pair for visual confirmation.
+-->
+</body>
+</html>

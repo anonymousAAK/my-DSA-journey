@@ -1,0 +1,142 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 21 - Segment Tree & BIT</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1, h2 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 21 - Segment Tree & Binary Indexed Tree</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 21 - WEB ADVANCED DSA
+ * Topic: Segment Tree & Binary Indexed Tree (Fenwick Tree)
+ * File: 1.SegmentTreeAndBIT.html
+ *
+ * CONCEPT:
+ *   Segment tree gives O(log n) range sum/min/max queries with O(log n)
+ *   point updates. BIT (Fenwick tree) is a compact, 1-indexed alternative
+ *   for prefix-sum operations using i & -i.
+ *
+ * KEY POINTS:
+ *   - Segment tree array size 4*n; children at 2k+1 and 2k+2.
+ *   - BIT lowbit trick: i & (-i) isolates the lowest set bit.
+ *   - Range sum on BIT = prefix(r) - prefix(l-1).
+ *
+ * ALGORITHM / APPROACH:
+ *   build/update/query as in Java; recursion-based.
+ *   BIT update walks parents adding lowbit, prefix walks subtracting it.
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - JS numbers are 64-bit floats; safe for our 32-bit ranges.
+ *   - Use bitwise ops (which coerce to 32-bit ints): (i & -i).
+ *   - Render output to <pre id="out"> in addition to console.log so users
+ *     don't need devtools.
+ *
+ * DRY RUN:
+ *   arr=[1,3,5,7,9,11].
+ *   query(1,3) -> 15; update(3,10) then query(0,5) -> 39.
+ *   BIT.prefix_sum(4) -> 16; range_sum(2,5) -> 24.
+ *
+ * COMPLEXITY:
+ *   Segment Tree: build O(n), query/update O(log n), space O(4n).
+ *   BIT:          build O(n log n), query/update O(log n), space O(n).
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+class SegmentTree {
+  constructor(arr) {
+    this.n = arr.length;
+    this.tree = new Array(4 * Math.max(this.n, 1)).fill(0);
+    if (this.n) this._build(arr, 0, 0, this.n - 1);
+  }
+  _build(a, node, lo, hi) {
+    if (lo === hi) { this.tree[node] = a[lo]; return; }
+    const mid = (lo + hi) >> 1;
+    this._build(a, 2*node+1, lo, mid);
+    this._build(a, 2*node+2, mid+1, hi);
+    this.tree[node] = this.tree[2*node+1] + this.tree[2*node+2];
+  }
+  update(idx, val) { this._update(0, 0, this.n - 1, idx, val); }
+  _update(node, lo, hi, idx, val) {
+    if (lo === hi) { this.tree[node] = val; return; }
+    const mid = (lo + hi) >> 1;
+    if (idx <= mid) this._update(2*node+1, lo, mid, idx, val);
+    else            this._update(2*node+2, mid+1, hi, idx, val);
+    this.tree[node] = this.tree[2*node+1] + this.tree[2*node+2];
+  }
+  query(l, r) { return this._query(0, 0, this.n - 1, l, r); }
+  _query(node, lo, hi, l, r) {
+    if (r < lo || hi < l) return 0;
+    if (l <= lo && hi <= r) return this.tree[node];
+    const mid = (lo + hi) >> 1;
+    return this._query(2*node+1, lo, mid, l, r)
+         + this._query(2*node+2, mid+1, hi, l, r);
+  }
+}
+
+class BIT {
+  constructor(arr) {
+    this.n = arr.length;
+    this.bit = new Array(this.n + 1).fill(0);
+    for (let i = 0; i < this.n; i++) this.update(i + 1, arr[i]);
+  }
+  update(i, delta) { for (; i <= this.n; i += i & -i) this.bit[i] += delta; }
+  prefix(i)        { let s = 0; for (; i > 0; i -= i & -i) s += this.bit[i]; return s; }
+  rangeSum(l, r)   { return this.prefix(r) - this.prefix(l - 1); }
+}
+
+function asciiTreePrint(st) {
+  // Render the leaf-level + first 3 internal levels.
+  let s = '';
+  let level = 0, count = 1, idx = 0;
+  while (idx < st.tree.length && level < 4) {
+    s += 'L' + level + ': ';
+    for (let k = 0; k < count && idx < st.tree.length; k++, idx++) s += st.tree[idx].toString().padStart(4, ' ');
+    s += '\n';
+    level++; count *= 2;
+  }
+  return s;
+}
+
+const arr = [1, 3, 5, 7, 9, 11];
+log('Array:', arr);
+
+log('\n=== Segment Tree ===');
+const st = new SegmentTree(arr);
+log('Tree (top 4 levels):\n' + asciiTreePrint(st));
+log('sum(0,5) =', st.query(0, 5));
+log('sum(1,3) =', st.query(1, 3));
+log('sum(2,4) =', st.query(2, 4));
+
+st.update(3, 10);
+log('\nAfter update arr[3]=10:');
+log('sum(0,5) =', st.query(0, 5));
+log('sum(1,3) =', st.query(1, 3));
+
+log('\n=== Binary Indexed Tree ===');
+const bit = new BIT(arr);
+log('BIT internal:', bit.bit);
+log('prefix(4)     =', bit.prefix(4));
+log('rangeSum(2,5) =', bit.rangeSum(2, 5));
+log('rangeSum(1,6) =', bit.rangeSum(1, 6));
+
+bit.update(4, 3);
+log('\nAfter adding 3 to index 4:');
+log('prefix(6)     =', bit.prefix(6));
+log('rangeSum(3,5) =', bit.rangeSum(3, 5));
+</script>
+</body>
+</html>

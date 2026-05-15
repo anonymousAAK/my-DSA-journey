@@ -1,0 +1,92 @@
+<!--
+  WEEK 6 - WEB DSA
+  Topic: Return Array Sum
+  File: 1.return_array_sum.html
+
+  CONCEPT:
+    Compute the sum of all numbers in an array. Demonstrated three ways:
+    iterative for-loop, recursion, and Array.prototype.reduce().
+
+  KEY POINTS:
+    - JavaScript arrays are dynamic and heterogeneous; we use only numbers here.
+    - reduce() is the canonical functional sum.
+    - All three methods are O(n).
+
+  ALGORITHM / APPROACH:
+    Iterative:  total = 0; for each v in arr: total += v
+    Recursive:  f(arr, i) = 0 if i == arr.length; else arr[i] + f(arr, i+1)
+    Reduce:     arr.reduce((acc, v) => acc + v, 0)
+
+  WEB-SPECIFIC NOTES:
+    - Output is rendered both to the console and to a <pre id="out"> block.
+    - Run on DOMContentLoaded so the DOM is ready.
+    - Number type is IEEE-754 double; safe for integers up to 2^53 - 1.
+
+  DRY RUN:
+    [1,2,3,4,5]    -> 15
+    [-1,0,5,-3,10] -> 11
+    []             -> 0
+
+  COMPLEXITY:
+    Iterative : O(n) time, O(1) space
+    Recursive : O(n) time, O(n) call stack
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 6 - Return Array Sum</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px;
+         white-space: pre-wrap; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 6 - Return Array Sum</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function arraySum(arr) {
+    let total = 0;
+    for (const v of arr) total += v;
+    return total;
+  }
+
+  function arraySumRecursive(arr, i = 0) {
+    if (i === arr.length) return 0;
+    return arr[i] + arraySumRecursive(arr, i + 1);
+  }
+
+  const arraySumReduce = (arr) => arr.reduce((acc, v) => acc + v, 0);
+
+  const test1 = [1, 2, 3, 4, 5];
+  log(`Array: [${test1}]`);
+  log(`Sum (iterative): ${arraySum(test1)}`);
+  log(`Sum (recursive): ${arraySumRecursive(test1)}`);
+  log(`Sum (reduce):    ${arraySumReduce(test1)}`);
+
+  const test2 = [-1, 0, 5, -3, 10];
+  log(`\nArray: [${test2}]`);
+  log(`Sum: ${arraySum(test2)}`);
+
+  const test3 = [];
+  log(`\nEmpty array sum: ${arraySum(test3)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - No type system: JS numbers are doubles; integer math is exact below 2^53.
+    - reduce() is the idiomatic sum.
+    - DOM output via textContent avoids HTML-injection risks vs innerHTML.
+-->

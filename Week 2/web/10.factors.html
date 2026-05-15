@@ -1,0 +1,61 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Factors of N (excluding 1 and N)
+File: 10.factors.html
+
+PROBLEM:
+ Print every i in [2, n/2] dividing n.
+
+KEY POINTS:
+ - Plain for loop in [2, n/2].
+ - For large n use the sqrt(n) optimisation.
+
+DRY RUN:
+ n=12 -> 2 3 4 6
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Factors</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Factors of N</h1>
+<label>n <input id="n" type="number" value="12"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function brute(n) {
+    const r = [];
+    for (let i = 2; i <= Math.floor(n/2); i++) if (n % i === 0) r.push(i);
+    return r;
+  }
+  function sqrtFactors(n) {
+    const s = new Set();
+    for (let i = 2; i * i <= n; i++) {
+      if (n % i === 0) { s.add(i); if (i !== n/i) s.add(n/i); }
+    }
+    s.delete(n);
+    return [...s].sort((a,b) => a - b);
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    log("brute :", brute(n).join(" "));
+    log("sqrt  :", sqrtFactors(n).join(" "));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Use Math.floor on division when comparing with i.
+ - Beware float precision for very large n (>2^53); use BigInt if needed.
+-->

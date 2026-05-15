@@ -1,0 +1,62 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Infinite Loop Demonstration
+File: 5.infinite_loop.html
+
+CONCEPT:
+Browser JavaScript is single-threaded. A genuinely infinite loop will FREEZE
+the page (and tab). We use a safety counter so this demo terminates.
+
+KEY POINTS:
+ - `while (true)` and `for (;;)` are equivalent infinite loops.
+ - Always include a safety break in demos.
+ - For long async work, use `setTimeout` to yield back to the event loop
+   (so the UI stays responsive).
+
+DRY RUN:
+ x=y=5; both increment; (x==y) forever -- safety cap stops it at 5 iters.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Infinite</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Infinite Loop (with safety cap)</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  let x = 5, y = 5, safety = 0;
+  while (x === y) {
+    log("Hello");
+    x++;
+    y++;
+    if (++safety >= 5) {
+      log("(safety cap reached)");
+      break;
+    }
+  }
+
+  // Canonical infinite-loop pattern
+  let n = 0;
+  while (true) {
+    if (++n >= 3) {
+      log("stopped at n =", n);
+      break;
+    }
+  }
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - On the web, an actually infinite loop hangs the page; browsers eventually
+   show a "page unresponsive" dialog.
+ - To do work over time without freezing the UI, schedule chunks with
+   `setTimeout(fn, 0)` or `requestIdleCallback`.
+-->

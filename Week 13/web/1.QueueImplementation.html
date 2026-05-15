@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 13 - Queue Implementations</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 950px; margin: 2rem auto; padding: 0 1rem; }
+  pre  { background: #111; color: #d8e1ff; padding: 1rem; border-radius: 8px; overflow:auto; }
+  .row { display:flex; flex-wrap:wrap; gap:.4rem; align-items:center; margin: .5rem 0; }
+  .cell { background:#3498db; color:white; padding:.4rem .7rem; border-radius:4px; font-family:monospace; min-width:2rem; text-align:center; }
+  .cell.empty { background:#ddd; color:#888; }
+  .cell.front { outline: 3px solid #27ae60; }
+  .cell.rear  { outline: 3px solid #e67e22; }
+  button { margin: .25rem; padding: .4rem .8rem; cursor: pointer; }
+  input { padding: .3rem; width: 6rem; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+  .label { font-family: monospace; color:#444; }
+  .window { background:#f1c40f; padding:.3rem .6rem; border-radius:4px; font-family:monospace; }
+</style>
+</head>
+<body>
+<h1>Week 13 — Queues (JavaScript)</h1>
+<!--
+  WEEK 13 - WEB DSA
+  Topic: Queue Implementations + Sliding Window Maximum
+  File: 1.QueueImplementation.html
+
+  CONCEPT:
+    Visualize a circular queue (with front/rear pointers), a queue-from-two-
+    stacks demo, and an animated sliding-window-maximum walk.
+
+  KEY POINTS:
+    - Circular queue rendered as a row of cells; green outline = front cell,
+      orange outline = next-write (rear) cell.
+    - Sliding window max: highlights the current window and the running max.
+
+  ALGORITHM / APPROACH:
+    Same as the other languages — circular ring + monotonic deque for SWM.
+
+  WEB-SPECIFIC NOTES:
+    - JS Array.shift() is O(n); avoid in hot paths. We use index pointers
+      for the circular queue.
+    - We render the array as N cells; empty cells are greyed.
+
+  DRY RUN:
+    SWM([1,3,-1,-3,5,3,6,7], 3) -> [3,3,5,5,6,7]
+
+  COMPLEXITY:
+    Circular ops O(1); SWM O(n).
+-->
+
+<h2>Circular Queue (capacity 6)</h2>
+<div class="row" id="cq"></div>
+<div class="row">
+  <input id="cqv" type="number" value="42">
+  <button onclick="cq_enq()">enqueue</button>
+  <button onclick="cq_deq()">dequeue</button>
+  <button onclick="cq_peek()">peek</button>
+  <button onclick="cq_reset()">reset</button>
+</div>
+
+<h2>Queue using Two Stacks</h2>
+<div class="row">
+  <input id="qsv" type="number" value="7">
+  <button onclick="qs_enq()">enqueue</button>
+  <button onclick="qs_deq()">dequeue</button>
+  <button onclick="qs_peek()">peek</button>
+</div>
+<div class="row">inbox: <span id="inbox" class="label"></span></div>
+<div class="row">outbox: <span id="outbox" class="label"></span></div>
+
+<h2>Sliding Window Maximum</h2>
+<div class="row">
+  <input id="swmArr" value="1 3 -1 -3 5 3 6 7" style="width: 16rem">
+  k <input id="swmK" type="number" value="3" style="width: 3rem">
+  <button onclick="run_swm()">run</button>
+</div>
+<div class="row" id="swmDisplay"></div>
+<div class="row">result: <span id="swmRes" class="window"></span></div>
+
+<h2>Transcript</h2>
+<pre id="out"></pre>
+
+<script>
+const out = document.getElementById("out");
+function log(m){ console.log(m); out.textContent += m + "\n"; out.scrollTop = out.scrollHeight; }
+
+// ---------- Circular Queue ----------
+class CircularQueue {
+  constructor(cap){ this.cap = cap; this.data = new Array(cap).fill(null); this.front = 0; this.rear = 0; this.sz = 0; }
+  enqueue(x){ if (this.sz === this.cap) return false; this.data[this.rear] = x; this.rear = (this.rear+1)%this.cap; this.sz++; return true; }
+  dequeue(){ if (!this.sz) throw new Error("empty"); const v = this.data[this.front]; this.data[this.front] = null; this.front = (this.front+1)%this.cap; this.sz--; return v; }
+  peek(){ if (!this.sz) throw new Error("empty"); return this.data[this.front]; }
+}
+const cq = new CircularQueue(6);
+function renderCQ(){
+  const el = document.getElementById("cq"); el.innerHTML = "";
+  for (let i = 0; i < cq.cap; i++){
+    const c = document.createElement("span");
+    c.className = "cell" + (cq.data[i] === null ? " empty" : "");
+    if (cq.sz > 0 && i === cq.front) c.className += " front";
+    if (i === cq.rear) c.className += " rear";
+    c.textContent = cq.data[i] === null ? "·" : cq.data[i];
+    el.appendChild(c);
+  }
+}
+function cq_enq(){ const v = +document.getElementById("cqv").value; const ok = cq.enqueue(v); log(`enqueue(${v}) -> ${ok}`); renderCQ(); }
+function cq_deq(){ try{ const v = cq.dequeue(); log(`dequeue() = ${v}`); renderCQ(); } catch(e){ log("error: "+e.message); } }
+function cq_peek(){ try{ log(`peek() = ${cq.peek()}`); } catch(e){ log("error: "+e.message); } }
+function cq_reset(){ cq.data.fill(null); cq.front = cq.rear = cq.sz = 0; log("reset"); renderCQ(); }
+
+// ---------- Queue using two stacks ----------
+class QueueTwoStacks {
+  constructor(){ this.inbox = []; this.outbox = []; }
+  enqueue(x){ this.inbox.push(x); }
+  shift(){ if (!this.outbox.length) while (this.inbox.length) this.outbox.push(this.inbox.pop()); }
+  dequeue(){ this.shift(); if (!this.outbox.length) throw new Error("empty"); return this.outbox.pop(); }
+  peek(){ this.shift(); if (!this.outbox.length) throw new Error("empty"); return this.outbox[this.outbox.length-1]; }
+}
+const qs = new QueueTwoStacks();
+function renderQS(){
+  document.getElementById("inbox").textContent = "[" + qs.inbox.join(",") + "]";
+  document.getElementById("outbox").textContent = "[" + qs.outbox.join(",") + "]";
+}
+function qs_enq(){ const v = +document.getElementById("qsv").value; qs.enqueue(v); log(`enqueue(${v})`); renderQS(); }
+function qs_deq(){ try { log(`dequeue = ${qs.dequeue()}`); renderQS(); } catch(e){ log("error: "+e.message); } }
+function qs_peek(){ try { log(`peek = ${qs.peek()}`); renderQS(); } catch(e){ log("error: "+e.message); } }
+
+// ---------- Sliding Window Maximum ----------
+function slidingWindowMax(arr, k){
+  if (!arr.length || !k) return [];
+  const res = [];
+  const dq = []; // indices, values strictly decreasing
+  for (let i = 0; i < arr.length; i++){
+    while (dq.length && dq[0] < i - k + 1) dq.shift();
+    while (dq.length && arr[dq[dq.length-1]] < arr[i]) dq.pop();
+    dq.push(i);
+    if (i >= k - 1) res.push(arr[dq[0]]);
+  }
+  return res;
+}
+function run_swm(){
+  const arr = document.getElementById("swmArr").value.trim().split(/\s+/).map(Number);
+  const k = +document.getElementById("swmK").value;
+  const r = slidingWindowMax(arr, k);
+  const el = document.getElementById("swmDisplay"); el.innerHTML = "";
+  for (let i = 0; i < arr.length; i++){
+    const c = document.createElement("span");
+    c.className = "cell";
+    c.textContent = arr[i];
+    el.appendChild(c);
+  }
+  document.getElementById("swmRes").textContent = "[" + r.join(", ") + "]";
+  log(`SWM([${arr.join(",")}], k=${k}) = [${r.join(",")}]`);
+}
+
+renderCQ(); renderQS();
+log("Initial demo:");
+for (let v of [1,2,3,4]) cq.enqueue(v); renderCQ(); log("CQ: enqueued 1..4");
+log("CQ peek = " + cq.peek());
+run_swm();
+</script>
+
+<!--
+NOTES (vs. Java):
+- JS Array.shift() is O(n) — for the SWM monotonic deque we accept this for
+  clarity; production code would use a real ring buffer or doubly linked list.
+- The circular queue visualization shows ring-buffer wraparound with the
+  green/orange outlines for front/rear positions.
+-->
+</body>
+</html>

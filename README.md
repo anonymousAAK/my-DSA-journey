@@ -44,8 +44,9 @@ Every week includes a beautifully designed **interactive HTML page** (`index.htm
 | **Python** | `.py` | Idiomatic Python with type hints, list comprehensions, `heapq`, `collections` |
 | **C++** | `.cpp` | Modern C++17, STL-heavy, competitive programming style |
 | **Rust** | `.rs` | Ownership-safe, uses `std::collections`, idiomatic iterators |
+| **Web** | `.html` | Self-contained HTML5 + embedded JS demos, output to `<pre id="out">` and console |
 
-Each week now has dedicated language subfolders: `java/`, `python/`, `cpp/`, `rust/`, plus `web/` for the interactive page. This keeps parity across languages and makes it easier to study one language deeply week by week.
+Each week has dedicated language subfolders: `java/`, `python/`, `cpp/`, `rust/`, `web/`. **Every Java topic now has a 1:1 numbered counterpart in each other language** (e.g. `4.add_two_numbers.py`, `4.add_two_numbers.cpp`, `4.add_two_numbers.rs`, `4.add_two_numbers.html`). Each file mirrors Java's header structure (CONCEPT / KEY POINTS / SYNTAX or ALGORITHM / DRY RUN / COMPLEXITY) plus a language-specific NOTES block calling out idiomatic differences from Java. The original `fundamentals.*` / `index.html` survey files are kept alongside as quick-reference overviews.
 
 ---
 

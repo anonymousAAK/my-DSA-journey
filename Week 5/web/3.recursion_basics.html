@@ -1,0 +1,74 @@
+<!--
+WEEK 5 - WEB FUNCTIONS & RECURSION
+Topic: Recursion Basics
+File: 3.recursion_basics.html
+
+CONCEPT:
+JavaScript supports recursion. Browsers/V8 typically allow ~10,000 stack
+frames. Tail-call optimisation is technically in the spec (ES2015) but
+NOT implemented in V8/SpiderMonkey/JSC -- only Safari has shipped it.
+
+KEY POINTS:
+ - Use BigInt for exact arithmetic past 2^53.
+ - For deep recursion, convert to iterative form.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 5 - Recursion basics</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Recursion Basics</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function printDesc(n) { if (n === 0) return; out.textContent += n + " "; printDesc(n - 1); }
+  function printAsc(n)  { if (n === 0) return; printAsc(n - 1); out.textContent += n + " "; }
+
+  function factorial(n) {
+    if (n <= 1n) return 1n;
+    return n * factorial(n - 1n);
+  }
+  function sumN(n) {
+    if (n === 0) return 0;
+    return n + sumN(n - 1);
+  }
+  function power(base, exp) {
+    if (exp === 0) return 1n;
+    return BigInt(base) * power(base, exp - 1);
+  }
+  function fastPower(base, exp) {
+    if (exp === 0) return 1n;
+    if (exp % 2 === 0) {
+      const h = fastPower(base, exp / 2);
+      return h * h;
+    }
+    return BigInt(base) * fastPower(base, exp - 1);
+  }
+
+  out.textContent = "Descending 5..1: ";
+  printDesc(5);
+  out.textContent += "\nAscending  1..5: ";
+  printAsc(5);
+  out.textContent += "\n";
+
+  log(`5!  = ${factorial(5n).toString()}`);
+  log(`10! = ${factorial(10n).toString()}`);
+  log(`sum(10) = ${sumN(10)}`);
+  log(`2^10 = ${power(2, 10).toString()}`);
+  log(`2^10 (fast) = ${fastPower(2, 10).toString()}`);
+  log(`3^20 (fast) = ${fastPower(3, 20).toString()}`);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - BigInt is a separate numeric type (suffix `n`); arithmetic mixed with Number throws.
+ - Deep recursion blows the stack; convert to iterative when n > 10000.
+ - `fastPower` cuts time from O(n) to O(log n).
+-->

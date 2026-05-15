@@ -1,0 +1,58 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Scope of Variables
+File: 5.scope_of_variable.html
+
+CONCEPT:
+JS has THREE declaration keywords with different scoping rules:
+ - `var`   -- FUNCTION-scoped (legacy)
+ - `let`   -- BLOCK-scoped
+ - `const` -- BLOCK-scoped, immutable binding
+
+KEY POINTS:
+ - `var` LEAKS out of for/while/if blocks.
+ - `let`/`const` are block-scoped (modern, recommended).
+ - HOISTING: `var` declarations are hoisted to top of function (but undefined until line is reached).
+ - Closures capture variables by reference.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Scope</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Variable Scope</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  // var leaks out of the block (function scope)
+  for (var i = 0; i < 3; i++) {}
+  log("var i after loop =", i);   // 3 (leaked!)
+
+  // let is block-scoped
+  for (let j = 0; j < 3; j++) {}
+  // log(j);   // ReferenceError -- j is not defined here
+
+  // closure pitfall with var (classic bug)
+  log("\n--- var closure bug ---");
+  const fns_var = [];
+  for (var k = 0; k < 3; k++) fns_var.push(() => k);
+  log("var:", fns_var.map(f => f()).join(" "));   // 3 3 3
+
+  // let creates a new binding per iteration
+  const fns_let = [];
+  for (let k = 0; k < 3; k++) fns_let.push(() => k);
+  log("let:", fns_let.map(f => f()).join(" "));   // 0 1 2
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Always use `let`/`const` in modern JS.
+ - The `var` closure pitfall is the canonical reason `let` was added (ES2015).
+-->

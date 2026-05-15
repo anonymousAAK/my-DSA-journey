@@ -1,0 +1,141 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 29 - Caching (LRU / LFU / TTL)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Caching - LRU / LFU / TTL</h1>
+
+<div class="doc">
+<p><strong>WEEK 29 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Bounded cache with an eviction policy.
+LRU drops least recently used; LFU drops least frequently used; TTL
+drops after a deadline.</p>
+<p><strong>KEY POINTS:</strong> O(1) get/put with Map's insertion-order
+property (LRU); per-frequency Maps (LFU); lazy expiry on access (TTL).</p>
+<p><strong>ALGORITHM:</strong> LRU: delete + re-insert on touch
+(insertion-ordered Map). LFU: bump freq + bucket migration. TTL: compare
+performance.now() to deadline.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> Map preserves insertion order, so
+LRU is trivially implementable without a doubly-linked list.</p>
+<p><strong>DRY RUN:</strong> Demo plays the canonical LeetCode 146/460
+sequences and a TTL expiry round-trip.</p>
+<p><strong>COMPLEXITY:</strong> All ops O(1) amortised.</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+class LRUCache {
+  constructor(cap) { this.cap = cap; this.map = new Map(); }
+  get(k) {
+    if (!this.map.has(k)) return -1;
+    const v = this.map.get(k);
+    this.map.delete(k);
+    this.map.set(k, v);
+    return v;
+  }
+  put(k, v) {
+    if (this.map.has(k)) this.map.delete(k);
+    this.map.set(k, v);
+    if (this.map.size > this.cap) this.map.delete(this.map.keys().next().value);
+  }
+}
+
+class LFUCache {
+  constructor(cap) {
+    this.cap = cap;
+    this.minF = 0;
+    this.kv  = new Map();             // k -> v
+    this.kf  = new Map();             // k -> freq
+    this.fk  = new Map();             // freq -> Map(k -> null) (LRU within)
+  }
+  _bump(k) {
+    const f = this.kf.get(k);
+    const bucket = this.fk.get(f);
+    bucket.delete(k);
+    if (bucket.size === 0) {
+      this.fk.delete(f);
+      if (this.minF === f) this.minF++;
+    }
+    this.kf.set(k, f + 1);
+    if (!this.fk.has(f + 1)) this.fk.set(f + 1, new Map());
+    this.fk.get(f + 1).set(k, null);
+  }
+  get(k) {
+    if (!this.kv.has(k)) return -1;
+    this._bump(k);
+    return this.kv.get(k);
+  }
+  put(k, v) {
+    if (this.cap <= 0) return;
+    if (this.kv.has(k)) { this.kv.set(k, v); this._bump(k); return; }
+    if (this.kv.size >= this.cap) {
+      const bucket = this.fk.get(this.minF);
+      const evict = bucket.keys().next().value;
+      bucket.delete(evict);
+      if (bucket.size === 0) this.fk.delete(this.minF);
+      this.kv.delete(evict);
+      this.kf.delete(evict);
+    }
+    this.kv.set(k, v);
+    this.kf.set(k, 1);
+    if (!this.fk.has(1)) this.fk.set(1, new Map());
+    this.fk.get(1).set(k, null);
+    this.minF = 1;
+  }
+}
+
+class TTLCache {
+  constructor(ttlMs) { this.ttl = ttlMs; this.map = new Map(); }
+  put(k, v) { this.map.set(k, [v, performance.now() + this.ttl]); }
+  get(k) {
+    if (!this.map.has(k)) return null;
+    const [v, dl] = this.map.get(k);
+    if (dl < performance.now()) { this.map.delete(k); return null; }
+    return v;
+  }
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const lru = new LRUCache(2);
+lru.put(1,1); lru.put(2,2);
+log("LRU get(1) =", lru.get(1));
+lru.put(3,3);
+log("LRU get(2) =", lru.get(2), " (expected -1)");
+
+const lfu = new LFUCache(2);
+lfu.put(1,1); lfu.put(2,2);
+lfu.get(1); lfu.get(1);
+lfu.put(3,3);
+log("LFU get(2) =", lfu.get(2), " (expected -1)");
+log("LFU get(1) =", lfu.get(1), " (expected 1)");
+log("LFU get(3) =", lfu.get(3), " (expected 3)");
+
+const ttl = new TTLCache(50);
+ttl.put("alpha", "value");
+log("TTL get(alpha) imm.:", ttl.get("alpha"));
+setTimeout(() => log("TTL get(alpha) later:", ttl.get("alpha")), 80);
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * JS Map preserves insertion order, so LRU is trivially O(1).
+  * performance.now() returns a high-resolution monotonic time.
+  * LFU uses a Map-of-Maps for the freq -> LRU bucket structure.
+-->
+</body>
+</html>

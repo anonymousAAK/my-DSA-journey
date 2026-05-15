@@ -1,0 +1,84 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 28 - Sprague-Grundy</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Sprague-Grundy Theorem</h1>
+
+<div class="doc">
+<p><strong>WEEK 28 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Every impartial game has a Grundy number
+g(s) = mex of children's Grundy numbers. Multi-pile sums XOR their
+Grundy values; losing iff XOR=0.</p>
+<p><strong>KEY POINTS:</strong> Generalises Nim's XOR rule; DP over
+single-pile states; XOR for sums.</p>
+<p><strong>ALGORITHM:</strong> Build g[0..n] via mex of reachable
+predecessors; XOR g[piles[i]] for multi-pile decision.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> Set for the reachable Grundy
+values; iterate from 0 to find mex.</p>
+<p><strong>DRY RUN:</strong> moves {1,3,4}: g(10)=1; two piles [10,6]:
+XOR(1,2)=3 != 0 -> first wins.</p>
+<p><strong>COMPLEXITY:</strong> Time O(n * |moves|); Space O(n).</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+function mex(set) {
+  let m = 0;
+  while (set.has(m)) m++;
+  return m;
+}
+
+function grundySubtraction(n, moves) {
+  const g = new Array(n + 1).fill(0);
+  for (let i = 1; i <= n; i++) {
+    const s = new Set();
+    for (const m of moves) if (i - m >= 0) s.add(g[i - m]);
+    g[i] = mex(s);
+  }
+  return g[n];
+}
+
+function firstPlayerWins(piles, moves) {
+  if (!piles.length) return false;
+  const maxP = Math.max(...piles);
+  const g = new Array(maxP + 1).fill(0);
+  for (let i = 1; i <= maxP; i++) {
+    const s = new Set();
+    for (const m of moves) if (i - m >= 0) s.add(g[i - m]);
+    g[i] = mex(s);
+  }
+  const x = piles.reduce((a, p) => a ^ g[p], 0);
+  return x !== 0;
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const moves = [1, 3, 4];
+log("Grundy table for moves [1,3,4]:");
+for (let i = 0; i <= 10; i++) log("  g(" + i + ") =", grundySubtraction(i, moves));
+log("grundy(10) =", grundySubtraction(10, moves));
+log("Two piles [10,6]: first wins?", firstPlayerWins([10, 6], moves));
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * Adds multi-pile XOR wrapper firstPlayerWins.
+  * JS Set replaces HashSet for the reachable Grundy values.
+-->
+</body>
+</html>

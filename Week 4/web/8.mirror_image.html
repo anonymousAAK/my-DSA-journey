@@ -1,0 +1,42 @@
+<!--
+WEEK 4 - WEB PATTERN PROBLEMS
+Topic: Mirror Image Number Pattern (right-aligned)
+File: 8.mirror_image.html
+
+KEY POINTS:
+ - String.padStart(width, " ") right-aligns a string to a given width.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 4 - Mirror</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px;font-family:monospace}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Mirror Image (right-aligned)</h1>
+<label>N <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const render = () => {
+    const n = Number(document.getElementById("n").value);
+    let s = "";
+    for (let i = 1; i <= n; i++) {
+      let body = "";
+      for (let j = 1; j <= i; j++) body += j;
+      s += body.padStart(n, " ") + "\n";    // right-align with spaces
+    }
+    out.textContent = s;
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - String.padStart(width) is the cleanest right-align in JS.
+ - For multi-digit row content the width should be the SUM of digit lengths from 1..N.
+-->

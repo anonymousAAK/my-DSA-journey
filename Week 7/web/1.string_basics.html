@@ -1,0 +1,106 @@
+<!--
+  WEEK 7 - WEB DSA
+  Topic: String Basics
+  File: 1.string_basics.html
+
+  CONCEPT:
+    JavaScript strings are immutable sequences of UTF-16 code units. Every
+    "modification" yields a new string. For batch building, push to an array
+    and Array.prototype.join('').
+
+  KEY POINTS:
+    - .length, charAt(i), s[i], slice(a,b), substring(a,b), substr (legacy)
+    - .indexOf, .includes, .replace, .toLowerCase, .toUpperCase, .trim
+    - Concatenation in a loop is OK (V8 ropes), but join(...) is clearer.
+
+  ALGORITHM / APPROACH:
+    Demonstrate length, indexing, slicing, search, replace, case-folding,
+    split, join-based building, reverse via [...s].reverse().join('').
+
+  WEB-SPECIFIC NOTES:
+    - For Unicode-aware iteration, prefer for...of which yields code points,
+      not surrogate halves.
+    - String.prototype.codePointAt(i) gives a 21-bit code point.
+    - Output rendered to <pre> via textContent.
+
+  DRY RUN:
+    s = "Hello, World!"
+    s.length = 13
+    s[7] = 'W'
+    s.slice(7, 12) = 'World'
+    s.indexOf('o') = 4
+
+  COMPLEXITY:
+    Most operations O(n); indexing is O(1).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 7 - String Basics</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 7 - String Basics</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  const s = "Hello, World!";
+  log(`String: ${s}`);
+  log(`length: ${s.length}`);
+  log(`s[7]: ${s[7]}`);
+  log(`s.slice(7, 12): ${s.slice(7, 12)}`);
+  log(`s.indexOf('o'): ${s.indexOf('o')}`);
+  log(`s.lastIndexOf('o'): ${s.lastIndexOf('o')}`);
+  log(`s.includes('World'): ${s.includes('World')}`);
+  log(`s.toLowerCase(): ${s.toLowerCase()}`);
+  log(`s.toUpperCase(): ${s.toUpperCase()}`);
+  log(`s.replaceAll('l','r'): ${s.replaceAll('l', 'r')}`);
+  log(`'  hello  '.trim() = '${'  hello  '.trim()}'`);
+
+  // Comparison
+  const a = "apple", b = "apple";
+  log(`\n'apple' === 'apple': ${a === b}`);
+  log(`'apple' < 'banana': ${'apple' < 'banana'}`);
+
+  // Iterate (Unicode-aware)
+  let chars = '';
+  for (const ch of s) chars += ch + ' ';
+  log(`\nChars (for..of): ${chars}`);
+
+  // Split
+  const csv = "one,two,three,four";
+  log(`\nSplit by ',':`);
+  for (const p of csv.split(',')) log(`  ${p}`);
+
+  // Build via join (preferred)
+  const parts = [];
+  for (let i = 1; i <= 5; i++) {
+    parts.push(String(i));
+    if (i < 5) parts.push("-");
+  }
+  log(`\nBuilt with join: ${parts.join('')}`);
+
+  // Reverse
+  log(`Reversed: ${[...s].reverse().join('')}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - No StringBuilder; use Array.push + join('') for O(n) build.
+    - for...of correctly iterates Unicode code points (handles surrogates).
+    - replaceAll requires modern engines; older code uses split/join or regex.
+-->

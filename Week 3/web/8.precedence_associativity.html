@@ -1,0 +1,56 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Operator Precedence and Associativity
+File: 8.precedence_associativity.html
+
+KEY POINTS:
+ - JS precedence is similar to C/Java; full table at MDN.
+ - Most binary operators are left-to-right; assignments and `**` are right-to-left.
+ - Unlike Python, comparisons DO NOT chain naturally: `1 < x < 10` is parsed as
+   `(1 < x) < 10`, comparing a boolean with a number.
+ - JS DOES allow assignment in conditions; PREFER `===`.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Precedence</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Operator Precedence &amp; Associativity</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  log("10 + 20 * 30 =", 10 + 20 * 30);   // 610
+  log("(10+20)*30  =", (10 + 20) * 30);  // 900
+
+  // ** is right-associative
+  log("2 ** 3 ** 2 =", 2 ** 3 ** 2);     // 2 ** (3 ** 2) = 512
+
+  // Right-associative assignment
+  let a, b, c;
+  a = b = c = 42;
+  log("a=", a, "b=", b, "c=", c);
+
+  // No chained comparisons
+  let x = 7;
+  log("1 < x < 10  =>", 1 < x < 10);     // (1<7)<10 -> true<10 -> 1<10 -> true (misleading!)
+  log("1 < x && x < 10 =>", 1 < x && x < 10);
+
+  // Unary minus binds tighter than **; JS prevents the ambiguity by REQUIRING parens
+  // log(-2 ** 2);   // SyntaxError in modern JS!
+  log("(-2) ** 2 =", (-2) ** 2);
+  log("-(2 ** 2) =", -(2 ** 2));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - `-2 ** 2` is intentionally a SyntaxError in JS to force you to parenthesise.
+ - `**` is RIGHT-associative; multiply/divide are left-associative.
+ - For assignment-in-condition, JS allows but linters discourage it.
+-->

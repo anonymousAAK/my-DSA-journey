@@ -1,0 +1,160 @@
+<!--
+  WEEK 9 - WEB DSA
+  Topic: Quick Sort
+  File: 3.quick_sort.html
+
+  CONCEPT:
+    Pivot + partition + recurse. Average O(n log n); worst O(n^2) without
+    randomisation.
+
+  KEY POINTS:
+    - Lomuto: pivot at last index.
+    - Hoare:  pivot at first; fewer swaps.
+    - Randomised pivot guards against adversarial input.
+    - QuickSelect: O(n) average kth-smallest via the same partition.
+
+  ALGORITHM / APPROACH:
+    See Java/Python sources; identical logic.
+
+  WEB-SPECIFIC NOTES:
+    - Math.random() seeds with the current time; we use a tiny LCG for
+      reproducibility.
+
+  DRY RUN:
+    [10,7,8,9,1,5] Lomuto pivot=5:
+        scan -> swap(10,1) -> [1,7,8,9,10,5]
+        place pivot       -> [1,5,8,9,10,7]
+        pivot index = 1
+
+  COMPLEXITY:
+    Average: O(n log n) time, O(log n) stack
+    Worst:   O(n^2)
+    Stable:  NO
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 9 - Quick Sort</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 9 - Quick Sort</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  // Reproducible LCG so we don't depend on Math.random's wall-clock seed.
+  let _seed = 42;
+  function rand(lo, hi) {
+    _seed = (_seed * 1664525 + 1013904223) >>> 0;
+    return lo + (_seed % (hi - lo + 1));
+  }
+
+  function lomutoPartition(arr, low, high) {
+    const pivot = arr[high];
+    let i = low - 1;
+    for (let j = low; j < high; j++) {
+      if (arr[j] <= pivot) {
+        i++;
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    }
+    [arr[i + 1], arr[high]] = [arr[high], arr[i + 1]];
+    return i + 1;
+  }
+
+  function quickSortLomuto(arr, low, high) {
+    if (low >= high) return;
+    const p = lomutoPartition(arr, low, high);
+    quickSortLomuto(arr, low, p - 1);
+    quickSortLomuto(arr, p + 1, high);
+  }
+
+  function hoarePartition(arr, low, high) {
+    const pivot = arr[low];
+    let i = low - 1, j = high + 1;
+    while (true) {
+      do { i++; } while (arr[i] < pivot);
+      do { j--; } while (arr[j] > pivot);
+      if (i >= j) return j;
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+  }
+
+  function quickSortHoare(arr, low, high) {
+    if (low >= high) return;
+    const p = hoarePartition(arr, low, high);
+    quickSortHoare(arr, low, p);
+    quickSortHoare(arr, p + 1, high);
+  }
+
+  function quickSortRandom(arr, low, high) {
+    if (low >= high) return;
+    const pivotIdx = rand(low, high);
+    [arr[pivotIdx], arr[high]] = [arr[high], arr[pivotIdx]];
+    const p = lomutoPartition(arr, low, high);
+    quickSortRandom(arr, low, p - 1);
+    quickSortRandom(arr, p + 1, high);
+  }
+
+  function quickSelect(arr, low, high, k) {
+    if (low === high) return arr[low];
+    const pivotIdx = rand(low, high);
+    [arr[pivotIdx], arr[high]] = [arr[high], arr[pivotIdx]];
+    const p = lomutoPartition(arr, low, high);
+    const rank = p - low + 1;
+    if (rank === k) return arr[p];
+    if (k < rank) return quickSelect(arr, low, p - 1, k);
+    return quickSelect(arr, p + 1, high, k - rank);
+  }
+
+  const base = [10, 7, 8, 9, 1, 5];
+
+  let arr1 = [...base];
+  log("Lomuto QuickSort:");
+  log(`Before: [${arr1}]`);
+  quickSortLomuto(arr1, 0, arr1.length - 1);
+  log(`After:  [${arr1}]`);
+
+  let arr2 = [...base];
+  log("\nHoare QuickSort:");
+  log(`Before: [${arr2}]`);
+  quickSortHoare(arr2, 0, arr2.length - 1);
+  log(`After:  [${arr2}]`);
+
+  let arr3 = [...base];
+  log("\nRandomized QuickSort:");
+  quickSortRandom(arr3, 0, arr3.length - 1);
+  log(`After:  [${arr3}]`);
+
+  const worst = [1, 2, 3, 4, 5, 6, 7, 8];
+  quickSortRandom(worst, 0, worst.length - 1);
+  log(`\nAlready sorted -> randomised: [${worst}]`);
+
+  const arr4 = [3, 2, 1, 5, 6, 4];
+  log("\nQuickSelect — kth smallest:");
+  for (let k = 1; k <= arr4.length; k++) {
+    const copy = [...arr4];
+    log(`k=${k}: ${quickSelect(copy, 0, copy.length - 1, k)}`);
+  }
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - Deterministic LCG keeps the demo reproducible across page loads.
+    - Spread (`[...base]`) clones arrays cheaply.
+    - For production, prefer Array.prototype.sort with a numeric compareFn.
+-->

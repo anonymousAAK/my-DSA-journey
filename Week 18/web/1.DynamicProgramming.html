@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 18 - Dynamic Programming (JS)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 980px; }
+  pre { background:#0b1021; color:#d6deeb; padding:1rem; border-radius:.5rem;
+        overflow:auto; font-family: ui-monospace, Menlo, monospace; font-size:.85rem; }
+  h1, h2 { color:#1e293b; }
+</style>
+</head>
+<body>
+<h1>Week 18 - Dynamic Programming Fundamentals</h1>
+<p>0/1 Knapsack, LCS, Coin Change, Subset Sum, Climbing Stairs.</p>
+<pre id="out"></pre>
+
+<script>
+/*
+WEEK 18 - WEB (JavaScript) DSA
+Topic: Dynamic Programming Fundamentals
+File: 1.DynamicProgramming.html
+
+CONCEPT:
+    DP solves a problem by decomposing it into overlapping subproblems and
+    storing each sub-answer. Two preconditions: optimal substructure +
+    overlapping subproblems. Two implementation styles:
+        TOP-DOWN  : recursion + Map/Object memo.
+        BOTTOM-UP : tabulation, often space-optimisable.
+
+KEY POINTS:
+    - State, recurrence, base case, evaluation order.
+    - For 0/1 knapsack on a 1-D rolling array, iterate w in REVERSE.
+    - Use Infinity as the impossible sentinel; coerce to int on output.
+
+ALGORITHM / APPROACH:
+    Five canonical problems:
+      1. 0/1 Knapsack             (2-D + space-optimised 1-D)
+      2. Longest Common Subseq.   (2-D)
+      3. Coin change (min coins)  (1-D)
+      4. Subset sum               (1-D boolean)
+      5. Climbing stairs          (Fibonacci, O(1) state)
+
+JS-SPECIFIC NOTES:
+    - Use Array.from + .map to build 2-D tables avoiding aliasing.
+    - Memoization via Map keyed by `${i},${cap}`.
+    - Numbers are doubles; safe-integer range covers anything we need here.
+
+DRY RUN:
+    knapsack([2,3,4,5],[3,4,5,6],5) -> 7
+    lcs("ABCBDAB","BDCABA") -> 4
+    coinChange([1,2,5], 11) -> 3
+    subsetSum([3,1,5,9,12], 7) -> false
+    climbStairs(5) -> 8
+
+COMPLEXITY:
+    knapsack          O(n*W) time, O(n*W) space (O(W) optimised)
+    lcs               O(m*n) time, O(m*n) space
+    coinChange        O(target * |coins|) time, O(target) space
+    subsetSum         O(n * target) time, O(target) space
+    climbStairs       O(n) time, O(1) space
+*/
+
+const out = document.getElementById('out');
+const log = (...a) => {
+  const line = a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+  out.textContent += line + '\n';
+  console.log(...a);
+};
+
+// ---------- KNAPSACK ----------
+function knapsack(weights, values, W) {
+  const n = weights.length;
+  const dp = Array.from({length: n + 1}, () => new Array(W + 1).fill(0));
+  for (let i = 1; i <= n; i++) {
+    const wi = weights[i-1], vi = values[i-1];
+    for (let w = 0; w <= W; w++) {
+      dp[i][w] = dp[i-1][w];
+      if (wi <= w) dp[i][w] = Math.max(dp[i][w], dp[i-1][w-wi] + vi);
+    }
+  }
+  return dp[n][W];
+}
+
+function knapsackOptimised(weights, values, W) {
+  const dp = new Array(W + 1).fill(0);
+  for (let i = 0; i < weights.length; i++) {
+    for (let w = W; w >= weights[i]; w--)
+      dp[w] = Math.max(dp[w], dp[w - weights[i]] + values[i]);
+  }
+  return dp[W];
+}
+
+function knapsackMemo(weights, values, W) {
+  const memo = new Map();
+  const go = (i, cap) => {
+    if (i === weights.length || cap === 0) return 0;
+    const key = `${i},${cap}`;
+    if (memo.has(key)) return memo.get(key);
+    let best = go(i + 1, cap);
+    if (weights[i] <= cap)
+      best = Math.max(best, go(i + 1, cap - weights[i]) + values[i]);
+    memo.set(key, best);
+    return best;
+  };
+  return go(0, W);
+}
+
+// ---------- LCS ----------
+function lcs(s1, s2) {
+  const m = s1.length, n = s2.length;
+  const dp = Array.from({length: m + 1}, () => new Array(n + 1).fill(0));
+  for (let i = 1; i <= m; i++)
+    for (let j = 1; j <= n; j++)
+      dp[i][j] = s1[i-1] === s2[j-1]
+        ? dp[i-1][j-1] + 1
+        : Math.max(dp[i-1][j], dp[i][j-1]);
+  return dp[m][n];
+}
+
+// ---------- COIN CHANGE ----------
+function coinChange(coins, target) {
+  const dp = new Array(target + 1).fill(Infinity);
+  dp[0] = 0;
+  for (let a = 1; a <= target; a++)
+    for (const c of coins)
+      if (c <= a && dp[a - c] + 1 < dp[a]) dp[a] = dp[a - c] + 1;
+  return dp[target] === Infinity ? -1 : dp[target];
+}
+
+// ---------- SUBSET SUM ----------
+function subsetSum(nums, target) {
+  const dp = new Array(target + 1).fill(false);
+  dp[0] = true;
+  for (const x of nums)
+    for (let t = target; t >= x; t--)
+      if (dp[t - x]) dp[t] = true;
+  return dp[target];
+}
+
+// ---------- CLIMBING STAIRS ----------
+function climbStairs(n) {
+  if (n <= 2) return n;
+  let prev2 = 1, prev1 = 2;
+  for (let i = 3; i <= n; i++) {
+    const curr = prev1 + prev2;
+    prev2 = prev1; prev1 = curr;
+  }
+  return prev1;
+}
+
+// ---------- driver ----------
+log('=== 0/1 Knapsack ===');
+const weights = [2,3,4,5], values = [3,4,5,6];
+log('W=5  bottom-up:', knapsack(weights, values, 5));               // 7
+log('W=10 bottom-up:', knapsack(weights, values, 10));              // 13
+log('W=10 optimised:', knapsackOptimised(weights, values, 10));
+log('W=10 memoised :', knapsackMemo(weights, values, 10));
+
+log('\n=== LCS ===');
+log("LCS('ABCBDAB','BDCABA') =", lcs('ABCBDAB','BDCABA'));          // 4
+log("LCS('AGGTAB','GXTXAYB') =", lcs('AGGTAB','GXTXAYB'));          // 4
+
+log('\n=== Coin Change ===');
+log('coins=[1,2,5], amount=11:', coinChange([1,2,5], 11));          // 3
+log('coins=[2],     amount=3 :', coinChange([2], 3));               // -1
+log('coins=[1],     amount=0 :', coinChange([1], 0));               // 0
+
+log('\n=== Subset Sum ===');
+log('[3,1,5,9,12] target=8:', subsetSum([3,1,5,9,12], 8));          // true
+log('[3,1,5,9,12] target=7:', subsetSum([3,1,5,9,12], 7));          // false
+
+log('\n=== Climbing Stairs ===');
+for (let i = 1; i <= 10; i++) log(`climbStairs(${i}) = ${climbStairs(i)}`);
+
+/*
+NOTES (JavaScript vs Java):
+  - Always use Array.from(...) to build 2-D arrays to avoid aliasing the
+    inner array that occurs with `new Array(n).fill(new Array(...))`.
+  - Map memoisation keyed by `${i},${j}` is concise; for hot paths, use
+    a flat typed array indexed manually for speed.
+  - Infinity is a clean sentinel; comparisons follow IEEE-754 rules.
+  - JS numbers are doubles; only worry about precision past 2^53.
+*/
+</script>
+</body>
+</html>

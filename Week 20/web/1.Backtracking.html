@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 20 - Backtracking (JS)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 980px; }
+  pre { background:#0b1021; color:#d6deeb; padding:1rem; border-radius:.5rem;
+        overflow:auto; font-family: ui-monospace, Menlo, monospace; font-size:.85rem; }
+  h1, h2 { color:#1e293b; }
+</style>
+</head>
+<body>
+<h1>Week 20 - Backtracking</h1>
+<p>Permutations, Subsets, N-Queens, Word Search.</p>
+<pre id="out"></pre>
+
+<script>
+/*
+WEEK 20 - WEB (JavaScript) DSA
+Topic: Backtracking — Template + Classic Problems
+File: 1.Backtracking.html
+
+CONCEPT:
+    Backtracking incrementally builds a candidate solution; if the partial
+    solution can no longer lead to a valid full answer, it ABANDONS the branch
+    and undoes the last choice.
+
+TEMPLATE:
+    function backtrack(state) {
+      if (isSolution(state)) { record(state); return; }
+      for (const c of choices(state)) {
+        if (isValid(c, state)) {
+          apply(c, state);
+          backtrack(state);
+          undo(c, state);
+        }
+      }
+    }
+
+KEY POINTS:
+    - Worst-case exponential. Pruning is the practical speed-up.
+    - Use Array.push/pop as the partial-solution stack.
+    - Snapshot with [...current] before recording to avoid aliasing.
+
+ALGORITHM / APPROACH:
+    Four canonical problems:
+      1. Permutations of a list of numbers
+      2. Subsets (power set)
+      3. N-Queens
+      4. Word Search in 2-D grid
+
+JS-SPECIFIC NOTES:
+    - Arrow + recursion is concise but heavy on closures; for hot paths
+      promote helpers to named functions.
+    - For word search we mutate the input grid then restore in the unwind.
+    - All numbers are doubles; no overflow worries here.
+
+DRY RUN:
+    permutations([1,2,3]) -> 6 arrays
+    subsets([1,2,3])      -> 8 arrays
+    nQueens(4)            -> 2 solutions
+    wordSearch grid="ABCE/SFCS/ADEE", "ABCCED" -> true; "ABCB" -> false
+
+COMPLEXITY:
+    permutations  O(n * n!)
+    subsets       O(n * 2^n)
+    nQueens       O(n!) worst, pruned
+    wordSearch    O(m*n * 4^|word|)
+*/
+
+const out = document.getElementById('out');
+const log = (...a) => {
+  const line = a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+  out.textContent += line + '\n';
+  console.log(...a);
+};
+
+// 1. PERMUTATIONS
+function permutations(nums) {
+  const result = [];
+  const arr = nums.slice();
+  const go = (start) => {
+    if (start === arr.length) { result.push(arr.slice()); return; }
+    for (let i = start; i < arr.length; i++) {
+      [arr[start], arr[i]] = [arr[i], arr[start]];   // choose
+      go(start + 1);                                 // explore
+      [arr[start], arr[i]] = [arr[i], arr[start]];   // undo
+    }
+  };
+  go(0);
+  return result;
+}
+
+// 2. SUBSETS
+function subsets(nums) {
+  const result = [];
+  const current = [];
+  const go = (idx) => {
+    result.push(current.slice());                    // record
+    for (let i = idx; i < nums.length; i++) {
+      current.push(nums[i]);
+      go(i + 1);
+      current.pop();                                 // backtrack
+    }
+  };
+  go(0);
+  return result;
+}
+
+// 3. N-QUEENS
+function nQueens(n) {
+  const result = [];
+  const queens = new Array(n).fill(-1);
+  const isSafe = (row, col) => {
+    for (let r = 0; r < row; r++) {
+      const c = queens[r];
+      if (c === col || Math.abs(c - col) === Math.abs(r - row)) return false;
+    }
+    return true;
+  };
+  const buildBoard = () =>
+    queens.map(c => '.'.repeat(c) + 'Q' + '.'.repeat(n - c - 1));
+  const go = (row) => {
+    if (row === n) { result.push(buildBoard()); return; }
+    for (let col = 0; col < n; col++) {
+      if (isSafe(row, col)) {
+        queens[row] = col;
+        go(row + 1);
+        queens[row] = -1;                            // backtrack
+      }
+    }
+  };
+  go(0);
+  return result;
+}
+
+// 4. WORD SEARCH
+function wordSearch(board, word) {
+  const m = board.length, n = board[0].length;
+  const dfs = (i, j, k) => {
+    if (k === word.length) return true;
+    if (i < 0 || i >= m || j < 0 || j >= n) return false;
+    if (board[i][j] !== word[k]) return false;
+    const tmp = board[i][j];
+    board[i][j] = '#';                               // mark visited
+    const found = dfs(i+1, j, k+1) || dfs(i-1, j, k+1)
+               || dfs(i, j+1, k+1) || dfs(i, j-1, k+1);
+    board[i][j] = tmp;                               // restore
+    return found;
+  };
+  for (let i = 0; i < m; i++)
+    for (let j = 0; j < n; j++)
+      if (dfs(i, j, 0)) return true;
+  return false;
+}
+
+// ---------- driver ----------
+log('=== Permutations of [1,2,3] ===');
+for (const p of permutations([1,2,3])) log(p);
+
+log('\n=== Subsets of [1,2,3] ===');
+for (const s of subsets([1,2,3])) log(s);
+
+log('\n=== 4-Queens ===');
+const sols = nQueens(4);
+log('Number of solutions:', sols.length);
+for (const sol of sols) { for (const row of sol) log(row); log('---'); }
+
+log('=== Word Search ===');
+const makeGrid = () => [
+  ['A','B','C','E'],
+  ['S','F','C','S'],
+  ['A','D','E','E']
+];
+log('Search ABCCED:', wordSearch(makeGrid(), 'ABCCED'));  // true
+log('Search SEE   :', wordSearch(makeGrid(), 'SEE'));     // true
+log('Search ABCB  :', wordSearch(makeGrid(), 'ABCB'));    // false
+
+/*
+NOTES (JavaScript vs Java):
+  - Array destructuring `[a, b] = [b, a]` mirrors Java's three-line swap.
+  - Always snapshot with .slice() before pushing into results; otherwise
+    aliasing means every entry ends up identical.
+  - String repeat for board rows is a one-liner ('.'.repeat(c)).
+  - JS recursion limit (~10k-30k frames) is fine for N-Queens up to ~12-15.
+*/
+</script>
+</body>
+</html>

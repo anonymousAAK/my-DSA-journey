@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 30 - Fast &amp; Slow Pointers</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Fast &amp; Slow Pointers (Floyd's Tortoise &amp; Hare)</h1>
+
+<div class="doc">
+<p><strong>WEEK 30 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Two pointers at speeds 1 and 2; meeting
+implies a cycle. Generalises to any deterministic next-state function
+(Happy Number).</p>
+<p><strong>KEY POINTS:</strong> O(n) time, O(1) space; for cycle entry
+reset one cursor to head and walk both 1-step.</p>
+<p><strong>ALGORITHM:</strong> hasCycle, detectCycleStart, middle node,
+isHappy.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> JS objects/classes work fine for
+ListNode; identity compare with === checks references.</p>
+<p><strong>DRY RUN:</strong> 1->2->3->2 cycle: hasCycle=true, start val=2.
+isHappy(19)=true; isHappy(2)=false.</p>
+<p><strong>COMPLEXITY:</strong> Time O(n); Space O(1).</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+class ListNode { constructor(v) { this.val = v; this.next = null; } }
+
+function hasCycle(head) {
+  let slow = head, fast = head;
+  while (fast && fast.next) {
+    slow = slow.next; fast = fast.next.next;
+    if (slow === fast) return true;
+  }
+  return false;
+}
+
+function detectCycleStart(head) {
+  let slow = head, fast = head;
+  while (fast && fast.next) {
+    slow = slow.next; fast = fast.next.next;
+    if (slow === fast) {
+      let entry = head;
+      while (entry !== slow) { entry = entry.next; slow = slow.next; }
+      return entry;
+    }
+  }
+  return null;
+}
+
+function middle(head) {
+  let slow = head, fast = head;
+  while (fast && fast.next) { slow = slow.next; fast = fast.next.next; }
+  return slow;
+}
+
+function digitSquareSum(n) {
+  let s = 0;
+  while (n > 0) { const d = n % 10; s += d * d; n = (n / 10) | 0; }
+  return s;
+}
+
+function isHappy(n) {
+  let slow = n, fast = n;
+  do {
+    slow = digitSquareSum(slow);
+    fast = digitSquareSum(digitSquareSum(fast));
+  } while (slow !== fast);
+  return slow === 1;
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const a = new ListNode(1), b = new ListNode(2), c = new ListNode(3);
+a.next = b; b.next = c; c.next = b;
+log("hasCycle:", hasCycle(a));
+log("cycle start val:", detectCycleStart(a)?.val);
+
+const n1 = new ListNode(1);
+n1.next = new ListNode(2);
+n1.next.next = new ListNode(3);
+n1.next.next.next = new ListNode(4);
+n1.next.next.next.next = new ListNode(5);
+log("middle val:", middle(n1).val);
+
+log("isHappy(19):", isHappy(19));
+log("isHappy(2): ", isHappy(2));
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * Identity check === compares references; same as Java's ==.
+  * (n / 10) | 0 emulates integer division (truncation towards zero).
+-->
+</body>
+</html>

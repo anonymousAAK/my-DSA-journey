@@ -1,0 +1,67 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Adding Two Numbers from User Input
+File: 8.add_two_number_better.html
+
+CONCEPT:
+Read two numbers and display their sum. Uses two <input> boxes and a button
+to demonstrate event-driven "input -> process -> output".
+
+KEY POINTS:
+ - `el.addEventListener("input", handler)` fires on every keystroke.
+ - `Number(el.value)` parses the current input value as a float.
+ - Empty input becomes 0 (NaN if non-numeric).
+
+SYNTAX:
+ const a = Number(document.getElementById("a").value);
+ const b = Number(document.getElementById("b").value);
+ output.textContent = a + b;
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Better add</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+    input{ padding: .25rem; font-size: 1rem; width: 8rem; }
+    label{ display: block; margin: .5rem 0; }
+  </style>
+</head>
+<body>
+  <h1>Add two numbers</h1>
+  <label>a: <input id="a" type="number" value="10"></label>
+  <label>b: <input id="b" type="number" value="25"></label>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const ea  = document.getElementById("a");
+      const eb  = document.getElementById("b");
+
+      const render = () => {
+        const a = Number(ea.value);
+        const b = Number(eb.value);
+        const sum = a + b;
+        out.textContent = `a + b = ${sum}`;
+        console.log(`a=${a}, b=${b}, sum=${sum}`);
+      };
+
+      // initial paint + live updates
+      render();
+      ea.addEventListener("input", render);
+      eb.addEventListener("input", render);
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java/Python read input once on demand; the web is event-driven and
+   continuously re-renders as values change.
+ - `Number(el.value)` is the simplest, most general parser; consider
+   `parseInt(el.value, 10)` if you specifically want integer behaviour.
+-->

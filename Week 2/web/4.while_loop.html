@@ -1,0 +1,63 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: While Loop Basics
+File: 4.while_loop.html
+
+CONCEPT:
+JavaScript's `while` allows assignment-in-condition (because `=` is an
+expression). Use parentheses to avoid the "did you mean ==?" lint warning.
+
+KEY POINTS:
+ - `while (cond) { ... }` — same shape as Java.
+ - `do { ... } while (cond);` exists in JS.
+ - `for (init; cond; step) { ... }` is also available.
+ - `for (const x of iterable)` iterates values; `for (const k in obj)` iterates keys.
+
+DRY RUN (Java's quirk):
+ x=5, y=5
+   iter 1: (x = 5) == y -> true; print "Hello"; x=6, y=6
+   iter 2: (x = 5) == y -> 5 == 6 -> false -> exit
+ Hello prints exactly once.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - While</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>While Loop</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  // Java-style quirk: assignment inside condition is legal in JS.
+  let x = 5, y = 5;
+  while ((x = 5) === y) {     // strict equality
+    log("Hello");
+    x++;
+    y++;
+  }
+  log(`(loop exited after y became ${y})`);
+
+  // Clean while
+  log("\n--- clean while ---");
+  let i = 1;
+  while (i <= 3) { log("i =", i); i++; }
+
+  // do-while
+  log("\n--- do-while (runs at least once) ---");
+  let k = 100;
+  do { log("k =", k); k++; } while (k < 100);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS allows assignment in conditions like Java; Rust forbids it; Python uses :=.
+ - Always use `===` over `==` to avoid coercion surprises.
+ - `do { } while (...)` runs the body at least once even if cond is false initially.
+-->

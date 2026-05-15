@@ -1,0 +1,71 @@
+<!--
+WEEK 5 - WEB FUNCTIONS & RECURSION
+Topic: Function Basics
+File: 1.method_basics.html
+
+CONCEPT:
+JS has multiple syntaxes for functions:
+ - function declarations: function f() { ... }
+ - function expressions:  const f = function() { ... };
+ - arrow functions:       const f = () => ...;
+ - method shorthand:      const obj = { f() { ... } };
+
+KEY POINTS:
+ - Default args:  function f(x = 10) { ... }
+ - Rest params:   function f(...args) { ... }
+ - Arrow funcs DO NOT have their own `this`.
+ - Closures capture variables by reference.
+ - Arguments are passed by value (primitives) or reference (objects/arrays).
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 5 - Function basics</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}</style>
+</head>
+<body>
+<h1>Function Basics</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function greet() { log("Hello from a function!"); }
+  function printSum(a, b) { log(`Sum of ${a} and ${b} = ${a + b}`); }
+  const add = (a, b) => a + b;
+  function multiply(x, y) { const result = x * y; return result; }
+
+  function tryToChange(n) { n = 999; log(`  inside: n = ${n}`); }
+  function mutateList(arr) { arr.push(99); }
+
+  greet();
+  printSum(3, 7);
+  log("add(5, 6) =", add(5, 6));
+  log("multiply(4, 3) =", multiply(4, 3));
+
+  let x = 42;
+  tryToChange(x);
+  log("after tryToChange: x =", x);   // 42 (primitive copied)
+
+  const list = [1, 2, 3];
+  mutateList(list);
+  log("after mutateList: list =", JSON.stringify(list));   // [1,2,3,99]
+
+  // Default and rest params
+  function power(base, exp = 2) { return base ** exp; }
+  log("power(5)        =", power(5));
+  log("power(5, 3)     =", power(5, 3));
+
+  function sumAll(...nums) { return nums.reduce((a, b) => a + b, 0); }
+  log("sumAll(1,2,3,4) =", sumAll(1,2,3,4));
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS primitives (number/string/bool) pass by VALUE; objects pass by REFERENCE.
+ - Arrow funcs are perfect for short callbacks; named functions for declarations.
+ - Default args, rest params, and destructuring make signatures very expressive.
+-->

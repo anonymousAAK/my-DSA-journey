@@ -1,0 +1,43 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: First X Terms of 3N+2 not divisible by 4
+File: 12.terms_of_ap.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - 3N+2</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>First X terms of 3N+2 (skip multiples of 4)</h1>
+<label>X <input id="x" type="number" value="5"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const render = () => {
+    out.textContent = "";
+    const x = Number(document.getElementById("x").value);
+    const terms = [];
+    let n = 1;
+    while (terms.length < x) {
+      const t = 3 * n + 2;
+      if (t % 4 !== 0) terms.push(t);
+      n++;
+    }
+    log(terms.join(" "));
+  };
+  render();
+  document.getElementById("x").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Two counters: how many emitted, how far along the series.
+ - For one-liner functional style: a generator + Array.from with take semantics.
+-->

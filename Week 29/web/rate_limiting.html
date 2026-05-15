@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 29 - Rate Limiting</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Rate Limiting - Token Bucket / Leaky Bucket / Sliding Window</h1>
+
+<div class="doc">
+<p><strong>WEEK 29 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Cap how often an action may occur:
+token-bucket (bursts up to capacity, average rate), leaky-bucket (steady
+outflow), sliding-window log (exact count over a time window).</p>
+<p><strong>KEY POINTS:</strong> Refill formula = elapsed * rate. Use
+performance.now() for monotonic timing.</p>
+<p><strong>ALGORITHM:</strong> token: refill + consume. leaky: drain +
+admit if room. sliding: drop old timestamps + check count.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> performance.now() returns ms; we
+convert to seconds for the rate math.</p>
+<p><strong>DRY RUN:</strong> TokenBucket(5, 2 tok/s) -> 5 burst allowed,
+then rejected; 500 ms later 1 more allowed.</p>
+<p><strong>COMPLEXITY:</strong> Token/Leaky O(1); Sliding O(window).</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+class TokenBucket {
+  constructor(cap, rate) {
+    this.cap = cap; this.rate = rate; this.tokens = cap;
+    this.last = performance.now() / 1000;
+  }
+  allow() {
+    const now = performance.now() / 1000;
+    this.tokens = Math.min(this.cap, this.tokens + (now - this.last) * this.rate);
+    this.last = now;
+    if (this.tokens >= 1) { this.tokens -= 1; return true; }
+    return false;
+  }
+}
+
+class LeakyBucket {
+  constructor(cap, rate) {
+    this.cap = cap; this.rate = rate; this.water = 0;
+    this.last = performance.now() / 1000;
+  }
+  allow() {
+    const now = performance.now() / 1000;
+    this.water = Math.max(0, this.water - (now - this.last) * this.rate);
+    this.last = now;
+    if (this.water < this.cap) { this.water += 1; return true; }
+    return false;
+  }
+}
+
+class SlidingWindowLog {
+  constructor(max, windowMs) {
+    this.max = max; this.window = windowMs; this.log = [];
+  }
+  allow() {
+    const now = performance.now();
+    while (this.log.length && this.log[0] <= now - this.window) this.log.shift();
+    if (this.log.length < this.max) { this.log.push(now); return true; }
+    return false;
+  }
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const tb = new TokenBucket(5, 2.0);
+for (let i = 1; i <= 7; i++)
+  log("  TokenBucket req " + i + ": " + (tb.allow() ? "ALLOWED" : "REJECTED"));
+
+log("");
+const lb = new LeakyBucket(3, 5.0);
+for (let i = 1; i <= 5; i++)
+  log("  LeakyBucket req " + i + ": " + (lb.allow() ? "ALLOWED" : "REJECTED"));
+
+log("");
+const sw = new SlidingWindowLog(3, 50);
+for (let i = 1; i <= 5; i++)
+  log("  SlidingWindow req " + i + ": " + (sw.allow() ? "ALLOWED" : "REJECTED"));
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * performance.now() / 1000 substitutes for System.nanoTime() / 1e9.
+  * We add leaky-bucket and sliding-window for spec completeness.
+-->
+</body>
+</html>

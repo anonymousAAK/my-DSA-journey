@@ -1,0 +1,58 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Decreasing-then-Increasing Check
+File: 16.check_no_sequence.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Sequence check</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input,textarea{padding:.25rem;font-family:monospace}textarea{width:100%;height:3em}</style>
+</head>
+<body>
+<h1>Sequence: Decreasing then Increasing?</h1>
+<label>Sequence (space-separated): <textarea id="seq">5 3 1 2 4</textarea></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function check(seq) {
+    if (seq.length < 2) return true;
+    let isDec = true;
+    for (let i = 1; i < seq.length; i++) {
+      if (seq[i] === seq[i-1]) return false;
+      if (seq[i] < seq[i-1]) { if (!isDec) return false; }
+      else                   { if (isDec) isDec = false; }
+    }
+    return true;
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const seq = document.getElementById("seq").value
+        .split(/\s+/).filter(Boolean).map(Number);
+    log("sequence:", JSON.stringify(seq));
+    log("valid?  :", check(seq));
+
+    // Bonus: classify a few canned cases
+    [
+      [5, 3, 1, 2, 4],
+      [1, 2, 3, 4, 5],
+      [5, 4, 3, 2, 1],
+      [1, 2, 3, 2, 1],
+      [1, 2, 2, 3],
+    ].forEach(c => log(`  ${JSON.stringify(c)} -> ${check(c)}`));
+  };
+  render();
+  document.getElementById("seq").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Linear scan with one boolean state.
+ - For STREAMED data, keep only the previous element.
+-->

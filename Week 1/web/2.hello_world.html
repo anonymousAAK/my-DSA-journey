@@ -1,0 +1,76 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Hello World - First JavaScript Program
+File: 2.hello_world.html
+
+CONCEPT:
+The classic "Hello World" in the browser. JS code lives inside a <script>
+tag (or an external .js file). `console.log` prints to DevTools; to display
+inside the page itself, write to the DOM (e.g., set textContent on an element).
+
+KEY POINTS:
+ - <script> tag holds inline JS; place it at the end of <body> or use defer.
+ - `console.log(...)` -> DevTools console (Java's System.out.println).
+ - DOM output: `el.textContent = "..."` or `el.innerHTML = "..."`.
+ - JS is DYNAMICALLY typed; no class wrapper needed.
+ - Single-line comments: //  ;  block: /* */
+
+SYNTAX:
+ console.log("text");
+ document.getElementById("id").textContent = "text";
+
+WEB-SPECIFIC NOTES vs Java:
+ - No package/class; code runs as soon as the script is parsed.
+ - To run "on load" use the DOMContentLoaded event listener.
+ - JS strings can use ' " or backticks (template literals).
+
+DRY RUN:
+ Open the page -> the <pre id="out"> shows three "Hello World" lines and
+ the DevTools console shows the same.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Hello World</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>Hello World - JavaScript</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...args) => {
+        const line = args.map(a => typeof a === "object" ? JSON.stringify(a) : String(a)).join(" ");
+        out.textContent += line + "\n";
+        console.log(...args);
+      };
+
+      // The classic
+      log("Hello World");
+
+      // Single OR double quotes work; backticks support interpolation
+      log('Hello, World!');
+      log(`Hello, ${"JavaScript"}!`);
+
+      // Multiple separate lines
+      log("Hello World");
+      log("Hello World");
+      log("Hello World");
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java needs `public class ... { public static void main(...) }`; JS needs nothing.
+ - Java: `System.out.println` | JS: `console.log` (DevTools) or DOM write (page).
+ - Strings support template-literal interpolation with `${expr}` inside backticks.
+ - The DOMContentLoaded event wraps code that touches the DOM safely.
+-->

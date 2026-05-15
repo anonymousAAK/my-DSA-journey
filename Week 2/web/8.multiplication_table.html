@@ -1,0 +1,45 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Multiplication Table
+File: 8.multiplication_table.html
+
+PROBLEM:
+ Print first 10 multiples of n.
+
+KEY POINTS:
+ - `for (let i = 1; i <= 10; i++)` is the classic counter loop.
+ - Use Array.from({length: 10}, (_, i) => (i+1)*n) for a more functional style.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Multiplication Table</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Multiplication Table</h1>
+<label>n <input id="n" type="number" value="4"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    for (let i = 1; i <= 10; i++) log(i * n);
+    // Functional alternative
+    log("\nfunctional:", Array.from({length:10}, (_,i)=>(i+1)*n).join(" "));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - The classic for-loop is universally readable across languages.
+ - `Array.from({length: n}, mapper)` is a popular functional idiom in JS.
+-->

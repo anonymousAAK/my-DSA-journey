@@ -1,0 +1,99 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Operators in JavaScript
+File: 16.operators.html
+
+CONCEPT:
+JavaScript supports the standard arithmetic, relational, logical, bitwise,
+and assignment operators. Notable additions vs Java:
+ - `===` / `!==` (strict equality — no coercion).
+ - Nullish coalescing `??` and optional chaining `?.`.
+ - Spread `...args` and rest parameters.
+ - `**` exponentiation.
+
+KEY POINTS:
+ - Arithmetic: + - * / % **
+ - Relational: == != === !== > < >= <=
+ - Logical:    && || ! ?? (nullish)
+ - Bitwise:    & | ^ ~ << >> >>>     (operands coerced to 32-bit signed int!)
+ - Assignment: = += -= *= /= //= **= &= |= ^= <<= >>= >>>= ||= &&= ??=
+ - Conditional: cond ? a : b
+ - `typeof`, `instanceof`, `in`, `delete`, `,` (comma), `void`, `new`
+
+SYNTAX:
+ const m = a > b ? a : b;
+ const v = obj?.field ?? defaultValue;
+ [a, b, c] = [1, 2, 3];        // destructuring
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Operators</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+  </style>
+</head>
+<body>
+  <h1>JavaScript Operators</h1>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+      log("=== Arithmetic ===");
+      log("10 + 3 =", 10 + 3);
+      log("10 / 3 =", 10 / 3);
+      log("10 % 3 =", 10 % 3);
+      log("2 ** 10 =", 2 ** 10);
+
+      log("\n=== Relational ===");
+      log("5 == '5'  ->", 5 == '5');     // true (coercion)
+      log("5 === '5' ->", 5 === '5');   // false (strict)
+      log("1 < 2 < 3 ->", 1 < 2 < 3);   // (1<2)<3 -> true<3 -> 1<3 -> true (NOT chained!)
+
+      log("\n=== Logical ===");
+      log("true && false =", true && false);
+      log("true || false =", true || false);
+      log("!true         =", !true);
+      // Short-circuit operands pass-through (Python-style)
+      log("'a' && 'b'    =", 'a' && 'b');     // 'b' (last truthy)
+      log("'' || 'fallback' =", '' || 'fallback');
+
+      log("\n=== Bitwise (32-bit signed) ===");
+      const p = 19, q = 28;     // 10011 & 11100
+      log("p & q  =", p & q);
+      log("p | q  =", p | q);
+      log("p ^ q  =", p ^ q);
+      log("~p     =", ~p);
+      log("p << 2 =", p << 2);
+      log("p >> 2 =", p >> 2);
+      log("-4 >>> 28 =", -4 >>> 28);  // JS has the unsigned right shift Java does
+
+      log("\n=== Nullish & Optional Chaining ===");
+      const obj = { user: { name: "Anne" } };
+      log("obj.user?.name           =", obj.user?.name);
+      log("obj.unknown?.name        =", obj.unknown?.name);
+      log("obj.user.age ?? 'no age' =", obj.user.age ?? 'no age');
+
+      log("\n=== Destructuring + spread ===");
+      const [a, b, ...rest] = [1, 2, 3, 4, 5];
+      log("a, b, rest =", a, b, JSON.stringify(rest));
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS keeps Java's `>>>` (unsigned right shift). Bitwise ops coerce to 32-bit int.
+ - `==` does type coercion, leading to weird truths like `'' == 0`; PREFER `===`.
+ - `&&`/`||` return one operand value, not strictly boolean (handy for defaults).
+ - `??` returns the right side only if the left is `null` or `undefined`,
+   NOT for `0` or `""`.
+ - Chained comparisons (`1 < x < 10`) are parsed left-to-right and do NOT behave
+   mathematically — use `1 < x && x < 10` instead.
+-->

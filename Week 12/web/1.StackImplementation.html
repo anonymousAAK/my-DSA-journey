@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 12 - Stack Implementation</title>
+<style>
+  body { font-family: system-ui, sans-serif; max-width: 900px; margin: 2rem auto; padding: 0 1rem; }
+  pre  { background: #111; color: #d8e1ff; padding: 1rem; border-radius: 8px; overflow:auto; }
+  .stack { display:flex; flex-direction:column-reverse; gap:.25rem; align-items:flex-start; min-height: 100px; padding:.5rem; border:1px dashed #aaa; border-radius:6px; width: 14rem;}
+  .frame { background:#9b59b6; color:white; padding:.4rem .9rem; border-radius:4px; font-family:monospace; min-width: 4rem; text-align:center;}
+  .frame.top { background:#27ae60; }
+  button { margin: .25rem; padding: .4rem .8rem; cursor: pointer; }
+  input { padding: .3rem; width: 8rem; }
+  h1 { font-size: 1.4rem; }
+  h2 { font-size: 1.1rem; margin-top: 1.5rem; }
+  .label { font-family: monospace; color: #444; }
+</style>
+</head>
+<body>
+<h1>Week 12 — Stack (JavaScript)</h1>
+<!--
+  WEEK 12 - WEB DSA
+  Topic: Stack Implementation + Classic Problems
+  File: 1.StackImplementation.html
+
+  CONCEPT:
+    LIFO container visualized with a vertical stack of "frames" — top of
+    the stack is the green frame at the top.
+
+  KEY POINTS:
+    - Same operations as the other languages: push, pop, peek.
+    - Demonstrates classic problems: balanced parens, NGE, postfix eval.
+
+  ALGORITHM / APPROACH:
+    JS Array's .push / .pop are O(1) amortized — perfect for stacks.
+
+  WEB-SPECIFIC NOTES:
+    - The stack visual uses flex-direction: column-reverse so newly pushed
+      frames render at the visual top.
+    - All output also goes to console + the <pre id="out"> transcript.
+
+  DRY RUN:
+    push 1,2,3 -> visual shows bottom-to-top [1][2][3].
+    isBalanced("([]{})") -> true; isBalanced("{[}]") -> false.
+
+  COMPLEXITY:
+    push/pop/peek O(1); NGE & postfix O(n).
+-->
+
+<h2>Interactive Stack</h2>
+<div class="stack" id="stack"></div>
+<div>
+  <input id="val" type="number" value="42">
+  <button onclick="op_push()">push</button>
+  <button onclick="op_pop()">pop</button>
+  <button onclick="op_peek()">peek</button>
+  <button onclick="op_clear()">clear</button>
+</div>
+
+<h2>Min Stack</h2>
+<div>
+  <input id="mval" type="number" value="3">
+  <button onclick="ms_push()">push</button>
+  <button onclick="ms_pop()">pop</button>
+  <button onclick="ms_min()">getMin</button>
+</div>
+
+<h2>Classic Problems</h2>
+<div>
+  <input id="parens" value="([]{})">
+  <button onclick="run_balanced()">isBalanced</button>
+</div>
+<div style="margin-top:.5rem">
+  <input id="nge" value="4 5 2 10 8">
+  <button onclick="run_nge()">nextGreaterElement</button>
+</div>
+<div style="margin-top:.5rem">
+  <input id="postfix" value="3 4 + 2 *">
+  <button onclick="run_postfix()">evalPostfix</button>
+</div>
+
+<h2>Transcript</h2>
+<pre id="out"></pre>
+
+<script>
+const out = document.getElementById("out");
+function log(m){ console.log(m); out.textContent += m + "\n"; out.scrollTop = out.scrollHeight; }
+
+class Stack {
+  constructor(){ this.data=[]; }
+  push(x){ this.data.push(x); }
+  pop(){ if(!this.data.length) throw new Error("underflow"); return this.data.pop(); }
+  peek(){ if(!this.data.length) throw new Error("empty"); return this.data[this.data.length-1]; }
+  size(){ return this.data.length; }
+}
+
+class MinStack {
+  constructor(){ this.s=[]; this.m=[]; }
+  push(x){
+    this.s.push(x);
+    this.m.push(this.m.length ? Math.min(x, this.m[this.m.length-1]) : x);
+  }
+  pop(){ this.m.pop(); return this.s.pop(); }
+  peek(){ return this.s[this.s.length-1]; }
+  getMin(){ return this.m[this.m.length-1]; }
+}
+
+const stack = new Stack();
+const ms = new MinStack();
+
+function render(){
+  const el = document.getElementById("stack");
+  el.innerHTML = "";
+  for (let i = 0; i < stack.data.length; i++) {
+    const f = document.createElement("div");
+    f.className = "frame" + (i === stack.data.length-1 ? " top" : "");
+    f.textContent = stack.data[i];
+    el.appendChild(f);
+  }
+}
+
+function op_push(){
+  const v = +document.getElementById("val").value;
+  stack.push(v); log(`push(${v}) -> stack=[${stack.data.join(",")}]`); render();
+}
+function op_pop(){
+  try { const v = stack.pop(); log(`pop() = ${v} -> stack=[${stack.data.join(",")}]`); render(); }
+  catch(e){ log("error: " + e.message); }
+}
+function op_peek(){
+  try { log(`peek() = ${stack.peek()}`); }
+  catch(e){ log("error: " + e.message); }
+}
+function op_clear(){ stack.data.length = 0; log("clear"); render(); }
+
+function ms_push(){
+  const v = +document.getElementById("mval").value;
+  ms.push(v); log(`MinStack.push(${v}); min=${ms.getMin()}`);
+}
+function ms_pop(){ const v = ms.pop(); log(`MinStack.pop() = ${v}`); }
+function ms_min(){ log(`MinStack.getMin() = ${ms.getMin()}`); }
+
+function isBalanced(s){
+  const stack = [];
+  const pairs = {")":"(", "]":"[", "}":"{"};
+  for (const c of s) {
+    if ("([{".includes(c)) stack.push(c);
+    else if (")]}".includes(c)) {
+      if (!stack.length || stack.pop() !== pairs[c]) return false;
+    }
+  }
+  return stack.length === 0;
+}
+function nextGreaterElement(arr){
+  const n = arr.length, res = new Array(n).fill(-1), st = [];
+  for (let i = 0; i < n; i++) {
+    while (st.length && arr[i] > arr[st[st.length-1]]) {
+      res[st.pop()] = arr[i];
+    }
+    st.push(i);
+  }
+  return res;
+}
+function evalPostfix(expr){
+  const st = [];
+  for (const tok of expr.trim().split(/\s+/)) {
+    if ("+-*/".includes(tok) && tok.length === 1) {
+      const b = st.pop(), a = st.pop();
+      if (tok === "+") st.push(a + b);
+      else if (tok === "-") st.push(a - b);
+      else if (tok === "*") st.push(a * b);
+      else st.push(Math.trunc(a / b));
+    } else st.push(parseInt(tok, 10));
+  }
+  return st.pop();
+}
+
+function run_balanced(){
+  const s = document.getElementById("parens").value;
+  log(`isBalanced("${s}") = ${isBalanced(s)}`);
+}
+function run_nge(){
+  const arr = document.getElementById("nge").value.trim().split(/\s+/).map(Number);
+  const r = nextGreaterElement(arr);
+  log(`NGE([${arr.join(",")}]) = [${r.join(",")}]`);
+}
+function run_postfix(){
+  const e = document.getElementById("postfix").value;
+  log(`evalPostfix("${e}") = ${evalPostfix(e)}`);
+}
+
+render();
+log("Initial demo:");
+log(`isBalanced("([]{})") = ${isBalanced("([]{})")}`);
+log(`isBalanced("{[}]") = ${isBalanced("{[}]")}`);
+log(`NGE([4,5,2,10,8]) = [${nextGreaterElement([4,5,2,10,8]).join(",")}]`);
+log(`postfix "3 4 + 2 *" = ${evalPostfix("3 4 + 2 *")}`);
+</script>
+
+<!--
+NOTES (vs. Java):
+- JS Array.push/pop are O(1) amortized; identical to Java ArrayDeque.
+- We use Math.trunc for integer division to mirror Java/C++ truncate-
+  toward-zero semantics.
+- No type system — runtime checks only.
+-->
+</body>
+</html>

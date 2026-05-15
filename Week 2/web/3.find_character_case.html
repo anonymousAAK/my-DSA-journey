@@ -1,0 +1,72 @@
+<!--
+WEEK 2 - WEB CONTROL FLOW
+Topic: Character Case Detection
+File: 3.find_character_case.html
+
+PROBLEM:
+ 1 for uppercase, 0 for lowercase, -1 otherwise.
+
+CONCEPT:
+ Use `ch.charCodeAt(0)` to get the ASCII code, or use regex / String methods:
+ `/[A-Z]/.test(ch)`, `ch === ch.toUpperCase()`, etc.
+
+KEY POINTS:
+ - `s.charCodeAt(0)` -> UTF-16 code unit of first char.
+ - Regex `/[A-Z]/`, `/[a-z]/` are concise tests.
+ - For Unicode-aware checks beyond ASCII, use regex `\p{L}` with /u flag.
+
+DRY RUN:
+ 'Q' -> 1; 'q' -> 0; '7' -> -1
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 2 - Char case</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Character Case Detection</h1>
+<label>character <input id="ch" maxlength="1" value="Q"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function classify(ch) {
+    if (!ch) return -1;
+    if (/^[A-Z]$/.test(ch)) return 1;
+    if (/^[a-z]$/.test(ch)) return 0;
+    return -1;
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const ch = document.getElementById("ch").value;
+    log(`'${ch}' -> ${classify(ch)}`);
+
+    // Show the ASCII-range alternative
+    if (ch) {
+      const code = ch.charCodeAt(0);
+      log(`charCodeAt = ${code}`);
+      log(`97<=code<=122 (lower) ? ${code >= 97 && code <= 122}`);
+      log(`65<=code<=90  (upper) ? ${code >= 65 && code <= 90}`);
+    }
+
+    // Built-in helpers
+    if (ch) {
+      log(`ch === ch.toUpperCase() : ${ch === ch.toUpperCase()}`);
+      log(`ch === ch.toLowerCase() : ${ch === ch.toLowerCase()}`);
+    }
+  };
+  render();
+  document.getElementById("ch").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - JS strings are UTF-16; `charCodeAt` returns a 16-bit code unit (Java's char).
+ - For full Unicode awareness use `codePointAt(0)` + Unicode regex (/u flag).
+-->

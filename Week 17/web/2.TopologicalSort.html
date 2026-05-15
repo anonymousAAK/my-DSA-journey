@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 17 - Topological Sort (JS)</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; max-width: 980px; }
+  pre { background:#0b1021; color:#d6deeb; padding:1rem; border-radius:.5rem;
+        overflow:auto; font-family: ui-monospace, Menlo, monospace; font-size:.85rem; }
+  h1, h2 { color:#1e293b; }
+</style>
+</head>
+<body>
+<h1>Week 17 - Topological Sort</h1>
+<p>DFS post-order + Kahn's BFS algorithm for DAG ordering and cycle detection.</p>
+<pre id="out"></pre>
+
+<script>
+/*
+WEEK 17 - WEB (JavaScript) DSA
+Topic: Topological Sort
+File: 2.TopologicalSort.html
+
+CONCEPT:
+    A topological order of a DAG places every edge u -> v with u BEFORE v.
+    Two algorithms:
+        DFS post-order  -- push v after recursing all its successors, reverse.
+        Kahn (BFS)      -- repeatedly emit vertices with indegree 0.
+    Kahn doubles as cycle detection.
+
+KEY POINTS:
+    - Multiple valid orders may exist for the same DAG.
+    - Kahn's residual size < V means a cycle.
+    - 3-colour DFS detects cycles in directed graphs.
+
+ALGORITHM / APPROACH:
+    Kahn:
+      indeg[v] for all v
+      queue = vertices with indeg 0
+      while queue:
+          u = dequeue; result.push(u)
+          for v in adj[u]: indeg[v]--; if 0 enqueue
+      result.length === V ? result : null
+
+JS-SPECIFIC NOTES:
+    - Use array + head-pointer for O(1) FIFO; .shift() would be O(n).
+    - Returning null on cycle parallels Java's null; pattern-match with `??`.
+
+DRY RUN:
+    Edges 5->2, 5->0, 4->0, 4->1, 2->3, 3->1
+        indeg = {0:2, 1:2, 2:1, 3:1, 4:0, 5:0}
+        queue = [4,5]
+        emit 4 -> dec 0,1; emit 5 -> dec 2,0 -> push 0,2
+        emit 0; emit 2 -> dec 3 push 3
+        emit 3 -> dec 1 push 1
+        emit 1 -> result [4,5,0,2,3,1] (length == V)
+
+    Cycle 0->1->2->3->1: indeg=[0,2,1,1] queue=[0]
+        emit 0 -> indeg[1]=1; queue empty.
+        result.length = 1 < 4 -> null.
+
+COMPLEXITY: O(V + E) time, O(V) extra space.
+*/
+
+const out = document.getElementById('out');
+const log = (...a) => {
+  const line = a.map(x => typeof x === 'string' ? x : JSON.stringify(x)).join(' ');
+  out.textContent += line + '\n';
+  console.log(...a);
+};
+
+class DiGraph {
+  constructor(v) {
+    this.V = v;
+    this.adj = Array.from({length: v}, () => []);
+  }
+  addEdge(u, v) { this.adj[u].push(v); }
+
+  topoSortDFS() {
+    const visited = new Uint8Array(this.V);
+    const stack = [];
+    const dfs = (u) => {
+      visited[u] = 1;
+      for (const v of this.adj[u]) if (!visited[v]) dfs(v);
+      stack.push(u);
+    };
+    for (let i = 0; i < this.V; i++) if (!visited[i]) dfs(i);
+    return stack.reverse();
+  }
+
+  topoSortKahn() {
+    const indeg = new Array(this.V).fill(0);
+    for (let u = 0; u < this.V; u++)
+      for (const v of this.adj[u]) indeg[v]++;
+    const q = []; let head = 0;
+    for (let i = 0; i < this.V; i++) if (indeg[i] === 0) q.push(i);
+    const result = [];
+    while (head < q.length) {
+      const u = q[head++];
+      result.push(u);
+      for (const v of this.adj[u]) {
+        if (--indeg[v] === 0) q.push(v);
+      }
+    }
+    return result.length === this.V ? result : null;
+  }
+
+  hasCycle() {
+    const state = new Uint8Array(this.V); // 0 white, 1 grey, 2 black
+    const dfs = (u) => {
+      state[u] = 1;
+      for (const v of this.adj[u]) {
+        if (state[v] === 1) return true;
+        if (state[v] === 0 && dfs(v)) return true;
+      }
+      state[u] = 2;
+      return false;
+    };
+    for (let i = 0; i < this.V; i++)
+      if (state[i] === 0 && dfs(i)) return true;
+    return false;
+  }
+}
+
+// ---------- driver ----------
+const g = new DiGraph(6);
+[[5,2],[5,0],[4,0],[4,1],[2,3],[3,1]].forEach(([u,v]) => g.addEdge(u,v));
+log('DFS topological sort: ', g.topoSortDFS());
+log('Kahn topological sort:', g.topoSortKahn());
+log('Has cycle:', g.hasCycle());
+
+const cyc = new DiGraph(4);
+[[0,1],[1,2],[2,3],[3,1]].forEach(([u,v]) => cyc.addEdge(u,v));
+log('\nCyclic graph:');
+log('Has cycle:', cyc.hasCycle());                 // true
+log('Kahn (null on cycle):', cyc.topoSortKahn());
+
+log('\n=== Build System ===');
+const build = new DiGraph(5); // 0 download, 1 compile, 2 test, 3 package, 4 deploy
+[[0,1],[1,2],[1,3],[2,3],[3,4]].forEach(([u,v]) => build.addEdge(u,v));
+log('Build order:', build.topoSortKahn());
+
+/*
+NOTES (JavaScript vs Java):
+  - Java's null sentinel translates directly to JS null; downstream code
+    can use `?? "<cycle>"` for default rendering.
+  - JS arrays double as both stacks and queues; use head-index instead of
+    .shift() for O(1) dequeue.
+  - 3-colour DFS uses Uint8Array — minimal and fast.
+*/
+</script>
+</body>
+</html>

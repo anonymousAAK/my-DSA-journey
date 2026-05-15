@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<title>Week 28 - Alpha-Beta Pruning</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5em; max-width: 900px; }
+  h1 { color: #163; }
+  pre { background: #111; color: #b5f5b5; padding: 1em; border-radius: 8px; }
+  .doc { background: #f6f8fa; padding: 1em; border-left: 4px solid #163; border-radius: 4px; }
+</style>
+</head>
+<body>
+<h1>Alpha-Beta Pruning</h1>
+
+<div class="doc">
+<p><strong>WEEK 28 - WEB (JS) ADVANCED TOPICS</strong></p>
+<p><strong>CONCEPT:</strong> Minimax with branch pruning. Maintain a
+window [alpha, beta]; abandon a subtree when the running v cannot affect
+the parent's choice.</p>
+<p><strong>KEY POINTS:</strong> alpha = best for Max so far; beta = best
+for Min so far; prune when alpha >= beta.</p>
+<p><strong>ALGORITHM:</strong> see code: identical to minimax but tracks
+alpha/beta and breaks on cutoff.</p>
+<p><strong>JS-SPECIFIC NOTES:</strong> Use Number.NEGATIVE_INFINITY /
+Number.POSITIVE_INFINITY for initial bounds.</p>
+<p><strong>DRY RUN:</strong> Empty TTT board -> value 0 with ~5-7x fewer
+node visits than plain minimax. The output prints the node counter.</p>
+<p><strong>COMPLEXITY:</strong> Time O(b^d) worst; O(b^(d/2)) with good
+ordering. Space O(d).</p>
+</div>
+
+<pre id="out"></pre>
+
+<script>
+"use strict";
+
+const LINES = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
+function winner(b) {
+  for (const [a,c,d] of LINES)
+    if (b[a] !== "." && b[a] === b[c] && b[c] === b[d]) return b[a];
+  return null;
+}
+function utility(b) {
+  const w = winner(b);
+  return w === "X" ? 1 : w === "O" ? -1 : 0;
+}
+
+let nodeCount = 0;
+
+function alphabeta(b, alpha, beta, maxTurn) {
+  nodeCount++;
+  if (winner(b) || !b.includes(".")) return utility(b);
+  if (maxTurn) {
+    let v = -Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] !== ".") continue;
+      const child = b.substring(0, i) + "X" + b.substring(i + 1);
+      v = Math.max(v, alphabeta(child, alpha, beta, false));
+      alpha = Math.max(alpha, v);
+      if (alpha >= beta) break;
+    }
+    return v;
+  } else {
+    let v = Infinity;
+    for (let i = 0; i < 9; i++) {
+      if (b[i] !== ".") continue;
+      const child = b.substring(0, i) + "O" + b.substring(i + 1);
+      v = Math.min(v, alphabeta(child, alpha, beta, true));
+      beta = Math.min(beta, v);
+      if (alpha >= beta) break;
+    }
+    return v;
+  }
+}
+
+const out = document.getElementById("out");
+const log = (...a) => { const s = a.join(" "); console.log(s); out.textContent += s + "\n"; };
+
+const empty = ".........";
+nodeCount = 0;
+log("Alpha-beta value of empty TTT:", alphabeta(empty, -Infinity, Infinity, true));
+log("Nodes explored:", nodeCount);
+</script>
+
+<!--
+NOTES
+-----
+Differences from Java:
+  * Java's game_theory.java doesn't include alpha-beta; we add it.
+  * Use Number infinities for initial alpha/beta bounds.
+-->
+</body>
+</html>

@@ -1,0 +1,114 @@
+<!--
+  WEEK 6 - WEB DSA
+  Topic: Array Reverse and Rotate
+  File: 3.array_reverse_and_rotate.html
+
+  CONCEPT:
+    1. Reverse an array in place using two pointers.
+    2. Left/right rotate by k via the reversal algorithm.
+
+  KEY POINTS:
+    - Reduce k modulo n; rotations of size n are no-ops.
+    - The reversal algorithm is O(n) time and O(1) space.
+
+  ALGORITHM / APPROACH:
+    reverse(arr, l, r): swap, l++, r--, while l < r
+    leftRotate(arr, k): k %= n;
+        reverse(arr, 0, k-1); reverse(arr, k, n-1); reverse(arr, 0, n-1)
+    rightRotate(arr, k) = leftRotate(arr, n - (k % n))
+
+  WEB-SPECIFIC NOTES:
+    - Array.prototype.reverse() exists; we keep the manual code for teaching.
+    - Destructuring assignment makes swaps one-liners: [a[i], a[j]] = [a[j], a[i]].
+
+  DRY RUN:
+    [1,2,3,4,5] reverse  -> [5,4,3,2,1]
+    [1,2,3,4,5] left k=2 -> [3,4,5,1,2]
+    [1,2,3,4,5] right k=2 -> [4,5,1,2,3]
+
+  COMPLEXITY:
+    Reverse : O(n) time, O(1) space
+    Rotate  : O(n) time, O(1) space
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 6 - Reverse & Rotate</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 6 - Array Reverse & Rotate</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function reverseRange(arr, l, r) {
+    while (l < r) {
+      [arr[l], arr[r]] = [arr[r], arr[l]];
+      l++; r--;
+    }
+  }
+
+  function reverseArray(arr) {
+    if (arr.length > 0) reverseRange(arr, 0, arr.length - 1);
+  }
+
+  function leftRotate(arr, k) {
+    const n = arr.length;
+    if (n === 0) return;
+    k = k % n;
+    if (k === 0) return;
+    reverseRange(arr, 0, k - 1);
+    reverseRange(arr, k, n - 1);
+    reverseRange(arr, 0, n - 1);
+  }
+
+  function rightRotate(arr, k) {
+    const n = arr.length;
+    if (n === 0) return;
+    leftRotate(arr, n - (k % n));
+  }
+
+  const arr1 = [1, 2, 3, 4, 5];
+  log(`Original: [${arr1}]`);
+  reverseArray(arr1);
+  log(`Reversed: [${arr1}]`);
+
+  const arr2 = [1, 2, 3, 4, 5];
+  log(`\nOriginal:         [${arr2}]`);
+  leftRotate(arr2, 2);
+  log(`Left Rotate by 2: [${arr2}]`);
+
+  const arr3 = [1, 2, 3, 4, 5];
+  log(`\nOriginal:          [${arr3}]`);
+  rightRotate(arr3, 2);
+  log(`Right Rotate by 2: [${arr3}]`);
+
+  const single = [42];
+  leftRotate(single, 5);
+  log(`\nSingle element rotated: [${single}]`);
+
+  const empty = [];
+  leftRotate(empty, 3);
+  log(`Empty array: [${empty}]`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - Destructuring swap removes the temp variable.
+    - Array.prototype.reverse() is built-in but we implement manually for learning.
+    - Modulus with negative k requires care — we ensure k is non-negative.
+-->

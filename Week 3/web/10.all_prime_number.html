@@ -1,0 +1,59 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: All Prime Numbers up to N
+File: 10.all_prime_number.html
+
+KEY POINTS:
+ - Trial division per number; sieve for the whole range.
+ - Use Math.sqrt or i*i <= n to bound the inner loop.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Primes</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Primes up to N</h1>
+<label>N <input id="n" type="number" value="30"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  const isPrime = n => {
+    if (n < 2) return false;
+    if (n % 2 === 0) return n === 2;
+    for (let j = 3; j * j <= n; j += 2) if (n % j === 0) return false;
+    return true;
+  };
+  const sieve = n => {
+    const composite = new Array(n + 1).fill(false);
+    composite[0] = composite[1] = true;
+    for (let i = 2; i * i <= n; i++) if (!composite[i])
+      for (let j = i * i; j <= n; j += i) composite[j] = true;
+    const primes = [];
+    for (let i = 2; i <= n; i++) if (!composite[i]) primes.push(i);
+    return primes;
+  };
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    const tdPrimes = [];
+    for (let i = 2; i <= n; i++) if (isPrime(i)) tdPrimes.push(i);
+    log("trial-div:", tdPrimes.join(" "));
+    log("sieve    :", sieve(n).join(" "));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Sieve allocates O(N) memory; trial division is O(N sqrt N) time, O(1) memory.
+ - For massive N use a typed array (Uint8Array) for the composite flags.
+-->

@@ -1,0 +1,49 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Reverse the Digits of an Integer
+File: 13.reverse.html
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Reverse</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Reverse Digits</h1>
+<label>n <input id="n" type="number" value="1234"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function reverseInt(n) {
+    const sign = n < 0 ? -1 : 1;
+    n = Math.abs(n);
+    let rev = 0;
+    while (n > 0) { rev = rev * 10 + (n % 10); n = Math.trunc(n / 10); }
+    return sign * rev;
+  }
+  function reverseStr(n) {
+    const sign = n < 0 ? -1 : 1;
+    return sign * Number([...String(Math.abs(n))].reverse().join(""));
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    log("loop  :", reverseInt(n));
+    log("string:", reverseStr(n));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - String approach via spread/reverse/join is the JS one-liner.
+ - For 32-bit overflow check, validate against (2**31)-1 before each step.
+-->

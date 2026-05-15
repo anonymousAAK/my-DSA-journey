@@ -1,0 +1,48 @@
+<!--
+WEEK 3 - WEB LOOPS & NUMBER THEORY
+Topic: Decimal to Binary
+File: 15.decimal_to_binary.html
+
+KEY POINTS:
+ - Manual loop encodes binary as decimal-place digits (matches Java).
+ - Built-in: `n.toString(2)` returns the binary STRING.
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head><meta charset="UTF-8" /><title>Week 3 - Dec2Bin</title>
+<style>body{font-family:system-ui,sans-serif;max-width:720px;margin:2rem auto;padding:0 1rem}pre{background:#111;color:#0f0;padding:1rem;border-radius:6px}input{padding:.25rem}</style>
+</head>
+<body>
+<h1>Decimal -&gt; Binary</h1>
+<label>n <input id="n" type="number" value="12"></label>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const log = (...a) => { out.textContent += a.join(" ") + "\n"; };
+
+  function decToBinNum(n) {
+    if (n === 0) return 0;
+    let bin = 0, p = 1;
+    while (n > 0) { bin += (n % 2) * p; p *= 10; n = Math.trunc(n / 2); }
+    return bin;
+  }
+
+  const render = () => {
+    out.textContent = "";
+    const n = Number(document.getElementById("n").value);
+    log("numeric (Java-style):", decToBinNum(n));
+    log("string  (toString(2)):", n.toString(2));
+  };
+  render();
+  document.getElementById("n").addEventListener("input", render);
+});
+</script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Number.toString(2) is the cleanest binary representation.
+ - The decimal-encoded form runs out at ~16 binary digits before exceeding 2^53.
+-->

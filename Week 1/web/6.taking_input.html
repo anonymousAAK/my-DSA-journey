@@ -1,0 +1,84 @@
+<!--
+WEEK 1 - WEB FUNDAMENTALS
+Topic: Taking User Input in the Browser
+File: 6.taking_input.html
+
+CONCEPT:
+Browsers don't have an stdin-like console for user programs. To take input
+on a web page you use either:
+  - <input> elements + event listeners (most common)
+  - `prompt("...")` -- a blocking modal dialog (fine for demos, not production)
+
+KEY POINTS:
+ - `prompt(message, default)` returns a string (or null if cancelled).
+ - Convert strings to numbers with `Number(s)`, `parseInt(s, 10)`, `parseFloat(s)`.
+ - For form-driven UIs, attach `input` / `change` listeners.
+ - Form inputs come back as STRINGS — always convert before arithmetic.
+
+SYNTAX:
+ const s = prompt("Enter two integers separated by space:");
+ const [a, b] = s.split(/\s+/).map(Number);
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Week 1 - Taking input</title>
+  <style>
+    body { font-family: system-ui, sans-serif; max-width: 720px; margin: 2rem auto; padding: 0 1rem; }
+    pre  { background: #111; color: #0f0; padding: 1rem; border-radius: 6px; }
+    label { display: block; margin-top: .5rem; }
+    input { padding: .25rem; font-size: 1rem; }
+    button{ margin-top: 1rem; padding: .5rem 1rem; font-size: 1rem; cursor: pointer; }
+  </style>
+</head>
+<body>
+  <h1>Taking Input</h1>
+  <label>First integer:  <input id="a" type="number" value="10"></label>
+  <label>Second integer: <input id="b" type="number" value="25"></label>
+  <label>A line of text: <input id="line" type="text" value="hello"></label>
+  <button id="run">Compute</button>
+  <pre id="out"></pre>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const out = document.getElementById("out");
+      const log = (...a) => { out.textContent += a.join(" ") + "\n"; console.log(...a); };
+
+      // Initial run with the default values
+      run();
+
+      document.getElementById("run").addEventListener("click", () => {
+        out.textContent = "";
+        run();
+      });
+
+      function run() {
+        const a = Number(document.getElementById("a").value);
+        const b = Number(document.getElementById("b").value);
+        const line = document.getElementById("line").value;
+
+        log("a =", a, "b =", b, "a+b =", a + b);
+        if (line.length) {
+          log(`First character of "${line}": '${line[0]}'`);
+        }
+        // Demonstrate other parse functions
+        log("Number('3.14')   =", Number("3.14"));
+        log("parseInt('42abc')=", parseInt("42abc", 10));
+        log("parseFloat('1e3')=", parseFloat("1e3"));
+      }
+
+      // For a Java/Python-style "blocking" prompt, uncomment the next line:
+      // const s = prompt("Enter two ints"); log("you typed:", s);
+    });
+  </script>
+</body>
+</html>
+
+<!--
+NOTES:
+ - Java's Scanner / Python's input() block on stdin; JS in browsers uses async events.
+ - `prompt()` exists for trivial demos but blocks the whole page and looks ugly.
+ - On the server, Node.js exposes `process.stdin` for stream-based input.
+ - For richer forms, prefer event-driven handlers over `prompt()`.
+-->

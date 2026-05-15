@@ -1,0 +1,127 @@
+<!--
+  WEEK 6 - WEB DSA
+  Topic: Prefix Sum & Kadane's Algorithm
+  File: 4.prefix_sum_and_kadane.html
+
+  CONCEPT:
+    A) Prefix sum: O(n) build, O(1) range queries.
+    B) Kadane: maximum contiguous subarray sum in O(n).
+
+  KEY POINTS:
+    - Range sum [l..r] = P[r] - (l > 0 ? P[l-1] : 0).
+    - Kadane: current = max(arr[i], current + arr[i]); best = max(best, current).
+    - Extended Kadane returns the [start, end] indices.
+
+  ALGORITHM / APPROACH:
+    See Java/Python implementations; identical logic here.
+
+  WEB-SPECIFIC NOTES:
+    - JS numbers are double precision; safe for typical learning inputs.
+    - Math.max(a, b) for two-argument max.
+    - Output rendered to <pre> via textContent.
+
+  DRY RUN:
+    arr = [3,-1,2,4,-3,7]
+    P   = [3, 2,4,8, 5,12]
+    rangeSum(1,4) = 5 - 3 = 2
+
+    Kadane on [-2,1,-3,4,-1,2,1,-5,4] -> 6, indices [3..6].
+
+  COMPLEXITY:
+    Prefix : O(n) build, O(1) per query
+    Kadane : O(n) time, O(1) space
+-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Week 6 - Prefix Sum & Kadane</title>
+<style>
+  body { font-family: system-ui, sans-serif; margin: 1.5rem; }
+  pre  { background: #111; color: #eee; padding: 1rem; border-radius: 8px; }
+  h1   { font-size: 1.2rem; }
+</style>
+</head>
+<body>
+<h1>Week 6 - Prefix Sum & Kadane</h1>
+<pre id="out"></pre>
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  const out = document.getElementById("out");
+  const lines = [];
+  const log = (s) => { lines.push(s); console.log(s); };
+
+  function buildPrefix(arr) {
+    const n = arr.length;
+    const prefix = new Array(n).fill(0);
+    if (n === 0) return prefix;
+    prefix[0] = arr[0];
+    for (let i = 1; i < n; i++) prefix[i] = prefix[i - 1] + arr[i];
+    return prefix;
+  }
+
+  function rangeSum(prefix, l, r) {
+    return l === 0 ? prefix[r] : prefix[r] - prefix[l - 1];
+  }
+
+  function maxSubarraySum(arr) {
+    let best = arr[0], current = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+      current = Math.max(arr[i], current + arr[i]);
+      best = Math.max(best, current);
+    }
+    return best;
+  }
+
+  function maxSubarrayWithIndices(arr) {
+    let best = arr[0], current = arr[0];
+    let start = 0, end = 0, tempStart = 0;
+    for (let i = 1; i < arr.length; i++) {
+      if (arr[i] > current + arr[i]) {
+        current = arr[i];
+        tempStart = i;
+      } else {
+        current += arr[i];
+      }
+      if (current > best) {
+        best = current;
+        start = tempStart;
+        end = i;
+      }
+    }
+    return [best, start, end];
+  }
+
+  const arr = [3, -1, 2, 4, -3, 7];
+  const prefix = buildPrefix(arr);
+  log(`Array:  [${arr}]`);
+  log(`Prefix: [${prefix}]`);
+  log(`Sum of arr[1..4] = ${rangeSum(prefix, 1, 4)}`);
+  log(`Sum of arr[0..5] = ${rangeSum(prefix, 0, 5)}`);
+  log(`Sum of arr[2..2] = ${rangeSum(prefix, 2, 2)}`);
+
+  const test1 = [-2, 1, -3, 4, -1, 2, 1, -5, 4];
+  log(`\nArray: [${test1}]`);
+  log(`Max subarray sum: ${maxSubarraySum(test1)}`);
+  const [best, s, e] = maxSubarrayWithIndices(test1);
+  log(`Max sum: ${best} | Subarray arr[${s}..${e}] = [${test1.slice(s, e + 1)}]`);
+
+  const allNeg = [-5, -1, -8, -3];
+  log(`\nAll-negative: [${allNeg}]`);
+  log(`Max sum: ${maxSubarraySum(allNeg)}`);
+
+  const single = [42];
+  log(`\nSingle element [42]: max sum = ${maxSubarraySum(single)}`);
+
+  out.textContent = lines.join("\n");
+});
+</script>
+</body>
+</html>
+
+<!--
+  NOTES — Web/JS vs Java:
+    - new Array(n).fill(0) initialises a numeric buffer.
+    - Math.max only takes scalars; for spread use Math.max(...arr).
+    - Slicing arr.slice(s, e+1) replaces Arrays.copyOfRange.
+-->
