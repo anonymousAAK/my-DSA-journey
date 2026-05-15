@@ -6,6 +6,8 @@
 ![Interactive](https://img.shields.io/badge/Interactive-HTML%20Pages-purple)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
+[![Build & Smoke Test](https://github.com/anonymousAAK/my-DSA-journey/actions/workflows/build.yml/badge.svg)](https://github.com/anonymousAAK/my-DSA-journey/actions/workflows/build.yml)
+
 > A comprehensive, 30-week structured guide to mastering Data Structures and Algorithms — from first principles to research-level topics and interview mastery.
 
 All implementations available in **4 languages**: Java, Python, C++, and Rust — with detailed comments, complexity analysis, and test cases.

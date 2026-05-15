@@ -30,7 +30,8 @@
 import java.util.Arrays;
 import java.util.Random;
 
-public class QuickSort {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class QuickSort {
 
     static Random rand = new Random(42);
 

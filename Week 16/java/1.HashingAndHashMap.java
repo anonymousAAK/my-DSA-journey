@@ -34,7 +34,8 @@
 
 import java.util.*;
 
-public class HashingAndHashMap {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class HashingAndHashMap {
 
     // PROBLEM 1: Two Sum
     // Given array and target, return indices of two numbers that sum to target.

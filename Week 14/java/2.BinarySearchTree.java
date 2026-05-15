@@ -27,7 +27,8 @@
  * Time: O(h)
  */
 
-public class BinarySearchTree {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class BinarySearchTree {
 
     static class Node {
         int val;

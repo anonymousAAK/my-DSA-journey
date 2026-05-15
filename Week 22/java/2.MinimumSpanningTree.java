@@ -38,7 +38,8 @@
 
 import java.util.*;
 
-public class MinimumSpanningTree {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class MinimumSpanningTree {
 
     // =====================
     // UNION-FIND (DSU)

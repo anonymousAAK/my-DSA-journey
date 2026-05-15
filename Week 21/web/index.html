@@ -95,6 +95,11 @@ a:hover{text-decoration:underline}
 /* Keyword highlighting for code */
 .kw{color:#ff7b72}.typ{color:#79c0ff}.str{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.num{color:#79c0ff}.op{color:#ff7b72}
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 
@@ -127,6 +132,7 @@ a:hover{text-decoration:underline}
 <a href="#xor-trie">Binary Trie (Max XOR)</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary &amp; Cheat Sheet</a>
+<a href="#live-demos">Live Demos</a>
 </nav>
 </aside>
 
@@ -896,6 +902,16 @@ update(3):     BIT[3] -> BIT[4] -> BIT[8] = walk: 011->100->1000
 <span class="title">Week 22: Advanced Graphs</span>
 </a>
 </div>
+
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.SegmentTreeAndBIT.html">1 — SegmentTreeAndBIT</a></li>
+      <li><a href="2.Trie.html">2 — Trie</a></li>
+  </ul>
+</section>
 
 </main>
 </div>

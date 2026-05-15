@@ -32,7 +32,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class KMPSearch {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class KMPSearch {
 
     // Build LPS (failure function) array for pattern
     static int[] buildLPS(String pattern) {

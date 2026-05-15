@@ -42,7 +42,8 @@ First 10 multiples of n each printed in new line
 */
 
 import java.util.Scanner;
-public class Main {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class Main {
 	
 	public static void main(String[] args) {
         int n;

@@ -32,7 +32,8 @@
 import java.util.HashMap;
 import java.util.Map;
 
-public class MergeSortedListsAndLRU {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class MergeSortedListsAndLRU {
 
     // Simple Node for linked list
     static class ListNode {

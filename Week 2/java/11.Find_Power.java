@@ -32,7 +32,8 @@
 
 import java.util.Scanner;
 
-public class FindPower {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class FindPower {
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);
         System.out.print("Enter base x and exponent n: ");

@@ -24,7 +24,8 @@
 import java.util.Scanner;
 import java.util.Arrays;
 
-public class ReturnArraySum {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class ReturnArraySum {
 
     // Iterative approach — O(n) time, O(1) space
     public static int sum(int[] arr) {

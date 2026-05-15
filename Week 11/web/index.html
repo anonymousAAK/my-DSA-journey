@@ -91,6 +91,11 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 .progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
 @media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 
@@ -115,6 +120,7 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 <a href="#comparison">Arrays vs Linked Lists</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
+<a href="#live-demos">Live Demos</a>
 </nav>
 </aside>
 
@@ -946,6 +952,16 @@ impl LRUCache {
 <a href="../Week 10/index.html">&larr; Week 10: Matrix</a>
 <a href="../Week 12/index.html">Week 12: Stacks &rarr;</a>
 </div>
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.SinglyLinkedList.html">1 — SinglyLinkedList</a></li>
+      <li><a href="2.MergeSortedListsAndLRU.html">2 — MergeSortedListsAndLRU</a></li>
+  </ul>
+</section>
+
 </main>
 </div>
 

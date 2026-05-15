@@ -24,7 +24,8 @@
  */
 
 import java.util.Scanner;
-public class Average {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class Average {
 
 
 	public static void main(String[] args) {

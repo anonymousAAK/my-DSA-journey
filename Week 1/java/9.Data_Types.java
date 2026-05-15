@@ -24,7 +24,8 @@
 
 package fundamentals;
 import java.util.Scanner;
-public class ArithematicOperators {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class ArithematicOperators {
     public static void main(String args[]) {
         Scanner s = new Scanner(System.in);
         String str;         // Declare a String variable (reference type, not primitive)

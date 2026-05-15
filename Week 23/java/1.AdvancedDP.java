@@ -39,7 +39,8 @@
 
 import java.util.Arrays;
 
-public class AdvancedDP {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class AdvancedDP {
 
     // =====================
     // TSP WITH BITMASK DP

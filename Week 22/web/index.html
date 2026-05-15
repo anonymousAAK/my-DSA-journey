@@ -80,6 +80,11 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .step-box{background:rgba(63,185,80,.06);border:1px solid rgba(63,185,80,.2);border-radius:8px;padding:1rem 1.2rem;margin:.75rem 0}
 .step-box .step-title{font-weight:700;color:var(--accent2);font-size:.9rem;margin-bottom:.3rem}
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 
@@ -112,6 +117,7 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 <a href="#prim">Prim's MST</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
+<a href="#live-demos">Live Demos</a>
 </nav>
 </aside>
 
@@ -854,6 +860,16 @@ std::pair&lt;<span class="typ">long long</span>, std::vector&lt;Edge&gt;&gt;
 <a href="../Week 21/index.html" class="nav-btn"><span class="label">Previous</span><span class="title">Week 21: Advanced Trees</span></a>
 <a href="../Week 23/index.html" class="nav-btn next"><span class="label">Next</span><span class="title">Week 23: Advanced DP</span></a>
 </div>
+
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.ShortestPaths.html">1 — ShortestPaths</a></li>
+      <li><a href="2.MinimumSpanningTree.html">2 — MinimumSpanningTree</a></li>
+  </ul>
+</section>
 
 </main>
 </div>

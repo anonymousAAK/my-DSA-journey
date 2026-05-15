@@ -30,7 +30,8 @@
 
 import java.util.*;
 
-public class TopologicalSort {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class TopologicalSort {
 
     static class Graph {
         int V;

@@ -42,7 +42,8 @@
 
 import java.util.*;
 
-public class ShortestPaths {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class ShortestPaths {
 
     static final int INF = Integer.MAX_VALUE / 2;
 

@@ -34,7 +34,8 @@
 
 import java.util.*;
 
-public class Backtracking {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class Backtracking {
 
     // PROBLEM 1: All Permutations
     // Time: O(n * n!), Space: O(n)

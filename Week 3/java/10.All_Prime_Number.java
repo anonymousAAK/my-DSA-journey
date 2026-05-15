@@ -26,7 +26,8 @@
 
 
 import java.util.Scanner;
-public class Solution{
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class Solution{
       public static void main(String[] args) {
             Scanner s = new Scanner(System.in);
             int n = s.nextInt();         // read upper bound N

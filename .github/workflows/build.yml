@@ -1,0 +1,74 @@
+name: Build & Smoke Test
+
+on:
+  push:
+    branches: [main, "claude/**", "codex/**"]
+  pull_request:
+    branches: [main]
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Compile every Python file
+        run: |
+          set -e
+          find "Week "* -maxdepth 2 -name "*.py" -print0 | xargs -0 -n1 python3 -m py_compile
+
+  cpp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Compile every C++ file
+        run: |
+          set -e
+          mkdir -p /tmp/cpp-out
+          fail=0
+          while IFS= read -r -d '' f; do
+            out="/tmp/cpp-out/$(basename "$f" .cpp).out"
+            if ! g++ -std=c++17 -Wno-everything "$f" -o "$out" 2>>/tmp/cpp-errors.log; then
+              echo "FAIL: $f"; fail=1
+            fi
+          done < <(find "Week "* -maxdepth 2 -name "*.cpp" -print0)
+          if [ "$fail" -ne 0 ]; then echo "--- error log ---"; cat /tmp/cpp-errors.log; exit 1; fi
+
+  rust:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Compile every Rust file
+        run: |
+          set -e
+          mkdir -p /tmp/rust-out
+          fail=0
+          while IFS= read -r -d '' f; do
+            base=$(basename "$f" .rs)
+            crate=$(echo "$base" | tr -c 'A-Za-z0-9_' '_' | sed 's/^[0-9]/c&/')
+            out="/tmp/rust-out/${crate}"
+            if ! rustc --edition 2021 --crate-name "$crate" "$f" -o "$out" 2>>/tmp/rust-errors.log; then
+              echo "FAIL: $f"; fail=1
+            fi
+          done < <(find "Week "* -maxdepth 2 -name "*.rs" -print0)
+          if [ "$fail" -ne 0 ]; then echo "--- error log ---"; cat /tmp/rust-errors.log; exit 1; fi
+
+  java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - name: Compile every Java file
+        run: |
+          set -e
+          mkdir -p /tmp/java-out
+          fail=0
+          while IFS= read -r -d '' f; do
+            if ! javac -d /tmp/java-out "$f" 2>>/tmp/java-errors.log; then
+              echo "FAIL: $f"; fail=1
+            fi
+          done < <(find "Week "* -maxdepth 2 -name "*.java" -print0)
+          if [ "$fail" -ne 0 ]; then echo "--- error log ---"; cat /tmp/java-errors.log; exit 1; fi

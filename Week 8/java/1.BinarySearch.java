@@ -24,7 +24,8 @@
  * 4. Search in rotated sorted array
  */
 
-public class BinarySearch {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class BinarySearch {
 
     // Standard binary search — returns index of target, or -1
     static int binarySearch(int[] arr, int target) {

@@ -29,7 +29,8 @@
  * hasCycle           | O(n)    | Floyd's algorithm
  */
 
-public class SinglyLinkedList {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class SinglyLinkedList {
 
     // Node class
     static class Node {

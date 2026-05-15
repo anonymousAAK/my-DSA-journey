@@ -94,6 +94,11 @@ summary:hover{color:var(--accent-green)}
 .progress-bar{position:fixed;top:0;left:0;height:3px;background:var(--gradient);z-index:300;transition:width .1s}
 @media print{.sidebar,.hamburger,.back-to-top,.progress-bar,.nav-footer,.overlay{display:none!important}.main{margin-left:0!important;max-width:100%!important}.card{opacity:1!important;transform:none!important;break-inside:avoid;box-shadow:none;border:1px solid #ddd}.code-content{white-space:pre-wrap}body{background:#fff;color:#000}}
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 
@@ -123,6 +128,7 @@ summary:hover{color:var(--accent-green)}
 <a href="#data-types-table">Type Reference Table</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
+<a href="#live-demos">Live Demos</a>
 </nav>
 </aside>
 
@@ -749,6 +755,30 @@ In <a href="../Week 2/index.html">Week 2</a>, you will learn about control flow 
 <span></span>
 <a href="../Week 2/index.html">Week 2: Control Flow &rarr;</a>
 </div>
+
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.installation.html">1 — Installation</a></li>
+      <li><a href="2.hello_world.html">2 — Hello World</a></li>
+      <li><a href="3.better_hello_world.html">3 — Better Hello World</a></li>
+      <li><a href="4.add_two_numbers.html">4 — Add Two Numbers</a></li>
+      <li><a href="5.arithmetic_operation.html">5 — Arithmetic Operation</a></li>
+      <li><a href="6.taking_input.html">6 — Taking Input</a></li>
+      <li><a href="7.taking_input_all.html">7 — Taking Input All</a></li>
+      <li><a href="8.add_two_number_better.html">8 — Add Two Number Better</a></li>
+      <li><a href="9.data_types.html">9 — Data Types</a></li>
+      <li><a href="10.multiple_input.html">10 — Multiple Input</a></li>
+      <li><a href="11.integer_and_string.html">11 — Integer And String</a></li>
+      <li><a href="12.average_of_two_numbers.html">12 — Average Of Two Numbers</a></li>
+      <li><a href="13.how_integer_is_stored.html">13 — How Integer Is Stored</a></li>
+      <li><a href="14.how_other_datatypes_are_stored.html">14 — How Other Datatypes Are Stored</a></li>
+      <li><a href="15.typecasting.html">15 — Typecasting</a></li>
+      <li><a href="16.operators.html">16 — Operators</a></li>
+  </ul>
+</section>
 
 </main>
 </div>

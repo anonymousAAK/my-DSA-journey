@@ -33,7 +33,8 @@
 
 import java.util.Arrays;
 
-public class DutchNationalFlagAndMissing {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class DutchNationalFlagAndMissing {
 
     // Part A: Dutch National Flag
     static void dutchFlag(int[] arr) {

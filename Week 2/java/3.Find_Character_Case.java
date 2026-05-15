@@ -47,7 +47,8 @@ lowercase in the input character then print 0 otherwise print -1.   */
 
 import java.util.Scanner;
 
-public class C_Case {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class C_Case {
     
     public static void main(String[] args) {
         Scanner s = new Scanner(System.in);

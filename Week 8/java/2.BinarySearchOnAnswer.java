@@ -25,7 +25,8 @@
 
 import java.util.Arrays;
 
-public class BinarySearchOnAnswer {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class BinarySearchOnAnswer {
 
     // PROBLEM 1: Integer Square Root
     // Find largest x such that x*x <= n

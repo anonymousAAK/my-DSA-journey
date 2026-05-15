@@ -45,7 +45,8 @@ celsius value.
 */
 
 import java.util.Scanner;
-public class F_C_Table {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class F_C_Table {
 
 
 	public static void main(String[] args) {

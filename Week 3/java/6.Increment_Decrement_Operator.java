@@ -1,7 +1,7 @@
 /*
  * WEEK 3 - LOOPS & NUMBER THEORY
  * Topic: Increment & Decrement Operators
- * File: 6.Increament_Decerement_Operator.java
+ * File: 6.Increment_Decrement_Operator.java
  *
  * CONCEPT:
  * Increment (++) and decrement (--) operators modify a variable's value by 1.
@@ -21,7 +21,8 @@
  * Space Complexity: O(1)
  */
 
-public class IncrementDecrementOperator {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class IncrementDecrementOperator {
     public static void main(String[] args) {
         int a = 5;
         System.out.println("Initial a = " + a);

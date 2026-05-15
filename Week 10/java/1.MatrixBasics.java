@@ -21,7 +21,8 @@
 
 import java.util.Arrays;
 
-public class MatrixBasics {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class MatrixBasics {
 
     static void printMatrix(int[][] mat) {
         for (int[] row : mat) System.out.println(Arrays.toString(row));
