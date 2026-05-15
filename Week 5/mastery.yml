@@ -1,0 +1,51 @@
+week: 5
+title: Functions & Recursion
+skills:
+  - id: factorial_5
+    prompt: "What is 5! (factorial of 5)?"
+    answer: 120
+    type: numeric
+    explanation: "5*4*3*2*1 = 120. The recursive call tree has depth 5."
+
+  - id: recursion_base_case
+    prompt: "What happens if a recursive function has no base case?"
+    answer: ["stack overflow", "infinite recursion", "infinite loop", "crash"]
+    type: open
+    explanation: "Without a base case the call stack grows until it overflows."
+
+  - id: hanoi_moves
+    prompt: "Minimum moves to solve Tower of Hanoi with 4 disks?"
+    answer: 15
+    type: numeric
+    explanation: "2^n - 1 = 2^4 - 1 = 15. Exponential — Hanoi at n=64 needs ~1.8e19 moves."
+
+  - id: fib_recursive_time
+    prompt: "Time complexity of NAIVE recursive Fibonacci F(n) = F(n-1)+F(n-2)?"
+    answer: ["O(2^n)", "exponential", "2^n", "O(phi^n)", "O(1.618^n)"]
+    type: open
+    explanation: "Each call branches into two; without memoization the tree size is exponential (~phi^n)."
+
+  - id: tail_call_idea
+    prompt: "What makes a call 'tail recursive'?"
+    answer: ["last action", "last operation", "no work after the call", "return the call directly"]
+    type: open
+    explanation: "A tail call is the LAST thing the function does — no pending work after it returns."
+
+  - id: overloading_def
+    prompt: "Method overloading distinguishes methods by what?"
+    choices: ["return type only", "name only", "parameter list (number/types)", "the order of declaration"]
+    answer: 2
+    type: multiple_choice
+    explanation: "Overloads must differ in their parameter lists; return type alone is not enough in Java."
+
+  - id: stack_frame_count
+    prompt: "Computing factorial(5) recursively, how many stack frames coexist at maximum depth?"
+    answer: 6
+    type: numeric
+    explanation: "factorial(5)..factorial(0) — six active frames at the deepest point."
+
+  - id: when_to_memoize
+    prompt: "When should you add memoization to a recursive solution?"
+    answer: ["overlapping subproblems", "same input called many times", "repeated calls", "duplicate states"]
+    type: open
+    explanation: "Memoization helps only when the same subproblem is recomputed many times (overlapping subproblems)."

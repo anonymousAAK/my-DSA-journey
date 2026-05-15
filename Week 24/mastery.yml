@@ -1,0 +1,48 @@
+week: 24
+title: Research-Level Topics
+skills:
+  - id: amortized_methods
+    prompt: "Name the three classic methods for amortized analysis."
+    answer:
+      - "aggregate"
+      - "accounting"
+      - "potential"
+    type: list
+    explanation: "Aggregate: total cost / n ops. Accounting: charge each op a 'token' that pays for future expensive ops. Potential: define Φ(state) so that amortized = real + ΔΦ."
+
+  - id: p_np_def
+    prompt: "What does NP stand for (the literal expansion)?"
+    answer: ["nondeterministic polynomial", "non-deterministic polynomial", "nondeterministic polynomial time"]
+    type: open
+    explanation: "Nondeterministic Polynomial time. Equivalently: solutions are verifiable in polynomial time."
+
+  - id: vertex_cover_approx
+    prompt: "Approximation ratio of the simple 2-approximation for Vertex Cover (pick both endpoints of an uncovered edge)?"
+    answer: 2
+    type: numeric
+    explanation: "Each matched edge contributes 2 to our cover but at least 1 to OPT (any cover must cover that edge), so we're within a factor of 2."
+
+  - id: skip_list_expected_height
+    prompt: "Expected height of a skip list with n elements?"
+    answer: ["O(log n)", "log n", "log_2 n", "logarithmic"]
+    type: open
+    explanation: "With p=1/2 promotion probability, expected height is O(log n) and expected search/insert is O(log n)."
+
+  - id: bloom_filter_property
+    prompt: "Bloom filter can produce which of these errors?"
+    choices: ["false positives", "false negatives", "both", "neither"]
+    answer: 0
+    type: multiple_choice
+    explanation: "False positives only (says 'maybe in set' when not). Never false negative — if it says 'definitely not in set' it really isn't."
+
+  - id: reservoir_sampling_prob
+    prompt: "In reservoir sampling of size k=1 from a stream of n unknown length, what probability does each item end up selected?"
+    answer: ["1/n", "one over n", "1 / n"]
+    type: open
+    explanation: "Each item i is kept with probability 1/i then survives subsequent replacements with probability i/n. Product telescopes to 1/n."
+
+  - id: streaming_algo_constraint
+    prompt: "Streaming algorithms have what fundamental constraint?"
+    answer: ["sublinear memory", "one pass", "limited memory", "small space", "polylog memory"]
+    type: open
+    explanation: "Often one-pass and o(n) (typically polylog) memory. You can't store the whole stream, so you keep a compact sketch."

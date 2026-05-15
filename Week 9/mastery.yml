@@ -1,0 +1,54 @@
+week: 9
+title: Sorting Algorithms
+skills:
+  - id: merge_sort_complexity
+    prompt: "Worst-case time complexity of merge sort?"
+    answer: ["O(n log n)", "n log n", "O(nlogn)"]
+    type: open
+    explanation: "Divide-and-conquer with linear merge gives n log n in all cases."
+
+  - id: quicksort_worst
+    prompt: "Worst-case time complexity of quicksort with naive pivot choice?"
+    answer: ["O(n^2)", "O(n²)", "n^2", "quadratic"]
+    type: open
+    explanation: "Picking the smallest/largest as pivot every time on already-sorted input gives O(n²)."
+
+  - id: stable_sort
+    prompt: "Which of these is NOT a stable sort?"
+    choices: ["Merge sort", "Insertion sort", "Quick sort (typical)", "Counting sort"]
+    answer: 2
+    type: multiple_choice
+    explanation: "Quicksort's swaps reorder equal elements; merge/insertion/counting preserve relative order."
+
+  - id: counting_sort_when
+    prompt: "When is counting sort a good fit?"
+    answer: ["small range", "bounded range", "small k", "limited values", "integer keys with small range"]
+    type: open
+    explanation: "Counting sort is O(n + k) where k is the value range. It shines when k = O(n)."
+
+  - id: in_place_sorts
+    prompt: "Name two sorts that are in-place (O(1) extra space)."
+    answer:
+      - "quicksort"
+      - "heapsort"
+    type: list
+    explanation: "Quicksort partitions in place (O(log n) stack); heapsort uses the input array as the heap. Selection / insertion / bubble also qualify."
+
+  - id: small_n_sort
+    prompt: "For sorting fewer than ~16 elements in a hot loop, which simple sort is usually fastest in practice?"
+    choices: ["Bubble sort", "Insertion sort", "Heap sort", "Merge sort"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Insertion sort has tiny constants, great cache behaviour, and is O(n) on nearly-sorted input. Library quicksorts switch to it for small partitions."
+
+  - id: nlogn_lower_bound
+    prompt: "Why can't a comparison-based sort beat O(n log n)?"
+    answer: ["decision tree", "n! permutations", "log(n!)", "information theoretic", "lower bound"]
+    type: open
+    explanation: "Any comparison sort's decision tree must distinguish n! permutations, so it has height >= log2(n!) = Θ(n log n)."
+
+  - id: radix_sort_complexity
+    prompt: "Time complexity of radix sort for n integers with d digits?"
+    answer: ["O(d*n)", "O(nd)", "O(d n)", "linear in d*n"]
+    type: open
+    explanation: "Each of d passes is a linear counting-sort over n items."

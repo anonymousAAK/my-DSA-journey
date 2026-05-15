@@ -1,0 +1,13 @@
+{
+  "topic": "palindrome_check",
+  "week": 7,
+  "function": "isPalindrome",
+  "cases": [
+    {"name": "simple_true",   "input": ["racecar"], "expected": true},
+    {"name": "simple_false",  "input": ["hello"],   "expected": false},
+    {"name": "punctuation",   "input": ["A man, a plan, a canal: Panama"], "expected": true},
+    {"name": "near_miss",     "input": ["race a car"], "expected": false, "adversarial": true},
+    {"name": "single_char",   "input": ["a"], "expected": true, "edge": true},
+    {"name": "empty",         "input": [""],  "expected": true, "edge": true}
+  ]
+}

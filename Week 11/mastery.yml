@@ -1,0 +1,49 @@
+week: 11
+title: Linked Lists
+skills:
+  - id: insert_head_complexity
+    prompt: "Insert at the head of a singly linked list — time complexity?"
+    answer: ["O(1)", "constant", "1"]
+    type: open
+    explanation: "Allocate node, point its next to old head, update head pointer. No traversal needed."
+
+  - id: floyd_cycle
+    prompt: "Floyd's cycle detection moves two pointers at what relative speeds?"
+    answer: ["1 and 2", "slow and fast", "one and two", "1x and 2x"]
+    type: open
+    explanation: "Slow advances 1, fast advances 2. If there's a cycle they meet inside it."
+
+  - id: reverse_list_idea
+    prompt: "Iterative singly-linked-list reverse needs which three pointers (per step)?"
+    answer:
+      - "prev"
+      - "curr"
+      - "next"
+    type: list
+    explanation: "Save next, point curr.next to prev, advance prev=curr and curr=next."
+
+  - id: middle_node_trick
+    prompt: "Find the middle of a singly linked list in ONE pass — trick?"
+    answer: ["slow and fast pointer", "two pointers", "fast and slow", "tortoise and hare"]
+    type: open
+    explanation: "Move slow by 1 and fast by 2; when fast hits the end, slow is at the middle."
+
+  - id: lru_combo
+    prompt: "Which two data structures combine to give O(1) LRU cache operations?"
+    answer:
+      - "hashmap"
+      - "doubly linked list"
+    type: list
+    explanation: "HashMap gives O(1) lookup of the node; the doubly linked list lets you move a node to the front and evict the tail in O(1)."
+
+  - id: doubly_vs_singly
+    prompt: "What does a doubly linked list give you that a singly linked list doesn't?"
+    answer: ["O(1) deletion given a node", "prev pointer", "backward traversal", "delete in O(1)"]
+    type: open
+    explanation: "With a prev pointer you can unlink a known node in O(1) without traversing from head, and you can iterate backwards."
+
+  - id: array_vs_list_random_access
+    prompt: "Random access by index — array vs linked list complexities?"
+    answer: ["O(1) vs O(n)", "array O(1), list O(n)", "constant vs linear"]
+    type: open
+    explanation: "Arrays support O(1) indexing; linked lists require walking from a known node."

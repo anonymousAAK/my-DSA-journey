@@ -1,0 +1,44 @@
+week: 28
+title: Game Theory & Combinatorics
+skills:
+  - id: nim_xor_rule
+    prompt: "Position in Nim is losing for the player-to-move iff the XOR of pile sizes equals what?"
+    answer: 0
+    type: numeric
+    explanation: "Sprague-Grundy: the Grundy value (= XOR of pile sizes) is 0 in P-positions (previous player wins / current player loses)."
+
+  - id: grundy_value_def
+    prompt: "Grundy value (nimber) of a game position is defined as the mex of what?"
+    answer: ["successor grundy values", "successors' grundy values", "mex of children grundy"]
+    type: open
+    explanation: "G(s) = mex{G(s') : s' reachable from s}. mex = minimum excludant — smallest non-negative integer not in the set."
+
+  - id: catalan_5
+    prompt: "What is the 5th Catalan number C_5? (using C_0 = 1, C_1 = 1, C_2 = 2, C_3 = 5, C_4 = 14)"
+    answer: 42
+    type: numeric
+    explanation: "C_5 = 42. Counts balanced parentheses of length 10, binary trees with 5 nodes, etc."
+
+  - id: ncr_pascal
+    prompt: "Pascal's identity expresses C(n, k) as the sum of which two values?"
+    answer: ["C(n-1, k-1) + C(n-1, k)", "n-1 choose k-1 plus n-1 choose k", "C(n-1,k-1) and C(n-1,k)"]
+    type: open
+    explanation: "C(n,k) = C(n-1, k-1) + C(n-1, k). Either we 'choose' the new item or we don't."
+
+  - id: inclusion_exclusion_signs
+    prompt: "Inclusion-Exclusion for |A ∪ B ∪ C| has how many terms, and what's the sign of the triple intersection?"
+    answer: ["7 terms, +", "seven terms positive", "|A|+|B|+|C|-|AB|-|AC|-|BC|+|ABC|", "+1 for triple", "positive"]
+    type: open
+    explanation: "Singles +, pairs −, triple +. For n sets the term count is 2^n − 1, with sign (−1)^(|S|+1)."
+
+  - id: matrix_expo_recurrence
+    prompt: "Matrix exponentiation computes F(n) for a linear recurrence in time?"
+    answer: ["O(k^3 log n)", "O(log n) for fixed k", "O(k^3 log n) with k = recurrence order", "logarithmic in n"]
+    type: open
+    explanation: "Raise the k×k transition matrix to the n-th power by fast exponentiation: O(log n) multiplications, each O(k³)."
+
+  - id: combinatorics_birthday
+    prompt: "Birthday paradox: ~how many people do you need before there's >50% chance of a shared birthday?"
+    answer: 23
+    type: numeric
+    explanation: "23. The √(2 N ln 2) approximation for N=365 gives ~22.5. Surprising and useful for understanding hash collisions."

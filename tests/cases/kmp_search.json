@@ -1,0 +1,12 @@
+{
+  "topic": "kmp_search",
+  "week": 7,
+  "function": "kmpSearch",
+  "cases": [
+    {"name": "multiple_matches",   "input": ["AABAACAADAABAABA", "AABA"], "expected": [0, 9, 12]},
+    {"name": "overlapping_matches","input": ["AAAAABAAABA", "AAAA"],      "expected": [0, 1], "adversarial": true},
+    {"name": "no_match",           "input": ["hello", "xyz"],             "expected": []},
+    {"name": "pattern_longer",     "input": ["hi", "hello"],              "expected": [], "edge": true},
+    {"name": "tile_matches",       "input": ["abcabcabc", "abc"],         "expected": [0, 3, 6]}
+  ]
+}

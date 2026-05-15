@@ -1,0 +1,45 @@
+week: 25
+title: Advanced String Algorithms
+skills:
+  - id: z_array_def
+    prompt: "Z-array entry Z[i] equals what for a string s?"
+    answer: ["longest prefix substring match at i", "length of longest substring starting at i that matches a prefix of s", "longest match with prefix"]
+    type: open
+    explanation: "Z[i] is the length of the longest substring starting at i that is also a prefix of s. Computed in O(n)."
+
+  - id: manacher_complexity
+    prompt: "Manacher's algorithm for longest palindromic substring — time complexity?"
+    answer: ["O(n)", "linear"]
+    type: open
+    explanation: "Manacher exploits palindromic symmetry to expand from each center in amortized O(1)."
+
+  - id: rolling_hash_collision
+    prompt: "Primary risk of polynomial rolling hash, and standard mitigation?"
+    answer: ["collisions", "hash collision and double hashing", "use two moduli", "collisions; use double hashing"]
+    type: open
+    explanation: "Different strings can hash to the same value. Standard mitigation: double hashing (two distinct moduli / bases) to make collision probability negligibly small."
+
+  - id: suffix_array_n_log_n
+    prompt: "Suffix array construction with sort-doubling — time complexity?"
+    answer: ["O(n log^2 n)", "O(n log n) with radix", "n log^2 n", "O(n log n)"]
+    type: open
+    explanation: "Sort-doubling is O(n log² n); with radix sort it becomes O(n log n). Linear-time constructions (DC3, SA-IS) also exist."
+
+  - id: trie_substring_idea
+    prompt: "Aho-Corasick augments a Trie with what extra structure to do multi-pattern matching in linear time?"
+    answer: ["failure links", "fail links", "suffix links"]
+    type: open
+    explanation: "Failure links (analogous to KMP's failure function) let the automaton fall back to the longest matched suffix that is still a prefix of some pattern."
+
+  - id: kmp_vs_z
+    prompt: "KMP's failure function and Z-array — what fundamental information do both encode?"
+    answer: ["prefix matches", "prefix-suffix overlaps", "longest prefix matches", "self-similarity of prefixes"]
+    type: open
+    explanation: "Both capture how much of a prefix re-appears starting at each position — KMP via 'longest proper prefix = suffix', Z directly via 'prefix match starting here'."
+
+  - id: choose_algorithm
+    prompt: "Pattern fixed, many texts to search. Best preprocessing?"
+    choices: ["preprocess each text", "preprocess the pattern (KMP/Z)", "build a suffix array of every text", "rolling hash with rebuild"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Pattern is fixed, so build its failure function once and reuse across all texts in O(n_text) each. Suffix arrays make sense only when the text is fixed and queries change."

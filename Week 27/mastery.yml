@@ -1,0 +1,47 @@
+week: 27
+title: Computational Geometry
+skills:
+  - id: cross_product_sign
+    prompt: "Cross product (B-A) x (C-A) > 0 means C is on which side of line AB?"
+    answer: ["left", "left side", "counterclockwise side", "ccw"]
+    type: open
+    explanation: "Positive cross product = counter-clockwise turn = C is to the LEFT of the directed line from A to B (in standard math axes)."
+
+  - id: orientation_test
+    prompt: "What three orientations can three points have, classified by cross-product sign?"
+    answer:
+      - "clockwise"
+      - "counter-clockwise"
+      - "collinear"
+    type: list
+    explanation: "Positive → CCW, negative → CW, zero → collinear. This single primitive underlies most geometry algorithms."
+
+  - id: convex_hull_complexity
+    prompt: "Convex hull of n points — best comparison-based complexity?"
+    answer: ["O(n log n)", "n log n", "logarithmic factor"]
+    type: open
+    explanation: "Graham scan and Andrew's monotone chain both run in O(n log n) due to the initial sort. Output-sensitive O(n h) algorithms exist (gift wrapping)."
+
+  - id: shoelace_idea
+    prompt: "The Shoelace formula computes what?"
+    answer: ["polygon area", "area of polygon", "signed area"]
+    type: open
+    explanation: "Σ (x_i * y_{i+1} - x_{i+1} * y_i) / 2 gives the signed area; sign reveals orientation."
+
+  - id: closest_pair_complexity
+    prompt: "Closest pair of points via divide-and-conquer — time complexity?"
+    answer: ["O(n log n)", "n log n", "O(nlogn)"]
+    type: open
+    explanation: "Divide by x-median, recurse on halves, merge with the 7-point strip trick. T(n) = 2T(n/2) + O(n)."
+
+  - id: line_segment_intersection
+    prompt: "Two segments AB and CD intersect iff their endpoints satisfy what orientation condition?"
+    answer: ["A,B on opposite sides of CD and C,D on opposite sides of AB", "different orientations on each side", "endpoints straddle each other", "opposite signs"]
+    type: open
+    explanation: "Use orientation: A and B must lie on opposite sides of line CD, AND C and D must lie on opposite sides of line AB. Plus collinear/touch edge cases."
+
+  - id: monotone_chain_advantage
+    prompt: "Why is Andrew's monotone chain often preferred over Graham scan in practice?"
+    answer: ["simpler implementation", "easier to code", "no angle sort needed", "sorts by x and y only", "fewer edge cases"]
+    type: open
+    explanation: "Sorts lexicographically by (x, y); no angle comparisons or pivot point. Two linear passes build upper and lower hulls."

@@ -1,0 +1,45 @@
+week: 13
+title: Queues
+skills:
+  - id: queue_order
+    prompt: "Queue is which ordering principle?"
+    answer: ["FIFO", "first in first out"]
+    type: open
+    explanation: "First-In-First-Out: enqueue at tail, dequeue at head."
+
+  - id: circular_queue_why
+    prompt: "Why does a circular queue beat a naive array-backed queue?"
+    answer: ["reuse slots", "no shifting", "wrap around", "O(1) enqueue and dequeue"]
+    type: open
+    explanation: "Wrapping around with modulo avoids shifting elements after dequeue, keeping both ops O(1)."
+
+  - id: deque_def
+    prompt: "What does 'deque' stand for?"
+    answer: ["double ended queue", "double-ended queue", "doubly ended queue"]
+    type: open
+    explanation: "Double-Ended Queue: supports O(1) push/pop at both ends."
+
+  - id: sliding_window_max
+    prompt: "Sliding-window maximum on an array of size n with window k — best time complexity?"
+    answer: ["O(n)", "linear", "amortized O(n)"]
+    type: open
+    explanation: "Monotonic deque solves it in O(n): each element is pushed and popped at most once."
+
+  - id: queue_from_two_stacks
+    prompt: "Implementing a queue with two stacks gives what amortized complexity per operation?"
+    answer: ["O(1) amortized", "amortized O(1)", "amortized constant"]
+    type: open
+    explanation: "Each element is moved between stacks at most twice; n ops cost O(n) total → O(1) amortized."
+
+  - id: bfs_uses_queue
+    prompt: "BFS uses which data structure to track the frontier?"
+    choices: ["stack", "queue", "priority queue", "set"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Queue maintains FIFO order, which is exactly what BFS needs to explore level-by-level."
+
+  - id: dq_kth_window
+    prompt: "In monotonic-deque sliding-window-max, the deque stores INDICES and is kept in what order of values?"
+    answer: ["decreasing", "non-increasing", "monotonically decreasing"]
+    type: open
+    explanation: "Front holds the index of the current window's max; values decrease toward the back."

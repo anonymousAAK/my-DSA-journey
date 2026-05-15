@@ -1,0 +1,45 @@
+week: 12
+title: Stacks
+skills:
+  - id: balanced_parens
+    prompt: "Is '({[]})' balanced? Reply true or false."
+    answer: "true"
+    type: string
+    explanation: "Push opens onto a stack, pop on close, mismatch or non-empty at end means unbalanced."
+
+  - id: next_greater_complexity
+    prompt: "Next-greater-element via monotonic stack — total time complexity for n elements?"
+    answer: ["O(n)", "linear", "amortized O(n)"]
+    type: open
+    explanation: "Each element is pushed and popped at most once → amortized O(n)."
+
+  - id: stack_pattern_recognition
+    prompt: "Which problem fits a STACK most naturally?"
+    choices: ["BFS of a tree", "Largest rectangle in histogram", "Top-K elements", "Detecting cycles in linked list"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Largest rectangle uses a monotonic increasing stack to find left/right boundaries in O(n)."
+
+  - id: postfix_eval
+    prompt: "Evaluate the postfix expression: 3 4 + 2 *"
+    answer: 14
+    type: numeric
+    explanation: "(3+4)*2 = 14. Push numbers, on operator pop two and push result."
+
+  - id: min_stack_idea
+    prompt: "Min-stack supports getMin() in O(1) by storing what alongside each value?"
+    answer: ["min so far", "current minimum", "running min", "min at the time of push"]
+    type: open
+    explanation: "Each stack entry stores (value, min-so-far). Pop and getMin remain O(1)."
+
+  - id: stack_overflow_cause
+    prompt: "What's the most common cause of unbounded stack growth in a recursive program?"
+    answer: ["missing base case", "no base case", "infinite recursion", "non-terminating recursion"]
+    type: open
+    explanation: "Recursion without (or with an unreachable) base case grows the call stack until it overflows."
+
+  - id: histogram_rect
+    prompt: "Histogram heights [2,1,5,6,2,3] — largest rectangle area?"
+    answer: 10
+    type: numeric
+    explanation: "Width 2 (indices 2..3) × height 5 = 10."

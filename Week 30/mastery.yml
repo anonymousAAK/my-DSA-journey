@@ -1,0 +1,58 @@
+week: 30
+title: Interview Patterns & Mastery
+skills:
+  - id: two_pointers_when
+    prompt: "Sorted array, find pair with given sum. Which pattern beats hashing in space?"
+    answer: ["two pointers", "two-pointer", "left and right pointers"]
+    type: open
+    explanation: "Two pointers from both ends → O(n) time, O(1) space. Hashing is O(n) time but O(n) space."
+
+  - id: sliding_window_signal
+    prompt: "Problem mentions 'longest/shortest contiguous subarray satisfying X'. Which pattern?"
+    answer: ["sliding window", "window", "two pointers sliding"]
+    type: open
+    explanation: "Sliding window: expand the right edge greedily, shrink the left when the constraint breaks."
+
+  - id: monotonic_stack_signal
+    prompt: "'Next greater element' or 'next smaller element' suggests which pattern?"
+    answer: ["monotonic stack", "stack", "monotone stack"]
+    type: open
+    explanation: "Monotonic stack: keep a stack in monotonic order; while top violates the invariant compared to the incoming element, pop and resolve those elements."
+
+  - id: top_k_signal
+    prompt: "'Top-K largest/smallest' or 'K-th frequent' suggests which structure?"
+    answer: ["heap", "priority queue", "min-heap of size k"]
+    type: open
+    explanation: "Maintain a min-heap of size k (or max-heap for K smallest). Quickselect is O(n) average if memory is tight."
+
+  - id: fast_slow_pointers_use
+    prompt: "Fast & slow pointers detect what in a linked list?"
+    answer: ["cycle", "loop", "middle", "cycle and middle"]
+    type: open
+    explanation: "Cycle detection (Floyd's) and finding the middle node — both in one pass with O(1) extra space."
+
+  - id: merge_intervals_sort
+    prompt: "Merge-intervals pattern: sort by what first?"
+    answer: ["start time", "start", "starting time", "left endpoint"]
+    type: open
+    explanation: "Sort by start time; iterate, merging when next.start ≤ current.end. (Greedy.)"
+
+  - id: graph_with_weights_signal
+    prompt: "'Shortest path with weights' on a positive-weight graph — which algorithm?"
+    choices: ["BFS", "Dijkstra", "DFS", "Floyd-Warshall"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Dijkstra for non-negative weights and single source. BFS is the unweighted special case."
+
+  - id: dp_signal
+    prompt: "Phrases like 'min/max number of ways' or 'count of...' suggest which paradigm?"
+    answer: ["DP", "dynamic programming", "memoization"]
+    type: open
+    explanation: "Counting and optimal-substructure problems are usually DP. Look for overlapping subproblems before committing."
+
+  - id: pattern_synthesis
+    prompt: "You see 'k-th smallest in a stream'. Best approach?"
+    choices: ["sort the stream each time", "maintain a max-heap of size k", "use a balanced BST of all elements", "binary search on values"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Max-heap of size k: heap root is the k-th smallest. Insert is O(log k); space O(k). Beats sorting every time and BST overhead."

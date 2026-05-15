@@ -1,0 +1,45 @@
+week: 1
+title: Java Fundamentals
+skills:
+  - id: int_div_truncation
+    prompt: "In Java/C++, what is the value of (5 / 2)?"
+    answer: 2
+    type: numeric
+    explanation: "Integer division truncates toward zero. To get 2.5 you must cast one operand to double."
+
+  - id: int_overflow_threshold
+    prompt: "Roughly above what magnitude does a 32-bit signed int overflow? (powers of 10 OK, e.g. 10^9)"
+    answer: ["2*10^9", "2.1*10^9", "2^31", "2147483647", "10^9"]
+    type: open
+    explanation: "Max int32 is 2^31 - 1 = 2,147,483,647. Use long for products that could exceed ~2e9."
+
+  - id: string_equality
+    prompt: "In Java, comparing two String objects with == checks what?"
+    answer: ["reference", "identity", "address", "pointer"]
+    type: open
+    explanation: "== compares references, not contents. Use .equals() for value equality."
+
+  - id: typecast_loss
+    prompt: "(int)(3.99) evaluates to what?"
+    answer: 3
+    type: numeric
+    explanation: "Casting double to int truncates toward zero; it does NOT round."
+
+  - id: scanner_newline_gotcha
+    prompt: "After calling sc.nextInt(), the very next sc.nextLine() often returns what?"
+    answer: ["empty string", "empty", "blank", "newline", "\"\""]
+    type: open
+    explanation: "nextInt() leaves the trailing newline in the buffer, so nextLine() consumes it as an empty line."
+
+  - id: pick_type_for_age
+    prompt: "Which primitive type best stores a person's age in years?"
+    choices: ["byte", "int", "double", "String"]
+    answer: 1
+    type: multiple_choice
+    explanation: "int is the idiomatic default for whole numbers. byte works but is rarely worth the friction."
+
+  - id: arithmetic_eval
+    prompt: "Compute: 7 % 3 + 7 / 3 (integer arithmetic)."
+    answer: 3
+    type: numeric
+    explanation: "7 % 3 = 1, 7 / 3 = 2, total = 3."

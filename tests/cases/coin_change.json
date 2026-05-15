@@ -1,0 +1,13 @@
+{
+  "topic": "coin_change",
+  "week": 18,
+  "function": "coinChange",
+  "cases": [
+    {"name": "classic",        "input": [[1, 2, 5], 11], "expected": 3},
+    {"name": "impossible",     "input": [[2], 3],        "expected": -1, "adversarial": true},
+    {"name": "zero_amount",    "input": [[1], 0],        "expected": 0,  "edge": true},
+    {"name": "single_coin",    "input": [[5], 25],       "expected": 5},
+    {"name": "duplicate_coins","input": [[2, 3, 5, 10], 18], "expected": 3},
+    {"name": "stress_medium",  "input": [[1, 2, 5, 10, 20, 50], 137], "expected": 6, "stretch": true}
+  ]
+}

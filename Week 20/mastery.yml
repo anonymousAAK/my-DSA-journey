@@ -1,0 +1,47 @@
+week: 20
+title: Backtracking
+skills:
+  - id: backtracking_template
+    prompt: "The classic backtracking pseudocode has which three steps inside the loop?"
+    answer:
+      - "choose"
+      - "explore"
+      - "unchoose"
+    type: list
+    explanation: "Choose a candidate, recurse (explore), then undo the choice (unchoose / backtrack)."
+
+  - id: nqueens_4_solutions
+    prompt: "How many solutions does the 4-Queens problem have?"
+    answer: 2
+    type: numeric
+    explanation: "Two distinct placements on a 4x4 board. 8-Queens has 92."
+
+  - id: subset_count
+    prompt: "Number of subsets of a set with 5 elements?"
+    answer: 32
+    type: numeric
+    explanation: "2^n. Each element is either in or out. 2^5 = 32."
+
+  - id: permutations_count
+    prompt: "Number of permutations of [1,2,3,4]?"
+    answer: 24
+    type: numeric
+    explanation: "n! = 4! = 24."
+
+  - id: pruning_importance
+    prompt: "Why is pruning critical in backtracking?"
+    answer: ["avoid exponential blowup", "cut search space", "reduce branches", "skip infeasible", "prevents exponential cost"]
+    type: open
+    explanation: "Backtracking is worst-case exponential; aggressive pruning (constraint propagation, bounds) is what makes problems like N-Queens or Sudoku tractable."
+
+  - id: backtrack_vs_dp
+    prompt: "Backtracking with overlapping subproblems is essentially what?"
+    answer: ["DP", "dynamic programming", "memoized recursion", "DP via memoization"]
+    type: open
+    explanation: "Once you notice the same state recurs, memoize it — backtracking becomes top-down DP."
+
+  - id: word_search_neighbors
+    prompt: "Word Search on a grid: how many neighbors per cell are explored?"
+    answer: 4
+    type: numeric
+    explanation: "Up, down, left, right. Diagonals would make 8 — but standard Word Search uses 4."

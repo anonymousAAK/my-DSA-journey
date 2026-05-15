@@ -1,0 +1,56 @@
+week: 10
+title: 2D Arrays & Matrix
+skills:
+  - id: traverse_complexity
+    prompt: "Time complexity to traverse an m x n matrix once?"
+    answer: ["O(m*n)", "O(mn)", "O(m n)", "m*n"]
+    type: open
+    explanation: "Every cell is visited exactly once."
+
+  - id: transpose_swap
+    prompt: "When transposing a square matrix in place, which indices do you swap (and what's the range to avoid double-swapping)?"
+    answer: ["i<j", "upper triangle", "lower triangle", "swap a[i][j] with a[j][i]"]
+    type: open
+    explanation: "Iterate i from 0 to n and j from i+1 to n, swapping a[i][j] with a[j][i]. Visiting all (i,j) pairs would undo the swap."
+
+  - id: rotate_90_decomp
+    prompt: "Rotate matrix 90° clockwise in place. Decomposition?"
+    answer: ["transpose then reverse rows", "transpose + reverse rows", "transpose then reverse each row"]
+    type: open
+    explanation: "Transpose, then reverse each row. For 90° counter-clockwise, reverse rows first then transpose (or transpose then reverse columns)."
+
+  - id: spiral_order_first
+    prompt: "Spiral traversal of [[1,2,3],[4,5,6],[7,8,9]] — first six elements?"
+    answer:
+      - "1"
+      - "2"
+      - "3"
+      - "6"
+      - "9"
+      - "8"
+    type: list
+    explanation: "Top row → right col → bottom row reversed → left col reversed → inward. 1,2,3,6,9,8,7,4,5."
+
+  - id: search_sorted_matrix
+    prompt: "Matrix is sorted row-wise AND column-wise. Best search complexity, no need for binary search?"
+    answer: ["O(m+n)", "O(m + n)", "linear in m+n"]
+    type: open
+    explanation: "Start at top-right (or bottom-left): if cell > target go left, if < target go down. Eliminates one row or column per step."
+
+  - id: pascal_row
+    prompt: "What is row 4 of Pascal's triangle (0-indexed top row is [1])?"
+    answer:
+      - "1"
+      - "4"
+      - "6"
+      - "4"
+      - "1"
+    type: list
+    explanation: "Row n has entries C(n, k) for k=0..n. Row 4: 1,4,6,4,1."
+
+  - id: row_major_layout
+    prompt: "In a row-major language (Java/C++), which traversal order is more cache-friendly?"
+    choices: ["column-by-column", "row-by-row", "diagonal", "spiral"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Row-by-row reads contiguous memory and is cache-friendly. Column-by-column thrashes."

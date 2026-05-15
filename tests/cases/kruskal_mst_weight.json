@@ -1,0 +1,16 @@
+{
+  "topic": "kruskal_mst_weight",
+  "week": 22,
+  "function": "kruskalMST",
+  "cases": [
+    {"name": "four_nodes",
+     "input": [4, [[0, 1, 4], [0, 2, 3], [1, 2, 1], [1, 3, 2], [2, 3, 4]]],
+     "expected": 6},
+    {"name": "five_nodes",
+     "input": [5, [[0, 1, 2], [0, 3, 6], [1, 2, 3], [1, 3, 8], [1, 4, 5], [2, 4, 7], [3, 4, 9]]],
+     "expected": 16},
+    {"name": "trivial_chain",
+     "input": [3, [[0, 1, 1], [1, 2, 2], [0, 2, 5]]],
+     "expected": 3, "edge": true}
+  ]
+}

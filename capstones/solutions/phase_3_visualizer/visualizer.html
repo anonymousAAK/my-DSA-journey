@@ -1,0 +1,385 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Phase 3 — Tree &amp; Heap Visualizer</title>
+<style>
+  body { font: 14px/1.4 system-ui, sans-serif; margin: 20px; color: #222; }
+  h1 { font-size: 18px; margin: 0 0 8px 0; }
+  .toolbar { margin-bottom: 8px; }
+  .toolbar button, .toolbar input, .toolbar select {
+    font: inherit; padding: 4px 8px; margin-right: 4px;
+  }
+  #stage { border: 1px solid #ccc; background: #fafafa; }
+  .node circle { fill: #fff; stroke: #333; stroke-width: 1.5; }
+  .node.highlight circle { fill: #ffd166; }
+  .node.compare circle { fill: #a3d9ff; }
+  .node text { text-anchor: middle; dominant-baseline: central; font-size: 12px; }
+  .edge { stroke: #777; stroke-width: 1.2; fill: none; }
+  #log { font-family: ui-monospace, monospace; font-size: 12px;
+         border: 1px solid #ddd; padding: 6px; height: 120px; overflow-y: auto;
+         background: #fff; margin-top: 8px; }
+</style>
+</head>
+<body>
+<h1>Tree &amp; Heap Visualizer</h1>
+<div class="toolbar">
+  <select id="mode">
+    <option value="bst">BST</option>
+    <option value="minheap">Min-Heap</option>
+  </select>
+  <input id="value" type="number" value="10" style="width:6em">
+  <button id="insertBtn">Insert</button>
+  <button id="deleteBtn">Delete</button>
+  <button id="extractBtn">Extract root (heap)</button>
+  <button id="heapifyBtn">Heapify random array</button>
+  <button id="clearBtn">Clear</button>
+  <label style="margin-left:8px">speed
+    <input id="speed" type="range" min="50" max="800" value="300" step="50"></label>
+</div>
+<svg id="stage" width="900" height="420"></svg>
+<div id="log"></div>
+
+<script>
+'use strict';
+
+/* -----------------------------------------------------------------------
+ * Event bus. Data structures publish operation events; the renderer
+ * subscribes. Neither knows about the other.
+ * --------------------------------------------------------------------- */
+const Bus = (() => {
+  const subs = [];
+  return {
+    on:  (fn) => subs.push(fn),
+    emit:(ev) => subs.forEach(fn => fn(ev)),
+  };
+})();
+
+function log(msg) {
+  const el = document.getElementById('log');
+  el.innerHTML += msg + '<br>';
+  el.scrollTop = el.scrollHeight;
+}
+
+/* -----------------------------------------------------------------------
+ * BST. Each operation emits a sequence of events for animation:
+ *   {type:'compare', id} | {type:'insert', id, value} | {type:'delete', id}
+ * --------------------------------------------------------------------- */
+let __id = 0;
+const newId = () => ++__id;
+
+class BST {
+  constructor() { this.root = null; }
+
+  insert(value) {
+    const events = [];
+    if (!this.root) {
+      this.root = { id: newId(), value, left: null, right: null };
+      events.push({type:'insert', id: this.root.id, value});
+      return events;
+    }
+    let cur = this.root;
+    while (true) {
+      events.push({type:'compare', id: cur.id});
+      if (value < cur.value) {
+        if (cur.left) { cur = cur.left; continue; }
+        cur.left = { id: newId(), value, left: null, right: null };
+        events.push({type:'insert', id: cur.left.id, value});
+        return events;
+      } else if (value > cur.value) {
+        if (cur.right) { cur = cur.right; continue; }
+        cur.right = { id: newId(), value, left: null, right: null };
+        events.push({type:'insert', id: cur.right.id, value});
+        return events;
+      } else {
+        // duplicate; ignore
+        return events;
+      }
+    }
+  }
+
+  delete(value) {
+    const events = [];
+    const [newRoot] = this._delete(this.root, value, events);
+    this.root = newRoot;
+    return events;
+  }
+  _delete(node, value, events) {
+    if (!node) return [null, false];
+    events.push({type:'compare', id: node.id});
+    if (value < node.value) {
+      const [l, ok] = this._delete(node.left, value, events);
+      node.left = l;
+      return [node, ok];
+    } else if (value > node.value) {
+      const [r, ok] = this._delete(node.right, value, events);
+      node.right = r;
+      return [node, ok];
+    } else {
+      events.push({type:'delete', id: node.id});
+      if (!node.left)  return [node.right, true];
+      if (!node.right) return [node.left,  true];
+      // find min of right subtree
+      let succParent = node, succ = node.right;
+      while (succ.left) { succParent = succ; succ = succ.left; }
+      node.value = succ.value;
+      if (succParent === node) succParent.right = succ.right;
+      else succParent.left = succ.right;
+      events.push({type:'delete', id: succ.id});
+      return [node, true];
+    }
+  }
+
+  inorder() {
+    const out = []; const walk = n => { if (!n) return; walk(n.left); out.push(n.value); walk(n.right); };
+    walk(this.root); return out;
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Min-heap, array-backed. Emits compare/swap events.
+ * --------------------------------------------------------------------- */
+class MinHeap {
+  constructor() { this.arr = []; this.ids = []; }
+
+  size() { return this.arr.length; }
+
+  insert(value) {
+    const events = [];
+    this.arr.push(value);
+    const id = newId();
+    this.ids.push(id);
+    events.push({type:'insert', id, value, index: this.arr.length - 1});
+    let i = this.arr.length - 1;
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      events.push({type:'compare', id: this.ids[i]});
+      events.push({type:'compare', id: this.ids[p]});
+      if (this.arr[i] < this.arr[p]) {
+        [this.arr[i], this.arr[p]] = [this.arr[p], this.arr[i]];
+        [this.ids[i], this.ids[p]] = [this.ids[p], this.ids[i]];
+        events.push({type:'swap', a: this.ids[i], b: this.ids[p]});
+        i = p;
+      } else break;
+    }
+    return events;
+  }
+
+  extractMin() {
+    const events = [];
+    if (!this.arr.length) return events;
+    events.push({type:'delete', id: this.ids[0]});
+    const lastVal = this.arr.pop();
+    const lastId = this.ids.pop();
+    if (this.arr.length) {
+      this.arr[0] = lastVal;
+      this.ids[0] = lastId;
+      let i = 0;
+      while (true) {
+        const l = 2*i + 1, r = 2*i + 2;
+        let best = i;
+        if (l < this.arr.length) {
+          events.push({type:'compare', id: this.ids[l]});
+          if (this.arr[l] < this.arr[best]) best = l;
+        }
+        if (r < this.arr.length) {
+          events.push({type:'compare', id: this.ids[r]});
+          if (this.arr[r] < this.arr[best]) best = r;
+        }
+        if (best === i) break;
+        [this.arr[i], this.arr[best]] = [this.arr[best], this.arr[i]];
+        [this.ids[i], this.ids[best]] = [this.ids[best], this.ids[i]];
+        events.push({type:'swap', a: this.ids[i], b: this.ids[best]});
+        i = best;
+      }
+    }
+    return events;
+  }
+
+  heapifyFrom(values) {
+    this.arr = values.slice();
+    this.ids = values.map(() => newId());
+    const events = values.map((v, idx) => ({type:'insert', id: this.ids[idx], value: v, index: idx}));
+    for (let i = (this.arr.length >> 1) - 1; i >= 0; i--) {
+      let k = i;
+      while (true) {
+        const l = 2*k + 1, r = 2*k + 2;
+        let best = k;
+        if (l < this.arr.length && this.arr[l] < this.arr[best]) best = l;
+        if (r < this.arr.length && this.arr[r] < this.arr[best]) best = r;
+        if (best === k) break;
+        [this.arr[k], this.arr[best]] = [this.arr[best], this.arr[k]];
+        [this.ids[k], this.ids[best]] = [this.ids[best], this.ids[k]];
+        events.push({type:'swap', a: this.ids[k], b: this.ids[best]});
+        k = best;
+      }
+    }
+    return events;
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Renderer. Given the current data structure, lays out nodes and draws
+ * SVG. Animation is driven by playing events with a delay between each.
+ * --------------------------------------------------------------------- */
+const stage = document.getElementById('stage');
+
+function clearStage() {
+  while (stage.firstChild) stage.removeChild(stage.firstChild);
+}
+
+function svgEl(tag, attrs = {}) {
+  const e = document.createElementNS('http://www.w3.org/2000/svg', tag);
+  for (const k in attrs) e.setAttribute(k, attrs[k]);
+  return e;
+}
+
+function layoutBST(root) {
+  // Standard in-order x positions; depth-based y.
+  const positions = new Map(); // id -> {x, y, value}
+  const edges = [];
+  let counter = 0;
+  function walk(node, depth) {
+    if (!node) return;
+    walk(node.left, depth + 1);
+    counter += 1;
+    positions.set(node.id, { x: counter, y: depth, value: node.value });
+    if (node.left)  edges.push([node.id, node.left.id]);
+    if (node.right) edges.push([node.id, node.right.id]);
+    walk(node.right, depth + 1);
+  }
+  walk(root, 0);
+  return { positions, edges, columns: counter };
+}
+
+function layoutHeap(arr, ids) {
+  const positions = new Map();
+  const edges = [];
+  if (!arr.length) return { positions, edges, columns: 0 };
+  const depth = Math.floor(Math.log2(arr.length)) + 1;
+  const cols = Math.pow(2, depth - 1);
+  for (let i = 0; i < arr.length; i++) {
+    const lvl = Math.floor(Math.log2(i + 1));
+    const lvlNodes = Math.pow(2, lvl);
+    const indexInLevel = i - (lvlNodes - 1);
+    const span = cols / lvlNodes;
+    const x = span * indexInLevel + span / 2;
+    positions.set(ids[i], { x, y: lvl, value: arr[i] });
+    if (i > 0) edges.push([ids[(i - 1) >> 1], ids[i]]);
+  }
+  return { positions, edges, columns: cols };
+}
+
+function render(layout, highlight = new Set(), comparing = new Set()) {
+  clearStage();
+  const W = stage.getAttribute('width');
+  const H = stage.getAttribute('height');
+  const cols = Math.max(layout.columns, 1);
+  const rows = Math.max(
+    1 + (layout.positions.size
+      ? Math.max(...[...layout.positions.values()].map(p => p.y))
+      : 0),
+    1);
+  const dx = (W - 60) / (cols + 1);
+  const dy = Math.min(70, (H - 60) / Math.max(rows, 1));
+
+  for (const [a, b] of layout.edges) {
+    const pa = layout.positions.get(a), pb = layout.positions.get(b);
+    const line = svgEl('line', {
+      class: 'edge',
+      x1: 30 + pa.x * dx, y1: 30 + pa.y * dy,
+      x2: 30 + pb.x * dx, y2: 30 + pb.y * dy,
+    });
+    stage.appendChild(line);
+  }
+  for (const [id, p] of layout.positions) {
+    const g = svgEl('g', { class: 'node' + (highlight.has(id) ? ' highlight' : (comparing.has(id) ? ' compare' : '')) });
+    const cx = 30 + p.x * dx, cy = 30 + p.y * dy;
+    g.appendChild(svgEl('circle', { cx, cy, r: 16 }));
+    const t = svgEl('text', { x: cx, y: cy });
+    t.textContent = p.value;
+    g.appendChild(t);
+    stage.appendChild(g);
+  }
+}
+
+/* -----------------------------------------------------------------------
+ * Driver: takes events from a data structure op and animates them.
+ * --------------------------------------------------------------------- */
+let currentMode = 'bst';
+let bst = new BST();
+let heap = new MinHeap();
+
+function snapshotLayout() {
+  return currentMode === 'bst' ? layoutBST(bst.root) : layoutHeap(heap.arr, heap.ids);
+}
+
+function delay() { return parseInt(document.getElementById('speed').value, 10); }
+
+async function play(events, opLabel) {
+  log(`> ${opLabel} — ${events.length} step(s)`);
+  for (const ev of events) {
+    const layout = snapshotLayout();
+    if (ev.type === 'compare') {
+      render(layout, new Set(), new Set([ev.id]));
+    } else if (ev.type === 'insert') {
+      render(layout, new Set([ev.id]));
+    } else if (ev.type === 'delete') {
+      render(layout, new Set([ev.id]));
+    } else if (ev.type === 'swap') {
+      render(layout, new Set([ev.a, ev.b]));
+    }
+    await new Promise(r => setTimeout(r, delay()));
+  }
+  render(snapshotLayout());
+}
+
+/* -----------------------------------------------------------------------
+ * Wiring
+ * --------------------------------------------------------------------- */
+document.getElementById('mode').addEventListener('change', e => {
+  currentMode = e.target.value;
+  bst = new BST();
+  heap = new MinHeap();
+  render(snapshotLayout());
+});
+document.getElementById('insertBtn').addEventListener('click', async () => {
+  const v = parseInt(document.getElementById('value').value, 10);
+  if (Number.isNaN(v)) return;
+  const events = currentMode === 'bst' ? bst.insert(v) : heap.insert(v);
+  await play(events, `insert ${v}`);
+});
+document.getElementById('deleteBtn').addEventListener('click', async () => {
+  const v = parseInt(document.getElementById('value').value, 10);
+  if (Number.isNaN(v)) return;
+  if (currentMode === 'bst') {
+    await play(bst.delete(v), `delete ${v}`);
+  } else {
+    log('delete by value not supported on heap; use extract root');
+  }
+});
+document.getElementById('extractBtn').addEventListener('click', async () => {
+  if (currentMode !== 'minheap') { log('extract is heap-only'); return; }
+  await play(heap.extractMin(), 'extract min');
+});
+document.getElementById('heapifyBtn').addEventListener('click', async () => {
+  if (currentMode !== 'minheap') { log('heapify is heap-only'); return; }
+  const vals = Array.from({length: 10}, () => Math.floor(Math.random() * 99));
+  heap = new MinHeap();
+  await play(heap.heapifyFrom(vals), `heapify ${vals.join(',')}`);
+});
+document.getElementById('clearBtn').addEventListener('click', () => {
+  bst = new BST(); heap = new MinHeap();
+  render(snapshotLayout());
+  log('cleared');
+});
+
+/* Demo: build a small BST so the page isn't empty on load. */
+(async () => {
+  for (const v of [50, 30, 70, 20, 40, 60, 80]) bst.insert(v);
+  render(snapshotLayout());
+  log('demo BST loaded: 50, 30, 70, 20, 40, 60, 80');
+})();
+</script>
+</body>
+</html>

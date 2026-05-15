@@ -1,0 +1,47 @@
+week: 23
+title: Advanced Dynamic Programming
+skills:
+  - id: bitmask_dp_state_count
+    prompt: "Bitmask DP over n elements (n=20) — how many subset states?"
+    answer: 1048576
+    type: numeric
+    explanation: "2^20 = 1,048,576. Combined with a transition factor (often n) → ~n·2^n ≈ 2·10^7 — feasible."
+
+  - id: bitmask_dp_n_limit
+    prompt: "Practical upper bound of n for bitmask DP (in seconds)?"
+    answer: ["20", "around 20", "20 to 22", "n ~ 20"]
+    type: open
+    explanation: "2^n blows up quickly. n ≤ 20 is the rough comfort zone; n=24 still possible with heavy constant-factor work."
+
+  - id: dp_on_trees_pattern
+    prompt: "DP on trees typically computes answers by what traversal order?"
+    answer: ["post-order", "postorder", "children before parents", "bottom-up"]
+    type: open
+    explanation: "Compute child DP states first, then combine into the parent. Naturally a post-order recursion."
+
+  - id: interval_dp_complexity
+    prompt: "Standard interval DP over n elements (e.g. matrix chain multiplication) — time complexity?"
+    answer: ["O(n^3)", "O(n³)", "cubic", "n cubed"]
+    type: open
+    explanation: "States are O(n²) intervals; each transition picks a split point in O(n). Total n³."
+
+  - id: digit_dp_state
+    prompt: "Digit DP commonly uses which state fields besides the current position?"
+    answer:
+      - "tight"
+      - "leading zero"
+      - "digit sum or related"
+    type: list
+    explanation: "'tight' tracks whether you're still bounded by the input's prefix; 'leading-zero' handles numbers with fewer digits; plus a problem-specific accumulator."
+
+  - id: convex_hull_trick_idea
+    prompt: "Convex hull trick optimizes a transition of the form dp[i] = min_j (a_j * x_i + b_j). What's the underlying object maintained?"
+    answer: ["lower envelope", "hull of lines", "convex hull of lines", "set of optimal lines"]
+    type: open
+    explanation: "Maintain the lower envelope of lines so that for any x you can query the minimum value in O(log n) (or O(1) amortized for monotone queries)."
+
+  - id: divide_conquer_opt_condition
+    prompt: "Divide-and-conquer DP optimization applies when the optimal split point is what?"
+    answer: ["monotone", "monotonic in i", "non-decreasing", "monotone in the boundary"]
+    type: open
+    explanation: "If opt(i, j) is monotone in i for fixed j, you can divide and conquer to reduce a transition layer from O(n²) to O(n log n)."

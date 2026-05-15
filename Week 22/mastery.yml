@@ -1,0 +1,54 @@
+week: 22
+title: Advanced Graph Algorithms
+skills:
+  - id: dijkstra_complexity
+    prompt: "Dijkstra with a binary-heap priority queue — time complexity on graph (V, E)?"
+    answer: ["O((V+E) log V)", "O(E log V)", "(V+E) log V"]
+    type: open
+    explanation: "Each edge relaxed at most once with a heap operation; V extractions plus up to E decrease-keys."
+
+  - id: dijkstra_negative_edge
+    prompt: "What happens if Dijkstra is run on a graph with negative-weight edges?"
+    answer: ["incorrect", "wrong", "fails", "may produce wrong answer", "incorrect results"]
+    type: open
+    explanation: "Dijkstra's greedy 'extract min and finalize' assumes non-negative edges. Negative edges can update an already-finalized vertex, breaking correctness."
+
+  - id: bellman_ford_complexity
+    prompt: "Bellman-Ford time complexity?"
+    answer: ["O(V*E)", "O(VE)", "V times E"]
+    type: open
+    explanation: "V−1 passes, each relaxes all E edges. Handles negative weights and detects negative cycles in an extra pass."
+
+  - id: floyd_warshall_complexity
+    prompt: "Floyd-Warshall all-pairs shortest paths complexity?"
+    answer: ["O(V^3)", "V^3", "V cubed", "O(V³)"]
+    type: open
+    explanation: "Three nested loops over V vertices. Memory O(V²)."
+
+  - id: union_find_op
+    prompt: "Amortized complexity of Union-Find with path compression and union by rank?"
+    answer: ["O(alpha(n))", "almost constant", "inverse Ackermann", "alpha", "amortized O(α(n))"]
+    type: open
+    explanation: "α(n) (inverse Ackermann) — < 5 for any practical n. Effectively constant."
+
+  - id: kruskal_vs_prim
+    prompt: "Kruskal uses which auxiliary data structure?"
+    choices: ["priority queue", "union-find / DSU", "stack", "trie"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Sort edges; for each, union endpoints if different components (DSU detects cycles). Prim's uses a priority queue instead."
+
+  - id: scc_algorithms
+    prompt: "Name two algorithms that compute strongly connected components."
+    answer:
+      - "kosaraju"
+      - "tarjan"
+    type: list
+    explanation: "Kosaraju: DFS, reverse graph, DFS in finish order. Tarjan: single DFS with low-link values."
+
+  - id: shortest_path_choice
+    prompt: "You need shortest paths on a 10^6-node road network with non-negative weights. Best algorithm?"
+    choices: ["Floyd-Warshall", "Bellman-Ford", "Dijkstra with heap", "BFS"]
+    answer: 2
+    type: multiple_choice
+    explanation: "Dijkstra. Floyd-Warshall is O(V³) — infeasible. Bellman-Ford is needed only for negative weights."

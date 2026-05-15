@@ -1,0 +1,48 @@
+week: 6
+title: Arrays
+skills:
+  - id: kadane_basic
+    prompt: "Given [-2,1,-3,4,-1,2,1,-5,4], return the maximum subarray sum."
+    answer: 6
+    type: numeric
+    explanation: "Kadane: running sum, reset to 0 when negative, track max. Subarray [4,-1,2,1] = 6."
+
+  - id: kadane_all_negative
+    prompt: "Apply Kadane to [-3, -1, -2]. What's the max subarray sum?"
+    answer: -1
+    type: numeric
+    explanation: "When ALL negative, the answer is the single largest (least negative) element. Watch out — the 'reset to 0' Kadane variant returns 0 wrongly; use the max-over-current-sum form."
+
+  - id: dutch_flag_idea
+    prompt: "What's the invariant in Dutch National Flag (3-way partition)?"
+    answer:
+      - "everything before low is 0"
+      - "everything between low and mid is 1"
+      - "everything after high is 2"
+    type: list
+    explanation: "Three pointers maintain three regions; mid scans, swapping into low/high zones."
+
+  - id: prefix_sum_use
+    prompt: "Name one problem where a prefix sum array gives you O(1) range queries."
+    answer: ["range sum", "subarray sum equals k", "running average", "range query"]
+    type: open
+    explanation: "Any cumulative aggregate makes range queries O(1) after O(N) preprocessing."
+
+  - id: rotate_complexity
+    prompt: "In-place array rotation by k via the three-reverse trick. Time and space complexity?"
+    answer: ["O(n) time O(1) space", "O(n), O(1)", "linear time constant space"]
+    type: open
+    explanation: "Reverse whole, reverse first k, reverse last n-k. Three linear passes, no extra array."
+
+  - id: missing_number_xor
+    prompt: "Array of n distinct numbers from 0..n with one missing. Apart from sum-formula, what trick finds it in O(n) and O(1) without overflow risk?"
+    answer: ["xor", "XOR", "bitwise xor", "exclusive or"]
+    type: open
+    explanation: "XOR all values and all indices; pairs cancel, leaving the missing number. No overflow because XOR never grows."
+
+  - id: scale_choice
+    prompt: "You have 10^9 elements in a stream and need to know the running max. Which approach fits?"
+    choices: ["sort and take last", "single pass tracking current max", "build heap", "binary search"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Single O(n) pass with one running variable — O(1) extra space. Sort is O(n log n) and needs all elements in memory."

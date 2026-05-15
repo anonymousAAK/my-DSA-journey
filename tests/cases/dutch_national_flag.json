@@ -1,0 +1,12 @@
+{
+  "topic": "dutch_national_flag",
+  "week": 6,
+  "function": "dutchFlag",
+  "cases": [
+    {"name": "basic",        "input": [[2, 0, 2, 1, 1, 0]], "expected": [0, 0, 1, 1, 2, 2]},
+    {"name": "already_sorted","input": [[0, 0, 1, 1, 2, 2]], "expected": [0, 0, 1, 1, 2, 2]},
+    {"name": "reversed",     "input": [[2, 2, 2, 1, 1, 0, 0, 0]], "expected": [0, 0, 0, 1, 1, 2, 2, 2]},
+    {"name": "single",       "input": [[1]], "expected": [1], "edge": true},
+    {"name": "empty",        "input": [[]], "expected": [], "edge": true}
+  ]
+}

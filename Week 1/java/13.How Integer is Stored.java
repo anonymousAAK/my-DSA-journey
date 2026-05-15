@@ -27,10 +27,10 @@ a) How are integers stored ?
 
 The most commonly used integer type is int which is a signed 32-bit type. When you store an integer, its corresponding binary value is stored. The way
 integers are stored differs for negative and positive numbers. For positive numbers the integral value is simple converted into binary value and for negative
-numbers their 2’s compliment form is stored.
+numbers their 2's compliment form is stored.
 
 
-Let’s discuss How are Negative Numbers Stored?
+Let's discuss How are Negative Numbers Stored?
 
 
 Computers use 2's complement in representing signed integers because:
@@ -43,7 +43,7 @@ Example:   */
 int i = -4;
 
 /*
-Steps to calculate Two’s Complement of -4 are as follows:
+Steps to calculate Two's Complement of -4 are as follows:
 
 Step 1: Take Binary Equivalent of the positive value (4 in this case)
 0000 0000 0000 0000 0000 0000 0000 0100

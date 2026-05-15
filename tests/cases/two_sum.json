@@ -1,0 +1,13 @@
+{
+  "topic": "two_sum",
+  "week": 16,
+  "function": "twoSum",
+  "cases": [
+    {"name": "leetcode_1",    "input": [[2, 7, 11, 15], 9], "expected": [0, 1]},
+    {"name": "middle_pair",   "input": [[3, 2, 4], 6], "expected": [1, 2]},
+    {"name": "duplicates_self","input": [[3, 3], 6], "expected": [0, 1], "adversarial": true},
+    {"name": "with_negatives","input": [[-1, -2, -3, -4, -5], -8], "expected": [2, 4]},
+    {"name": "no_match",      "input": [[1, 2, 3, 4], 100], "expected": [-1, -1], "edge": true},
+    {"name": "first_with_last","input": [[5, 0, 0, 0, 0, 5], 10], "expected": [0, 5]}
+  ]
+}

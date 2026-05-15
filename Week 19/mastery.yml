@@ -1,0 +1,45 @@
+week: 19
+title: Greedy Algorithms
+skills:
+  - id: activity_selection_sort
+    prompt: "Activity-selection greedy: sort intervals by what field?"
+    answer: ["end time", "finish time", "ending time", "earliest end"]
+    type: open
+    explanation: "Picking the activity that finishes earliest leaves max room for the rest. Proof: exchange argument."
+
+  - id: greedy_vs_dp_difference
+    prompt: "Why does greedy sometimes fail where DP succeeds?"
+    answer: ["local choice not optimal", "no global view", "local optimum not global", "needs to revisit choices"]
+    type: open
+    explanation: "Greedy commits to the locally best option; if local optima don't compose into the global optimum it fails. DP explores all subproblem combinations."
+
+  - id: fractional_vs_01
+    prompt: "Which knapsack is solvable by greedy?"
+    choices: ["0/1 knapsack", "Fractional knapsack", "Bounded knapsack", "Multi-dimensional knapsack"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Fractional allows splitting items, so sorting by value/weight greedily is optimal. 0/1 doesn't allow splitting and needs DP."
+
+  - id: huffman_property
+    prompt: "Huffman coding produces codes that are what (so decoding is unambiguous)?"
+    answer: ["prefix free", "prefix-free", "no code is prefix of another", "prefix codes"]
+    type: open
+    explanation: "Prefix-free codes mean no codeword is a prefix of another — decoding is unique left-to-right."
+
+  - id: gas_station_idea
+    prompt: "Gas Station problem (LeetCode 134): if total gas >= total cost, what's a quick rule to locate a valid start?"
+    answer: ["start after the last deficit", "reset to next station when tank goes negative", "restart from the station after the failure point"]
+    type: open
+    explanation: "Walk through; whenever tank goes negative reset start to next index. One pass, O(n)."
+
+  - id: coin_change_greedy_fail
+    prompt: "For coins=[1,3,4] target=6, greedy picks 4+1+1=3 coins. What's the optimal?"
+    answer: 2
+    type: numeric
+    explanation: "Two coins of 3. Greedy fails here — coin denominations [1,3,4] aren't a 'canonical' system. DP is required in general."
+
+  - id: greedy_proof_idea
+    prompt: "Common technique for proving a greedy algorithm correct?"
+    answer: ["exchange argument", "exchange", "swap argument", "matroid", "stay ahead"]
+    type: open
+    explanation: "Exchange (swap) argument: show that any optimal solution can be transformed into the greedy solution without losing optimality."

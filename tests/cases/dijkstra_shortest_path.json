@@ -1,0 +1,19 @@
+{
+  "topic": "dijkstra_shortest_path",
+  "week": 22,
+  "function": "dijkstra",
+  "cases": [
+    {"name": "classic_five",
+     "input": [5, [[0, 1, 4], [0, 2, 1], [2, 1, 2], [1, 3, 1], [2, 3, 5], [3, 4, 3]], 0],
+     "expected": [0, 3, 1, 4, 7]},
+    {"name": "disconnected",
+     "input": [4, [[0, 1, 1], [2, 3, 1]], 0],
+     "expected": [0, 1, -1, -1], "edge": true},
+    {"name": "single_vertex",
+     "input": [1, [], 0],
+     "expected": [0], "edge": true},
+    {"name": "wikipedia_example",
+     "input": [6, [[0, 1, 7], [0, 2, 9], [0, 5, 14], [1, 2, 10], [1, 3, 15], [2, 3, 11], [2, 5, 2], [3, 4, 6], [4, 5, 9]], 0],
+     "expected": [0, 7, 9, 20, 20, 11]}
+  ]
+}

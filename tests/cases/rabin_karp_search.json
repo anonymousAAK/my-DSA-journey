@@ -1,0 +1,12 @@
+{
+  "topic": "rabin_karp_search",
+  "week": 25,
+  "function": "rabinKarpSearch",
+  "cases": [
+    {"name": "single_match",      "input": ["ABABDABACDABABCABAB", "ABABCABAB"], "expected": [10]},
+    {"name": "overlapping",       "input": ["AAAAAA", "AAA"], "expected": [0, 1, 2, 3], "adversarial": true},
+    {"name": "no_match",          "input": ["hello", "xyz"], "expected": []},
+    {"name": "pattern_too_long",  "input": ["hi", "hello"], "expected": [], "edge": true},
+    {"name": "internal_match",    "input": ["abcdefg", "cde"], "expected": [2]}
+  ]
+}
