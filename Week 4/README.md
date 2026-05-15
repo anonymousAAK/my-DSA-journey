@@ -56,3 +56,30 @@ xdg-open web/<file>.html   # Linux
 - **6. Char Pattern**
 - **7. Interesting Alphabet**
 - **8. Mirror Image**
+
+## Tradeoff Matrix
+
+Flagship topic: printing 2-D patterns (triangle / pyramid / mirror).
+
+| Approach | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| Nested `for` loops, one print per cell | O(rows × cols) | O(1) | Low | Default for any pattern |
+| Build each row into a `StringBuilder`, print once | O(rows × cols) | O(cols) | Medium | When I/O latency dominates (many rows) |
+| Compute symmetry once, mirror | O(rows × cols/2) | O(1) | Medium | Palindromic / mirror patterns |
+| Recursive row printer | O(rows × cols) | O(rows) stack | Medium | When recursion is the lesson, not the goal |
+
+## Anti-patterns to avoid
+
+- **Reaching for `String += ch` in a hot loop** — `String` is immutable in Java; every `+=` allocates a new object, turning an O(n) pattern into O(n²). Use `StringBuilder`.
+- **Computing the row count and the spaces independently** — they're linked. Express spaces as `total - row` (or similar) in one place; don't maintain two counters that must agree.
+- **Hard-coding the pattern for n=5 and hoping it generalizes** — always parameterize by `n` from the start. Patterns that only work for one size are a sign you haven't found the invariant.
+- **Mixing `print` and `println` inconsistently** — forgetting a single newline shifts everything below it and makes the bug look like an off-by-one in the loop. Print exactly one `\n` at the end of each row.
+- **Confusing row index with row width** — in an inverted pyramid, the printed character count *decreases* with row index. Draw two rows on paper before coding to confirm direction.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach nested loops in one minute, what's the one sentence you'd use?
+- Did you find yourself drawing the pattern on paper before coding? Did it help?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?

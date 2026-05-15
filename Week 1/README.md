@@ -72,3 +72,30 @@ xdg-open web/<file>.html   # Linux
 - **14. How other datatype are stores**
 - **15. Typecasting**
 - **16. Operators in java**
+
+## Tradeoff Matrix
+
+Flagship topic: reading input and printing output (Scanner vs BufferedReader vs args).
+
+| Approach | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| `System.out.println` + `Scanner` | O(N) I/O | O(1) extra | Low | Tiny programs (< 10⁴ tokens), tutorials |
+| `BufferedReader` + `StringTokenizer` | O(N) I/O, ~5–10× faster | O(line) | Medium | Competitive programming, large inputs |
+| `DataInputStream` byte reader | O(N), fastest | O(buf) | High | Hot loops with 10⁶+ tokens |
+| Command-line `args[]` | O(args) | O(1) | Low | Fixed-size config, scripts driven by shell |
+
+## Anti-patterns to avoid
+
+- **Calling `sc.nextInt()` then `sc.nextLine()` and being surprised the second returns empty** — `nextInt` leaves the trailing newline in the buffer; either consume it with an extra `nextLine()` or use `nextLine()` + `Integer.parseInt` consistently.
+- **Reusing one `Scanner` and closing it inside a helper** — closing a `Scanner` over `System.in` closes `System.in` itself, so later reads silently fail. Don't close stdin scanners.
+- **Mixing `int` and `double` in arithmetic and expecting fractional results** — `5/2` is `2`, not `2.5`. Cast one operand to `double` first, or use a `double` literal.
+- **Comparing strings with `==`** — `==` checks reference identity, not content. Use `.equals()`. This bites people on day one and never fully stops biting.
+- **Believing `int` can hold any number** — Java `int` overflows silently past 2³¹−1. Use `long` for products, factorials, or anything that could exceed ~2·10⁹.
+
+## Reflection prompts
+
+- Which topic this week was hardest, and what made it hard?
+- Was there a pattern you didn't recognize and had to be told about? Which one?
+- If you had to teach a beginner how Java stores an `int` in one minute, what's the one sentence you'd use?
+- Did you hit any silent type-conversion bugs (e.g. integer division)? How did you spot them?
+- What's one problem you'd want to revisit in 3 weeks to see if you've internalized the pattern?
