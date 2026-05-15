@@ -44,7 +44,7 @@ class Solution {
       // First inner loop: print (N - currRow) leading spaces for right-alignment
       int spaces = 1;
       while (spaces <= n - currRow) {
-        System.out.print(“ “);
+        System.out.print(" ");
         spaces += 1;
       }
       // Second inner loop: print numbers 1 to currRow in ascending order

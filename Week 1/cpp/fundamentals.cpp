@@ -10,6 +10,7 @@
  */
 
 #include <iostream>
+#include <algorithm>
 #include <string>
 #include <cmath>       // for pow, sqrt
 #include <climits>     // for INT_MAX, INT_MIN

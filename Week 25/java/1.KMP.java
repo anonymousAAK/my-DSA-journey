@@ -57,7 +57,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class KMP {
+class KMP {
 
     /** Build the LPS (failure) array for the given pattern.  O(m). */
     public static int[] buildLPS(String pattern) {
