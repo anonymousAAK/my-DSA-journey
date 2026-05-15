@@ -83,6 +83,11 @@ a{color:var(--accent-blue);text-decoration:none}a:hover{text-decoration:underlin
 .sidebar-toggle{display:none;position:fixed;bottom:1.5rem;right:1.5rem;z-index:100;width:48px;height:48px;border-radius:50%;background:var(--accent-gradient);border:none;color:#0d1117;font-size:1.2rem;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,.4)}
 @media(max-width:900px){.sidebar{display:none;position:fixed;top:0;left:0;width:100%;height:100%;z-index:99;padding:1rem;background:rgba(13,17,23,.95);backdrop-filter:blur(8px)}.sidebar.open{display:block}.sidebar-inner{max-height:calc(100vh - 2rem)}.sidebar-toggle{display:flex;align-items:center;justify-content:center}.page-layout{flex-direction:column}}
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 <section class="hero">
@@ -116,6 +121,7 @@ a{color:var(--accent-blue);text-decoration:none}a:hover{text-decoration:underlin
 <li><a href="#summary">Cheat Sheet</a></li>
 </ul>
 </div>
+<a href="#live-demos">Live Demos</a>
 </nav>
 
 <main class="main-content">
@@ -439,6 +445,16 @@ The BST property means <strong>inorder traversal always produces sorted output</
 <a href="../Week 13/index.html" class="nav-btn">&larr; Week 13: Queues</a>
 <a href="../Week 15/index.html" class="nav-btn">Week 15: Heaps &rarr;</a>
 </nav>
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.BinaryTree.html">1 — BinaryTree</a></li>
+      <li><a href="2.BinarySearchTree.html">2 — BinarySearchTree</a></li>
+  </ul>
+</section>
+
 </main>
 </div>
 </div>

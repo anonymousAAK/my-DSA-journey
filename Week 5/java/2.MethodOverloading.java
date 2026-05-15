@@ -20,7 +20,8 @@
  * Time Complexity: O(1) per call
  */
 
-public class MethodOverloading {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class MethodOverloading {
 
     // Version 1: two ints
     static int add(int a, int b) {

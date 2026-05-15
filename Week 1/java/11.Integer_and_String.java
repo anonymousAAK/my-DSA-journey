@@ -22,7 +22,8 @@
 
 package fundamentals;
 import java.util.Scanner;
-public class ArithematicOperators {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class ArithematicOperators {
 
     Scanner s = new Scanner(System.in);
     String str = s.next();       // Read a word (String token) first

@@ -22,7 +22,8 @@
  *              Use StringBuilder instead → O(n) vs O(n²)
  */
 
-public class StringBasics {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class StringBasics {
 
     public static void main(String[] args) {
         // --- Basic Operations ---

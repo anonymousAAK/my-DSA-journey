@@ -26,7 +26,8 @@
 
 import java.util.Arrays;
 
-public class FibonacciRecursion {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class FibonacciRecursion {
 
     // APPROACH 1: Naive recursion — simple but O(2^n)
     static long fibNaive(int n) {

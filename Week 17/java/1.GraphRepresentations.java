@@ -39,7 +39,8 @@
 
 import java.util.*;
 
-public class GraphRepresentations {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class GraphRepresentations {
 
     static class Graph {
         int V;

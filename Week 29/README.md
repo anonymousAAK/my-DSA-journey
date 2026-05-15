@@ -1,22 +1,53 @@
-# Week 29 Language-Depth Guide
+# Week 29
 
-This week is organized to keep **Java, Python, C++, and Rust** aligned at the same conceptual depth.
+Each topic is implemented in all five languages: **Java, Python, C++, Rust, and Web (HTML/JS)**. The Java track is the primary detailed walkthrough; the others mirror it with idiomatic constructs.
 
-## Topic roadmap (from Java track)
+## Topic index
 
-- **system design**
+| # | Topic | Java | Python | C++ | Rust | Web |
+|---|-------|------|--------|-----|------|-----|
+| 1 | caching | `java/caching.java` | `python/caching.py` | `cpp/caching.cpp` | `rust/caching.rs` | `web/caching.html` |
+| 2 | consistent hashing | `java/consistent_hashing.java` | `python/consistent_hashing.py` | `cpp/consistent_hashing.cpp` | `rust/consistent_hashing.rs` | `web/consistent_hashing.html` |
+| 3 | message queues | `java/message_queues.java` | `python/message_queues.py` | `cpp/message_queues.cpp` | `rust/message_queues.rs` | `web/message_queues.html` |
+| 4 | rate limiting | `java/rate_limiting.java` | `python/rate_limiting.py` | `cpp/rate_limiting.cpp` | `rust/rate_limiting.rs` | `web/rate_limiting.html` |
+| 5 | sharding | `java/sharding.java` | `python/sharding.py` | `cpp/sharding.cpp` | `rust/sharding.rs` | `web/sharding.html` |
+| 6 | system design | `java/system_design.java` | `python/system_design.py` | `cpp/system_design.cpp` | `rust/system_design.rs` | — |
 
-## How to study deeply in each language
+## Survey companions
 
-1. Start with `java/` for step-by-step explanation and edge cases.
-2. Implement the same topic in `python/`, `cpp/`, and `rust/` using idiomatic constructs.
-3. For every topic, include: approach, pseudocode, implementation, complexity, and at least 2 dry-run examples.
-4. Keep naming consistent across languages for easy comparison.
+Cross-cutting files that summarize the week or provide an interactive overview:
 
-## Language folders
+| Topic | Java | Python | C++ | Rust | Web |
+|-------|------|--------|-----|------|-----|
+| Interactive index | — | — | — | — | `web/index.html` |
 
-- `java/` — primary detailed walkthrough implementations
-- `python/` — idiomatic Python translation + explanations
-- `cpp/` — STL/C++17 implementation + explanations
-- `rust/` — ownership-safe implementation + explanations
-- `web/` — interactive weekly notes
+## How to run a topic file
+
+From the week's directory:
+
+```bash
+# Java
+javac java/<file>.java && java -cp java <ClassName>
+
+# Python
+python3 python/<file>.py
+
+# C++
+g++ -std=c++17 cpp/<file>.cpp -o /tmp/a && /tmp/a
+
+# Rust
+rustc --edition 2021 rust/<file>.rs -o /tmp/a && /tmp/a
+
+# Web — open in a browser
+open web/<file>.html   # macOS
+xdg-open web/<file>.html   # Linux
+```
+
+## Topic roadmap
+
+- **1. caching**
+- **2. consistent hashing**
+- **3. message queues**
+- **4. rate limiting**
+- **5. sharding**
+- **6. system design**

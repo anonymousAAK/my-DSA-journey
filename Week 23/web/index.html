@@ -78,6 +78,11 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 .kw{color:#ff7b72}.typ{color:#79c0ff}.str{color:#a5d6ff}.cm{color:#8b949e;font-style:italic}.fn{color:#d2a8ff}.num{color:#79c0ff}
 .math{background:rgba(88,166,255,.06);border:1px solid var(--code-border);border-radius:6px;padding:.8rem 1rem;margin:.75rem 0;font-family:var(--font-mono);font-size:.85rem;color:var(--accent);overflow-x:auto}
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 
@@ -109,6 +114,7 @@ a{color:var(--accent);text-decoration:none}a:hover{text-decoration:underline}
 <a href="#tree-dp">DP on Trees</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
+<a href="#live-demos">Live Demos</a>
 </nav>
 </aside>
 
@@ -741,6 +747,15 @@ dp[v][1] = max weight if v IS selected = weight[v] + sum(dp[child][0])</div>
 <a href="../Week 22/index.html" class="nav-btn"><span class="label">Previous</span><span class="title">Week 22: Advanced Graphs</span></a>
 <a href="../Week 24/index.html" class="nav-btn next"><span class="label">Next</span><span class="title">Week 24: Research Level Topics</span></a>
 </div>
+
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.AdvancedDP.html">1 — AdvancedDP</a></li>
+  </ul>
+</section>
 
 </main>
 </div>

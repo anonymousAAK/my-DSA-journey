@@ -1,7 +1,7 @@
 /*
  * WEEK 3 - LOOPS & NUMBER THEORY
  * Topic: Nth Fibonacci Number
- * File: 9.Nth_Fibonnaci_Number.java
+ * File: 9.Nth_Fibonacci_Number.java
  *
  * CONCEPT:
  * The Fibonacci sequence is defined as F(n) = F(n-1) + F(n-2), where
@@ -25,7 +25,8 @@
  */
 
 import java.util.Scanner;
-public class Solution {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class Solution {
       public static void main(String[] args) {
           Scanner s = new Scanner(System.in);
           int n = s.nextInt();           // read N: which Fibonacci number to find

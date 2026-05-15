@@ -112,6 +112,11 @@ a:hover{text-decoration:underline}
 .page-layout{flex-direction:column}
 }
 </style>
+<style>
+  #live-demos .demo-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: .5rem; }
+  #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
+</style>
 </head>
 <body>
 <!-- Hero -->
@@ -145,6 +150,7 @@ a:hover{text-decoration:underline}
 <li><a href="#summary">Cheat Sheet</a></li>
 </ul>
 </div>
+<a href="#live-demos">Live Demos</a>
 </nav>
 
 <!-- Main -->
@@ -501,6 +507,15 @@ Each element is added to the deque at most once and removed at most once. So acr
 <a href="../Week 12/index.html" class="nav-btn">&larr; Week 12</a>
 <a href="../Week 14/index.html" class="nav-btn">Week 14: Trees &rarr;</a>
 </nav>
+
+<section id="live-demos" class="card">
+  <h2>Run Live Demos</h2>
+  <p>Each topic from this week ships with a self-contained interactive demo. Click to open and run in your browser.</p>
+  <ul class="demo-grid">
+      <li><a href="1.QueueImplementation.html">1 — QueueImplementation</a></li>
+  </ul>
+</section>
+
 </main>
 </div>
 </div>

@@ -34,7 +34,8 @@
 
 import java.util.Arrays;
 
-public class PrefixSumAndKadane {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class PrefixSumAndKadane {
 
     // Build prefix sum array
     static int[] buildPrefix(int[] arr) {

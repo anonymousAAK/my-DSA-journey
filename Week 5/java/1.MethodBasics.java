@@ -23,7 +23,8 @@
 
 import java.util.Scanner;
 
-public class MethodBasics {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class MethodBasics {
 
     // --- Static methods (can be called without creating an object) ---
 

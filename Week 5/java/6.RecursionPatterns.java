@@ -22,7 +22,8 @@
  * Time/Space: varies by problem (shown per example)
  */
 
-public class RecursionPatterns {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class RecursionPatterns {
 
     // PATTERN 1: Linear Recursion — Reverse a string
     // Time: O(n), Space: O(n) stack + O(n) output

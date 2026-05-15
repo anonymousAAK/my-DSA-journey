@@ -1,8 +1,55 @@
-# Week 2 Language-Depth Guide
+# Week 2
 
-This week is organized to keep **Java, Python, C++, and Rust** aligned at the same conceptual depth.
+Each topic is implemented in all five languages: **Java, Python, C++, Rust, and Web (HTML/JS)**. The Java track is the primary detailed walkthrough; the others mirror it with idiomatic constructs.
 
-## Topic roadmap (from Java track)
+## Topic index
+
+| # | Topic | Java | Python | C++ | Rust | Web |
+|---|-------|------|--------|-----|------|-----|
+| 1 | Data Types review | `java/1.Data_Types_review.java` | `python/1.data_types_review.py` | `cpp/1.data_types_review.cpp` | `rust/s01_data_types_review.rs` | `web/1.data_types_review.html` |
+| 2 | If else | `java/2.If_else.java` | `python/2.if_else.py` | `cpp/2.if_else.cpp` | `rust/s02_if_else.rs` | `web/2.if_else.html` |
+| 3 | Find Character Case | `java/3.Find_Character_Case.java` | `python/3.find_character_case.py` | `cpp/3.find_character_case.cpp` | `rust/s03_find_character_case.rs` | `web/3.find_character_case.html` |
+| 4 | While Loop | `java/4.While_Loop.java` | `python/4.while_loop.py` | `cpp/4.while_loop.cpp` | `rust/s04_while_loop.rs` | `web/4.while_loop.html` |
+| 5 | Infinite Loop | `java/5.Infinite_Loop.java` | `python/5.infinite_loop.py` | `cpp/5.infinite_loop.cpp` | `rust/s05_infinite_loop.rs` | `web/5.infinite_loop.html` |
+| 6 | Fahrenheit to Celsius Table | `java/6.Fahrenheit_to_Celsius_Table.java` | `python/6.fahrenheit_to_celsius_table.py` | `cpp/6.fahrenheit_to_celsius_table.cpp` | `rust/s06_fahrenheit_to_celsius_table.rs` | `web/6.fahrenheit_to_celsius_table.html` |
+| 7 | Total Salary | `java/7.Total_Salary.java` | `python/7.total_salary.py` | `cpp/7.total_salary.cpp` | `rust/s07_total_salary.rs` | `web/7.total_salary.html` |
+| 8 | Multiplication Table | `java/8.Multiplication_Table.java` | `python/8.multiplication_table.py` | `cpp/8.multiplication_table.cpp` | `rust/s08_multiplication_table.rs` | `web/8.multiplication_table.html` |
+| 9 | Sum of Even Odd | `java/9.Sum_of_Even_Odd.java` | `python/9.sum_of_even_odd.py` | `cpp/9.sum_of_even_odd.cpp` | `rust/s09_sum_of_even_odd.rs` | `web/9.sum_of_even_odd.html` |
+| 10 | Factors | `java/10.Factors.java` | `python/10.factors.py` | `cpp/10.factors.cpp` | `rust/s10_factors.rs` | `web/10.factors.html` |
+| 11 | Find Power | `java/11.Find_Power.java` | `python/11.find_power.py` | `cpp/11.find_power.cpp` | `rust/s11_find_power.rs` | `web/11.find_power.html` |
+
+## Survey companions
+
+Cross-cutting files that summarize the week or provide an interactive overview:
+
+| Topic | Java | Python | C++ | Rust | Web |
+|-------|------|--------|-----|------|-----|
+| Control Flow | — | `python/control_flow.py` | `cpp/control_flow.cpp` | `rust/control_flow.rs` | — |
+| Interactive index | — | — | — | — | `web/index.html` |
+
+## How to run a topic file
+
+From the week's directory:
+
+```bash
+# Java
+javac java/<file>.java && java -cp java <ClassName>
+
+# Python
+python3 python/<file>.py
+
+# C++
+g++ -std=c++17 cpp/<file>.cpp -o /tmp/a && /tmp/a
+
+# Rust
+rustc --edition 2021 rust/<file>.rs -o /tmp/a && /tmp/a
+
+# Web — open in a browser
+open web/<file>.html   # macOS
+xdg-open web/<file>.html   # Linux
+```
+
+## Topic roadmap
 
 - **1. Data Types review**
 - **2. If else**
@@ -15,18 +62,3 @@ This week is organized to keep **Java, Python, C++, and Rust** aligned at the sa
 - **9. Sum of Even Odd**
 - **10. Factors**
 - **11. Find Power**
-
-## How to study deeply in each language
-
-1. Start with `java/` for step-by-step explanation and edge cases.
-2. Implement the same topic in `python/`, `cpp/`, and `rust/` using idiomatic constructs.
-3. For every topic, include: approach, pseudocode, implementation, complexity, and at least 2 dry-run examples.
-4. Keep naming consistent across languages for easy comparison.
-
-## Language folders
-
-- `java/` — primary detailed walkthrough implementations
-- `python/` — idiomatic Python translation + explanations
-- `cpp/` — STL/C++17 implementation + explanations
-- `rust/` — ownership-safe implementation + explanations
-- `web/` — interactive weekly notes

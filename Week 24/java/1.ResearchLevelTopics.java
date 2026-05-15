@@ -59,7 +59,8 @@
 
 import java.util.*;
 
-public class ResearchLevelTopics {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class ResearchLevelTopics {
 
     // =====================
     // AMORTIZED ANALYSIS: Dynamic Array (simplified)

@@ -21,7 +21,8 @@
  */
 
 package fundamentals;
-public class AddTwoNumbers {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class AddTwoNumbers {
     public static void main(String args[]) {
       int a=10;   // Declare and initialize first operand
       int b=25;   // Declare and initialize second operand

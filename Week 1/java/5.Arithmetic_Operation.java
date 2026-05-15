@@ -1,7 +1,7 @@
 /*
  * WEEK 1 - JAVA FUNDAMENTALS
  * Topic: Arithmetic Operations & Operator Precedence
- * File: 5.Arthemetic_Operation.java
+ * File: 5.Arithmetic_Operation.java
  *
  * CONCEPT:
  * Demonstrates arithmetic operations in Java, particularly integer division
@@ -23,7 +23,8 @@
  */
 
 package fundamentals;
-public class ArithematicOperators {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class ArithmeticOperators {
     public static void main(String args[]) {
       int a=3;
       int b=10;

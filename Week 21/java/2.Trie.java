@@ -29,7 +29,8 @@
 
 import java.util.*;
 
-public class Trie {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class Trie {
 
     static class TrieNode {
         TrieNode[] children = new TrieNode[26];

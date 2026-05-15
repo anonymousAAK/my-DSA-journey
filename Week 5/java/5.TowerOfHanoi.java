@@ -25,7 +25,8 @@
  * It's a beautiful example of a problem where exponential is optimal!
  */
 
-public class TowerOfHanoi {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class TowerOfHanoi {
 
     static int moveCount = 0;
 

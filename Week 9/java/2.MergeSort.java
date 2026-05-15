@@ -27,7 +27,8 @@
 
 import java.util.Arrays;
 
-public class MergeSort {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class MergeSort {
 
     // Merge two sorted halves arr[left..mid] and arr[mid+1..right]
     static void merge(int[] arr, int left, int mid, int right) {

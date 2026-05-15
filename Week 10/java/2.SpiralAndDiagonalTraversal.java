@@ -24,7 +24,8 @@
 import java.util.ArrayList;
 import java.util.List;
 
-public class SpiralAndDiagonalTraversal {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class SpiralAndDiagonalTraversal {
 
     // Spiral order traversal
     static List<Integer> spiralOrder(int[][] mat) {

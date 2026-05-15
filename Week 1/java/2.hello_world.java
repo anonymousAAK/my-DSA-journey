@@ -23,7 +23,8 @@
 //After creating a class .
 // Here's the first code
 package fundamentals;
-public class HelloWorld {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class HelloWorld {
     public static void main(String args[]) {
       System.out.println("Hello World");
     }

@@ -28,7 +28,8 @@
 
 import java.util.*;
 
-public class BinaryTree {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class BinaryTree {
 
     static class Node {
         int val;

@@ -28,7 +28,8 @@
 import java.util.Arrays;
 import java.util.Scanner;
 
-public class LinearSearch {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class LinearSearch {
 
     // Return index of first occurrence of target, or -1 if not found
     public static int linearSearch(int[] arr, int target) {

@@ -35,7 +35,8 @@ b = b * 50;  // Compilation error: result exceeds byte range
 
 
 // --- Example 2: Integer Division Pitfall ---
-public class  Solution{
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class  Solution{
     public static void main(String [] args)  {
         double a = 6 / 4;   // 6/4 is int division = 1, stored as 1.0 in double
         int b  = 6 / 4;     // 6/4 is int division = 1

@@ -29,7 +29,8 @@
  * Space Complexity: O(n) for the call stack (n frames)
  */
 
-public class RecursionBasics {
+// package-private: filename uses '<n>.<name>.java' convention; javac compiles only when the top-level class is non-public.
+class RecursionBasics {
 
     // 1. Print N down to 1
     // Base case: n == 0 → stop
