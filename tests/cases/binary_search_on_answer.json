@@ -1,0 +1,11 @@
+{
+  "topic": "binary_search_on_answer",
+  "week": 8,
+  "function": "minEatingSpeed",
+  "cases": [
+    {"name": "koko_classic",     "input": [[3, 6, 7, 11], 8], "expected": 4},
+    {"name": "koko_tight",       "input": [[30, 11, 23, 4, 20], 5], "expected": 30},
+    {"name": "koko_loose",       "input": [[30, 11, 23, 4, 20], 6], "expected": 23},
+    {"name": "koko_single_pile", "input": [[100], 10], "expected": 10, "edge": true}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "topic": "valid_anagram",
+  "week": 7,
+  "function": "isAnagram",
+  "cases": [
+    {"name": "true_basic",    "input": ["listen", "silent"], "expected": true},
+    {"name": "true_short",    "input": ["eat", "tea"],       "expected": true},
+    {"name": "false_words",   "input": ["hello", "world"],   "expected": false},
+    {"name": "diff_length",   "input": ["rat", "ratt"],      "expected": false, "edge": true},
+    {"name": "empty_both",    "input": ["", ""],             "expected": true,  "edge": true}
+  ]
+}

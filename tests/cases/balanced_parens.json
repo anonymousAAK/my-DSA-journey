@@ -1,0 +1,13 @@
+{
+  "topic": "balanced_parens",
+  "week": 12,
+  "function": "isBalanced",
+  "cases": [
+    {"name": "mixed_balanced",   "input": ["([]{})"],   "expected": true},
+    {"name": "unmatched_close",  "input": ["(])"],      "expected": false},
+    {"name": "nested",           "input": ["((()))"],   "expected": true},
+    {"name": "wrong_order",      "input": ["{[}]"],     "expected": false, "adversarial": true},
+    {"name": "empty",            "input": [""],         "expected": true,  "edge": true},
+    {"name": "long_mixed",       "input": ["[({})](){}[[{}]]"],   "expected": true, "stretch": true}
+  ]
+}

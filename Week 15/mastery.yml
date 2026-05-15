@@ -1,0 +1,47 @@
+week: 15
+title: Heaps & Priority Queues
+skills:
+  - id: heap_property
+    prompt: "Min-heap property in one sentence?"
+    answer: ["parent <= children", "parent smaller than children", "every parent <= its children", "parent leq children"]
+    type: open
+    explanation: "Every parent is <= each of its children, so the minimum sits at the root."
+
+  - id: heap_insert
+    prompt: "Time complexity of inserting into a binary heap of size n?"
+    answer: ["O(log n)", "logarithmic", "log n"]
+    type: open
+    explanation: "Bubble-up walks at most the height of the heap (log n)."
+
+  - id: build_heap
+    prompt: "Building a heap from an array of n elements (heapify from bottom up)?"
+    answer: ["O(n)", "linear"]
+    type: open
+    explanation: "Counter-intuitive: the sum of sift-down costs is bounded by a geometric series giving O(n), not O(n log n)."
+
+  - id: kth_largest_heap
+    prompt: "Find the K-th largest element in a stream — which heap and what size?"
+    answer: ["min-heap of size k", "min heap size k", "min-heap size k", "min heap of size k"]
+    type: open
+    explanation: "Maintain a min-heap of size k. The smallest of the top-k sits at the root; the answer at any time is that root."
+
+  - id: median_of_stream
+    prompt: "Median-of-stream uses two heaps — which ones?"
+    answer:
+      - "max-heap of lower half"
+      - "min-heap of upper half"
+    type: list
+    explanation: "Lower half in a max-heap, upper in a min-heap, balanced to within one element. Median is a root (or average of both roots)."
+
+  - id: pq_default_java
+    prompt: "Java's PriorityQueue defaults to a what kind of heap?"
+    choices: ["max-heap", "min-heap", "median heap", "treap"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Default PriorityQueue is a min-heap — natural ordering. Pass Collections.reverseOrder() for max-heap behaviour."
+
+  - id: merge_k_sorted
+    prompt: "Merge K sorted lists with N total elements using a min-heap — time complexity?"
+    answer: ["O(N log K)", "N log K", "O(n log k)"]
+    type: open
+    explanation: "Heap holds K heads; each of N pops is O(log K)."

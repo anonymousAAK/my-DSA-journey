@@ -1,0 +1,44 @@
+week: 21
+title: Advanced Trees
+skills:
+  - id: avl_balance_factor
+    prompt: "What is the allowed balance-factor range for an AVL node?"
+    answer: ["-1, 0, 1", "-1 to 1", "between -1 and 1", "|bf| <= 1"]
+    type: open
+    explanation: "Balance factor (height(left) − height(right)) must lie in {-1, 0, 1}. Outside → rotate."
+
+  - id: segment_tree_query
+    prompt: "Segment tree on n elements — range query and point update complexity?"
+    answer: ["O(log n)", "log n", "logarithmic"]
+    type: open
+    explanation: "Both range query and point update walk a single root-to-leaf path of depth O(log n)."
+
+  - id: bit_fenwick_use
+    prompt: "Fenwick (BIT) tree primarily supports what query type?"
+    answer: ["prefix sum", "prefix sums", "cumulative sum", "range sum"]
+    type: open
+    explanation: "Prefix sums with O(log n) point updates. Range sums via difference of two prefix queries."
+
+  - id: trie_lookup
+    prompt: "Trie lookup/insert complexity for a key of length L (alphabet size constant)?"
+    answer: ["O(L)", "L", "linear in L"]
+    type: open
+    explanation: "Independent of how many keys are stored — only the key length matters."
+
+  - id: red_black_height
+    prompt: "Maximum height of a Red-Black tree with n nodes?"
+    answer: ["2 log(n+1)", "O(log n)", "~ 2 log2(n)", "log n"]
+    type: open
+    explanation: "RB invariants force height ≤ 2·log2(n+1). Balanced operations are O(log n)."
+
+  - id: segment_tree_size
+    prompt: "Standard segment tree array size for n leaves (safe upper bound)?"
+    answer: ["4n", "4*n", "about 4n"]
+    type: open
+    explanation: "Allocate 4n to safely cover non-power-of-two n. Tighter bounds exist for power-of-two sizes."
+
+  - id: trie_vs_hashmap
+    prompt: "Why use a Trie over a HashMap for words?"
+    answer: ["prefix queries", "prefix lookups", "shared prefixes", "autocomplete", "ordered iteration"]
+    type: open
+    explanation: "Tries answer prefix queries (autocomplete) in O(L) and naturally share storage across common prefixes. HashMaps can't iterate by prefix."

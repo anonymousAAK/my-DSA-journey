@@ -1,0 +1,38 @@
+week: 4
+title: Pattern Printing
+skills:
+  - id: stars_in_triangle
+    prompt: "How many '*' characters are printed by a right-triangle of height 5 (1 star row 1, 2 row 2, ...)?"
+    answer: 15
+    type: numeric
+    explanation: "1+2+3+4+5 = 15. The formula n(n+1)/2 generalises."
+
+  - id: nested_loop_complexity
+    prompt: "Two nested loops, both from 1 to n, doing O(1) work inside — total time complexity?"
+    answer: ["O(n^2)", "O(n*n)", "O(n²)", "n^2", "quadratic"]
+    type: open
+    explanation: "Outer × inner = n × n iterations."
+
+  - id: diamond_total_rows
+    prompt: "A diamond pattern of 'size' n (centre row has 2n-1 stars) has how many total rows?"
+    answer: ["2n-1", "2*n - 1", "2n - 1"]
+    type: open
+    explanation: "n rows building up and n-1 rows coming down (or vice versa) = 2n-1."
+
+  - id: pattern_indexing
+    prompt: "In a row index i (0-indexed) of a right-aligned triangle of width n, how many leading spaces?"
+    answer: ["n - i - 1", "n-i-1", "n minus i minus 1"]
+    type: open
+    explanation: "Leading spaces = (width − i − 1), so the stars right-align to column n."
+
+  - id: mirror_pattern_idea
+    prompt: "To print a mirrored pattern, what's the simplest structural change to the original loop?"
+    answer: ["reverse inner loop", "reverse order", "iterate inner backward", "reverse the print order"]
+    type: open
+    explanation: "Most mirror patterns just reverse the direction of the inner column loop or swap leading/trailing characters."
+
+  - id: alphabet_pattern
+    prompt: "Row index i (0-indexed) printing letters from 'A'. The 3rd character of row 4 is which letter?"
+    answer: "C"
+    type: string
+    explanation: "Row 4, columns 0..3 print A,B,C,D so the 3rd character (index 2) is 'C'."

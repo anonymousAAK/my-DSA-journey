@@ -1,0 +1,12 @@
+{
+  "topic": "reverse_linked_list",
+  "week": 11,
+  "function": "reverseList",
+  "cases": [
+    {"name": "basic",     "input": [[1, 2, 3, 4, 5]], "expected": [5, 4, 3, 2, 1]},
+    {"name": "two",       "input": [[1, 2]], "expected": [2, 1]},
+    {"name": "single",    "input": [[7]], "expected": [7], "edge": true},
+    {"name": "empty",     "input": [[]], "expected": [], "edge": true},
+    {"name": "palindrome","input": [[1, 2, 3, 2, 1]], "expected": [1, 2, 3, 2, 1]}
+  ]
+}

@@ -1,0 +1,54 @@
+week: 17
+title: Graphs - Fundamentals & Traversals
+skills:
+  - id: bfs_dfs_complexity
+    prompt: "Time complexity of BFS or DFS on a graph with V vertices and E edges?"
+    answer: ["O(V + E)", "O(V+E)", "V + E"]
+    type: open
+    explanation: "Each vertex enqueued/visited once, each edge inspected at most twice (undirected) or once (directed)."
+
+  - id: matrix_vs_list
+    prompt: "When is adjacency MATRIX preferable to adjacency LIST?"
+    answer: ["dense graphs", "dense", "many edges", "E close to V^2", "frequent edge existence queries"]
+    type: open
+    explanation: "Dense graphs (E ≈ V²) make the V² matrix justified, and 'is there an edge u-v?' becomes O(1). Sparse graphs favour lists for memory."
+
+  - id: cycle_detection_undirected
+    prompt: "Cycle detection in an UNDIRECTED graph via DFS — signal that a cycle exists?"
+    answer: ["visited neighbour not parent", "non-parent visited", "back edge", "neighbour seen that isn't parent"]
+    type: open
+    explanation: "If DFS encounters an already-visited neighbour that isn't the immediate parent, there's a cycle."
+
+  - id: cycle_detection_directed
+    prompt: "Cycle detection in a DIRECTED graph via DFS uses what state set?"
+    answer:
+      - "white"
+      - "gray"
+      - "black"
+    type: list
+    explanation: "Three-coloring: white=unvisited, gray=on current DFS stack, black=done. A back-edge to a gray node is a cycle."
+
+  - id: topo_sort_requirement
+    prompt: "Topological sort requires the graph to be what?"
+    answer: ["DAG", "directed acyclic graph", "acyclic", "no cycles"]
+    type: open
+    explanation: "Only DAGs admit a topological ordering. If a cycle exists Kahn's algorithm leaves nodes in the queue with positive in-degree."
+
+  - id: bipartite_check
+    prompt: "Detect bipartite via what traversal-time procedure?"
+    answer: ["2-coloring", "two coloring", "alternating colors during BFS", "BFS coloring"]
+    type: open
+    explanation: "BFS (or DFS) trying to alternate colors level by level; conflict = not bipartite. Equivalent to 'no odd cycle'."
+
+  - id: connected_components_count
+    prompt: "How do you count connected components in an undirected graph?"
+    answer: ["BFS/DFS from each unvisited vertex", "union-find", "DFS counter", "loop over vertices, traverse each unvisited"]
+    type: open
+    explanation: "Loop over vertices; whenever you start a fresh BFS/DFS from an unvisited node, increment a counter. Union-Find is the alternative."
+
+  - id: graph_dense_sparse_choice
+    prompt: "A social graph with 10^9 users averaging 200 friends each — matrix or list?"
+    choices: ["matrix", "list", "either", "neither"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Sparse. Matrix would need 10^18 cells; adjacency list needs only ~2·10^11 entries."

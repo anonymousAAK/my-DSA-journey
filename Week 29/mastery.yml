@@ -1,0 +1,57 @@
+week: 29
+title: System Design for Engineers
+skills:
+  - id: lru_data_structures
+    prompt: "LRU cache implementation requires which two data structures combined?"
+    answer:
+      - "hashmap"
+      - "doubly linked list"
+    type: list
+    explanation: "HashMap for O(1) key→node lookup; doubly linked list to move a node to the front and evict tail in O(1)."
+
+  - id: consistent_hash_minimal_move
+    prompt: "Adding one node to a consistent-hash ring of N nodes moves roughly what fraction of keys?"
+    answer: ["1/N", "one over n", "1/n"]
+    type: open
+    explanation: "Only keys that fall between the new node's position and the previous owner move. Virtual nodes smooth this out."
+
+  - id: token_bucket
+    prompt: "Token Bucket rate limiter — what gets refilled at a constant rate?"
+    answer: ["tokens", "bucket tokens", "the bucket fills with tokens"]
+    type: open
+    explanation: "Tokens are added at rate r up to bucket size b. Each request consumes one (or more) tokens. Allows bursts up to bucket size."
+
+  - id: trie_autocomplete
+    prompt: "Trie-based autocomplete: at each prefix node you typically cache what to make suggestions O(k)?"
+    answer: ["top k words", "top suggestions", "top-k completions", "precomputed top words"]
+    type: open
+    explanation: "Store the top-k frequent completions at each node so prefix lookups are O(prefix length + k) rather than full subtree traversal."
+
+  - id: merkle_use
+    prompt: "Merkle tree's primary use?"
+    choices: ["sorting", "verifying data integrity efficiently", "caching", "load balancing"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Hash trees verify integrity of large data sets with O(log n) proof size. Used in Git, blockchains, content-addressed storage."
+
+  - id: heap_scheduler
+    prompt: "A task scheduler with 'run-at' timestamps uses which data structure for next-due lookup?"
+    choices: ["queue", "min-heap (priority queue)", "stack", "hashmap"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Min-heap keyed by run-at gives O(log n) insert and O(log n) extract-min for the earliest job."
+
+  - id: cache_invalidation_strategies
+    prompt: "Name two cache invalidation strategies."
+    answer:
+      - "TTL"
+      - "write-through"
+    type: list
+    explanation: "Common strategies: TTL (time-to-live), write-through, write-back, explicit invalidation, LRU eviction. Any two of these are fine."
+
+  - id: scale_choice_billion_users
+    prompt: "Designing a rate limiter for 10^9 users globally — which structure scales best?"
+    choices: ["one big HashMap on a single server", "Sharded counters / sliding window per user across many nodes", "Single Redis instance", "Database table with row locks"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Sharding by user-id with consistent hashing distributes both memory and ops. Single instances don't fit 10^9 users and don't tolerate failure."

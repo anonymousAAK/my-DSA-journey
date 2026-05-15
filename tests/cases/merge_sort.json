@@ -1,0 +1,12 @@
+{
+  "topic": "merge_sort",
+  "week": 9,
+  "function": "mergeSort",
+  "cases": [
+    {"name": "basic",         "input": [[38, 27, 43, 3, 9, 82, 10]], "expected": [3, 9, 10, 27, 38, 43, 82]},
+    {"name": "already_sorted","input": [[1, 2, 3, 4, 5]],            "expected": [1, 2, 3, 4, 5]},
+    {"name": "reverse",       "input": [[5, 4, 3, 2, 1]],            "expected": [1, 2, 3, 4, 5]},
+    {"name": "duplicates",    "input": [[3, 1, 4, 1, 5, 9, 2, 6, 5, 3, 5]], "expected": [1, 1, 2, 3, 3, 4, 5, 5, 5, 6, 9]},
+    {"name": "empty",         "input": [[]], "expected": [], "edge": true}
+  ]
+}

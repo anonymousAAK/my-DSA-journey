@@ -1,0 +1,46 @@
+week: 16
+title: Hash Tables & Maps
+skills:
+  - id: hash_avg_lookup
+    prompt: "Average-case lookup time for a hash table with good hash function and load factor < 1?"
+    answer: ["O(1)", "constant", "amortized O(1)"]
+    type: open
+    explanation: "Hashing makes the expected probe chain length constant. Worst case is O(n) when everything collides."
+
+  - id: two_sum_hash
+    prompt: "Two-Sum problem: array nums, target. Hash map approach — what does the map store?"
+    answer: ["value to index", "number to index", "complement", "seen values"]
+    type: open
+    explanation: "Walk the array, for each x check if (target - x) is in the map; otherwise insert x → index."
+
+  - id: collision_resolutions
+    prompt: "Name two common collision-resolution strategies."
+    answer:
+      - "chaining"
+      - "open addressing"
+    type: list
+    explanation: "Chaining stores collided keys in a per-bucket list/tree. Open addressing probes other slots (linear, quadratic, double hashing)."
+
+  - id: load_factor_resize
+    prompt: "At roughly what load factor do most hash tables resize (rehash)?"
+    answer: ["0.7", "0.75", "0.5 to 0.75", "around 0.75"]
+    type: open
+    explanation: "Java HashMap defaults to 0.75. Lower thresholds (~0.5) for open addressing to keep probe sequences short."
+
+  - id: group_anagrams_key
+    prompt: "Group-anagrams via hashing — what's the canonical key for each word?"
+    answer: ["sorted characters", "sorted string", "sorted letters", "character count tuple", "frequency vector"]
+    type: open
+    explanation: "Either the sorted-letters string or a 26-int frequency tuple groups anagrams. Sorted is O(L log L) per word; counts is O(L)."
+
+  - id: hash_vs_treemap
+    prompt: "Why prefer a balanced BST (TreeMap) over a HashMap?"
+    answer: ["ordered iteration", "sorted order", "range queries", "predictable worst-case", "ordered keys"]
+    type: open
+    explanation: "TreeMap gives ordered iteration, floor/ceiling/range queries, and O(log n) worst-case (not amortized)."
+
+  - id: consistent_hash_purpose
+    prompt: "Consistent hashing solves what problem in distributed systems?"
+    answer: ["minimize remapping", "node addition/removal", "key redistribution", "scaling cache nodes", "minimal key movement"]
+    type: open
+    explanation: "When you add or remove a node, only ~1/N of keys move (instead of nearly all), because keys are placed on a ring and owned by the next clockwise node."

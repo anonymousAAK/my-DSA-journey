@@ -1,0 +1,12 @@
+{
+  "topic": "kth_largest",
+  "week": 15,
+  "function": "kthLargest",
+  "cases": [
+    {"name": "k_2",          "input": [[3, 2, 1, 5, 6, 4], 2], "expected": 5},
+    {"name": "k_4",          "input": [[3, 2, 3, 1, 2, 4, 5, 5, 6], 4], "expected": 4},
+    {"name": "k_equals_n",   "input": [[7, 10, 4, 3, 20, 15], 6], "expected": 3, "edge": true},
+    {"name": "k_one",        "input": [[7, 10, 4, 3, 20, 15], 1], "expected": 20},
+    {"name": "duplicates_all_equal", "input": [[5, 5, 5, 5, 5], 3], "expected": 5, "adversarial": true}
+  ]
+}

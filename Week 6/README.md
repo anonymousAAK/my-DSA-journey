@@ -1,5 +1,7 @@
 # Week 6
 
+> Self-check: `./scripts/journey quiz 6` — run the mastery checkpoints for this week.
+
 Each topic is implemented in all five languages: **Java, Python, C++, Rust, and Web (HTML/JS)**. The Java track is the primary detailed walkthrough; the others mirror it with idiomatic constructs.
 
 ## Topic index

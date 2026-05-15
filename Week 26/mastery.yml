@@ -1,0 +1,44 @@
+week: 26
+title: Network Flow & Matching
+skills:
+  - id: max_flow_min_cut
+    prompt: "Max-flow min-cut theorem states what equality?"
+    answer: ["max flow equals min cut", "max flow = min cut", "value of max flow = capacity of min cut"]
+    type: open
+    explanation: "In any flow network, the maximum value of an s-t flow equals the minimum capacity over all s-t cuts."
+
+  - id: edmonds_karp_complexity
+    prompt: "Edmonds-Karp (BFS-based Ford-Fulkerson) time complexity?"
+    answer: ["O(V*E^2)", "O(VE^2)", "V E squared", "O(V·E²)"]
+    type: open
+    explanation: "Each augmenting path takes O(E) via BFS, and there are at most O(VE) augmentations."
+
+  - id: residual_graph_purpose
+    prompt: "Why does Ford-Fulkerson use a residual graph (including reverse edges)?"
+    answer: ["allow undo", "cancel flow", "redirect flow", "revoke prior decisions", "back edges to cancel"]
+    type: open
+    explanation: "Reverse edges in the residual graph allow flow to be rerouted, ensuring the algorithm reaches the true global maximum and not a local one."
+
+  - id: bipartite_matching_to_flow
+    prompt: "Bipartite matching reduces to max-flow by adding what edges?"
+    answer: ["source to L", "R to sink", "source connected to left side and right side to sink", "unit-capacity source/sink edges"]
+    type: open
+    explanation: "Source → every left vertex (cap 1), every right vertex → sink (cap 1), original edges left→right (cap 1). Max flow value = max matching size."
+
+  - id: hopcroft_karp_complexity
+    prompt: "Hopcroft-Karp bipartite matching complexity?"
+    answer: ["O(E*sqrt(V))", "E sqrt V", "O(E√V)"]
+    type: open
+    explanation: "Phases find augmenting paths via BFS+DFS; only O(√V) phases are needed in the worst case."
+
+  - id: min_cut_use_case
+    prompt: "Name one application of min-cut outside pure graph problems."
+    answer: ["image segmentation", "bipartite matching", "project selection", "network reliability", "clustering"]
+    type: open
+    explanation: "Image segmentation models foreground/background via s-t cuts; project selection uses min-cut to maximize profit minus cost."
+
+  - id: integrality_property
+    prompt: "Ford-Fulkerson on integer capacities returns an integer flow because of which property?"
+    answer: ["integrality theorem", "integral capacities yield integral flows", "augmenting along integer residual capacities", "integer max flow"]
+    type: open
+    explanation: "Each augmentation increases flow by a positive integer (the bottleneck of the residual path), so the result is integral when all capacities are integers."

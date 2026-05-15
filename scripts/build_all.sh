@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 # Local smoke test: compile every file in every language.
-# Usage: ./scripts/build_all.sh [python|cpp|rust|java|all]
+# Usage: ./scripts/build_all.sh [python|cpp|rust|java|all|quiz N]
 set -e
 LANG="${1:-all}"
+
+# Convenience passthrough: `./scripts/build_all.sh quiz 6` -> `./scripts/journey quiz 6`
+if [ "$LANG" = "quiz" ]; then
+  shift
+  exec "$(dirname "$0")/journey" quiz "$@"
+fi
 
 run_python() { find "Week "* -maxdepth 2 -name "*.py" -print0 | xargs -0 -n1 python3 -m py_compile; echo "Python OK"; }
 run_cpp()    { while IFS= read -r -d '' f; do g++ -std=c++17 -w "$f" -o /tmp/a.out || { echo "FAIL $f"; exit 1; }; done < <(find "Week "* -maxdepth 2 -name "*.cpp" -print0); echo "C++ OK"; }

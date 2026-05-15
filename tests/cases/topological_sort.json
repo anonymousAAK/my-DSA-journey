@@ -1,0 +1,15 @@
+{
+  "topic": "topological_sort",
+  "week": 17,
+  "function": "topologicalSort",
+  "cases": [
+    {"name": "classic_six",   "input": [6, [[5, 2], [5, 0], [4, 0], [4, 1], [2, 3], [3, 1]]],
+     "expected": [4, 5, 0, 2, 3, 1]},
+    {"name": "linear_chain",  "input": [4, [[0, 1], [1, 2], [2, 3]]],
+     "expected": [0, 1, 2, 3]},
+    {"name": "cycle_detected","input": [3, [[0, 1], [1, 2], [2, 0]]],
+     "expected": null, "adversarial": true},
+    {"name": "disconnected",  "input": [4, [[0, 1], [2, 3]]],
+     "expected": [0, 1, 2, 3], "edge": true}
+  ]
+}

@@ -79,3 +79,23 @@ jobs:
             fi
           done < <(find "Week "* -maxdepth 2 -name "*.java" -print0)
           if [ "$fail" -ne 0 ]; then echo "--- error log ---"; cat /tmp/java-errors.log; exit 1; fi
+
+  quality:
+    runs-on: ubuntu-latest
+    continue-on-error: true  # informational for now; goal is to drive issues to zero
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Run quality lint (report-only)
+        run: python scripts/quality_check.py --quiet || echo "::warning::quality_check found drift; see logs"
+
+  tests:
+    runs-on: ubuntu-latest
+    needs: [python]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12" }
+      - name: Run correctness fixtures (Python harness)
+        run: python tests/harness/harness.py --all

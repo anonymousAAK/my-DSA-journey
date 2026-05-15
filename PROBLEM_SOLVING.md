@@ -2,6 +2,8 @@
 
 > A 30-week DSA curriculum can teach you *what* the algorithms are. This file is about *how to think* when a problem you've never seen before lands on your screen. Read this once. Then read it again after Week 10. Then again after Week 20.
 
+> **Want to feel this in practice before committing 30 weeks?** Spend 4 hours on the [Quickstart](QUICKSTART.md) — eight curated problems that take you through the full loop described below. Or take the [Diagnostic](docs/diagnostic.md) to find where in the curriculum you actually belong.
+
 ---
 
 ## Why this exists

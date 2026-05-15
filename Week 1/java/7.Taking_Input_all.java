@@ -57,6 +57,6 @@ Sample Input:
 
 Here, s.nextInt() scans and returns the next token as int. A token is part of entered
 line that is separated from other tokens by space, tab or newline. So when input
-line is: “10 5” then s.nextInt() returns the first token i.e. “10” as int and s.nextInt()
-again returns the next token i.e. “5” as int  
+line is: "10 5" then s.nextInt() returns the first token i.e. "10" as int and s.nextInt()
+again returns the next token i.e. "5" as int  
   */

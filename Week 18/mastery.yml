@@ -1,0 +1,57 @@
+week: 18
+title: Dynamic Programming
+skills:
+  - id: memo_vs_tab
+    prompt: "Memoization vs tabulation — main directional difference?"
+    answer:
+      - "memoization is top-down"
+      - "tabulation is bottom-up"
+    type: list
+    explanation: "Memoization caches recursion results (top-down). Tabulation fills a table iteratively from base cases (bottom-up)."
+
+  - id: knapsack_01_complexity
+    prompt: "0/1 Knapsack with n items and capacity W — DP time complexity?"
+    answer: ["O(n*W)", "O(nW)", "O(n W)", "n times W"]
+    type: open
+    explanation: "Pseudo-polynomial: dp[i][w] table size n × W."
+
+  - id: lcs_complexity
+    prompt: "Longest Common Subsequence on strings of lengths m and n — DP time complexity?"
+    answer: ["O(m*n)", "O(mn)"]
+    type: open
+    explanation: "Standard 2D DP fills an m×n table."
+
+  - id: lis_nlogn
+    prompt: "Longest Increasing Subsequence can be solved in what optimal time complexity?"
+    answer: ["O(n log n)", "n log n", "O(nlogn)"]
+    type: open
+    explanation: "Patience-sorting / lower_bound on the running 'smallest tail' array gives O(n log n)."
+
+  - id: coin_change_recurrence
+    prompt: "Min coins to make amount A from coins[]. State and transition?"
+    answer: ["dp[a] = min over c of dp[a-c]+1", "dp[a] = 1 + min(dp[a - c])", "min over coins of dp[a-c]+1"]
+    type: open
+    explanation: "dp[0]=0, dp[a] = 1 + min over coin c (a >= c) of dp[a-c]."
+
+  - id: fib_dp_space
+    prompt: "Fibonacci by DP uses O(n) memory naively. What's the optimized space?"
+    answer: ["O(1)", "constant", "two variables"]
+    type: open
+    explanation: "Only the previous two values matter; rolling two variables gives O(1) space."
+
+  - id: when_dp
+    prompt: "Two conditions that make a problem a DP candidate?"
+    answer:
+      - "optimal substructure"
+      - "overlapping subproblems"
+    type: list
+    explanation: "The optimum on a problem comes from optima on subproblems (substructure) AND those subproblems repeat (so caching pays)."
+
+  - id: edit_distance_ops
+    prompt: "Edit distance considers which three operations on a character?"
+    answer:
+      - "insert"
+      - "delete"
+      - "replace"
+    type: list
+    explanation: "Insert, delete, replace — each costs 1 in the classic Levenshtein distance."

@@ -1,0 +1,52 @@
+week: 3
+title: Loops & Number Theory Basics
+skills:
+  - id: for_sum_1_to_n
+    prompt: "Sum of integers 1..100 via a for loop?"
+    answer: 5050
+    type: numeric
+    explanation: "Classic n*(n+1)/2 = 100*101/2 = 5050."
+
+  - id: break_vs_continue
+    prompt: "Inside a loop, what's the difference between break and continue?"
+    answer:
+      - "break exits the loop"
+      - "continue skips to the next iteration"
+    type: list
+    explanation: "break leaves the loop entirely. continue skips the rest of the current iteration and moves to the next."
+
+  - id: variable_scope
+    prompt: "A variable declared inside a for-loop's body is visible WHERE?"
+    answer: ["inside the loop", "block", "loop body", "only in the loop"]
+    type: open
+    explanation: "Java/C++ are block-scoped: the variable dies when the enclosing { } closes."
+
+  - id: prime_trial_division_bound
+    prompt: "Trial-division primality testing only needs to check divisors up to what?"
+    answer: ["sqrt(n)", "square root of n", "sqrt", "n^0.5"]
+    type: open
+    explanation: "If n has a factor larger than sqrt(n) it must also have one smaller, so checking up to sqrt(n) suffices."
+
+  - id: bitwise_and
+    prompt: "Compute 12 & 10 (bitwise AND)."
+    answer: 8
+    type: numeric
+    explanation: "12 = 1100, 10 = 1010, AND = 1000 = 8."
+
+  - id: bin_to_dec
+    prompt: "Convert binary 1011 to decimal."
+    answer: 11
+    type: numeric
+    explanation: "8 + 0 + 2 + 1 = 11."
+
+  - id: fib_index
+    prompt: "If F(0)=0, F(1)=1, what is F(7)?"
+    answer: 13
+    type: numeric
+    explanation: "Sequence: 0,1,1,2,3,5,8,13. F(7) = 13."
+
+  - id: complexity_naive_prime
+    prompt: "Time complexity of trial-division primality test up to sqrt(n)?"
+    answer: ["O(sqrt(n))", "O(sqrtn)", "sqrt(n)", "O(n^0.5)"]
+    type: open
+    explanation: "O(sqrt(n)) divisions in the worst case."

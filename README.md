@@ -14,6 +14,17 @@ All implementations available in **4 languages**: Java, Python, C++, and Rust �
 
 ---
 
+## Start Here
+
+**First time on this repo?** 30 weeks is a real commitment. Before you make it, try one of these two on-ramps:
+
+- **[QUICKSTART.md](QUICKSTART.md) — 4 hours, 8 problems.** A focused session that walks you through the full methodology (decompose → recognize a pattern → implement → journal) on representative problems across every difficulty level. If the loop works for you, the long path is just more reps of it.
+- **[docs/diagnostic.md](docs/diagnostic.md) — 15 questions, ~25 minutes.** A calibrated diagnostic that places you into the curriculum so you don't waste weeks relearning what you already know. Maps your score to a specific starting week.
+
+Already convinced? Skip ahead to [Learning Paths](#learning-paths) or jump straight to [Week 1](Week%201/).
+
+---
+
 ### Interactive Learning Pages
 
 Every week includes a beautifully designed **interactive HTML page** (`index.html`) that you can open in any browser. No build tools, no dependencies — just open the file!
@@ -82,6 +93,7 @@ This layout supports going as deep in every language as the Java track, week by 
 
 ## Table of Contents
 
+- [Start Here](#start-here)
 - [Learning Paths](#learning-paths)
 - [How to Use This Guide](#how-to-use-this-guide)
 - [Curriculum Overview](#curriculum-overview)

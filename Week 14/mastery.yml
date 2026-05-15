@@ -1,0 +1,50 @@
+week: 14
+title: Trees
+skills:
+  - id: inorder_bst_property
+    prompt: "Inorder traversal of a Binary Search Tree yields keys in what order?"
+    answer: ["sorted", "ascending", "non-decreasing", "increasing"]
+    type: open
+    explanation: "Inorder visits left subtree, node, right subtree — and BST invariant guarantees sorted order."
+
+  - id: tree_traversal_orders
+    prompt: "Name the three depth-first traversal orders of a binary tree."
+    answer:
+      - "preorder"
+      - "inorder"
+      - "postorder"
+    type: list
+    explanation: "Defined by when you visit the node relative to its children."
+
+  - id: level_order_structure
+    prompt: "Level-order traversal uses which data structure?"
+    choices: ["stack", "queue", "set", "heap"]
+    answer: 1
+    type: multiple_choice
+    explanation: "Queue: enqueue root, then for each dequeued node enqueue its children — classic BFS."
+
+  - id: bst_search_worst
+    prompt: "Search in an UNBALANCED BST — worst-case time complexity?"
+    answer: ["O(n)", "linear", "O(h)"]
+    type: open
+    explanation: "Inserting sorted keys makes a stick-shaped tree of height n. Balancing (AVL/Red-Black) restores O(log n)."
+
+  - id: height_vs_depth
+    prompt: "What's the difference between height and depth of a node?"
+    answer:
+      - "depth is distance from root"
+      - "height is distance to deepest leaf"
+    type: list
+    explanation: "Depth is measured from the root downward; height from a node down to its furthest leaf."
+
+  - id: lca_strategy
+    prompt: "Lowest Common Ancestor in a binary tree — typical recursive strategy?"
+    answer: ["recurse on both children", "if both sides return non-null this node is the LCA", "post-order", "return non-null from each subtree"]
+    type: open
+    explanation: "Recurse left and right. If both return non-null, current node is the LCA; else propagate the non-null side."
+
+  - id: bst_invalid_input
+    prompt: "Why does 'every node's left < node < right' fail to validate a BST?"
+    answer: ["needs global bounds", "needs min and max range", "subtree bounds", "must respect ancestor bounds", "range check"]
+    type: open
+    explanation: "A node deep in the left subtree must still be less than every ancestor on the path. Pass min/max bounds down the recursion."

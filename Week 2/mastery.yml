@@ -1,0 +1,40 @@
+week: 2
+title: Control Flow
+skills:
+  - id: ternary_basic
+    prompt: "What does (5 > 3) ? 10 : 20 evaluate to?"
+    answer: 10
+    type: numeric
+    explanation: "Ternary picks the first branch when condition is true."
+
+  - id: while_vs_dowhile
+    prompt: "What is the key behavioural difference between `while` and `do-while`?"
+    answer:
+      ["do-while runs once", "do-while executes the body at least once", "do-while checks the condition after"]
+    type: open
+    explanation: "do-while tests the condition AFTER the body, so the body runs at least once even if the condition is false."
+
+  - id: nested_if_eval
+    prompt: "If x=4, what does this print? if (x>2) { if (x>5) print 'A'; else print 'B'; } else print 'C';"
+    answer: "B"
+    type: string
+    explanation: "x>2 is true so we enter the outer if; x>5 is false so we print 'B'."
+
+  - id: even_odd
+    prompt: "Which expression correctly tests if int n is even?"
+    choices: ["n / 2 == 0", "n % 2 == 0", "n & 2 == 0", "n == 2"]
+    answer: 1
+    type: multiple_choice
+    explanation: "n % 2 == 0 is the canonical even check. n & 1 == 0 also works but parses oddly without parens."
+
+  - id: short_circuit
+    prompt: "In `if (a != 0 && b/a > 1)`, why doesn't this crash when a==0?"
+    answer: ["short circuit", "short-circuit", "doesn't evaluate", "skip", "lazy"]
+    type: open
+    explanation: "&& short-circuits: when the left side is false the right side is never evaluated, so b/a never runs."
+
+  - id: power_loop_count
+    prompt: "Using a while loop, how many multiplications happen to compute 2^5?"
+    answer: 5
+    type: numeric
+    explanation: "Five iterations, each multiplying the running product by 2. (Fast exponentiation is Week 5+.)"

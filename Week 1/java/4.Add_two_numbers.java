@@ -37,7 +37,7 @@ variable is a basic unit of storage in a Java program.
 Syntax for Declaring a Variable:   type variable_name [ = value];
 
 
-Here, type is one of Java’s primitive datatypes. The variable_name is the name of
+Here, type is one of Java's primitive datatypes. The variable_name is the name of
 a variable. We can initialize the variable by specifying an equal sign and a value
 (Initialization is optional). 
 

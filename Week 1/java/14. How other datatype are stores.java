@@ -30,7 +30,7 @@ b) Float and Double values
 
 
 In Java, any value declared with decimal point is by default of type double (which is of 8 bytes). If we want to assign a float value (which is of 4 bytes), then we must
-use ‘f’ or ‘F’ literal to specify that current value is “float”.
+use 'f' or 'F' literal to specify that current value is "float".
 
 Example:
 
@@ -50,8 +50,8 @@ of a char is 0 to 65,536.
 
 public static void main(String[] args) {
     char ch1, ch2;
-      ch1 = 88; //ASCII value for ‘X’
-      ch2 = ‘Y’;
+      ch1 = 88; //ASCII value for 'X'
+      ch2 = 'Y';
       System.out.println(ch1 +" " +ch2);
     }
 /*
@@ -69,13 +69,13 @@ Example code:   */
 
 
 public static void main(String[] args) {
-    System.out.println(‘a’ + 1);
+    System.out.println('a' + 1);
 }
 
 Output:
 98
   
 /*  
-Here, we added a character and an int, so it added the ASCII value of char ‘a’ i.e 97 and int 1. So, answer will be 98.
+Here, we added a character and an int, so it added the ASCII value of char 'a' i.e 97 and int 1. So, answer will be 98.
 
-Similar logic applies to adding two chars as well, when two chars are added their codes are actually added i.e. ‘a’ + ‘b’ wil give 195.     */
+Similar logic applies to adding two chars as well, when two chars are added their codes are actually added i.e. 'a' + 'b' wil give 195.     */

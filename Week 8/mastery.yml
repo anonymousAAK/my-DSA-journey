@@ -1,0 +1,45 @@
+week: 8
+title: Searching Algorithms
+skills:
+  - id: binary_search_steps
+    prompt: "Worst-case comparisons for binary search on 1,000,000 sorted elements?"
+    answer: 20
+    type: numeric
+    explanation: "ceil(log2(10^6)) ≈ 20. Each step halves the search space."
+
+  - id: binary_search_complexity
+    prompt: "Time complexity of binary search?"
+    answer: ["O(log n)", "log n", "logarithmic"]
+    type: open
+    explanation: "Each step halves the search space — log n steps."
+
+  - id: mid_overflow_pitfall
+    prompt: "Why is `mid = (lo + hi) / 2` risky for very large lo and hi, and what's the fix?"
+    answer: ["overflow", "integer overflow", "use lo + (hi - lo) / 2", "lo + (hi-lo)/2"]
+    type: open
+    explanation: "lo + hi can overflow 32-bit int. Use lo + (hi - lo) / 2 (or unsigned shift in Java)."
+
+  - id: rotated_sorted_strategy
+    prompt: "How do you binary-search a rotated sorted array in O(log n)?"
+    answer: ["check which half is sorted", "sorted half", "compare mid to lo/hi", "find the sorted side then narrow"]
+    type: open
+    explanation: "At each step at least one half is sorted; check which half is sorted and whether the target lies inside it, then recurse into that half."
+
+  - id: binary_search_answer
+    prompt: "Which problem is a good fit for 'binary search on the answer'?"
+    choices: ["Find element in unsorted array", "Find min eating speed to finish bananas in H hours", "Reverse a string", "Two sum"]
+    answer: 1
+    type: multiple_choice
+    explanation: "When the predicate 'is X feasible?' is monotonic in X, binary search the value space — not the index space."
+
+  - id: ternary_search_use
+    prompt: "Ternary search is used to find what kind of value on a function?"
+    answer: ["unimodal", "minimum or maximum", "extremum of unimodal", "peak"]
+    type: open
+    explanation: "Ternary search finds the extremum of a UNIMODAL function in O(log n)."
+
+  - id: scale_choice
+    prompt: "Sorted array of 10^9 entries on disk. Best search strategy?"
+    answer: ["binary search", "binary", "interpolation search"]
+    type: open
+    explanation: "Binary search keeps you to ~30 comparisons. For uniformly distributed keys interpolation search is even faster on average."

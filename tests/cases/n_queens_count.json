@@ -1,0 +1,10 @@
+{
+  "topic": "n_queens_count",
+  "week": 20,
+  "function": "nQueensCount",
+  "cases": [
+    {"name": "n_4", "input": [4], "expected": 2},
+    {"name": "n_6", "input": [6], "expected": 4},
+    {"name": "n_8", "input": [8], "expected": 92, "stretch": true}
+  ]
+}

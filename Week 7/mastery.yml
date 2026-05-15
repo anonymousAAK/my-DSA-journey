@@ -1,0 +1,44 @@
+week: 7
+title: Strings
+skills:
+  - id: palindrome_check
+    prompt: "Is 'racecar' a palindrome? Reply true or false."
+    answer: "true"
+    type: string
+    explanation: "Reads the same forwards and backwards."
+
+  - id: anagram_check
+    prompt: "Two strings are anagrams iff what condition on their character counts?"
+    answer: ["equal counts", "same frequency", "same character counts", "matching frequencies", "identical multiset"]
+    type: open
+    explanation: "Anagrams have identical character-frequency maps. Sort-and-compare also works."
+
+  - id: stringbuilder_vs_string
+    prompt: "Why prefer StringBuilder over repeated String += in a Java loop?"
+    answer: ["immutability", "strings are immutable", "O(n^2) concatenation", "quadratic", "avoid copying"]
+    type: open
+    explanation: "Java Strings are immutable; each += allocates a new string, making concatenation O(n²). StringBuilder is mutable and amortized O(1) per append."
+
+  - id: kmp_complexity
+    prompt: "Time complexity of KMP substring search on text length n, pattern length m?"
+    answer: ["O(n + m)", "O(n+m)", "linear", "O(n)"]
+    type: open
+    explanation: "Preprocessing the pattern is O(m); the scan is O(n). Total O(n+m)."
+
+  - id: rabin_karp_idea
+    prompt: "What data structure trick lets Rabin-Karp slide its window in amortized O(1) per shift?"
+    answer: ["rolling hash", "hash", "polynomial hash", "rolling polynomial"]
+    type: open
+    explanation: "A rolling hash updates in O(1) per shift by subtracting the leaving character and adding the entering one."
+
+  - id: rle
+    prompt: "Run-length-encode 'aaabbc'. Format as letters+counts, e.g. a3b2c1."
+    answer: ["a3b2c1"]
+    type: open
+    explanation: "Three a's, two b's, one c → a3b2c1."
+
+  - id: substring_count_complexity
+    prompt: "Naïve substring search (text n, pattern m) worst-case time complexity?"
+    answer: ["O(n*m)", "O(nm)", "O(n m)", "n*m"]
+    type: open
+    explanation: "At each of n positions you compare up to m characters."

@@ -1,0 +1,12 @@
+{
+  "topic": "sliding_window_longest_substr",
+  "week": 30,
+  "function": "longestUniqueSubstring",
+  "cases": [
+    {"name": "leetcode_3",      "input": ["abcabcbb"], "expected": 3},
+    {"name": "all_same",        "input": ["bbbbb"],    "expected": 1, "edge": true},
+    {"name": "internal_window", "input": ["pwwkew"],   "expected": 3},
+    {"name": "empty",           "input": [""],         "expected": 0, "edge": true},
+    {"name": "dvdf_trick",      "input": ["dvdf"],     "expected": 3, "adversarial": true}
+  ]
+}
