@@ -55,12 +55,26 @@ Each week has dedicated language subfolders: `java/`, `python/`, `cpp/`, `rust/`
 
 ```
 Week N/
-├── java/      # Java lessons and problems (detailed, step-by-step)
-├── python/    # Python equivalents with idiomatic patterns
-├── cpp/       # C++17/STL implementations
-├── rust/      # Rust ownership-safe implementations
-└── web/       # Interactive weekly notes (index.html)
+├── java/      # Java lessons and problems (numbered topic-by-topic)
+├── python/    # Python equivalent for each Java topic (1:1 numbered)
+├── cpp/       # C++17/STL equivalent for each Java topic (1:1 numbered)
+├── rust/      # Rust ownership-safe equivalent for each Java topic (1:1 numbered)
+└── web/       # HTML+JS demo for each Java topic + an interactive index.html
 ```
+
+**Every Java topic has a 1:1 numbered counterpart in every other language.** For example, in Week 1:
+
+```
+Week 1/java/4.Add_two_numbers.java
+Week 1/python/4.add_two_numbers.py
+Week 1/cpp/4.add_two_numbers.cpp
+Week 1/rust/4.add_two_numbers.rs
+Week 1/web/4.add_two_numbers.html
+```
+
+Each per-topic file follows the same header structure as Java — `CONCEPT`, `KEY POINTS`, `SYNTAX` or `ALGORITHM / APPROACH`, `DRY RUN`, `COMPLEXITY` — and ends with a `NOTES` block calling out language-specific idiomatic differences from Java.
+
+Alongside the numbered topic files, each language folder also keeps an **overview/survey file** (`fundamentals.py`, `arrays.cpp`, `linked_lists.rs`, …) and `web/index.html` keeps the rich interactive page. These are quick-reference companions to the deep per-topic files.
 
 This layout supports going as deep in every language as the Java track, week by week.
 
@@ -117,7 +131,8 @@ Hashing   Trees    Adv Trees  Adv Graph  Research  Sys Design
 2. **Intermediate**: Jump to Week 8 (Searching) or Week 11 (Linked Lists) depending on your comfort level.
 3. **Advanced**: Weeks 18-24 cover DP, advanced graphs, and research-level topics.
 4. **Interview prep**: Follow the Interview Prep learning path above, then do Week 30.
-5. Each week folder is organized into `java`, `python`, `cpp`, `rust`, and `web` subfolders.
+5. Each week folder is organized into `java`, `python`, `cpp`, `rust`, and `web` subfolders, with one numbered file per topic in every language.
+6. **Recommended study flow per topic**: read the Java file for the canonical walkthrough → read the same-numbered Python/C++/Rust/HTML file → run all four and compare outputs → finish with the `NOTES` block at the bottom of each file to see what changed idiomatically.
 6. Every file includes: Problem statement → Approach/Pseudocode → Implementation → Complexity Analysis.
 7. **Language learners**: Compare implementations across languages to understand design differences.
 8. **Open the HTML pages**: Each week has `web/index.html` with interactive explanations, diagrams, and code you can copy directly.

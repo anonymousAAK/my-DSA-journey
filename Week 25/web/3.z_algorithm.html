@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Week 25 - Z-Algorithm</title>
+<style>
+  body { font-family: ui-monospace, monospace; background:#0e1116; color:#e6edf3; margin:1rem; }
+  h1 { color:#79c0ff; }
+  pre#out { background:#161b22; padding:1rem; border:1px solid #30363d; white-space:pre; overflow:auto; }
+</style>
+</head>
+<body>
+<h1>Week 25 - Z-Algorithm</h1>
+<pre id="out"></pre>
+
+<script>
+/*
+ * WEEK 25 - WEB ADVANCED DSA
+ * Topic: Z-Algorithm for Pattern Matching
+ * File: 3.z_algorithm.html
+ *
+ * CONCEPT:
+ *   For a string S the Z-array Z[i] = length of the longest prefix of S
+ *   that starts at S[i]. Computed in O(n) by reusing previously found
+ *   matches inside a moving "Z-box". Pattern matching becomes:
+ *       build C = P + '$' + T, compute Z(C), report Z[i] == |P|.
+ *
+ * KEY POINTS:
+ *   - The Z-box [l, r) is the right-most prefix match encountered so far.
+ *   - If i < r, Z[i] = min(r - i, Z[i - l]) BEFORE attempting to extend.
+ *   - Each character of S participates in at most two char-comparisons.
+ *
+ * ALGORITHM / APPROACH:
+ *   z[0] = 0; l = r = 0
+ *   for i in 1..n:
+ *     if i < r: z[i] = min(r - i, z[i - l])
+ *     while i + z[i] < n and s[z[i]] === s[i + z[i]]: z[i]++
+ *     if i + z[i] > r: l = i; r = i + z[i]
+ *
+ * WEB-SPECIFIC NOTES vs JAVA:
+ *   - Math.min, simple string indexing, Array.fill.
+ *   - Output goes to <pre id="out"> and console.log.
+ *
+ * DRY RUN:
+ *   S = "aabxaab" -> Z = [0,1,0,0,3,1,0].
+ *   C = "ABABCABAB$ABABDABACDABABCABAB"; Z[20] = 9 -> match at 10.
+ *
+ * COMPLEXITY:
+ *   Time  : O(n + m)
+ *   Space : O(n + m)
+ */
+
+const out = document.getElementById('out');
+function log(...args) {
+  const s = args.map(a => typeof a === 'object' ? JSON.stringify(a) : String(a)).join(' ');
+  out.textContent += s + '\n';
+  console.log(...args);
+}
+
+function zFunction(s) {
+  const n = s.length;
+  const z = new Array(n).fill(0);
+  let l = 0, r = 0;
+  for (let i = 1; i < n; i++) {
+    if (i < r) z[i] = Math.min(r - i, z[i - l]);
+    while (i + z[i] < n && s[z[i]] === s[i + z[i]]) z[i]++;
+    if (i + z[i] > r) { l = i; r = i + z[i]; }
+  }
+  return z;
+}
+
+function search(text, pattern) {
+  if (!pattern) return [];
+  const concat = pattern + '$' + text;
+  const z = zFunction(concat);
+  const m = pattern.length;
+  const results = [];
+  for (let i = m + 1; i < concat.length; i++) {
+    if (z[i] === m) results.push(i - m - 1);
+  }
+  return results;
+}
+
+log('=== Z-Algorithm (Web/JS) ===');
+const demo = 'aabxaab';
+log('String :', demo);
+log('Z-array:', zFunction(demo));      // [0,1,0,0,3,1,0]
+
+const text = 'ABABDABACDABABCABAB';
+const pattern = 'ABABCABAB';
+log('\nText   :', text);
+log('Pattern:', pattern);
+log('Matches:', search(text, pattern));   // [10]
+
+log('\n--- Overlapping matches ---');
+const t2 = 'AAAAAA', p2 = 'AAA';
+log('Text   :', t2);
+log('Pattern:', p2);
+log('Matches:', search(t2, p2));          // [0,1,2,3]
+
+/*
+ * NOTES (vs Java baseline):
+ *   - JS string concatenation is fine for short inputs; for huge inputs
+ *     consider an array-join idiom to avoid quadratic concat costs.
+ *   - The sentinel '$' must not appear in (text + pattern); change it if so.
+ */
+</script>
+</body>
+</html>
