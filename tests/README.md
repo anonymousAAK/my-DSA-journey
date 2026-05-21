@@ -15,15 +15,16 @@ tests/
 │   └── ... (25 total)
 ├── refs/                # reference implementations consumed by harnesses
 │   ├── kadane_max_subarray.py
-│   ├── kadane_max_subarray.cpp   # pilot: C++ driver for kadane
-│   ├── kadane_max_subarray.rs    # pilot: Rust driver for kadane
+│   ├── kadane_max_subarray.cpp
+│   ├── kadane_max_subarray.rs
 │   ├── KadaneMaxSubarray.java    # pilot: Java reference for kadane
-│   └── ... (25 Python refs; the cpp/rs/java refs only cover the pilot)
+│   └── ... (25 Python refs + 25 C++ + 25 Rust drivers; Java still pilot-only)
 └── harness/
-    ├── harness.py        # Python harness — runs all 25 topics
-    ├── harness_cpp.sh    # C++ harness — pilot: kadane only
+    ├── harness.py        # Python orchestrator — also shells out to cpp/rust/java
+    ├── emit_lines.py     # shared JSON->line-format emitter (cpp + rust)
+    ├── harness_cpp.sh    # C++ harness — all 25 topics
     ├── Harness.java      # Java harness — pilot: kadane only
-    └── harness_rust.sh   # Rust harness — pilot: kadane only
+    └── harness_rust.sh   # Rust harness — all 25 topics
 ```
 
 ## What problem does this solve?
@@ -48,23 +49,38 @@ python tests/harness/harness.py --all
 python tests/harness/harness.py --all -v
 ```
 
-CI runs `python tests/harness/harness.py --all` after the Python compile job
-succeeds. See the `tests` job in `.github/workflows/build.yml`.
+CI runs `python tests/harness/harness.py --all --lang python` after the
+Python compile job succeeds, plus parallel `tests-cpp` / `tests-rust` /
+`tests-java` jobs. See `.github/workflows/build.yml`.
 
-### C++ / Java / Rust (kadane pilot only)
+### C++ and Rust (all 25 topics)
 
 ```bash
-bash tests/harness/harness_cpp.sh tests/cases/kadane_max_subarray.json
+# One topic
+bash tests/harness/harness_cpp.sh tests/cases/<topic>.json
+bash tests/harness/harness_rust.sh tests/cases/<topic>.json
 
-# Java requires a small build step:
-javac -d /tmp/java-out tests/harness/Harness.java tests/refs/KadaneMaxSubarray.java
-java -cp /tmp/java-out Harness tests/cases/kadane_max_subarray.json
+# All 25 topics
+bash tests/harness/harness_cpp.sh --all
+bash tests/harness/harness_rust.sh --all
 
-bash tests/harness/harness_rust.sh tests/cases/kadane_max_subarray.json
+# Via the Python orchestrator (same args, picks the wrapper)
+python tests/harness/harness.py --all --lang cpp
+python tests/harness/harness.py --all --lang rust
+
+# Run python first, then cpp, then rust, then aggregate
+python tests/harness/harness.py --all --lang all
 ```
 
-Each non-Python harness will print `SKIP <topic> :: no <lang> driver yet`
-for fixtures whose driver hasn't been written.
+### Java (kadane pilot only)
+
+```bash
+javac -d /tmp/java-out tests/harness/Harness.java tests/refs/KadaneMaxSubarray.java
+java -cp /tmp/java-out Harness tests/cases/kadane_max_subarray.json
+```
+
+Each non-Python harness prints `SKIP <topic> :: no <lang> driver yet` for
+fixtures whose driver hasn't been written (still the case for Java).
 
 ## Adding a new fixture
 

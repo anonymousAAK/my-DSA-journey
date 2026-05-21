@@ -54,6 +54,118 @@ REQUIRED_TOKENS_GROUPS: list[list[str]] = [
 # Per-language header opener patterns. We scan the first ~120 lines.
 HEADER_SCAN_LINES = 200
 
+# Fundamentals weeks (1-5) — these contain syntax tutorials where COMPLEXITY
+# is genuinely not applicable (e.g. "print hello world", "declare a variable").
+TUTORIAL_WEEKS = {1, 2, 3, 4, 5}
+
+# Topic-name fragments identifying tutorial/syntax-demo files for which
+# COMPLEXITY analysis does not apply. Match is case-insensitive and substring.
+TUTORIAL_TOPIC_PATTERNS = (
+    "hello_world", "installation", "data_types", "typecasting", "operators",
+    "if_else", "while_loop", "for_loop", "break", "continue",
+    "scope_of_variable", "bitwise_operator", "infinite_loop",
+    "taking_input", "multiple_input", "integer_and_string",
+    "how_integer_is_stored", "how_other_datatype",
+    "arithmetic_operation", "increment_decrement",
+    "precedence_associativity", "add_two_numbers", "better_hello",
+    "find_character_case", "for_loop_variations",
+)
+
+# Survey / multi-topic legacy filenames. These files bundle several related
+# topics in a single source (e.g. all sorting algorithms in BubbleSelectionInsertion.java).
+# They are exempt from the per-topic header schema and from the per-topic
+# counterpart check. New per-topic files should NOT be added here — use the
+# numbered file convention instead.
+SURVEY_TOPIC_STEMS = {
+    # Weeks 26-30 cross-cutting surveys
+    "network_flow", "geometry", "game_theory", "system_design",
+    "interview_patterns", "fundamentals", "arrays", "strings",
+    "searching", "sorting", "matrix", "linked_lists", "stacks", "queues",
+    "trees", "heaps", "hashing", "graphs", "dp", "greedy", "backtracking",
+    "recursion", "control_flow", "string_algorithms",
+}
+
+# Path to the known-drift configuration. Files listed there are exempted from
+# the header check with a human-readable reason. Format is intentionally
+# minimal — one entry per line, "<repo-relative-path>: <reason>".
+KNOWN_DRIFT_FILE = ".ci-known-drift.yml"
+
+# Path to the java-skip list (also used by CI for the java compile job).
+# Files listed here are pedagogical fragments and are exempt from the header
+# check in addition to being skipped by the java compile job.
+CI_SKIP_JAVA_FILE = ".ci-skip-java"
+
+
+def _load_line_set(relpath: str) -> set[str]:
+    """Load a simple line-oriented config file: blank lines and `#` comments
+    are ignored, otherwise either the bare path before any `:` separator OR
+    the entire line is treated as a path. Returns the set of repo-relative
+    paths (forward-slash) it lists."""
+    p = REPO_ROOT / relpath
+    if not p.is_file():
+        return set()
+    out: set[str] = set()
+    for raw in p.read_text(encoding="utf-8", errors="replace").splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#"):
+            continue
+        # `<path>: <reason>` form — take everything before the first colon.
+        if ":" in line:
+            path = line.split(":", 1)[0].strip()
+        else:
+            path = line
+        if path:
+            out.add(path)
+    return out
+
+
+# Lazy-loaded module-level caches.
+_SKIP_JAVA_CACHE: set[str] | None = None
+_KNOWN_DRIFT_CACHE: set[str] | None = None
+
+
+def skip_java_paths() -> set[str]:
+    global _SKIP_JAVA_CACHE
+    if _SKIP_JAVA_CACHE is None:
+        _SKIP_JAVA_CACHE = _load_line_set(CI_SKIP_JAVA_FILE)
+    return _SKIP_JAVA_CACHE
+
+
+def known_drift_paths() -> set[str]:
+    global _KNOWN_DRIFT_CACHE
+    if _KNOWN_DRIFT_CACHE is None:
+        _KNOWN_DRIFT_CACHE = _load_line_set(KNOWN_DRIFT_FILE)
+    return _KNOWN_DRIFT_CACHE
+
+
+def is_tutorial_topic(path: Path) -> bool:
+    """Return True if this file is a syntax-tutorial / fundamentals demo for
+    which COMPLEXITY analysis is genuinely not applicable."""
+    # Week-based: weeks 1-5 are fundamentals.
+    try:
+        wk = int(path.parent.parent.name.split()[1])
+        if wk in TUTORIAL_WEEKS:
+            return True
+    except (ValueError, IndexError):
+        pass
+    # Topic-name-based: any filename whose normalised stem contains a tutorial keyword.
+    stem = path.stem if path.suffix else path.name
+    is_rust = path.suffix == ".rs"
+    norm = normalize_stem(stem, is_rust=is_rust)
+    for kw in TUTORIAL_TOPIC_PATTERNS:
+        if kw in norm:
+            return True
+    return False
+
+
+def is_survey_file(path: Path) -> bool:
+    """Return True if this Java/HTML file is a survey/multi-topic legacy file
+    that should be exempt from the per-topic header and counterpart checks."""
+    stem = path.stem if path.suffix else path.name
+    is_rust = path.suffix == ".rs"
+    norm = normalize_stem(stem, is_rust=is_rust)
+    return norm in SURVEY_TOPIC_STEMS
+
 
 # ---------------------------------------------------------------------------
 # Issue accumulator
@@ -173,22 +285,36 @@ def extract_header_text(path: Path, text: str) -> str:
 
 
 def check_html_header(text: str) -> list[str]:
-    """HTML must contain `<!-- WEEK N` (or similar) near the top."""
+    """HTML must contain `<!-- WEEK N` (or similar) near the top.
+
+    For survey/multi-topic HTML files that follow a `<head>` -> `<title>` -> `<body>`
+    layout (no leading HTML comment), accept a `<title>Week N` element instead —
+    that's the equivalent "this file declares its week" signal.
+    """
     head = "\n".join(text.splitlines()[:30])
     if re.search(r"<!--[^>]*WEEK\s+\d+", head, flags=re.IGNORECASE):
         return []
     # Also tolerate a `<!--\nWEEK N` on the next line.
     if re.search(r"<!--\s*\n\s*WEEK\s+\d+", head, flags=re.IGNORECASE):
         return []
+    # Tolerate `<title>Week N - ...</title>` for survey-style HTML pages.
+    if re.search(r"<title>[^<]*WEEK\s+\d+", head, flags=re.IGNORECASE):
+        return []
     return ["WEEK N comment header"]
 
 
-def check_code_header(text: str) -> list[str]:
-    """Return the list of *missing* token-groups (rendered as the first alternative)."""
+def check_code_header(text: str, *, allow_missing_complexity: bool = False) -> list[str]:
+    """Return the list of *missing* token-groups (rendered as the first alternative).
+
+    If `allow_missing_complexity` is True (e.g. for syntax-tutorial files in
+    fundamentals weeks), the COMPLEXITY group is not required.
+    """
     scan = extract_header_text(Path("."), text)  # path unused
     upper = scan.upper()
     missing: list[str] = []
     for group in REQUIRED_TOKENS_GROUPS:
+        if allow_missing_complexity and group == ["COMPLEXITY"]:
+            continue
         if not any(tok.upper() in upper for tok in group):
             missing.append(group[0])
     return missing
@@ -197,6 +323,8 @@ def check_code_header(text: str) -> list[str]:
 def run_check_headers() -> tuple[int, list[Issue]]:
     issues: list[Issue] = []
     file_count = 0
+    skip_java = skip_java_paths()
+    drift = known_drift_paths()
     for wk in week_dirs():
         for lang_dir, ext in [("python", ".py"), ("cpp", ".cpp"), ("rust", ".rs"),
                               ("java", ".java"), ("web", ".html")]:
@@ -213,21 +341,34 @@ def run_check_headers() -> tuple[int, list[Issue]]:
                     continue
                 if ext == ".html" and not is_numbered_topic_file(f):
                     continue
+                relpath = rel(f)
+                # Pedagogical Java fragments (also skipped by the java compile
+                # job) — these are intentionally not standalone programs and
+                # not required to carry the per-topic header schema.
+                if ext == ".java" and relpath in skip_java:
+                    continue
+                # Survey / multi-topic files (e.g. Week N java/web "bundle"
+                # files in advanced weeks) use a different header schema and
+                # are exempted via .ci-known-drift.yml.
+                if relpath in drift:
+                    continue
                 file_count += 1
                 text = read_text_safely(f)
                 if text is None:
                     issues.append(Issue("headers", "HEADER_UNREADABLE",
-                                        "tokens=[?]", rel(f)))
+                                        "tokens=[?]", relpath))
                     continue
                 if ext == ".html":
                     missing = check_html_header(text)
                 else:
-                    missing = check_code_header(text)
+                    allow_no_complexity = is_tutorial_topic(f)
+                    missing = check_code_header(
+                        text, allow_missing_complexity=allow_no_complexity)
                 if missing:
                     tokens = ", ".join(missing)
                     issues.append(Issue(
                         "headers", "HEADER_MISSING",
-                        f"tokens=[{tokens}]", rel(f),
+                        f"tokens=[{tokens}]", relpath,
                         extra={"missing": missing},
                     ))
     return file_count, issues
@@ -438,6 +579,8 @@ def index_lang_dir(d: Path, is_rust: bool) -> dict[str, str]:
 def run_check_consistency() -> tuple[int, list[Issue]]:
     issues: list[Issue] = []
     missing_count = 0
+    skip_java = skip_java_paths()
+    drift = known_drift_paths()
     for wk in week_dirs():
         java_dir = wk / "java"
         if not java_dir.is_dir():
@@ -448,6 +591,15 @@ def run_check_consistency() -> tuple[int, list[Issue]]:
         rs_map = index_lang_dir(wk / "rust", is_rust=True)
         web_map = index_lang_dir(wk / "web", is_rust=False)
         for norm, jpath in java_map.items():
+            # Survey / cross-cutting overview files (e.g. fundamentals.java,
+            # network_flow.java) don't have a 1:1 per-topic counterpart by
+            # design — they are weekly overviews, not per-topic implementations.
+            if norm in SURVEY_TOPIC_STEMS:
+                continue
+            # Pedagogical fragments (skipped by the java compile job) are not
+            # standalone programs and don't have cross-language counterparts.
+            if jpath in skip_java or jpath in drift:
+                continue
             for lang, m in [("python", py_map), ("cpp", cpp_map),
                             ("rust", rs_map), ("web", web_map)]:
                 if norm not in m:

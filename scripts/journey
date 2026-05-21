@@ -18,11 +18,14 @@ from __future__ import annotations
 
 import argparse
 import datetime as _dt
+import html as _html
 import json
 import os
 import random
 import re
+import subprocess
 import sys
+import webbrowser
 from pathlib import Path
 
 try:
@@ -279,9 +282,28 @@ def cmd_quiz(args: argparse.Namespace) -> int:
 
     result = run_quiz(week_data, n=args.n)
 
-    # Persist
+    # Persist latest snapshot per week (unchanged behaviour).
     progress["weeks"][str(week)] = result
     progress["current_week"] = max(progress.get("current_week", 1), week)
+
+    # Append an entry to the rolling history (for streaks / time-to-mastery).
+    now_iso = _dt.datetime.now().isoformat(timespec="seconds")
+    history = progress.setdefault("history", [])
+    history.append({
+        "week": week,
+        "passed": list(result.get("passed", [])),
+        "missed": list(result.get("missed", [])),
+        "total": result.get("total", 0),
+        "rate": result.get("rate", 0),
+        "timestamp": now_iso,
+    })
+
+    # Aggregate per-skill miss counts across all attempts.
+    miss_counts = progress.setdefault("skill_miss_counts", {})
+    for sid in result.get("missed", []):
+        key = f"{week}:{sid}"
+        miss_counts[key] = miss_counts.get(key, 0) + 1
+
     save_progress(progress)
 
     # Spaced-repetition suggestion at 80%+
@@ -300,8 +322,391 @@ def cmd_quiz(args: argparse.Namespace) -> int:
     return 0
 
 
+# ---------------------------------------------------------------------------
+# HTML dashboard
+# ---------------------------------------------------------------------------
+
+DASHBOARD_FILE = PROGRESS_DIR / "dashboard.html"
+
+
+def _parse_ts(ts: str) -> _dt.date | None:
+    """Parse either ISO datetime or ISO date into a date."""
+    if not ts or ts == "—":
+        return None
+    try:
+        return _dt.date.fromisoformat(ts[:10])
+    except Exception:
+        return None
+
+
+def _compute_streak(history: list[dict]) -> int:
+    """Consecutive days (ending today or yesterday) with at least one quiz."""
+    days = set()
+    for h in history:
+        d = _parse_ts(h.get("timestamp", ""))
+        if d:
+            days.add(d)
+    if not days:
+        return 0
+    today = _dt.date.today()
+    # Allow streak to "still be alive" if last entry was yesterday.
+    if today not in days and (today - _dt.timedelta(days=1)) not in days:
+        return 0
+    start = today if today in days else today - _dt.timedelta(days=1)
+    streak = 0
+    cur = start
+    while cur in days:
+        streak += 1
+        cur -= _dt.timedelta(days=1)
+    return streak
+
+
+def _top_missed_skills(progress: dict, k: int = 10) -> list[tuple[str, int, int]]:
+    """Return [(week, skill_id, miss_count)] sorted desc by count."""
+    counts = progress.get("skill_miss_counts", {})
+    items: list[tuple[str, int, int]] = []
+    for key, count in counts.items():
+        if ":" not in key:
+            continue
+        week_s, sid = key.split(":", 1)
+        try:
+            week_n = int(week_s)
+        except ValueError:
+            continue
+        items.append((sid, week_n, int(count)))
+    items.sort(key=lambda t: (-t[2], t[1], t[0]))
+    return items[:k]
+
+
+def _time_to_mastery(history: list[dict]) -> dict[int, int]:
+    """For each week the learner aced (rate>=100), days from 1st attempt to 100."""
+    first_attempt: dict[int, _dt.date] = {}
+    first_ace: dict[int, _dt.date] = {}
+    for h in history:
+        wk = h.get("week")
+        if not isinstance(wk, int):
+            continue
+        d = _parse_ts(h.get("timestamp", ""))
+        if not d:
+            continue
+        if wk not in first_attempt or d < first_attempt[wk]:
+            first_attempt[wk] = d
+        if h.get("rate", 0) >= 100 and wk not in first_ace:
+            first_ace[wk] = d
+        elif h.get("rate", 0) >= 100 and d < first_ace[wk]:
+            first_ace[wk] = d
+    out: dict[int, int] = {}
+    for wk, ace_d in first_ace.items():
+        start = first_attempt.get(wk, ace_d)
+        out[wk] = (ace_d - start).days
+    return out
+
+
+def _recommend_next(progress: dict) -> dict:
+    """Suggest a new week + 2 revisit problems following REVIEW_SCHEDULE.md."""
+    weeks_seen = progress.get("weeks", {})
+    # Highest attempted week, defaulting to current_week.
+    attempted = [int(k) for k in weeks_seen.keys() if k.isdigit()]
+    highest_attempted = max(attempted) if attempted else 0
+    cur = max(progress.get("current_week", 1), highest_attempted)
+    next_new = min(cur + 1, TOTAL_WEEKS)
+    revisit = []
+    for offset in (3, 7):
+        prev = next_new - offset
+        if prev >= 1:
+            rec = weeks_seen.get(str(prev))
+            note = ""
+            if rec:
+                ts = rec.get("timestamp", "")
+                d = _parse_ts(ts)
+                if d:
+                    note = f" (last attempt {(_dt.date.today() - d).days}d ago)"
+            revisit.append({"week": prev, "note": note})
+    return {"next_new": next_new, "revisit": revisit}
+
+
+def _week_status(rec: dict | None) -> tuple[str, str]:
+    """Return (css_class, label) describing a week cell."""
+    if not rec:
+        return ("none", "not attempted")
+    rate = rec.get("rate", 0) or 0
+    if rate >= 80:
+        return ("good", f"{rate:.0f}%")
+    if rate >= 50:
+        return ("mid", f"{rate:.0f}%")
+    return ("bad", f"{rate:.0f}%")
+
+
+def _esc(s) -> str:
+    return _html.escape(str(s), quote=True)
+
+
+def _render_dashboard(progress: dict) -> str:
+    weeks_seen = progress.get("weeks", {})
+    history = progress.get("history", [])
+    streak = _compute_streak(history)
+    top_missed = _top_missed_skills(progress, 10)
+    ttm = _time_to_mastery(history)
+    recommendation = _recommend_next(progress)
+    generated = _dt.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    # Cell colors come from the per-week web pages' palette
+    # (#0d1117 bg, #161b22 card, #30363d border, #58a6ff blue, #3fb950 green).
+    css = """
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--card-border:#30363d;
+  --text:#c9d1d9;--text-secondary:#8b949e;
+  --accent-blue:#58a6ff;--accent-green:#3fb950;
+  --good:#22c55e;--mid:#eab308;--bad:#ef4444;--none:#374151;
+  --gradient:linear-gradient(135deg,#58a6ff,#3fb950);
+  --radius:12px;--shadow:0 4px 24px rgba(0,0,0,.4);
+}
+html{scroll-behavior:smooth}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);line-height:1.6;
+  padding:32px 20px 80px;max-width:1080px;margin:0 auto;
+}
+h1{font-size:2.2rem;font-weight:800;margin-bottom:6px;
+   background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;}
+h2{font-size:1.25rem;margin:0 0 16px;display:flex;align-items:center;gap:10px;color:var(--text)}
+.subtitle{color:var(--text-secondary);font-size:.95rem;margin-bottom:28px}
+.card{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+      padding:24px;margin:20px 0;box-shadow:var(--shadow)}
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:16px;margin-bottom:20px}
+.stat{background:var(--card);border:1px solid var(--card-border);border-radius:var(--radius);
+      padding:18px 20px;text-align:center}
+.stat .val{font-size:2rem;font-weight:800;color:var(--accent-blue)}
+.stat .lbl{font-size:.8rem;text-transform:uppercase;letter-spacing:1px;color:var(--text-secondary);margin-top:4px}
+.heatmap{display:grid;grid-template-columns:repeat(10,1fr);gap:8px;margin-top:8px}
+.cell{position:relative;aspect-ratio:1/1;border-radius:8px;cursor:pointer;
+      display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.9rem;
+      color:#0d1117;transition:transform .12s,box-shadow .12s;border:1px solid rgba(0,0,0,.2)}
+.cell.good{background:var(--good)}
+.cell.mid{background:var(--mid)}
+.cell.bad{background:var(--bad)}
+.cell.none{background:var(--none);color:var(--text-secondary)}
+.cell:hover{transform:translateY(-2px);box-shadow:0 4px 12px rgba(0,0,0,.5)}
+.cell .tt{position:absolute;bottom:-6px;left:50%;transform:translate(-50%,100%);
+          background:#000;color:#fff;padding:4px 8px;border-radius:6px;font-size:.72rem;
+          white-space:nowrap;opacity:0;pointer-events:none;transition:opacity .15s;z-index:5}
+.cell:hover .tt{opacity:1}
+.legend{display:flex;gap:14px;margin-top:14px;flex-wrap:wrap;font-size:.82rem;color:var(--text-secondary)}
+.legend .sw{display:inline-block;width:14px;height:14px;border-radius:3px;vertical-align:middle;margin-right:6px}
+.detail{display:none;margin-top:16px;padding:16px;background:rgba(88,166,255,.05);
+        border-left:3px solid var(--accent-blue);border-radius:0 8px 8px 0;font-size:.9rem}
+.detail.open{display:block}
+.detail h3{font-size:1rem;color:var(--accent-blue);margin-bottom:8px}
+.detail ul{margin:6px 0 6px 22px}
+table{width:100%;border-collapse:collapse;margin:10px 0;font-size:.9rem}
+th{background:rgba(88,166,255,.1);color:var(--accent-blue);text-align:left;padding:10px;
+   border-bottom:2px solid var(--card-border);font-weight:600}
+td{padding:8px 10px;border-bottom:1px solid var(--card-border)}
+tr:hover td{background:rgba(88,166,255,.03)}
+.badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:.72rem;font-weight:600}
+.badge-good{background:rgba(34,197,94,.15);color:var(--good)}
+.badge-bad{background:rgba(239,68,68,.15);color:var(--bad)}
+.footer{margin-top:40px;font-size:.78rem;color:var(--text-secondary);text-align:center}
+ul.plain{list-style:none;padding:0}
+ul.plain li{padding:6px 0;border-bottom:1px solid var(--card-border)}
+ul.plain li:last-child{border-bottom:none}
+@media(max-width:760px){
+  .heatmap{grid-template-columns:repeat(6,1fr)}
+  body{padding:20px 14px}
+}
+"""
+
+    # Build heatmap cells
+    cells_html = []
+    week_details = {}
+    for n in range(1, TOTAL_WEEKS + 1):
+        rec = weeks_seen.get(str(n))
+        cls, label = _week_status(rec)
+        ts = rec.get("timestamp", "—") if rec else "—"
+        passed = rec.get("passed", []) if rec else []
+        missed = rec.get("missed", []) if rec else []
+        total = rec.get("total", 0) if rec else 0
+        tip = f"Week {n}: {label}"
+        cells_html.append(
+            f'<div class="cell {cls}" data-week="{n}" '
+            f'onclick="toggleDetail({n})" title="{_esc(tip)}">'
+            f"{n}<span class=\"tt\">{_esc(label)}</span></div>"
+        )
+        # Per-week skill details (rendered as a hidden block below the grid).
+        detail_lines = [
+            f'<div id="detail-{n}" class="detail">',
+            f'<h3>Week {n} — {_esc(label)} (last attempt: {_esc(ts)})</h3>',
+            f'<p>Skills tested: {total}</p>',
+        ]
+        if passed:
+            detail_lines.append("<p><strong>Passed:</strong></p><ul>")
+            for sid in passed:
+                detail_lines.append(f"<li>{_esc(sid)}</li>")
+            detail_lines.append("</ul>")
+        if missed:
+            detail_lines.append("<p><strong>Missed:</strong></p><ul>")
+            for sid in missed:
+                detail_lines.append(f"<li>{_esc(sid)}</li>")
+            detail_lines.append("</ul>")
+        if not rec:
+            detail_lines.append("<p><em>Week not yet attempted.</em></p>")
+        detail_lines.append("</div>")
+        week_details[n] = "\n".join(detail_lines)
+
+    # Top-line stats
+    attempted = sum(1 for v in weeks_seen.values() if v)
+    aced = sum(1 for v in weeks_seen.values() if v and v.get("rate", 0) >= 80)
+
+    # Top missed skills table
+    if top_missed:
+        missed_rows = "\n".join(
+            f"<tr><td>{wk}</td><td>{_esc(sid)}</td>"
+            f'<td><span class="badge badge-bad">{cnt}</span></td></tr>'
+            for sid, wk, cnt in top_missed
+        )
+        missed_table = (
+            "<table><thead><tr><th>Week</th><th>Skill</th><th>Miss count</th>"
+            f"</tr></thead><tbody>{missed_rows}</tbody></table>"
+        )
+    else:
+        missed_table = "<p><em>No missed skills recorded yet.</em></p>"
+
+    # Time-to-mastery table
+    if ttm:
+        ttm_rows = "\n".join(
+            f"<tr><td>{wk}</td><td>{days} day{'s' if days != 1 else ''}</td></tr>"
+            for wk, days in sorted(ttm.items())
+        )
+        ttm_table = (
+            "<table><thead><tr><th>Week</th><th>Days to 100%</th>"
+            f"</tr></thead><tbody>{ttm_rows}</tbody></table>"
+        )
+    else:
+        ttm_table = (
+            "<p><em>No 100% weeks yet — ace a week to see your time-to-mastery here.</em></p>"
+        )
+
+    # Recommended next session
+    rec_items = [
+        f"<li><strong>New: Week {recommendation['next_new']}</strong></li>"
+    ]
+    for r in recommendation["revisit"]:
+        rec_items.append(
+            f"<li>Revisit Week {r['week']}{_esc(r['note'])}</li>"
+        )
+    rec_html = "<ul class='plain'>" + "".join(rec_items) + "</ul>"
+
+    details_html = "\n".join(week_details[n] for n in range(1, TOTAL_WEEKS + 1))
+
+    js = """
+function toggleDetail(n){
+  document.querySelectorAll('.detail').forEach(function(d){
+    if(d.id !== 'detail-'+n) d.classList.remove('open');
+  });
+  var el = document.getElementById('detail-'+n);
+  if(el) el.classList.toggle('open');
+}
+"""
+
+    return f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DSA Journey — Progress Dashboard</title>
+<style>{css}</style>
+</head>
+<body>
+<h1>DSA Journey — Progress Dashboard</h1>
+<p class="subtitle">Generated {_esc(generated)} from <code>~/.journey/progress.json</code></p>
+
+<div class="stats">
+  <div class="stat"><div class="val">{streak}</div><div class="lbl">Day streak</div></div>
+  <div class="stat"><div class="val">{attempted}/{TOTAL_WEEKS}</div><div class="lbl">Weeks attempted</div></div>
+  <div class="stat"><div class="val">{aced}</div><div class="lbl">Weeks aced (>=80%)</div></div>
+  <div class="stat"><div class="val">{len(top_missed)}</div><div class="lbl">Distinct weak skills</div></div>
+</div>
+
+<div class="card">
+  <h2>Mastery heatmap (30 weeks)</h2>
+  <div class="heatmap">{''.join(cells_html)}</div>
+  <div class="legend">
+    <span><span class="sw" style="background:var(--good)"></span>>=80%</span>
+    <span><span class="sw" style="background:var(--mid)"></span>50-79%</span>
+    <span><span class="sw" style="background:var(--bad)"></span>&lt;50%</span>
+    <span><span class="sw" style="background:var(--none)"></span>not attempted</span>
+  </div>
+  {details_html}
+</div>
+
+<div class="card">
+  <h2>Top weak skills (most missed)</h2>
+  {missed_table}
+</div>
+
+<div class="card">
+  <h2>Recommended next session</h2>
+  {rec_html}
+  <p style="font-size:.82rem;color:var(--text-secondary);margin-top:8px">
+    Based on <code>docs/REVIEW_SCHEDULE.md</code> — pair one new week with two
+    revisits at N-3 and N-7 offsets.
+  </p>
+</div>
+
+<div class="card">
+  <h2>Time-to-mastery</h2>
+  {ttm_table}
+</div>
+
+<div class="footer">
+  Self-contained — no external CSS or JS. Refresh with
+  <code>./scripts/journey progress --html</code>.
+</div>
+
+<script>{js}</script>
+</body>
+</html>
+"""
+
+
+def write_dashboard(progress: dict) -> Path:
+    PROGRESS_DIR.mkdir(parents=True, exist_ok=True)
+    html_str = _render_dashboard(progress)
+    DASHBOARD_FILE.write_text(html_str)
+    return DASHBOARD_FILE
+
+
+def _open_in_browser(path: Path) -> None:
+    url = path.resolve().as_uri()
+    # Prefer xdg-open / open if available, else webbrowser stdlib.
+    for cmd in ("xdg-open", "open"):
+        try:
+            subprocess.Popen(
+                [cmd, str(path)],
+                stdout=subprocess.DEVNULL,
+                stderr=subprocess.DEVNULL,
+            )
+            return
+        except FileNotFoundError:
+            continue
+    try:
+        webbrowser.open(url)
+    except Exception:
+        pass
+
+
 def cmd_progress(_args: argparse.Namespace) -> int:
     progress = load_progress()
+
+    # HTML mode short-circuits the text table.
+    if getattr(_args, "html", False):
+        path = write_dashboard(progress)
+        print(f"Wrote dashboard: {path}")
+        if getattr(_args, "open", False):
+            _open_in_browser(path)
+        return 0
+
     weeks_seen = progress.get("weeks", {})
 
     # Validate every week's YAML parses too (silent — just count skills)
@@ -364,6 +769,12 @@ def cmd_reset(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_dashboard(_args: argparse.Namespace) -> int:
+    """Shortcut: equivalent to `progress --html --open`."""
+    ns = argparse.Namespace(html=True, open=True)
+    return cmd_progress(ns)
+
+
 def cmd_default(_args: argparse.Namespace) -> int:
     progress = load_progress()
     cur = progress.get("current_week", 1)
@@ -385,7 +796,23 @@ def build_parser() -> argparse.ArgumentParser:
     q.set_defaults(func=cmd_quiz)
 
     pr = sub.add_parser("progress", help="Show progress table")
+    pr.add_argument(
+        "--html",
+        action="store_true",
+        help="Write a self-contained HTML dashboard to ~/.journey/dashboard.html",
+    )
+    pr.add_argument(
+        "--open",
+        action="store_true",
+        help="With --html, also open the dashboard in the default browser",
+    )
     pr.set_defaults(func=cmd_progress)
+
+    d = sub.add_parser(
+        "dashboard",
+        help="Shortcut for `progress --html --open`",
+    )
+    d.set_defaults(func=cmd_dashboard)
 
     r = sub.add_parser("reset", help="Reset a week's progress")
     r.add_argument("week", type=int)

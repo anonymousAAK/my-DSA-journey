@@ -80,14 +80,21 @@ language harness, follow these steps:
 
 Skeletons for C++, Java, and Rust harnesses are in place:
 
-* `tests/harness/harness_cpp.sh` — wraps a C++ test binary built from each
-  topic's `.cpp` plus a tiny stdin-driven driver.
+* `tests/harness/harness_cpp.sh` — wraps a per-topic C++ binary built from each
+  `tests/refs/<topic>.cpp` plus a tiny stdin-driven driver.
 * `tests/harness/harness.java` — single Java entry point that reflects into a
   per-topic class.
-* `tests/harness/harness_rust.sh` — `rustc`-based runner; uses a hand-rolled
-  mini JSON parser to avoid a `Cargo.toml` for the kadane proof-of-concept.
+* `tests/harness/harness_rust.sh` — `rustc`-based runner that mirrors the C++
+  harness for each `tests/refs/<topic>.rs` driver.
 
-Each currently runs exactly **one** topic (`kadane_max_subarray`) end-to-end as
-the foundation pattern. Extending to the remaining 24 topics is mechanical:
-copy the kadane driver, swap the function name and types. See `tests/README.md`
-for the step-by-step extension guide.
+The C++ and Rust harnesses share a single per-topic JSON->line emitter in
+`tests/harness/emit_lines.py`. Each driver reads a deterministic line-based
+format from stdin (`CASE`, `ARR`, `INT`, `STR`, etc.) and prints `PASS topic
+:: case_name` or `FAIL topic :: case_name`. Both `--all` modes loop through
+every `tests/cases/*.json` and dispatch to the matching driver; topics without
+a driver print `SKIP topic :: no <lang> driver yet` and don't fail the run.
+
+All 25 topics ship with both C++ and Rust drivers (120/120 cases per
+language). The Python orchestrator at `tests/harness/harness.py` accepts
+`--lang python|cpp|rust|java|all`, where `all` runs Python first (fast), then
+C++, then Rust, then aggregates the per-language exit codes.

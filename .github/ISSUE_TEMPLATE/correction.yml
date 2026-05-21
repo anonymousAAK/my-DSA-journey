@@ -1,0 +1,76 @@
+name: Correction
+description: Report a typo, broken link, or factual error in any file. Small, isolated fixes only — for behavioral bugs, use the bug template.
+title: "[fix] "
+labels: ["correction", "good first issue"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for catching this. Small fixes matter — they're what keep the repo trustworthy as it grows.
+
+        If your fix is a one-liner you're confident in, feel free to open a PR at the same time as this issue and link them in the "PR link" field below.
+
+  - type: input
+    id: file
+    attributes:
+      label: File path
+      description: Repo-relative path to the file (e.g. `Week 18/README.md`, `docs/SOLUTION_JOURNAL.md`). If the fix spans multiple files, list them comma-separated.
+      placeholder: Week N/<file>
+    validations:
+      required: true
+
+  - type: dropdown
+    id: kind
+    attributes:
+      label: What kind of error is this?
+      options:
+        - "Typo / grammar"
+        - "Broken link (external)"
+        - "Broken link (internal repo)"
+        - "Factual error (wrong complexity, misnamed algorithm, refuted claim)"
+        - "Clarification (1-2 sentences only)"
+        - "Other (describe below)"
+    validations:
+      required: true
+
+  - type: textarea
+    id: whats_wrong
+    attributes:
+      label: What's wrong
+      description: |
+        Quote the problematic text (or paste the URL that 404s, or the wrong complexity figure). Be specific — "the README is confusing" isn't actionable; "line 42 of `Week 18/README.md` says O(n) but the algorithm is O(n log n)" is.
+      placeholder: |
+        `Week 18/README.md` line 42:
+        > Merge sort runs in O(n) time.
+
+        This is wrong — merge sort is O(n log n).
+    validations:
+      required: true
+
+  - type: textarea
+    id: suggested_fix
+    attributes:
+      label: Suggested fix
+      description: What should it say instead? For a typo, the corrected sentence. For a broken link, the working URL. For a factual error, the correct statement (with a source if it's contested).
+      placeholder: |
+        Replace with:
+        > Merge sort runs in O(n log n) time.
+    validations:
+      required: true
+
+  - type: input
+    id: pr_link
+    attributes:
+      label: PR link (optional)
+      description: If you're already submitting a PR for the fix, link it here.
+      placeholder: e.g. #123
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have searched existing issues to make sure this hasn't already been reported.
+          required: true

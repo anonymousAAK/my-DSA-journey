@@ -78,6 +78,19 @@ Build a small command-line search tool — call it `tgrep` (tiny grep) — that 
 - Honor `.gitignore` for the recursive search.
 - Memory-map the file via `mmap` and compare benchmark numbers.
 
+## Reference Implementation
+
+A working Python reference lives at `capstones/solutions/phase_2_text_search_tool/`. **Don't peek before you attempt this yourself** — copying it defeats the entire point of a capstone.
+
+When you're done (or genuinely stuck after 4+ hours of honest effort), open the reference and:
+
+1. Read its `README.md` for the design decisions and tradeoffs the author made.
+2. Diff your architecture against theirs. What's different? Whose choices were better, and why?
+3. Run its `test_*.py` against your implementation (you may need a thin adapter).
+4. Write a journal entry comparing the two implementations.
+
+The reference is *a* solution, not *the* solution. Yours might be cleaner. Yours might be slower. Either is a learning outcome.
+
 ## Self-grading rubric
 | Criterion | Points | What you're checking |
 |-----------|--------|----------------------|

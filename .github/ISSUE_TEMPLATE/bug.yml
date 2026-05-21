@@ -1,0 +1,70 @@
+name: Bug report
+description: Report something that's broken in the repo — a file that won't compile, wrong output, a leaked smart quote, a failing test.
+title: "[bug] "
+labels: ["bug", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to report a bug. The more specific you are about the affected file and how to reproduce the problem, the faster we can fix it.
+
+        Before filing, please skim open issues — there's a chance someone has already reported the same thing.
+
+  - type: input
+    id: file
+    attributes:
+      label: Affected file
+      description: Repo-relative path to the file with the bug (e.g. `Week 6/python/3.kadane.py`). If multiple files are affected, list the primary one here and the others in the "what's broken" field.
+      placeholder: Week N/<lang>/<file>
+    validations:
+      required: true
+
+  - type: textarea
+    id: whats_broken
+    attributes:
+      label: What's broken
+      description: Describe the bug. Include the exact steps to reproduce — the command you ran, the input you gave, what you observed. Code blocks (```) and copy-pasted terminal output are very welcome.
+      placeholder: |
+        1. From the repo root, run: `javac "Week 6/java/3.Kadane.java"`
+        2. Observe error: ...
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected behavior
+      description: What did you expect to happen? If you're reporting a wrong-output bug, state the correct answer and (briefly) why.
+      placeholder: The file should compile cleanly and printing `maxSubarraySum([-2,1,-3,4,-1,2,1,-5,4])` should return 6.
+    validations:
+      required: true
+
+  - type: textarea
+    id: actual
+    attributes:
+      label: Actual behavior
+      description: What actually happened? Include the error message, stack trace, or wrong-output value verbatim.
+      placeholder: |
+        Compile failure:
+        Week 6/java/3.Kadane.java:42: error: unmappable character (0x80) for encoding UTF-8
+    validations:
+      required: true
+
+  - type: input
+    id: language_runtime
+    attributes:
+      label: Language / runtime version
+      description: e.g. `OpenJDK 17.0.9`, `Python 3.11.6`, `g++ 13.2.0`, `rustc 1.74.0`. If the bug is language-independent (e.g. a markdown typo), say "n/a".
+      placeholder: e.g. Python 3.11.6 on Ubuntu 22.04
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have searched existing issues and this bug is not already reported.
+          required: true
+        - label: I have reproduced the bug on the latest commit on `main`.
+          required: false
