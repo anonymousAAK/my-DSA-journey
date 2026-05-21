@@ -39,8 +39,113 @@ except ImportError:
 REPO_ROOT = Path(__file__).resolve().parent.parent
 PROGRESS_DIR = Path(os.path.expanduser("~/.journey"))
 PROGRESS_FILE = PROGRESS_DIR / "progress.json"
+CONFIG_FILE = PROGRESS_DIR / "config.json"
 TOTAL_WEEKS = 30
 NON_INTERACTIVE = os.environ.get("JOURNEY_NON_INTERACTIVE") == "1"
+
+# Default config used when ~/.journey/config.json doesn't exist yet.
+DEFAULT_CONFIG = {
+    "language": "python",
+    "time_per_session": "30m",
+    "goal": "curriculum",
+    "soft_gate_enabled": True,
+}
+
+# Topic → fixture aliases. Mirror of scripts/coverage_report.py — many topic
+# names a learner might type don't directly match a fixture filename.
+TOPIC_FIXTURE_ALIASES: dict[str, list[str]] = {
+    # Convenient shortcuts a learner might type
+    "kadane": ["kadane_max_subarray"],
+    "prefix_sum": ["kadane_max_subarray"],
+    "dutch_flag": ["dutch_national_flag"],
+    "palindrome": ["palindrome_check"],
+    "anagram": ["valid_anagram"],
+    "spiral": ["spiral_traversal"],
+    "reverse_ll": ["reverse_linked_list"],
+    "linked_list": ["reverse_linked_list"],
+    "lru": ["lru_cache"],
+    "stack": ["balanced_parens"],
+    "queue": ["sliding_window_max"],
+    "bst": ["bst_validate"],
+    "heap": ["kth_largest"],
+    "hashmap": ["two_sum"],
+    "hash_map": ["two_sum"],
+    "topo": ["topological_sort"],
+    "topo_sort": ["topological_sort"],
+    "dp": ["coin_change"],
+    "backtrack": ["n_queens_count"],
+    "n_queens": ["n_queens_count"],
+    "dijkstra": ["dijkstra_shortest_path"],
+    "kruskal": ["kruskal_mst_weight"],
+    "mst": ["kruskal_mst_weight"],
+    "kmp": ["kmp_search"],
+    "rabin_karp": ["rabin_karp_search"],
+    "sliding_window": ["sliding_window_longest_substr"],
+    "binary_search": ["binary_search"],
+    "merge_sort": ["merge_sort"],
+    "quick_sort": ["quick_sort"],
+    "two_sum": ["two_sum"],
+    # The full coverage_report alias table — Java topic stems → fixture(s)
+    "return_array_sum": ["linear_search"],
+    "prefix_sum_and_kadane": ["kadane_max_subarray"],
+    "dutch_national_flag_and_missing": ["dutch_national_flag"],
+    "palindrome_and_anagram": ["palindrome_check", "valid_anagram"],
+    "bubble_selection_insertion": ["quick_sort"],
+    "spiral_and_diagonal_traversal": ["spiral_traversal"],
+    "singly_linked_list": ["reverse_linked_list"],
+    "merge_sorted_lists_and_lru": ["lru_cache"],
+    "stack_implementation": ["balanced_parens"],
+    "queue_implementation": ["sliding_window_max"],
+    "binary_search_tree": ["bst_validate"],
+    "heap_and_priority_queue": ["kth_largest"],
+    "hashing_and_hash_map": ["two_sum"],
+    "graph_representations": ["topological_sort"],
+    "topological_sort": ["topological_sort"],
+    "dynamic_programming": ["coin_change"],
+    "backtracking": ["n_queens_count"],
+    "shortest_paths": ["dijkstra_shortest_path"],
+    "minimum_spanning_tree": ["kruskal_mst_weight"],
+}
+
+
+def load_config() -> dict:
+    """Read ~/.journey/config.json, merged onto DEFAULT_CONFIG."""
+    cfg = dict(DEFAULT_CONFIG)
+    if CONFIG_FILE.exists():
+        try:
+            cfg.update(json.loads(CONFIG_FILE.read_text()))
+        except Exception:
+            pass
+    return cfg
+
+
+def save_config(cfg: dict) -> None:
+    PROGRESS_DIR.mkdir(parents=True, exist_ok=True)
+    CONFIG_FILE.write_text(json.dumps(cfg, indent=2, sort_keys=True))
+
+
+def resolve_topic_fixture(topic: str) -> tuple[str, Path] | None:
+    """Resolve a learner-supplied topic name to (topic_id, fixture_path).
+
+    Tries (in order): direct filename match, alias lookup. Returns None if no
+    fixture is found.
+    """
+    cases_dir = REPO_ROOT / "tests" / "cases"
+    direct = cases_dir / f"{topic}.json"
+    if direct.is_file():
+        return topic, direct
+    for alias in TOPIC_FIXTURE_ALIASES.get(topic, []):
+        candidate = cases_dir / f"{alias}.json"
+        if candidate.is_file():
+            return alias, candidate
+    return None
+
+
+def available_topics() -> list[str]:
+    cases_dir = REPO_ROOT / "tests" / "cases"
+    if not cases_dir.is_dir():
+        return []
+    return sorted(p.stem for p in cases_dir.glob("*.json"))
 
 # ---------------------------------------------------------------------------
 # FSRS (Free Spaced Repetition Scheduler) — minimum viable implementation.
@@ -1311,10 +1416,622 @@ def cmd_review(args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# `next` — pick a single concrete next session
+# ---------------------------------------------------------------------------
+
+TIME_BUDGETS = {
+    "15m": 15,
+    "30m": 30,
+    "1h": 60,
+    "60m": 60,
+    "weekend": 240,
+}
+
+
+def _parse_time(s: str | None) -> int:
+    """Return minutes for a time-budget string. Falls back to 30."""
+    if not s:
+        return 30
+    if s in TIME_BUDGETS:
+        return TIME_BUDGETS[s]
+    # Permit raw numbers like "20" (minutes).
+    try:
+        return max(5, int(s))
+    except ValueError:
+        return 30
+
+
+def _current_week_mastery_rate(progress: dict, week: int) -> float:
+    rec = progress.get("weeks", {}).get(str(week))
+    if not rec:
+        return 0.0
+    return float(rec.get("rate", 0) or 0)
+
+
+def _first_python_topic_file(week: int) -> Path | None:
+    py_dir = REPO_ROOT / f"Week {week}" / "python"
+    if not py_dir.is_dir():
+        return None
+    # Pick a "feature" topic file — first numbered file works.
+    candidates = sorted(
+        p for p in py_dir.iterdir()
+        if p.is_file() and p.suffix == ".py" and re.match(r"^\d+\.", p.name)
+    )
+    if candidates:
+        # Prefer the mid-week file for "flagship" feel.
+        return candidates[min(len(candidates) - 1, 3)]
+    return None
+
+
+def _build_session_steps(week: int, minutes: int, due_count: int) -> list[str]:
+    """Render the numbered step list for a session."""
+    concept_path = _first_python_topic_file(week)
+    rel_concept = (
+        concept_path.relative_to(REPO_ROOT) if concept_path else f"Week {week}/python/"
+    )
+    rel_patterns = f"Week {week}/patterns.md"
+    rel_challenges = f"Week {week}/challenges.md"
+    workbook_dir = f"workbook/week_{week:02d}/attempts/"
+
+    steps: list[str] = []
+    if minutes <= 15:
+        # Just ONE small task. Pick the highest-leverage thing.
+        steps.append(
+            f"1. Drill (10 min)\n"
+            f"   Open: {rel_patterns}\n"
+            f"   Try: drills 1-3 cold. Then check the answer key."
+        )
+    elif minutes <= 30:
+        steps.append(
+            f"1. Concept (10 min)\n"
+            f"   Open: {rel_concept}\n"
+            f"   Read: the CONCEPT and KEY POINTS blocks at the top."
+        )
+        steps.append(
+            f"2. Drill (5 min)\n"
+            f"   Open: {rel_patterns}\n"
+            f"   Try: drills 3-5 cold. Then check the answer key."
+        )
+        steps.append(
+            f"3. Verify (10 min)\n"
+            f"   Run: ./scripts/journey quiz {week} --n 3"
+        )
+    elif minutes <= 60:
+        steps.append(
+            f"1. Concept (10 min)\n"
+            f"   Open: {rel_concept}\n"
+            f"   Read: the CONCEPT and KEY POINTS blocks at the top."
+        )
+        steps.append(
+            f"2. Drill (5 min)\n"
+            f"   Open: {rel_patterns}\n"
+            f"   Try: drills 3-5 cold. Then check the answer key."
+        )
+        steps.append(
+            f"3. Implement (10 min)\n"
+            f"   Open: {rel_challenges}\n"
+            f"   Code: Challenge 1 from scratch in {workbook_dir}\n"
+            f"   Hint: ./scripts/journey new-attempt <topic>"
+        )
+        steps.append(
+            f"4. Verify (5 min)\n"
+            f"   Run: ./scripts/journey verify <topic> {workbook_dir}<your-file>.py"
+        )
+        steps.append(
+            f"5. Quiz (15 min)\n"
+            f"   Run: ./scripts/journey quiz {week}"
+        )
+    else:
+        # weekend — capstone or full week sprint
+        steps.append(
+            f"1. Capstone block (60 min)\n"
+            f"   Open: capstones/  (pick the capstone for this phase)\n"
+            f"   Implement one milestone end-to-end."
+        )
+        steps.append(
+            f"2. Concept + drill (30 min)\n"
+            f"   Open: {rel_concept} and {rel_patterns}\n"
+            f"   Read the concept, then run cold through every drill."
+        )
+        steps.append(
+            f"3. Implement (45 min)\n"
+            f"   Open: {rel_challenges}\n"
+            f"   Tackle Challenges 1 and 2 in {workbook_dir}"
+        )
+        steps.append(
+            f"4. Quiz (15 min)\n"
+            f"   Run: ./scripts/journey quiz {week}"
+        )
+        steps.append(
+            f"5. Reflect (15 min)\n"
+            f"   Run: ./scripts/journey reflect"
+        )
+    if due_count > 0:
+        steps.append(
+            f"Bonus: {due_count} skill(s) due for review.\n"
+            f"   Run: ./scripts/journey review"
+        )
+    return steps
+
+
+def cmd_next(args: argparse.Namespace) -> int:
+    progress = load_progress()
+    config = load_config()
+    minutes_str = getattr(args, "time", None) or config.get("time_per_session", "30m")
+    minutes = _parse_time(minutes_str)
+
+    # --skip: advance current_week pointer without doing the session.
+    if getattr(args, "skip", False):
+        cur = progress.get("current_week", 1)
+        if config.get("soft_gate_enabled", True) and not getattr(args, "force", False):
+            rate = _current_week_mastery_rate(progress, cur)
+            if rate < 80:
+                print(
+                    f"Soft gate: Week {cur} mastery is {rate:.0f}% (< 80%).\n"
+                    f"Run `./scripts/journey quiz {cur}` first, or use --force to override."
+                )
+                return 1
+        nxt = min(cur + 1, TOTAL_WEEKS)
+        progress["current_week"] = nxt
+        save_progress(progress)
+        print(f"Advanced pointer from Week {cur} → Week {nxt}.")
+        return 0
+
+    # 1. No progress at all → start onboarding
+    if not progress.get("weeks") and not progress.get("history"):
+        if not CONFIG_FILE.exists():
+            print("Welcome! Looks like this is your first session.")
+            print("Run: ./scripts/journey start")
+            return 0
+
+    current_week = progress.get("current_week", 1)
+    due = collect_due_skills(progress)
+    due_count = len(due)
+    rate = _current_week_mastery_rate(progress, current_week)
+
+    # Decision: which kind of session?
+    decision: str
+    target_week = current_week
+
+    # If current week never quizzed → suggest quiz session
+    rec = progress.get("weeks", {}).get(str(current_week))
+    if not rec or rate < 80:
+        decision = "mastery_quiz" if rec else "first_pass"
+    elif due_count > 0 and minutes >= 15:
+        decision = "review"
+    else:
+        # Advance to next week with soft gate
+        target_week = min(current_week + 1, TOTAL_WEEKS)
+        decision = "advance"
+        # Soft mastery gate
+        if (
+            config.get("soft_gate_enabled", True)
+            and not getattr(args, "force", False)
+            and rate < 80
+        ):
+            print(
+                f"Warning: Week {current_week} mastery is {rate:.0f}% (< 80%).\n"
+                f"Recommend running `./scripts/journey quiz {current_week}` "
+                f"before moving to Week {target_week}.\n"
+                f"Pass --force to skip this gate.\n"
+            )
+            target_week = current_week
+            decision = "mastery_quiz"
+
+    # ----- Header -----
+    today = _dt.date.today()
+    day_idx = today.toordinal() % 7 + 1
+    header = (
+        f"Next session — Week {target_week}, Day {day_idx} (~{minutes} min)"
+    )
+    print(header)
+    print()
+
+    # ----- Body by decision -----
+    if decision == "review" and due:
+        print(f"You have {due_count} skill(s) due for review (FSRS).")
+        print()
+        print(f"1. Review session (~{minutes} min)")
+        print(f"   Run: ./scripts/journey review --n {min(due_count, max(3, minutes // 3))}")
+        print()
+        # Show top 3 due skills
+        print("   Top due skills:")
+        for sk in due[:3]:
+            wk = sk.get("_week", "?")
+            sid = sk.get("id", "?")
+            print(f"     - Week {wk}: {sid}")
+    elif decision == "mastery_quiz":
+        print(
+            f"Current Week {target_week} mastery: {rate:.0f}% "
+            f"(need >= 80% to advance)."
+        )
+        print()
+        steps = _build_session_steps(target_week, minutes, due_count)
+        for s in steps:
+            print(s)
+            print()
+        print(f"   Then: ./scripts/journey quiz {target_week}")
+    else:
+        steps = _build_session_steps(target_week, minutes, due_count)
+        for s in steps:
+            print(s)
+            print()
+
+    print(
+        "Or skip with: ./scripts/journey next --skip "
+        "(advances pointer without doing the session)"
+    )
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# `verify` — run user code against fixture cases
+# ---------------------------------------------------------------------------
+
+def cmd_verify(args: argparse.Namespace) -> int:
+    topic = args.topic
+    user_file = Path(args.file).expanduser().resolve()
+
+    resolved = resolve_topic_fixture(topic)
+    if not resolved:
+        topics = available_topics()
+        print(f"error: topic '{topic}' has no fixture.")
+        if topics:
+            print("Available topics:")
+            for t in topics:
+                print(f"  - {t}")
+            print()
+            print("You can also use aliases like: kadane, dutch_flag, two_sum, etc.")
+        return 2
+
+    fixture_id, fixture_path = resolved
+
+    if not user_file.is_file():
+        print(f"error: user file not found: {user_file}")
+        return 2
+
+    try:
+        fixture = json.loads(fixture_path.read_text())
+    except Exception as e:
+        print(f"error: could not parse fixture {fixture_path}: {e}")
+        return 2
+
+    func_name = fixture.get("function")
+    cases = fixture.get("cases", [])
+    if not func_name or not cases:
+        print(f"error: fixture {fixture_path.name} missing function/cases.")
+        return 2
+
+    # Dynamically import the user file as a module.
+    import importlib.util
+    mod_name = f"_journey_user_{user_file.stem}"
+    spec = importlib.util.spec_from_file_location(mod_name, str(user_file))
+    if spec is None or spec.loader is None:
+        print(f"error: could not load module from {user_file}")
+        return 2
+    module = importlib.util.module_from_spec(spec)
+    try:
+        spec.loader.exec_module(module)  # type: ignore[union-attr]
+    except Exception as e:
+        print(f"error: importing {user_file.name} raised: {type(e).__name__}: {e}")
+        return 2
+
+    fn = getattr(module, func_name, None)
+    if fn is None or not callable(fn):
+        print(
+            f"error: {user_file.name} does not define a callable "
+            f"`{func_name}(...)`."
+        )
+        # Hint at what was found
+        names = [n for n in dir(module) if callable(getattr(module, n)) and not n.startswith("_")]
+        if names:
+            print(f"  Found callables: {', '.join(names[:10])}")
+        return 2
+
+    rel_fixture = fixture_path.relative_to(REPO_ROOT) if fixture_path.is_relative_to(REPO_ROOT) else fixture_path
+    print(
+        f"Verifying {topic} (your code) against {rel_fixture} ({len(cases)} cases)"
+    )
+
+    passed = 0
+    fails: list[tuple[str, object, object]] = []
+    for case in cases:
+        name = case.get("name", "?")
+        case_input = case.get("input", [])
+        expected = case.get("expected")
+        try:
+            got = fn(*case_input)
+        except Exception as e:
+            print(f"FAIL {name}")
+            print(f"  input:    {case_input}")
+            print(f"  expected: {expected}")
+            print(f"  got:      raised {type(e).__name__}: {e}")
+            fails.append((name, expected, f"<raised {type(e).__name__}>"))
+            continue
+        if got == expected:
+            print(f"PASS {name}")
+            passed += 1
+        else:
+            print(f"FAIL {name}")
+            print(f"  input:    {case_input}")
+            print(f"  expected: {expected}")
+            print(f"  got:      {got}")
+            fails.append((name, expected, got))
+
+    total = len(cases)
+    print()
+    print(f"TOTAL: {passed}/{total} passed")
+    ref_py = REPO_ROOT / "tests" / "refs" / f"{fixture_id}.py"
+    if ref_py.is_file():
+        rel_ref = ref_py.relative_to(REPO_ROOT)
+        print(f"Diff against canonical: {rel_ref}")
+    return 0 if passed == total else 1
+
+
+# ---------------------------------------------------------------------------
+# `new-attempt` — generate a workbook stub for a topic
+# ---------------------------------------------------------------------------
+
+LANG_EXT = {"python": "py", "java": "java", "cpp": "cpp", "rust": "rs"}
+
+
+def _stub_for_python(topic: str, fixture: dict, week: int) -> str:
+    func = fixture.get("function", topic)
+    cases = fixture.get("cases", []) or []
+    today = _dt.date.today().isoformat()
+    sample = cases[0] if cases else {"input": [], "expected": None}
+    sample_input = sample.get("input", [])
+    sample_expected = sample.get("expected")
+    return (
+        f"# Topic: {topic}\n"
+        f"# Week: {week}\n"
+        f"# Date: {today}\n"
+        f"# Generated by `./scripts/journey new-attempt {topic}`.\n"
+        f"#\n"
+        f"# Implement the function below so that `verify` passes:\n"
+        f"#   ./scripts/journey verify {topic} <path-to-this-file>\n"
+        f"\n"
+        f"def {func}(*args):\n"
+        f"    # WRITE YOUR CODE HERE\n"
+        f"    # ----------------------------------------------------------\n"
+        f"    # Tip: don't peek at tests/refs/{topic}.py until you've tried.\n"
+        f"    # ----------------------------------------------------------\n"
+        f"    raise NotImplementedError(\"{func} is not implemented yet\")\n"
+        f"\n"
+        f"\n"
+        f"if __name__ == \"__main__\":\n"
+        f"    # Sample input from the fixture; expected: {sample_expected!r}\n"
+        f"    sample_input = {sample_input!r}\n"
+        f"    print({func}(*sample_input))\n"
+    )
+
+
+def _stub_for_other(topic: str, fixture: dict, week: int, lang: str) -> str:
+    func = fixture.get("function", topic)
+    today = _dt.date.today().isoformat()
+    comment = "//"
+    return (
+        f"{comment} Topic: {topic}\n"
+        f"{comment} Week: {week}\n"
+        f"{comment} Date: {today}\n"
+        f"{comment} Language: {lang}\n"
+        f"{comment} Function to implement: {func}\n"
+        f"{comment} WRITE YOUR CODE HERE\n"
+    )
+
+
+def cmd_new_attempt(args: argparse.Namespace) -> int:
+    config = load_config()
+    lang = (getattr(args, "lang", None) or config.get("language") or "python").lower()
+    ext = LANG_EXT.get(lang, "py")
+
+    topic = args.topic
+    resolved = resolve_topic_fixture(topic)
+    if not resolved:
+        topics = available_topics()
+        print(f"error: topic '{topic}' has no fixture.")
+        if topics:
+            print("Available topics:")
+            for t in topics:
+                print(f"  - {t}")
+        return 2
+    fixture_id, fixture_path = resolved
+    try:
+        fixture = json.loads(fixture_path.read_text())
+    except Exception as e:
+        print(f"error: could not parse fixture: {e}")
+        return 2
+
+    progress = load_progress()
+    week = progress.get("current_week", 1)
+
+    attempts_dir = REPO_ROOT / "workbook" / f"week_{week:02d}" / "attempts"
+    attempts_dir.mkdir(parents=True, exist_ok=True)
+
+    today = _dt.date.today().isoformat()
+    base = f"{topic}__{today}"
+    target = attempts_dir / f"{base}.{ext}"
+    # Don't overwrite — bump a counter
+    counter = 2
+    while target.exists():
+        target = attempts_dir / f"{base}-{counter}.{ext}"
+        counter += 1
+
+    if lang == "python":
+        content = _stub_for_python(topic, fixture, week)
+    else:
+        content = _stub_for_other(topic, fixture, week, lang)
+    target.write_text(content)
+    rel = target.relative_to(REPO_ROOT) if target.is_relative_to(REPO_ROOT) else target
+    print(f"Created: {rel}")
+    print(f"  Function to implement: {fixture.get('function')}")
+    print(f"  Verify with: ./scripts/journey verify {topic} {rel}")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# `reflect` — append a journal entry to the workbook
+# ---------------------------------------------------------------------------
+
+def _parse_reflection_prompts(week: int) -> list[str]:
+    """Pull the bullet list under the 'Reflection prompts' section of the
+    week's README. Returns up to 4 prompts."""
+    readme = REPO_ROOT / f"Week {week}" / "README.md"
+    if not readme.is_file():
+        return []
+    lines = readme.read_text(encoding="utf-8").splitlines()
+    in_section = False
+    prompts: list[str] = []
+    for ln in lines:
+        if re.match(r"^#{1,6}\s+Reflection\s+prompts?\b", ln, re.IGNORECASE):
+            in_section = True
+            continue
+        if in_section:
+            if re.match(r"^#{1,6}\s+", ln):  # next heading ends the section
+                break
+            m = re.match(r"^\s*[-*]\s+(.+)$", ln)
+            if m:
+                prompts.append(m.group(1).strip())
+    return prompts[:4]
+
+
+_FALLBACK_REFLECTION_PROMPTS = [
+    "What was the hardest concept this week, and what made it hard?",
+    "Which pattern did you fail to recognize first, and what would have tipped you off?",
+    "If you had to teach this week's flagship algorithm in one sentence, what would you say?",
+    "What problem would you want to revisit in 3 weeks to test retention?",
+]
+
+
+def cmd_reflect(args: argparse.Namespace) -> int:
+    progress = load_progress()
+    week = getattr(args, "week", None) or progress.get("current_week", 1)
+    journal_dir = REPO_ROOT / "workbook" / f"week_{week:02d}"
+    journal_dir.mkdir(parents=True, exist_ok=True)
+    journal = journal_dir / "journal.md"
+
+    prompts = _parse_reflection_prompts(week)
+    if not prompts:
+        prompts = _FALLBACK_REFLECTION_PROMPTS
+
+    today = _dt.date.today().isoformat()
+    lines: list[str] = []
+    if not journal.exists():
+        lines.append(f"# Week {week} — Journal")
+        lines.append("")
+        lines.append(
+            "Append a dated entry every session. Source prompts: "
+            f"`Week {week}/README.md` Reflection prompts section."
+        )
+        lines.append("")
+
+    lines.append(f"## {today}")
+    lines.append("")
+    for p in prompts:
+        lines.append(f"**{p}**")
+        lines.append("")
+        lines.append("_(your thoughts here)_")
+        lines.append("")
+    lines.append("---")
+    lines.append("")
+    block = "\n".join(lines)
+
+    with journal.open("a", encoding="utf-8") as fh:
+        fh.write(block)
+
+    rel = journal.relative_to(REPO_ROOT) if journal.is_relative_to(REPO_ROOT) else journal
+    print(f"Appended entry to: {rel}")
+    print()
+    print("Template appended:")
+    print("-" * 60)
+    print(block)
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# `start` — interactive onboarding
+# ---------------------------------------------------------------------------
+
+def _ask(prompt: str, default: str, choices: list[str] | None = None) -> str:
+    if NON_INTERACTIVE:
+        return default
+    try:
+        raw = input(prompt).strip()
+    except EOFError:
+        return default
+    if not raw:
+        return default
+    if choices and raw.lower() not in choices:
+        print(f"  (invalid — using default: {default})")
+        return default
+    return raw.lower()
+
+
+def cmd_start(_args: argparse.Namespace) -> int:
+    print("DSA Journey — onboarding (about 2 minutes)")
+    print("=" * 50)
+    print()
+
+    language = _ask(
+        "Primary language? (python / java / cpp / rust) [python]: ",
+        "python",
+        ["python", "java", "cpp", "rust"],
+    )
+    time_per_session = _ask(
+        "Time per session? (15m / 30m / 1h) [30m]: ",
+        "30m",
+        ["15m", "30m", "1h"],
+    )
+    goal = _ask(
+        "Goal? (interview / curriculum / exploration) [curriculum]: ",
+        "curriculum",
+        ["interview", "curriculum", "exploration"],
+    )
+    skip_diag = _ask(
+        "Skip the diagnostic? (y/N) [N]: ",
+        "n",
+        ["y", "n", "yes", "no"],
+    )
+
+    cfg = dict(DEFAULT_CONFIG)
+    cfg.update({
+        "language": language,
+        "time_per_session": time_per_session,
+        "goal": goal,
+        "soft_gate_enabled": True,
+    })
+    save_config(cfg)
+
+    # Ensure progress.json exists with a sensible current_week
+    progress = load_progress()
+    if "current_week" not in progress:
+        progress["current_week"] = 1
+        save_progress(progress)
+
+    print()
+    print(f"Saved config: {CONFIG_FILE}")
+    if skip_diag.startswith("n"):
+        diag = REPO_ROOT / "docs" / "diagnostic.md"
+        if diag.is_file():
+            rel = diag.relative_to(REPO_ROOT)
+            print(f"Recommended: open {rel} for the 15-question placement test.")
+        # Also surface progress at a glance
+        print()
+        try:
+            cmd_progress(argparse.Namespace(html=False, open=False))
+        except Exception:
+            pass
+    print()
+    print("Setup complete. Run `./scripts/journey next` to get your first session.")
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # Argparse
 # ---------------------------------------------------------------------------
 
 def build_parser() -> argparse.ArgumentParser:
+
     p = argparse.ArgumentParser(prog="journey", description="DSA-journey mastery CLI.")
     sub = p.add_subparsers(dest="cmd")
 
@@ -1370,6 +2087,71 @@ def build_parser() -> argparse.ArgumentParser:
         help="Render as Markdown (suitable for piping into emails / issues)",
     )
     dly.set_defaults(func=cmd_daily)
+
+    # `next` — pick one concrete session
+    nx = sub.add_parser(
+        "next",
+        help="Pick ONE concrete next action based on progress + due skills + time.",
+    )
+    nx.add_argument(
+        "--time",
+        default=None,
+        help="Time budget: 15m | 30m | 1h | weekend (default: from config or 30m)",
+    )
+    nx.add_argument(
+        "--force",
+        action="store_true",
+        help="Override the soft mastery gate (advance even if current week <80%).",
+    )
+    nx.add_argument(
+        "--skip",
+        action="store_true",
+        help="Advance current_week pointer without running a session.",
+    )
+    nx.set_defaults(func=cmd_next)
+
+    # `verify` — run user code against fixture
+    vr = sub.add_parser(
+        "verify",
+        help="Run your code against the fixture cases for a topic.",
+    )
+    vr.add_argument("topic", help="Topic name (e.g. kadane, two_sum, dijkstra)")
+    vr.add_argument("file", help="Path to your implementation file.")
+    vr.set_defaults(func=cmd_verify)
+
+    # `new-attempt` — scaffold a workbook stub
+    na = sub.add_parser(
+        "new-attempt",
+        help="Create a workbook stub for a topic (uses current_week).",
+    )
+    na.add_argument("topic", help="Topic name (e.g. kadane, two_sum).")
+    na.add_argument(
+        "--lang",
+        default=None,
+        choices=["python", "java", "cpp", "rust"],
+        help="Override config language for this stub.",
+    )
+    na.set_defaults(func=cmd_new_attempt)
+
+    # `reflect` — append journal entry
+    rf = sub.add_parser(
+        "reflect",
+        help="Append a journal entry with reflection prompts to workbook/week_NN/journal.md.",
+    )
+    rf.add_argument(
+        "--week",
+        type=int,
+        default=None,
+        help="Override current_week.",
+    )
+    rf.set_defaults(func=cmd_reflect)
+
+    # `start` — onboarding
+    st = sub.add_parser(
+        "start",
+        help="Interactive onboarding — sets language, time, goal, soft_gate.",
+    )
+    st.set_defaults(func=cmd_start)
 
     return p
 

@@ -1,10 +1,39 @@
-# Week 26
+# Week 26 — Network Flow & Matching
 
-> Self-check: `./scripts/journey quiz 26` — run the mastery checkpoints for this week.
+> Self-check: `./scripts/journey quiz 26`  |  Next session: `./scripts/journey next`
 
-Each topic is implemented in all five languages: **Java, Python, C++, Rust, and Web (HTML/JS)**. The Java track is the primary detailed walkthrough; the others mirror it with idiomatic constructs.
+## Today's session (~45 min)
 
-## Topic index
+1. **Concept** (10 min) — Read [`python/edmonds_karp.py`](python/edmonds_karp.py) (CONCEPT + KEY POINTS blocks).
+2. **Recognize the pattern** (5 min) — Try drills 1-5 in [`patterns.md`](patterns.md) cold.
+3. **Implement from spec** (20 min) — Pick Challenge 1 from [`challenges.md`](challenges.md). Code it in `workbook/week_26/attempts/`.
+4. **Verify YOUR code** (5 min) — `./scripts/journey verify max_flow_min_cut workbook/week_26/attempts/<your-file>.py`
+5. **Mastery quiz** (5 min) — `./scripts/journey quiz 26`
+
+If you got stuck: open [`python/edmonds_karp.py`](python/edmonds_karp.py) and diff against your attempt.
+If you finish early: drills 6-10 in `patterns.md`, or Challenge 2.
+
+**Primary language: Python.** Want to compare implementations? See the per-language table below.
+
+---
+
+## Topic overview
+
+This week covers **Network Flow & Matching**. You'll touch: bipartite matching, dinic, edmonds karp, ford fulkerson, min cut, network flow. The flagship algorithm/concept for the week is implemented in all five languages, and the Python file listed in Today's session is the canonical walkthrough.
+
+## Related materials
+
+| Resource | Use it when |
+|----------|-------------|
+| [`problems.md`](problems.md) | You want extra practice with company-tagged problems |
+
+## Reference: per-language topic index
+
+<details>
+<summary>All implementations (Java / Python / C++ / Rust / Web)</summary>
+
+**Topic index**
+
 
 | # | Topic | Java | Python | C++ | Rust | Web |
 |---|-------|------|--------|-----|------|-----|
@@ -15,7 +44,8 @@ Each topic is implemented in all five languages: **Java, Python, C++, Rust, and 
 | 5 | min cut | `java/min_cut.java` | `python/min_cut.py` | `cpp/min_cut.cpp` | `rust/min_cut.rs` | `web/min_cut.html` |
 | 6 | network flow | `java/network_flow.java` | `python/network_flow.py` | `cpp/network_flow.cpp` | `rust/network_flow.rs` | — |
 
-## Survey companions
+**Survey companions**
+
 
 Cross-cutting files that summarize the week or provide an interactive overview:
 
@@ -23,7 +53,62 @@ Cross-cutting files that summarize the week or provide an interactive overview:
 |-------|------|--------|-----|------|-----|
 | Interactive index | — | — | — | — | `web/index.html` |
 
-## How to run a topic file
+**Topic roadmap**
+
+
+- **1. bipartite matching**
+- **2. dinic**
+- **3. edmonds karp**
+- **4. ford fulkerson**
+- **5. min cut**
+- **6. network flow**
+
+</details>
+
+## Reference: tradeoff matrix
+
+<details>
+<summary>Approach x Time x Space x When-to-prefer</summary>
+
+
+Flagship topic: Network flow (Ford–Fulkerson, Edmonds–Karp, Dinic, bipartite matching, min cut).
+
+| Approach | Time | Space | When to prefer |
+|----------|------|-------|----------------|
+| Ford–Fulkerson (DFS augmenting paths) | O(E · max_flow) | O(V + E) | Integer capacities, small max_flow; can loop forever on irrationals |
+| Edmonds–Karp (BFS augmenting paths) | O(V · E²) | O(V + E) | General case, simple to implement |
+| Dinic's algorithm | O(V² · E) general, O(E √V) unit capacities | O(V + E) | Default for large graphs and bipartite matching |
+| Push–Relabel | O(V² √E) | O(V + E) | Dense graphs; great practical constants |
+| ISAP (improved push–relabel) | O(V² √E) | O(V + E) | Highest practical throughput |
+| Hopcroft–Karp (bipartite matching) | O(E √V) | O(V + E) | Pure bipartite matching |
+
+| Approach (min cut) | Time | Space | When to prefer |
+|----------|------|-------|----------------|
+| Max-flow then reachability from source | O(max-flow algorithm) | O(V + E) | s-t min cut |
+| Stoer–Wagner | O(V·E + V² log V) | O(V²) | Global min cut on undirected graphs |
+| Karger's randomized | O(V²) per run, O(V² log V) high-prob | O(V + E) | Approximation; simple Monte Carlo |
+
+</details>
+
+## Reference: anti-patterns to avoid
+
+<details>
+<summary>Common mistakes specific to this week's topic</summary>
+
+
+- **Ford–Fulkerson on capacities given as floats** — augmenting-path search can choose paths whose sum never reaches max flow (classic Zwick example). Stick to integers, or use Edmonds–Karp/Dinic which terminate regardless.
+- **Forgetting to add reverse edges with capacity 0** — without them, augmenting paths can't "undo" earlier choices and you'll under-report max flow. Every edge `u→v` needs a back-edge `v→u` initialized to 0.
+- **Modeling vertex capacities by clamping flow at a vertex** — the standard trick is to split each vertex into `v_in → v_out` with the vertex capacity on that edge. Trying to enforce it post-hoc never works.
+- **Bipartite matching by greedy augmenting without alternating paths** — greedy matching is a 1/2-approximation, not optimal. Use augmenting-path search (Hungarian/Hopcroft–Karp) for maximum matching.
+- **Reading Dinic's BFS level graph but not maintaining a `currentEdge[]` pointer** — without it, each DFS revisits saturated edges and the complexity bound breaks. The `currentEdge[]` ("dead end" pointer) is what makes Dinic Dinic.
+
+</details>
+
+## Reference: how to run a topic file
+
+<details>
+<summary>Java / Python / C++ / Rust / Web one-liners</summary>
+
 
 From the week's directory:
 
@@ -45,43 +130,10 @@ open web/<file>.html   # macOS
 xdg-open web/<file>.html   # Linux
 ```
 
-## Topic roadmap
-
-- **1. bipartite matching**
-- **2. dinic**
-- **3. edmonds karp**
-- **4. ford fulkerson**
-- **5. min cut**
-- **6. network flow**
-
-## Tradeoff Matrix
-
-Flagship topic: Network flow (Ford–Fulkerson, Edmonds–Karp, Dinic, bipartite matching, min cut).
-
-| Approach | Time | Space | When to prefer |
-|----------|------|-------|----------------|
-| Ford–Fulkerson (DFS augmenting paths) | O(E · max_flow) | O(V + E) | Integer capacities, small max_flow; can loop forever on irrationals |
-| Edmonds–Karp (BFS augmenting paths) | O(V · E²) | O(V + E) | General case, simple to implement |
-| Dinic's algorithm | O(V² · E) general, O(E √V) unit capacities | O(V + E) | Default for large graphs and bipartite matching |
-| Push–Relabel | O(V² √E) | O(V + E) | Dense graphs; great practical constants |
-| ISAP (improved push–relabel) | O(V² √E) | O(V + E) | Highest practical throughput |
-| Hopcroft–Karp (bipartite matching) | O(E √V) | O(V + E) | Pure bipartite matching |
-
-| Approach (min cut) | Time | Space | When to prefer |
-|----------|------|-------|----------------|
-| Max-flow then reachability from source | O(max-flow algorithm) | O(V + E) | s-t min cut |
-| Stoer–Wagner | O(V·E + V² log V) | O(V²) | Global min cut on undirected graphs |
-| Karger's randomized | O(V²) per run, O(V² log V) high-prob | O(V + E) | Approximation; simple Monte Carlo |
-
-## Anti-patterns to avoid
-
-- **Ford–Fulkerson on capacities given as floats** — augmenting-path search can choose paths whose sum never reaches max flow (classic Zwick example). Stick to integers, or use Edmonds–Karp/Dinic which terminate regardless.
-- **Forgetting to add reverse edges with capacity 0** — without them, augmenting paths can't "undo" earlier choices and you'll under-report max flow. Every edge `u→v` needs a back-edge `v→u` initialized to 0.
-- **Modeling vertex capacities by clamping flow at a vertex** — the standard trick is to split each vertex into `v_in → v_out` with the vertex capacity on that edge. Trying to enforce it post-hoc never works.
-- **Bipartite matching by greedy augmenting without alternating paths** — greedy matching is a 1/2-approximation, not optimal. Use augmenting-path search (Hungarian/Hopcroft–Karp) for maximum matching.
-- **Reading Dinic's BFS level graph but not maintaining a `currentEdge[]` pointer** — without it, each DFS revisits saturated edges and the complexity bound breaks. The `currentEdge[]` ("dead end" pointer) is what makes Dinic Dinic.
+</details>
 
 ## Reflection prompts
+
 
 - Which topic this week was hardest, and what made it hard?
 - Was there a pattern you didn't recognize and had to be told about? Which one?

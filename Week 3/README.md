@@ -1,10 +1,34 @@
-# Week 3
+# Week 3 — Loops & Number Theory Basics
 
-> Self-check: `./scripts/journey quiz 3` — run the mastery checkpoints for this week.
+> Self-check: `./scripts/journey quiz 3`  |  Next session: `./scripts/journey next`
 
-Each topic is implemented in all five languages: **Java, Python, C++, Rust, and Web (HTML/JS)**. The Java track is the primary detailed walkthrough; the others mirror it with idiomatic constructs.
+## Today's session (~30 min)
 
-## Topic index
+1. **Read & run** (15 min) — Walk through the python files in order: `1.*.py`, `2.*.py`, ... — actually run them.
+2. **Type along** (10 min) — Re-type 3 of them from scratch in `workbook/week_03/attempts/`. Don't copy-paste.
+3. **Self-check** (5 min) — `./scripts/journey quiz 3`
+
+Primary language: Python. Compare implementations in `java/`, `cpp/`, `rust/` to see how the same syntax looks across languages.
+
+---
+
+## Topic overview
+
+This week covers **Loops & Number Theory Basics**. You'll touch: For loop, For loop variations, Break, Continue, Scope of Variable, Increment Decrement Operator. The flagship algorithm/concept for the week is implemented in all five languages, and the Python file listed in Today's session is the canonical walkthrough.
+
+## Related materials
+
+| Resource | Use it when |
+|----------|-------------|
+| [`problems.md`](problems.md) | You want extra practice with company-tagged problems |
+
+## Reference: per-language topic index
+
+<details>
+<summary>All implementations (Java / Python / C++ / Rust / Web)</summary>
+
+**Topic index**
+
 
 | # | Topic | Java | Python | C++ | Rust | Web |
 |---|-------|------|--------|-----|------|-----|
@@ -25,7 +49,8 @@ Each topic is implemented in all five languages: **Java, Python, C++, Rust, and 
 | 15 | Decimal to Binary | `java/15.Decimal_to_Binary.java` | `python/15.decimal_to_binary.py` | `cpp/15.decimal_to_binary.cpp` | `rust/s15_decimal_to_binary.rs` | `web/15.decimal_to_binary.html` |
 | 16 | Check no Sequence | `java/16.Check_no_Sequence.java` | `python/16.check_no_sequence.py` | `cpp/16.check_no_sequence.cpp` | `rust/s16_check_no_sequence.rs` | `web/16.check_no_sequence.html` |
 
-## Survey companions
+**Survey companions**
+
 
 Cross-cutting files that summarize the week or provide an interactive overview:
 
@@ -34,7 +59,65 @@ Cross-cutting files that summarize the week or provide an interactive overview:
 | Loops And Numbers | — | `python/loops_and_numbers.py` | `cpp/loops_and_numbers.cpp` | `rust/loops_and_numbers.rs` | — |
 | Interactive index | — | — | — | — | `web/index.html` |
 
-## How to run a topic file
+**Topic roadmap**
+
+
+- **1. For loop**
+- **2. For loop variations**
+- **3. Break**
+- **4. Continue**
+- **5. Scope of Variable**
+- **6. Increment Decrement Operator**
+- **7. Bitwise Operator**
+- **8. Precedence Associativity**
+- **9. Nth Fibonacci Number**
+- **10. All Prime Number**
+- **11. Sum Or Product**
+- **12. Terms of AP**
+- **13. Reverse**
+- **14. Binary to Decimal**
+- **15. Decimal to Binary**
+- **16. Check no Sequence**
+
+</details>
+
+## Reference: tradeoff matrix
+
+<details>
+<summary>Approach x Time x Space x When-to-prefer</summary>
+
+
+Flagship topic: computing the Nth Fibonacci number.
+
+| Approach | Time | Space | Code complexity | When to prefer |
+|----------|------|-------|-----------------|----------------|
+| Naive recursion `fib(n-1)+fib(n-2)` | O(φⁿ) | O(n) stack | Low | Never for n > ~40 — pedagogy only |
+| Iterative (two variables) | O(n) | O(1) | Low | Default choice for all practical n |
+| Memoized recursion | O(n) | O(n) | Medium | When you also need intermediate values |
+| Matrix exponentiation | O(log n) | O(1) | High | Astronomical n with modular arithmetic |
+| Binet's formula | O(1) | O(1) | Low | When n is tiny and float error is OK |
+
+</details>
+
+## Reference: anti-patterns to avoid
+
+<details>
+<summary>Common mistakes specific to this week's topic</summary>
+
+
+- **Using `int` for Fibonacci past F(46)** — F(47) overflows a signed 32-bit int. Switch to `long` (good up to F(92)) or `BigInteger` for arbitrary n.
+- **Computing primality with `for i in 2..n`** — checking up to `sqrt(n)` is enough, since any factor larger than √n must pair with a smaller one. Wasting the upper half makes a 10× difference even on toy inputs.
+- **Building a decimal number from a binary string with `s += digit * Math.pow(2, i)`** — `Math.pow` returns `double` and you'll lose precision on long strings. Multiply-accumulate with `int`/`long` instead.
+- **Forgetting that `break` only exits the innermost loop** — if you're inside a nested loop and want to bail out of both, you need a labeled break or a flag, not a single `break`.
+- **Bitwise vs logical operators** — `&` and `&&` are different. `&` evaluates both sides; `&&` short-circuits. Mixing them up causes either subtle slowness or NullPointerExceptions on the right operand.
+
+</details>
+
+## Reference: how to run a topic file
+
+<details>
+<summary>Java / Python / C++ / Rust / Web one-liners</summary>
+
 
 From the week's directory:
 
@@ -56,46 +139,10 @@ open web/<file>.html   # macOS
 xdg-open web/<file>.html   # Linux
 ```
 
-## Topic roadmap
-
-- **1. For loop**
-- **2. For loop variations**
-- **3. Break**
-- **4. Continue**
-- **5. Scope of Variable**
-- **6. Increment Decrement Operator**
-- **7. Bitwise Operator**
-- **8. Precedence Associativity**
-- **9. Nth Fibonacci Number**
-- **10. All Prime Number**
-- **11. Sum Or Product**
-- **12. Terms of AP**
-- **13. Reverse**
-- **14. Binary to Decimal**
-- **15. Decimal to Binary**
-- **16. Check no Sequence**
-
-## Tradeoff Matrix
-
-Flagship topic: computing the Nth Fibonacci number.
-
-| Approach | Time | Space | Code complexity | When to prefer |
-|----------|------|-------|-----------------|----------------|
-| Naive recursion `fib(n-1)+fib(n-2)` | O(φⁿ) | O(n) stack | Low | Never for n > ~40 — pedagogy only |
-| Iterative (two variables) | O(n) | O(1) | Low | Default choice for all practical n |
-| Memoized recursion | O(n) | O(n) | Medium | When you also need intermediate values |
-| Matrix exponentiation | O(log n) | O(1) | High | Astronomical n with modular arithmetic |
-| Binet's formula | O(1) | O(1) | Low | When n is tiny and float error is OK |
-
-## Anti-patterns to avoid
-
-- **Using `int` for Fibonacci past F(46)** — F(47) overflows a signed 32-bit int. Switch to `long` (good up to F(92)) or `BigInteger` for arbitrary n.
-- **Computing primality with `for i in 2..n`** — checking up to `sqrt(n)` is enough, since any factor larger than √n must pair with a smaller one. Wasting the upper half makes a 10× difference even on toy inputs.
-- **Building a decimal number from a binary string with `s += digit * Math.pow(2, i)`** — `Math.pow` returns `double` and you'll lose precision on long strings. Multiply-accumulate with `int`/`long` instead.
-- **Forgetting that `break` only exits the innermost loop** — if you're inside a nested loop and want to bail out of both, you need a labeled break or a flag, not a single `break`.
-- **Bitwise vs logical operators** — `&` and `&&` are different. `&` evaluates both sides; `&&` short-circuits. Mixing them up causes either subtle slowness or NullPointerExceptions on the right operand.
+</details>
 
 ## Reflection prompts
+
 
 - Which topic this week was hardest, and what made it hard?
 - Was there a pattern you didn't recognize and had to be told about? Which one?

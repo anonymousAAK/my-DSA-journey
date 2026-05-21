@@ -98,6 +98,10 @@ python scripts/quality_check.py
 
 Must exit `0`. If you've added drift the lint will say so. See **Quality lint** below for what each check does and how to fix the common failure modes.
 
+### Workbook (your personal workspace)
+
+`workbook/` is gitignored. Don't ever PR a workbook attempt to the main repo — those are personal scratchwork. Instead, polished solutions you want to share go in `showcase/submissions/` via a PR.
+
 ### Adding a fixture and reference (for topic files)
 
 If your new file implements an algorithm that has a `tests/cases/<topic>.json` fixture, the test harness will pick it up automatically. If you're adding a brand-new topic that *deserves* a fixture (most algorithmic ones do):

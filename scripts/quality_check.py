@@ -483,10 +483,22 @@ def run_check_challenges() -> tuple[int, list[Issue]]:
 # ---------------------------------------------------------------------------
 
 README_REQUIRED = [
-    "## Tradeoff Matrix",
-    "## Anti-patterns to avoid",
-    "## Reflection prompts",
+    # Each entry is a tuple of acceptable forms. The header check passes if
+    # ANY of the listed forms appears in the README. We accept both the
+    # original "## Tradeoff Matrix" form and the post-restructure
+    # "## Reference: tradeoff matrix" form (case-insensitive on the
+    # second form, since the restructure lowercased the section names
+    # when nesting them as collapsible reference blocks).
+    ("## Tradeoff Matrix", "## Reference: tradeoff matrix"),
+    ("## Anti-patterns to avoid", "## Reference: anti-patterns to avoid"),
+    ("## Reflection prompts",),
 ]
+
+
+def _readme_has_section(text: str, accepted_forms: tuple[str, ...]) -> bool:
+    """Case-insensitive presence check for any of the accepted forms."""
+    lowered = text.lower()
+    return any(form.lower() in lowered for form in accepted_forms)
 
 
 def run_check_readmes() -> tuple[int, list[Issue]]:
@@ -499,7 +511,7 @@ def run_check_readmes() -> tuple[int, list[Issue]]:
             continue
         total += 1
         text = read_text_safely(f) or ""
-        missing = [h for h in README_REQUIRED if h not in text]
+        missing = [forms[0] for forms in README_REQUIRED if not _readme_has_section(text, forms)]
         # Topic-index table: a markdown table whose header row includes the
         # language column names. We look for a header row containing at least
         # three of {Java, Python, C++, Rust, Web}.

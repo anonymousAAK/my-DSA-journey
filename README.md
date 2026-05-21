@@ -18,20 +18,50 @@ Implementations across **5 tracks** — Java, Python, C++, Rust, and self-contai
 
 ## Start Here
 
-**First time on this repo?** 30 weeks is a real commitment. Before you make it, try one of these two on-ramps:
+**First time on this repo?** Two paths in:
 
-- **[QUICKSTART.md](QUICKSTART.md) — 4 hours, 8 problems.** A focused session that walks you through the full methodology (decompose → recognize a pattern → implement → journal) on representative problems across every difficulty level. If the loop works for you, the long path is just more reps of it.
-- **[docs/diagnostic.md](docs/diagnostic.md) — 15 questions, ~25 minutes.** A calibrated diagnostic that places you into the curriculum so you don't waste weeks relearning what you already know. Maps your score to a specific starting week.
+### Just getting started
 
-Already convinced? Skip ahead to [Learning Paths](#learning-paths) or jump straight to [Week 1](Week%201/).
+```bash
+./scripts/journey start    # 2-minute onboarding: language, time, goal
+./scripts/journey next     # tells you exactly what to do next, takes 15-60 min
+```
+
+That's it. The CLI picks your next session — concept to read, drill to try, code to write, quiz to take. No menu, no choice paralysis. One next thing.
+
+### Want to look first
+
+- **[QUICKSTART.md](QUICKSTART.md) — 4 hours, 8 problems.** A focused session covering the full methodology (decompose → recognize a pattern → implement → journal) across every difficulty level.
+- **[docs/diagnostic.md](docs/diagnostic.md) — 15 questions, ~25 min.** A calibrated placement test that maps your score to a starting week.
+- **[INDEX.md](INDEX.md)** — master index of every file in this repo.
+
+### Already convinced?
+
+Skip to [Learning Paths](#learning-paths) or jump straight to [Week 1](Week%201/).
 
 **Done a capstone?** [Submit it to the showcase →](showcase/README.md)
 
-**Looking for a specific doc?** See [INDEX.md](INDEX.md) — the master index of every file in this repo, grouped by purpose.
+**Multilingual?** Mindset docs in [हिन्दी](translations/hi/), [Español](translations/es/), [中文](translations/zh/). [Want to add yours?](CONTRIBUTING.md#translations)
 
-**🌍 Languages**: English (default) · [हिन्दी](translations/hi/) · [Español](translations/es/) · [中文](translations/zh/) · [Want to add yours?](CONTRIBUTING.md#translations)
+## How the journey CLI works
 
-**🎧 Audio version**: spoken-form transcripts ready for TTS or narration are in [`audio/`](audio/) — see [`audio/README.md`](audio/README.md) to generate them or contribute professional recordings. Video walkthroughs: [`video/`](video/).
+The `./scripts/journey` CLI is the heart of the daily learning loop. Run `./scripts/journey --help` for the full reference, or see [`docs/JOURNEY_CLI.md`](docs/JOURNEY_CLI.md) for examples.
+
+| Command | What it does |
+|---------|--------------|
+| `journey start` | One-time setup: primary language, time per session, goal |
+| `journey next` | The big one — picks your next session based on progress + FSRS due-skills + available time |
+| `journey next --time 15m` | Shorter session (drill only) |
+| `journey next --time weekend` | Capstone-sized scope |
+| `journey new-attempt <topic>` | Creates a stub in `workbook/` for you to code in |
+| `journey verify <topic> <file>` | Runs YOUR code against fixtures — the most empowering single command |
+| `journey reflect` | Appends today's reflection prompts to your week's journal |
+| `journey quiz N` | Mastery quiz for week N (with spaced repetition built in) |
+| `journey review` | Runs only FSRS-due skills across all weeks, most-overdue first |
+| `journey progress --html` | Opens your personal dashboard (heatmap, streak, weak skills) |
+| `journey daily` | Today's recommended drill + challenge + reflection |
+
+All progress lives in `~/.journey/`. Your code lives in `workbook/` (gitignored — opt in to share via PR to `showcase/`).
 
 ---
 
@@ -101,6 +131,16 @@ Each per-topic file follows the same header structure as Java — `CONCEPT`, `KE
 Alongside the numbered topic files, each language folder also keeps an **overview/survey file** (`fundamentals.py`, `arrays.cpp`, `linked_lists.rs`, …) and `web/index.html` keeps the rich interactive page. These are quick-reference companions to the deep per-topic files.
 
 This layout supports going as deep in every language as the Java track, week by week.
+
+### Your workspace: `workbook/`
+
+A gitignored directory at the repo root. The journey CLI writes there:
+
+- `workbook/week_NN/attempts/` — your implementation attempts (one file per topic per date)
+- `workbook/week_NN/journal.md` — your reflection journal (`./journey reflect` appends here)
+- `workbook/week_NN/notes.md` — freeform notes you write
+
+See `workbook/README.md` for details.
 
 ## Table of Contents
 

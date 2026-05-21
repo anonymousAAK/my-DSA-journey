@@ -121,3 +121,26 @@ Great work — for retention, revisit Week 3 and Week — (see docs/REVIEW_SCHED
 2. Add an entry with a unique `id`, a short `prompt`, the correct `answer` (matching the `type`'s shape), and a one-line `explanation`.
 3. (Optional) Run `./scripts/journey progress` — it parses every `mastery.yml`, so YAML errors will surface immediately.
 4. (Optional) Run `JOURNEY_NON_INTERACTIVE=1 ./scripts/journey quiz N` to confirm the new skill doesn't crash the engine.
+
+---
+
+## What's next?
+
+Mastery quizzes test recognition under time pressure. They don't test whether
+you can actually write the algorithm. Two newer subcommands close that loop:
+
+- **`./scripts/journey next`** — picks ONE concrete next action for your
+  session based on `current_week`, FSRS-due skills, and the time you have
+  (`--time 15m | 30m | 1h | weekend`). Use this as your "what should I work
+  on right now?" button. Honors a soft mastery gate: you'll get a warning if
+  you try to jump ahead before scoring ≥80% on the current week
+  (pass `--force` to override).
+- **`./scripts/journey verify <topic> <file>`** — runs YOUR code against the
+  same fixtures the canonical reference implementations pass. Use it after
+  `./scripts/journey new-attempt <topic>` writes a stub for you in
+  `workbook/week_NN/attempts/`. PASS/FAIL output per case + a pointer to
+  `tests/refs/<topic>.py` for the diff.
+
+The full reference for every subcommand (`start`, `next`, `quiz`, `review`,
+`verify`, `new-attempt`, `reflect`, `daily`, `progress`, `dashboard`,
+`reset`) lives in [`JOURNEY_CLI.md`](JOURNEY_CLI.md).
