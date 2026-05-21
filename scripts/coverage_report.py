@@ -29,6 +29,52 @@ CASES_DIR = REPO_ROOT / "tests" / "cases"
 OUTPUT_FILE = REPO_ROOT / "tests" / "COVERAGE.md"
 TOTAL_WEEKS = 30
 
+# Some Java files bundle multiple algorithms (e.g. PrefixSumAndKadane covers
+# both prefix sums and Kadane's algorithm) while fixtures are scoped to a
+# single algorithm. Map Java topic stems to the fixture(s) that exercise
+# their content. A Java topic is "tested" if ANY listed fixture exists.
+TOPIC_FIXTURE_ALIASES: dict[str, list[str]] = {
+    # Week 6
+    "return_array_sum": ["linear_search"],
+    "prefix_sum_and_kadane": ["kadane_max_subarray"],
+    "dutch_national_flag_and_missing": ["dutch_national_flag"],
+    # Week 7
+    "palindrome_and_anagram": ["palindrome_check", "valid_anagram"],
+    # Week 9
+    "bubble_selection_insertion": ["quick_sort"],  # any sort exercises the pattern
+    # Week 10
+    "spiral_and_diagonal_traversal": ["spiral_traversal"],
+    # Week 11
+    "singly_linked_list": ["reverse_linked_list"],
+    "merge_sorted_lists_and_lru": ["lru_cache"],
+    # Week 12
+    "stack_implementation": ["balanced_parens"],
+    # Week 13
+    "queue_implementation": ["sliding_window_max"],
+    # Week 14
+    "binary_search_tree": ["bst_validate"],
+    # Week 15
+    "heap_and_priority_queue": ["kth_largest"],
+    # Week 16
+    "hashing_and_hash_map": ["two_sum"],
+    # Week 17
+    "graph_representations": ["topological_sort"],  # any graph algo touches representations
+    "topological_sort": ["topological_sort"],
+    # Week 18
+    "dynamic_programming": ["coin_change"],
+    # Week 20
+    "backtracking": ["n_queens_count"],
+    # Week 22
+    "shortest_paths": ["dijkstra_shortest_path"],
+    "minimum_spanning_tree": ["kruskal_mst_weight"],
+    # Week 25
+    "kmp": ["kmp_search"],
+    "rabin_karp": ["rabin_karp_search"],
+    "z_algorithm": [],  # no fixture yet
+    # Week 30
+    "sliding_window": ["sliding_window_longest_substr"],
+}
+
 # Topic files start with a number followed by '.' or whitespace, e.g.
 # "1.ReturnArraySum.java" or "14. How other datatype are stores.java".
 NUMBERED_PREFIX = re.compile(r"^(\d+)[.\s]")
@@ -99,7 +145,15 @@ def enumerate_week_topics(week: int) -> list[tuple[str, str]]:
 
 
 def fixture_exists(topic: str) -> bool:
-    return (CASES_DIR / f"{topic}.json").is_file()
+    """A topic is covered if any directly-named fixture OR any aliased
+    fixture file exists. Aliases handle the case where a Java file bundles
+    multiple algorithms while fixtures are scoped per-algorithm."""
+    if (CASES_DIR / f"{topic}.json").is_file():
+        return True
+    for alias in TOPIC_FIXTURE_ALIASES.get(topic, []):
+        if (CASES_DIR / f"{alias}.json").is_file():
+            return True
+    return False
 
 
 def build_report() -> str:

@@ -3,7 +3,7 @@
 > **30 weeks. 4 languages. Real correctness tests, mastery quizzes, and a 4-hour quickstart — learn DSA as problem-solving, not memorization.**
 
 ![Weeks](https://img.shields.io/badge/Weeks-30-blue)
-![Languages](https://img.shields.io/badge/Languages-Java%20%7C%20C%2B%2B%20%7C%20Python%20%7C%20Rust-green)
+![Languages](https://img.shields.io/badge/Languages-Java%20%7C%20Python%20%7C%20C%2B%2B%20%7C%20Rust%20%7C%20Web-green)
 ![Level](https://img.shields.io/badge/Level-Beginner%20to%20Research-orange)
 ![Interactive](https://img.shields.io/badge/Interactive-HTML%20Pages-purple)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
@@ -12,7 +12,7 @@
 
 > A comprehensive, 30-week structured guide to mastering Data Structures and Algorithms — from first principles to research-level topics and interview mastery.
 
-All implementations available in **4 languages**: Java, Python, C++, and Rust — with detailed comments, complexity analysis, and test cases.
+Implementations across **5 tracks** — Java, Python, C++, Rust, and self-contained Web (HTML + JS) — with detailed comments, complexity analysis, and runnable correctness fixtures for the key algorithms.
 
 ---
 
@@ -164,7 +164,7 @@ Hashing   Trees    Adv Trees  Adv Graph  Research  Sys Design
 7. **Language learners**: Compare implementations across languages to understand design differences.
 8. **Open the HTML pages**: Each week has `web/index.html` with interactive explanations, diagrams, and code you can copy directly.
 
-9. Each `Week N/README.md` now mirrors the Java topic roadmap and defines what “detailed parity” means for Python/C++/Rust.
+9. Each `Week N/README.md` now mirrors the Java topic roadmap and defines what "detailed parity" means for Python/C++/Rust.
 
 ---
 

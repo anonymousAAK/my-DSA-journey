@@ -659,37 +659,60 @@ def run_check_leetcode() -> tuple[int, list[Issue]]:
 # CHECK 7 — Smart-quote detection
 # ---------------------------------------------------------------------------
 
+def _scan_one_for_smart_quotes(f: Path, issues: list[Issue]) -> None:
+    text = read_text_safely(f)
+    if not text:
+        return
+    hits = []
+    for lineno, line in enumerate(text.splitlines(), 1):
+        if SMART_QUOTE_RE.search(line):
+            chars = sorted({c for c in line if c in SMART_QUOTES})
+            hits.append((lineno, "".join(chars)))
+    if hits:
+        sample = ", ".join(f"L{ln}:{c}" for ln, c in hits[:3])
+        issues.append(Issue(
+            "smart_quotes", "SMART_QUOTE",
+            f"chars=[{sample}] count={len(hits)}",
+            rel(f),
+            extra={"hits": [{"line": ln, "chars": c} for ln, c in hits]},
+        ))
+
+
 def run_check_smart_quotes() -> tuple[int, list[Issue]]:
+    """Scan code files AND prose files (.md / .yml / .html) for typographic
+    smart quotes. Previously only code files were scanned, which let smart
+    quotes survive in READMEs and docs until they tripped Java compilers."""
     issues: list[Issue] = []
     scanned = 0
-    target_exts = {".java", ".py", ".cpp", ".rs"}
+    code_exts = {".java", ".py", ".cpp", ".rs"}
+    prose_exts = {".md", ".yml", ".yaml", ".html"}
+
+    # Scan code files inside Week N/<lang>/ as before.
     for wk in week_dirs():
         for sub in ("java", "python", "cpp", "rust"):
             d = wk / sub
             if not d.is_dir():
                 continue
             for f in d.iterdir():
-                if not f.is_file():
-                    continue
-                if f.suffix not in target_exts:
+                if not f.is_file() or f.suffix not in code_exts:
                     continue
                 scanned += 1
-                text = read_text_safely(f)
-                if not text:
-                    continue
-                hits = []
-                for lineno, line in enumerate(text.splitlines(), 1):
-                    if SMART_QUOTE_RE.search(line):
-                        chars = sorted({c for c in line if c in SMART_QUOTES})
-                        hits.append((lineno, "".join(chars)))
-                if hits:
-                    sample = ", ".join(f"L{ln}:{c}" for ln, c in hits[:3])
-                    issues.append(Issue(
-                        "smart_quotes", "SMART_QUOTE",
-                        f"chars=[{sample}] count={len(hits)}",
-                        rel(f),
-                        extra={"hits": [{"line": ln, "chars": c} for ln, c in hits]},
-                    ))
+                _scan_one_for_smart_quotes(f, issues)
+
+    # Scan prose files anywhere in the repo, skipping vendor / build dirs and
+    # the translations/ tree (CJK / Indic content uses non-ASCII quotation
+    # marks legitimately).
+    skip_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv",
+                 "site", "site_src", "dist", ".idea", ".vscode", "translations"}
+    for dirpath, dirnames, filenames in os.walk(REPO_ROOT):
+        dirnames[:] = [d for d in dirnames if d not in skip_dirs and not d.startswith(".")]
+        for fn in filenames:
+            f = Path(dirpath) / fn
+            if f.suffix.lower() not in prose_exts:
+                continue
+            scanned += 1
+            _scan_one_for_smart_quotes(f, issues)
+
     return scanned, issues
 
 

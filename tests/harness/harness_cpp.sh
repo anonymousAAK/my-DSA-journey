@@ -41,9 +41,19 @@ run_one () {
 
 if [[ "${1:-}" == "--all" ]]; then
     rc=0
+    log=$(mktemp)
+    fixtures=0
     for f in "${CASES_DIR}"/*.json; do
-        run_one "${f}" || rc=$?
+        fixtures=$((fixtures + 1))
+        run_one "${f}" 2>&1 | tee -a "${log}" || rc=$?
     done
+    passes=$(grep -c '^PASS' "${log}" || true)
+    fails=$(grep -c '^FAIL' "${log}" || true)
+    skips=$(grep -c '^SKIP ' "${log}" || true)
+    rm -f "${log}"
+    echo ""
+    echo "============================================================"
+    echo "TOTAL: ${passes} passed, ${fails} failed across ${fixtures} fixtures (skipped: ${skips})"
     exit "${rc}"
 fi
 
