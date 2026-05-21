@@ -5,33 +5,32 @@ repo_url: https://github.com/anonymousAAK/my-DSA-journey
 repo_name: anonymousAAK/my-DSA-journey
 edit_uri: edit/main/
 
-# Use the repository root as the docs source. The existing markdown (README.md,
-# PROBLEM_SOLVING.md, QUICKSTART.md, docs/, case_studies/, capstones/, and each
-# Week N/README.md) is rendered in place.
-docs_dir: .
+# Build a curated symlink-farm under site_src/ before mkdocs runs.
+# mkdocs requires docs_dir to be a child of the config file, so we cannot
+# point at the repo root. scripts/prepare_site.sh creates site_src/ by
+# symlinking every file/folder referenced from the nav: below.
+#
+#   bash scripts/prepare_site.sh && mkdocs build --strict
+#
+# The CI workflow (.github/workflows/site.yml) runs prepare_site.sh as a
+# step before mkdocs.
+docs_dir: site_src
 
-# Keep code, build output, configuration, and binary directories out of the site.
-exclude_docs: |
-  .git/
-  .github/
-  .devcontainer/
-  __pycache__/
-  scripts/__pycache__/
-  dist/
-  site/
-  tests/cases/
-  tests/refs/
-  tests/harness/
-  Week */java/
-  Week */cpp/
-  Week */python/
-  Week */rust/
-  Week */web/
-  Week */mastery.yml
-  capstones/solutions/
-  mkdocs.yml
-  requirements.txt
-  LICENSE
+# site_src/ is generated; everything inside is a symlink to live content.
+# No exclude_docs needed because we explicitly pick what goes in.
+
+# Link validation: many docs intentionally link to source code (e.g.
+# Week N/python/2.hello_world.py) and other files that aren't part of the
+# rendered site. Demote those to info so --strict only fails on real
+# config / parse problems, not cross-tree references.
+validation:
+  links:
+    absolute_links: ignore
+    unrecognized_links: info
+    not_found: info
+  nav:
+    not_found: warn
+    omitted_files: ignore
 
 theme:
   name: material
@@ -74,11 +73,9 @@ extra:
       link: https://github.com/anonymousAAK/my-DSA-journey
       name: my-DSA-journey on GitHub
 
+# Theme overrides — site_src/docs/assets/theme.css after symlink farm.
 extra_css:
   - docs/assets/theme.css
-
-# Override Material's slate colors to exactly match the existing web palette.
-# (theme.css is created lazily; if absent, Material falls back to defaults.)
 
 plugins:
   - search

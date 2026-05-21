@@ -6,3 +6,4 @@ site/
 
 # eBook build output (scripts/build_book.sh)
 dist/
+site_src/
