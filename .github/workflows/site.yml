@@ -36,6 +36,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
+      - name: Prepare site_src/ (symlink content into docs_dir)
+        run: bash scripts/prepare_site.sh
+
       - name: Build site
         run: mkdocs build --strict
 
