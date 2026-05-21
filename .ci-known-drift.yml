@@ -1,0 +1,166 @@
+# .ci-known-drift.yml
+#
+# Files exempted from scripts/quality_check.py header check, with reason.
+# Read by the script via the KNOWN_DRIFT_FILE constant.
+#
+# Format: '<repo-relative-path>: <human-readable reason>'
+# Lines starting with '#' and blank lines are ignored.
+#
+# Adding an entry should be a conscious decision: it means "this file
+# legitimately does not follow the schema and that's OK because <reason>".
+# Do NOT use this to silence genuine drift in new files — fix the file
+# instead. The list below was captured at the point where CI flipped from
+# report-only to gating; new contributions should not extend it without a
+# documented reason in the PR description.
+#
+# See scripts/QUALITY_CHECK.md for the full policy.
+
+# Fundamentals-week tutorials (Weeks 1-5).
+# Syntax-demo files that intentionally use an abbreviated header schema:
+# they may omit DRY RUN / NOTES blocks because the file is teaching a
+# single syntax element (e.g. how `break` works) where a worked example
+# and cross-language NOTES block do not add pedagogical value.
+Week 1/java/10.Multiple_input.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/12.Average_of_two_numbers.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/2.hello_world.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/3.Better_Hello_World.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/4.Add_two_numbers.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/5.Arithmetic_Operation.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/7.Taking_Input_all.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/java/8.Add_two_number_better.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 1/python/7.taking_input_all.py: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/cpp/10.factors.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/cpp/8.multiplication_table.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/10.Factors.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/11.Find_Power.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/3.Find_Character_Case.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/6.Fahrenheit_to_Celsius_Table.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/7.Total_Salary.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/8.Multiplication_Table.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/java/9.Sum_of_Even_Odd.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/rust/s06_fahrenheit_to_celsius_table.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/rust/s07_total_salary.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/rust/s08_multiplication_table.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/rust/s09_sum_of_even_odd.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/rust/s10_factors.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 2/rust/s11_find_power.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/10.all_prime_number.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/11.sum_or_product.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/12.terms_of_ap.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/13.reverse.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/14.binary_to_decimal.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/15.decimal_to_binary.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/16.check_no_sequence.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/3.break.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/4.continue.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/5.scope_of_variable.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/7.bitwise_operator.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/8.precedence_associativity.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/cpp/9.nth_fibonacci_number.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/10.All_Prime_Number.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/11.Sum-Or-Product.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/12.Terms_of_AP.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/13.Reverse.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/14.Binary_to_Decimal.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/16.Check_no_Sequence.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/6.Increment_Decrement_Operator.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/java/9.Nth_Fibonacci_Number.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s02_for_loop_variations.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s03_break.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s04_continue.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s05_scope_of_variable.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s06_increment_decrement_operator.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s07_bitwise_operator.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s08_precedence_associativity.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s09_nth_fibonacci_number.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s10_all_prime_number.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s11_sum_or_product.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s12_terms_of_ap.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s13_reverse.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s14_binary_to_decimal.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s15_decimal_to_binary.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 3/rust/s16_check_no_sequence.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/1.square_pattern.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/2.tri_star_pattern.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/3.tri_no_pattern.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/4.reverse_num_pattern.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/5.alpha_pattern.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/6.char_pattern.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/7.interesting_alphabet.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/cpp/8.mirror_image.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/1.Square_Pattern.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/2.Tri_Star_Pattern.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/3.Tri_No_pattern.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/4.Reverse_Num_Pattern.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/5.Alpha_Pattern.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/6.Char_Pattern.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/7.Interesting_Alphabet.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/java/8.Mirror_Image.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s01_square_pattern.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s02_tri_star_pattern.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s03_tri_no_pattern.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s04_reverse_num_pattern.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s05_alpha_pattern.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s06_char_pattern.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s07_interesting_alphabet.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 4/rust/s08_mirror_image.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/cpp/3.recursion_basics.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/cpp/4.fibonacci_recursion.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/cpp/5.tower_of_hanoi.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/cpp/6.recursion_patterns.cpp: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/java/1.MethodBasics.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/java/2.MethodOverloading.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/java/3.RecursionBasics.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/java/4.FibonacciRecursion.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/java/5.TowerOfHanoi.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/java/6.RecursionPatterns.java: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/python/3.recursion_basics.py: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/python/6.recursion_patterns.py: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/rust/s01_method_basics.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/rust/s02_method_overloading.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/rust/s03_recursion_basics.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/rust/s04_fibonacci_recursion.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/rust/s05_tower_of_hanoi.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+Week 5/rust/s06_recursion_patterns.rs: fundamentals-week tutorial; abbreviated header schema (syntax demo)
+
+# Multi-topic survey files (Weeks 6-25 java/web).
+# These bundle multiple related algorithms (e.g. BubbleSelectionInsertion.java
+# covers three sorts). They use sectioned in-file headers (===== BUBBLE SORT =====)
+# rather than the top-of-file per-topic schema. The pedagogical content is present;
+# it is just not parseable by the literal CONCEPT:/KEY POINTS:/etc. token check.
+Week 10/java/1.MatrixBasics.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 10/java/2.SpiralAndDiagonalTraversal.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 11/java/1.SinglyLinkedList.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 11/java/2.MergeSortedListsAndLRU.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 12/java/1.StackImplementation.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 13/java/1.QueueImplementation.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 14/java/1.BinaryTree.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 14/java/2.BinarySearchTree.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 15/java/1.HeapAndPriorityQueue.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 16/java/1.HashingAndHashMap.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 17/java/1.GraphRepresentations.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 17/java/2.TopologicalSort.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 18/java/1.DynamicProgramming.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 19/java/1.GreedyAlgorithms.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 20/java/1.Backtracking.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 21/java/1.SegmentTreeAndBIT.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 21/java/2.Trie.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 22/java/1.ShortestPaths.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 22/java/2.MinimumSpanningTree.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 23/java/1.AdvancedDP.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 24/java/1.ResearchLevelTopics.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 24/java/2.NPCompletenessAndApproximation.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 6/java/1.ReturnArraySum.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 6/java/2.LinearSearch.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 6/java/3.ArrayReverseAndRotate.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 6/java/4.PrefixSumAndKadane.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 6/java/5.DutchNationalFlagAndMissing.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 7/java/1.StringBasics.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 7/java/2.PalindromeAndAnagram.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 7/java/3.KMPSearch.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 8/java/1.BinarySearch.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 8/java/2.BinarySearchOnAnswer.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 9/java/1.BubbleSelectionInsertion.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 9/java/2.MergeSort.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+Week 9/java/3.QuickSort.java: multi-topic survey file; uses sectioned in-file headers, not per-topic schema
+

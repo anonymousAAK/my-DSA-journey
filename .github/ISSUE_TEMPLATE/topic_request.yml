@@ -1,0 +1,107 @@
+name: Topic request
+description: Propose a new topic file for one of the weeks. Open this before writing code — we want to discuss scope first.
+title: "[topic] "
+labels: ["enhancement", "topic-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for proposing a topic. Because every new topic file has to land in all five language tracks at once (java, python, cpp, rust, web), a quick scope check before you write code saves a lot of wasted work.
+
+        Please don't open a PR for a new topic until this issue has been triaged.
+
+  - type: input
+    id: topic_name
+    attributes:
+      label: Proposed topic name
+      description: The snake_case identifier the topic will use across language tracks (e.g. `aho_corasick`, `union_find_with_path_compression`). Keep it specific — `trees` is too broad; `bst_delete_with_two_children` is too narrow.
+      placeholder: e.g. fenwick_tree_range_update
+    validations:
+      required: true
+
+  - type: dropdown
+    id: week
+    attributes:
+      label: Which week does this belong in?
+      description: Pick the week whose existing scope best fits the topic. If it spans multiple, pick the earliest.
+      options:
+        - "Week 1 — Java Fundamentals"
+        - "Week 2 — Control Flow"
+        - "Week 3 — Loops & Number Theory Basics"
+        - "Week 4 — Pattern Printing"
+        - "Week 5 — Functions & Recursion"
+        - "Week 6 — Arrays"
+        - "Week 7 — Strings"
+        - "Week 8 — Searching"
+        - "Week 9 — Sorting"
+        - "Week 10 — 2D Arrays & Matrix"
+        - "Week 11 — Linked Lists"
+        - "Week 12 — Stacks"
+        - "Week 13 — Queues"
+        - "Week 14 — Trees"
+        - "Week 15 — Heaps"
+        - "Week 16 — Hash Tables"
+        - "Week 17 — Graphs"
+        - "Week 18 — Dynamic Programming"
+        - "Week 19 — Greedy"
+        - "Week 20 — Backtracking"
+        - "Week 21 — Advanced Trees"
+        - "Week 22 — Advanced Graphs"
+        - "Week 23 — Advanced DP"
+        - "Week 24 — Research Level"
+        - "Week 25 — Advanced Strings"
+        - "Week 26 — Network Flow"
+        - "Week 27 — Computational Geometry"
+        - "Week 28 — Game Theory"
+        - "Week 29 — System Design"
+        - "Week 30 — Interview Patterns"
+        - "Other / cross-week"
+    validations:
+      required: true
+
+  - type: textarea
+    id: week_rationale
+    attributes:
+      label: Why this week?
+      description: One paragraph. What prerequisites does the topic assume? Why doesn't it belong an earlier or later week?
+      placeholder: This topic builds on segment trees (Week 21) and is the natural step toward persistent data structures, so it slots in just after the Fenwick tree material.
+    validations:
+      required: true
+
+  - type: textarea
+    id: java_impl
+    attributes:
+      label: What would the canonical Java implementation look like?
+      description: |
+        A rough sketch — function signatures, the core algorithm in 5-10 lines of pseudocode, the test cases you'd include. We're not asking for the final file, just enough that a reviewer can sanity-check feasibility and scope.
+      placeholder: |
+        ```java
+        class AhoCorasick {
+            void addPattern(String p) { ... }
+            void buildFailureLinks() { ... }
+            List<Match> search(String text) { ... }
+        }
+        ```
+        Test cases: single-pattern, overlapping patterns, no match, all matches.
+    validations:
+      required: true
+
+  - type: textarea
+    id: portability
+    attributes:
+      label: Cross-language portability concerns
+      description: |
+        Anything tricky about translating the topic to Python/C++/Rust/web? Examples: needs mutable graph in Rust (will require `RefCell`); uses Java generics that don't map cleanly to C; relies on `synchronized` for which we'd need to pick a Python alternative.
+      placeholder: Rust will need `Rc<RefCell<Node>>` for the failure-link graph; the web demo can use plain JS objects but the visualizer will need a tree layout.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read CONTRIBUTING.md and understand the file-naming and header conventions.
+          required: true
+        - label: I understand a new topic file must land in all five language tracks before merging.
+          required: true

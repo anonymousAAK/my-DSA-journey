@@ -28,6 +28,13 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
   #live-demos .demo-grid a { display: block; padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; color: inherit; text-decoration: none; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
   #live-demos .demo-grid a:hover { background: rgba(255,255,255,.12); }
 </style>
+<style>
+  #practice-reflect .practice-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: .5rem; }
+  #practice-reflect .practice-grid li { padding: .75rem 1rem; background: rgba(255,255,255,.06); border-radius: 6px; border: 1px solid rgba(255,255,255,.1); transition: background .15s; }
+  #practice-reflect .practice-grid li:hover { background: rgba(255,255,255,.12); }
+  #practice-reflect .practice-grid a { color: inherit; text-decoration: none; font-weight: 600; }
+  #practice-reflect .practice-grid a:hover { text-decoration: underline; }
+</style>
 </head>
 <body>
 <div class="progress-bar" id="progressBar"></div>
@@ -47,6 +54,7 @@ details{margin:12px 0}summary{cursor:pointer;font-weight:600;color:var(--accent-
 <a href="#comparison">Complexity Table</a>
 <a href="#practice">Practice Problems</a>
 <a href="#summary">Summary</a>
+<a href="#practice-reflect">Practice &amp; Reflect</a>
 <a href="#live-demos">Live Demos</a>
 </nav>
 </aside>
@@ -1339,6 +1347,18 @@ In interviews, these data structures are building blocks. A cache system uses LR
 <a href="../Week 28/index.html">&larr; Week 28</a>
 <a href="../Week 30/index.html">Week 30 &rarr;</a>
 </div>
+
+<section id="practice-reflect" class="card">
+  <h2>Practice &amp; Reflect</h2>
+  <p>This week's curated artifacts for active practice and journaling.</p>
+  <ul class="practice-grid">
+    <li><a href="../patterns.md">🎯 Pattern Recognition Drills</a> — 10 problem statements; identify the pattern before peeking.</li>
+    <li><a href="../challenges.md">🔥 Hard Mode Challenges</a> — Implement from spec without looking at the canonical code.</li>
+    <li><a href="../problems.md">📋 Curated LeetCode Problems</a> — Practice problems with difficulty badges.</li>
+    <li><a href="../mastery.yml">✅ Mastery Quiz</a> — Run <code>./scripts/journey quiz 29</code> to test yourself.</li>
+    <li><a href="../README.md#reflection-prompts">📝 Reflection Prompts</a> — Journal questions for this week.</li>
+  </ul>
+</section>
 
 <section id="live-demos" class="card">
   <h2>Run Live Demos</h2>

@@ -1,5 +1,7 @@
 # My DSA Journey — Beginner to Research-Advanced
 
+> **30 weeks. 4 languages. Real correctness tests, mastery quizzes, and a 4-hour quickstart — learn DSA as problem-solving, not memorization.**
+
 ![Weeks](https://img.shields.io/badge/Weeks-30-blue)
 ![Languages](https://img.shields.io/badge/Languages-Java%20%7C%20C%2B%2B%20%7C%20Python%20%7C%20Rust-green)
 ![Level](https://img.shields.io/badge/Level-Beginner%20to%20Research-orange)
@@ -23,11 +25,13 @@ All implementations available in **4 languages**: Java, Python, C++, and Rust �
 
 Already convinced? Skip ahead to [Learning Paths](#learning-paths) or jump straight to [Week 1](Week%201/).
 
+**Looking for a specific doc?** See [INDEX.md](INDEX.md) — the master index of every file in this repo, grouped by purpose.
+
 ---
 
 ### Interactive Learning Pages
 
-Every week includes a beautifully designed **interactive HTML page** (`index.html`) that you can open in any browser. No build tools, no dependencies — just open the file!
+Every week includes a beautifully designed **interactive HTML page** (`index.html`) that you can open in any browser. No build tools, no dependencies — just open the file! These pages now also link to the per-week practice and reflection artifacts (patterns drills, hard-mode challenges, mastery quiz, curated LeetCode problems, and reflection prompts).
 
 | Feature | Description |
 |---------|-------------|
@@ -41,6 +45,7 @@ Every week includes a beautifully designed **interactive HTML page** (`index.htm
 | **Visual Diagrams** | ASCII art diagrams for algorithm walkthroughs |
 | **Complexity Tables** | Side-by-side time & space comparisons |
 | **Practice Problems** | Curated LeetCode problems with difficulty badges |
+| **Practice & Reflect Links** | Direct links to patterns drills, challenges, mastery quiz, and LeetCode problems for that week |
 | **Progress Bar** | Reading progress indicator at the top |
 | **Responsive** | Mobile-friendly with hamburger menu |
 | **Print-Ready** | Clean print styles for offline study |
@@ -94,6 +99,7 @@ This layout supports going as deep in every language as the Java track, week by 
 ## Table of Contents
 
 - [Start Here](#start-here)
+- [Master Index (INDEX.md)](INDEX.md)
 - [Learning Paths](#learning-paths)
 - [How to Use This Guide](#how-to-use-this-guide)
 - [Curriculum Overview](#curriculum-overview)
@@ -805,3 +811,10 @@ rustc "Week 8/searching.rs" && ./searching
 ---
 
 Made with dedication, one algorithm at a time.
+
+---
+
+<!-- Repository topic tags suggestion (apply via GitHub UI > Settings > Topics):
+     dsa, algorithms, data-structures, interview-prep, learning-resources,
+     java, python, cpp, rust, problem-solving, leetcode, computer-science
+-->

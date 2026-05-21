@@ -1,0 +1,10 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Questions and discussion
+    url: https://github.com/anonymousAAK/my-DSA-journey/discussions
+    about: |
+      Have a question about the curriculum, want to share a study strategy, or want to chat about how a topic clicked for you? Use Discussions instead of opening an issue.
+  - name: Read the contributing guide first
+    url: https://github.com/anonymousAAK/my-DSA-journey/blob/main/CONTRIBUTING.md
+    about: |
+      Before opening an issue or PR, please skim CONTRIBUTING.md — it covers the header / naming / lint conventions that 90% of bounced PRs trip over.

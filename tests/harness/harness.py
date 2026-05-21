@@ -14,7 +14,9 @@ from __future__ import annotations
 import argparse
 import importlib.util
 import json
+import subprocess
 import sys
+import tempfile
 import traceback
 from pathlib import Path
 from typing import Any
@@ -150,16 +152,90 @@ def run_all(verbose: bool = False) -> int:
     return 0 if total_failed == 0 else 1
 
 
+def _run_java(fixture: str | None, run_all_flag: bool) -> int:
+    """Compile the Java harness + refs and shell out to it."""
+    build_dir = Path(tempfile.gettempdir()) / "jbuild"
+    build_dir.mkdir(parents=True, exist_ok=True)
+    sources = [str(HARNESS_DIR / "Harness.java"), *sorted(str(p) for p in REFS_DIR.glob("*.java"))]
+    rc = subprocess.call(["javac", "-d", str(build_dir), *sources])
+    if rc != 0:
+        print("javac failed", file=sys.stderr)
+        return rc
+    if run_all_flag:
+        return subprocess.call(["java", "-cp", str(build_dir), "Harness", "--all"])
+    if not fixture:
+        print("supply a fixture path or --all", file=sys.stderr)
+        return 2
+    return subprocess.call(["java", "-cp", str(build_dir), "Harness", fixture])
+
+
+def _run_shell_harness(script: str, fixture: str | None, run_all_flag: bool) -> int:
+    """Shell out to harness_cpp.sh or harness_rust.sh."""
+    cmd = ["bash", str(HARNESS_DIR / script)]
+    if run_all_flag:
+        cmd.append("--all")
+    elif fixture:
+        cmd.append(fixture)
+    else:
+        print("supply a fixture path or --all", file=sys.stderr)
+        return 2
+    return subprocess.call(cmd)
+
+
+def _run_all_langs(fixture: str | None, run_all_flag: bool, verbose: bool) -> int:
+    """Run python first (fast), then C++, then Rust. Aggregate exit code."""
+    results: list[tuple[str, int]] = []
+
+    print("\n========== python ==========")
+    if run_all_flag:
+        rc_py = run_all(verbose=verbose)
+    else:
+        if not fixture:
+            print("supply a fixture path or --all", file=sys.stderr)
+            return 2
+        passed, failed, _ = run_fixture(Path(fixture), verbose=verbose)
+        rc_py = 0 if failed == 0 else 1
+    results.append(("python", rc_py))
+
+    print("\n========== cpp ==========")
+    rc_cpp = _run_shell_harness("harness_cpp.sh", fixture, run_all_flag)
+    results.append(("cpp", rc_cpp))
+
+    print("\n========== rust ==========")
+    rc_rs = _run_shell_harness("harness_rust.sh", fixture, run_all_flag)
+    results.append(("rust", rc_rs))
+
+    print("\n========== summary ==========")
+    fail = 0
+    for name, rc in results:
+        flag = "OK" if rc == 0 else "FAIL"
+        print(f"  [{flag:4}] {name}")
+        if rc != 0:
+            fail = rc
+    return fail
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="DSA correctness harness")
     parser.add_argument("fixture", nargs="?", help="Path to a cases.json fixture")
-    parser.add_argument("--lang", default="python", choices=["python"],
-                        help="Currently only the python harness is implemented end-to-end")
+    parser.add_argument("--lang", default="python",
+                        choices=["python", "java", "cpp", "rust", "all"],
+                        help="Reference-language harness to run "
+                             "('all' runs python, then C++, then Rust)")
     parser.add_argument("--all", action="store_true",
                         help="Run every fixture under tests/cases/")
     parser.add_argument("-v", "--verbose", action="store_true",
                         help="Print PASS lines too (default: only FAILs)")
     args = parser.parse_args()
+
+    if args.lang == "java":
+        return _run_java(args.fixture, args.all)
+    if args.lang == "cpp":
+        return _run_shell_harness("harness_cpp.sh", args.fixture, args.all)
+    if args.lang == "rust":
+        return _run_shell_harness("harness_rust.sh", args.fixture, args.all)
+    if args.lang == "all":
+        return _run_all_langs(args.fixture, args.all, args.verbose)
 
     if args.all:
         return run_all(verbose=args.verbose)
