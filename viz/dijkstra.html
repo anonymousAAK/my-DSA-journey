@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dijkstra Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--gradient:linear-gradient(135deg,#58a6ff,#3fb950)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem;display:inline-block;margin-bottom:14px}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input,.controls select{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:16px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+canvas{display:block;width:100%;background:#0d1117;border:1px solid var(--border);border-radius:6px}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.78rem;line-height:1.55;background:#0d1117;border-radius:6px;padding:10px}
+.pseudo .line{padding:2px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.tbl{width:100%;border-collapse:collapse;font-family:monospace;font-size:.78rem;margin-top:10px}
+.tbl th,.tbl td{padding:4px 6px;border-bottom:1px solid var(--border);text-align:center}
+.tbl th{color:var(--blue)}
+.tbl td.upd{background:rgba(63,185,80,.15);color:var(--green);font-weight:700}
+.tbl td.fin{color:var(--muted)}
+.pq{font-family:monospace;font-size:.78rem;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:8px;margin-top:8px;min-height:30px}
+.pq .item{display:inline-block;background:#22272e;color:var(--text);padding:2px 6px;border-radius:3px;margin:2px}
+.pq .item.head{background:var(--yellow);color:#0d1117;font-weight:700}
+.stats{margin-top:10px;font-size:.78rem;color:var(--muted);font-family:monospace}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; All visualizations</a>
+<div class="top"><h1>Dijkstra's Algorithm</h1></div>
+
+<div class="controls">
+  <label>Source: <select id="src"></select></label>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <button id="randomGraph">New graph</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="40"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Weighted graph</h3>
+    <canvas id="cv" height="420"></canvas>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="panel">
+    <h3>Priority queue (min-heap)</h3>
+    <div class="pq" id="pq"></div>
+    <h3 style="margin-top:14px">Distance table</h3>
+    <table class="tbl" id="distTbl"></table>
+    <h3 style="margin-top:14px">Pseudocode</h3>
+    <div class="pseudo" id="pseudo"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const LINES = [
+  'function dijkstra(G, s):',                       // 0
+  '  dist[v] = inf for all v; dist[s] = 0',          // 1
+  '  pq = MinHeap([(0, s)])',                         // 2
+  '  while pq not empty:',                              // 3
+  '    (d, u) = pq.pop()',                              // 4
+  '    if d > dist[u]: continue',                       // 5
+  '    finalize(u)',                                    // 6
+  '    for (v, w) in adj[u]:',                          // 7
+  '      if dist[u] + w < dist[v]:',                    // 8
+  '        dist[v] = dist[u] + w',                      // 9
+  '        pq.push((dist[v], v))',                      // 10
+];
+
+// 8 nodes laid out on a circle, weighted undirected edges
+let NODES=[], EDGES=[], ADJ={};
+
+function buildGraph(){
+  const n = 7;
+  NODES = [];
+  const W = 700, H = 380;
+  const cx = W/2, cy = H/2;
+  for(let i=0;i<n;i++){
+    const a = (i/n) * Math.PI*2 - Math.PI/2;
+    NODES.push({id:String.fromCharCode(65+i), x: cx + Math.cos(a)*150, y: cy + Math.sin(a)*140});
+  }
+  // generate edges: spanning ring + a few chords
+  EDGES=[];
+  for(let i=0;i<n;i++){
+    EDGES.push({u:NODES[i].id,v:NODES[(i+1)%n].id,w:1+Math.floor(Math.random()*9)});
+  }
+  // add chords
+  const chords = [[0,3],[1,4],[2,5],[3,6]];
+  for(const [a,b] of chords){
+    if(Math.random()<0.85)
+      EDGES.push({u:NODES[a].id,v:NODES[b].id,w:1+Math.floor(Math.random()*9)});
+  }
+  ADJ = {};
+  for(const n of NODES) ADJ[n.id]=[];
+  for(const e of EDGES){
+    ADJ[e.u].push([e.v,e.w]);
+    ADJ[e.v].push([e.u,e.w]);
+  }
+  const srcSel = document.getElementById('src');
+  srcSel.innerHTML = NODES.map(n=>`<option value="${n.id}">${n.id}</option>`).join('');
+}
+
+function planDijkstra(s){
+  const dist = {}; for(const n of NODES) dist[n.id]=Infinity;
+  dist[s]=0;
+  const heap = [[0,s]];
+  const fin = new Set();
+  const steps=[];
+  function snap(line,extra={}){
+    steps.push({line,
+      dist:Object.assign({},dist),
+      heap:heap.map(x=>x.slice()),
+      fin:new Set(fin),
+      ...extra});
+  }
+  snap(1);
+  snap(2);
+  while(heap.length){
+    snap(3);
+    heap.sort((a,b)=>a[0]-b[0]);
+    const [d,u]=heap.shift();
+    snap(4,{cur:u,curD:d});
+    if(d>dist[u]){ snap(5,{cur:u,curD:d,skip:true}); continue; }
+    fin.add(u);
+    snap(6,{cur:u});
+    for(const [v,w] of ADJ[u]){
+      snap(7,{cur:u,probe:v,edge:[u,v,w]});
+      const nd = dist[u]+w;
+      snap(8,{cur:u,probe:v,edge:[u,v,w]});
+      if(nd<dist[v]){
+        dist[v]=nd;
+        heap.push([nd,v]);
+        snap(10,{cur:u,probe:v,edge:[u,v,w],updated:v});
+      }
+    }
+  }
+  snap(3,{done:true});
+  return steps;
+}
+
+let steps=[], idx=0, state=null;
+
+function reset(){
+  const s = document.getElementById('src').value;
+  steps = planDijkstra(s);
+  idx=0;
+  state=null;
+  render();
+}
+
+function step(){
+  if(idx>=steps.length) return false;
+  state=steps[idx++];
+  render();
+  return idx<steps.length;
+}
+
+function render(){
+  const cv = document.getElementById('cv');
+  const W = cv.clientWidth; cv.width = W;
+  cv.height = 420;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,W,420);
+  // scale node positions to fit W
+  const scaleX = W/700;
+  const pos = {};
+  for(const n of NODES) pos[n.id] = {x:n.x*scaleX, y:n.y+10};
+
+  // edges
+  for(const e of EDGES){
+    const a = pos[e.u], b = pos[e.v];
+    let color = '#30363d', width=1.5;
+    if(state && state.edge && ((state.edge[0]===e.u && state.edge[1]===e.v)||(state.edge[0]===e.v && state.edge[1]===e.u))){
+      color = state.updated ? '#3fb950' : '#d29922'; width=3;
+    }
+    ctx.strokeStyle=color; ctx.lineWidth=width;
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    // weight
+    const mx=(a.x+b.x)/2, my=(a.y+b.y)/2;
+    ctx.fillStyle='#161b22'; ctx.fillRect(mx-12,my-9,24,18);
+    ctx.strokeStyle='#30363d'; ctx.lineWidth=1; ctx.strokeRect(mx-12,my-9,24,18);
+    ctx.fillStyle='#c9d1d9'; ctx.font='bold 12px monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(e.w, mx, my);
+  }
+  ctx.lineWidth=1;
+
+  // nodes
+  for(const n of NODES){
+    const p = pos[n.id];
+    let bg='#22272e', stroke='#30363d';
+    if(state){
+      if(state.fin && state.fin.has(n.id)) bg='#58a6ff';
+      if(state.cur===n.id) bg='#d29922';
+      if(state.probe===n.id) stroke='#a371f7';
+    }
+    ctx.fillStyle=bg;
+    ctx.beginPath(); ctx.arc(p.x,p.y,22,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=state&&state.probe===n.id?3:1.5; ctx.stroke();
+    ctx.fillStyle=(bg==='#22272e')?'#c9d1d9':'#0d1117';
+    ctx.font='bold 14px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.id, p.x, p.y);
+    // distance label
+    const d = state ? state.dist[n.id] : Infinity;
+    ctx.fillStyle='#3fb950'; ctx.font='bold 11px monospace';
+    ctx.fillText(d===Infinity?'∞':d, p.x, p.y+34);
+  }
+  ctx.lineWidth=1;
+
+  // pq
+  const pqEl = document.getElementById('pq');
+  const h = state ? state.heap.slice().sort((a,b)=>a[0]-b[0]) : [];
+  if(!h.length) pqEl.innerHTML = `<span style="color:var(--muted)">empty</span>`;
+  else pqEl.innerHTML = h.map((p,i)=>`<span class="item ${i===0?'head':''}">(${p[0]},${p[1]})</span>`).join('');
+
+  // table
+  const tbl = document.getElementById('distTbl');
+  const ids = NODES.map(n=>n.id);
+  let html = '<tr>'+ids.map(i=>`<th>${i}</th>`).join('')+'</tr><tr>';
+  for(const id of ids){
+    const d = state ? state.dist[id] : Infinity;
+    let cls = '';
+    if(state){
+      if(state.updated===id) cls='upd';
+      else if(state.fin && state.fin.has(id)) cls='fin';
+    }
+    html += `<td class="${cls}">${d===Infinity?'∞':d}</td>`;
+  }
+  html+='</tr>';
+  tbl.innerHTML = html;
+
+  // pseudo
+  document.getElementById('pseudo').innerHTML =
+    LINES.map((s,i)=>`<div class="line ${state&&i===state.line?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+
+  document.getElementById('stats').textContent =
+    state ? `step ${idx}/${steps.length} · cur=${state.cur||'—'} · finalized=${state.fin?state.fin.size:0}` : '';
+}
+
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const sp = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(60, 800 - sp*7);
+  timer = setInterval(()=>{ if(!step()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+document.getElementById('step').onclick = ()=>{ pause(); step(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); reset(); };
+document.getElementById('src').onchange = ()=>{ pause(); reset(); };
+document.getElementById('randomGraph').onclick = ()=>{ pause(); buildGraph(); reset(); };
+const sp=document.getElementById('speed'), sv=document.getElementById('speedVal');
+sp.oninput=()=>{ sv.textContent=sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent=sp.value+'%';
+
+buildGraph();
+reset();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>

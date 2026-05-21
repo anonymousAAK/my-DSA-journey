@@ -1,0 +1,112 @@
+title: "[study-buddy] Week N — <timezone>"
+labels: ["study-buddy"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Looking for a study partner? Fill out the form so others can quickly tell if you're a good match. When someone replies, take the conversation off-thread (DMs, Discord, email) — don't drop contact info publicly.
+
+  - type: dropdown
+    id: week
+    attributes:
+      label: Which week are you on right now?
+      options:
+        - Week 1
+        - Week 2
+        - Week 3
+        - Week 4
+        - Week 5
+        - Week 6
+        - Week 7
+        - Week 8
+        - Week 9
+        - Week 10
+        - Week 11
+        - Week 12
+        - Week 13
+        - Week 14
+        - Week 15
+        - Week 16
+        - Week 17
+        - Week 18
+        - Week 19
+        - Week 20
+        - Week 21
+        - Week 22
+        - Week 23
+        - Week 24
+        - Week 25
+        - Week 26
+        - Week 27
+        - Week 28
+        - Week 29
+        - Week 30
+        - Reviewing / no fixed week
+    validations:
+      required: true
+
+  - type: input
+    id: timezone
+    attributes:
+      label: Timezone
+      description: Use a UTC offset or an IANA name.
+      placeholder: e.g. "UTC+5:30 (Asia/Kolkata)"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cadence
+    attributes:
+      label: Preferred cadence
+      multiple: true
+      options:
+        - Daily check-in (async, 5 min)
+        - Weekly sync (live, 30 min)
+        - Live pair-coding (1-2 hrs)
+        - Problem-by-problem messaging (whenever)
+        - Async code-review on each other's solutions
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Working language(s)
+      multiple: true
+      options:
+        - Java
+        - Python
+        - C++
+        - Rust
+        - JavaScript / TypeScript
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you hoping to get from pairing?
+      description: Accountability? Someone to bounce approaches off? A code-review partner?
+      placeholder: e.g. "I want someone to do the same week's challenges and compare solutions on Sunday."
+    validations:
+      required: true
+
+  - type: input
+    id: contact_method
+    attributes:
+      label: Preferred way to be contacted
+      description: Don't put your raw email here — say "DM me on Discord", "reply here and I'll DM you", etc.
+      placeholder: e.g. "Reply here, I'll DM you my Discord handle."
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: ground_rules
+    attributes:
+      label: Ground rules
+      options:
+        - label: I'll respond within 48 hours when a match replies.
+          required: true
+        - label: I understand contact info should be exchanged in DMs, not in the public thread.
+          required: true

@@ -1,0 +1,86 @@
+name: Weekly Competition
+
+on:
+  schedule:
+    # Every Monday at 12:00 UTC.
+    - cron: "0 12 * * 1"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  open-competition:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Compute ISO week
+        id: week
+        run: |
+          # GNU date %V is ISO week number; %G is ISO week-numbering year.
+          ISO_WEEK="$(date -u +'%G-W%V')"
+          DATE_LABEL="$(date -u +'%Y-%m-%d')"
+          echo "iso_week=${ISO_WEEK}" >> "$GITHUB_OUTPUT"
+          echo "date_label=${DATE_LABEL}" >> "$GITHUB_OUTPUT"
+
+      - name: Build issue body
+        id: body
+        run: |
+          ISO_WEEK="${{ steps.week.outputs.iso_week }}"
+          SEED="competitions/${ISO_WEEK}.md"
+          {
+            echo "body<<__EOF__"
+            if [ -f "$SEED" ]; then
+              cat "$SEED"
+            else
+              echo "# Weekly Competition — ${ISO_WEEK}"
+              echo
+              echo "**Problem TBD.** A maintainer will edit this issue with the"
+              echo "official problem statement shortly. In the meantime, see"
+              echo "the [competitions overview](../tree/main/competitions) and"
+              echo "the [competition template](../tree/main/competitions/templates/competition_template.md)."
+              echo
+              echo "## How to participate"
+              echo
+              echo "Post your solution as a comment on this issue. See"
+              echo "\`competitions/README.md\` for the full rules."
+            fi
+            echo "__EOF__"
+          } >> "$GITHUB_OUTPUT"
+
+      - name: Close previous competition issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          PREV=$(gh issue list --label competition --state open --json number --jq '.[].number' || true)
+          for n in $PREV; do
+            gh issue close "$n" --comment "Closing in favor of the new weekly competition." || true
+            gh issue unpin  "$n" 2>/dev/null || true
+          done
+
+      - name: Open new competition issue
+        id: open
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          TITLE="Weekly Competition — Week of ${{ steps.week.outputs.date_label }}"
+          # Write the body to a tempfile to avoid escaping issues.
+          cat > /tmp/comp_body.md <<'BODY_EOF'
+          ${{ steps.body.outputs.body }}
+          BODY_EOF
+          URL=$(gh issue create \
+            --title "$TITLE" \
+            --label competition \
+            --label auto-generated \
+            --body-file /tmp/comp_body.md)
+          NUM=$(basename "$URL")
+          echo "issue_number=${NUM}" >> "$GITHUB_OUTPUT"
+
+      - name: Pin new competition issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh issue pin "${{ steps.open.outputs.issue_number }}" || true

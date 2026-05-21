@@ -1,0 +1,62 @@
+title: "[intro] "
+labels: ["welcome"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Welcome! Use this template to introduce yourself if you're new to the repo. No pressure — say as little or as much as you like.
+
+  - type: input
+    id: handle
+    attributes:
+      label: How should we refer to you?
+      description: First name, handle, or "anonymous learner" — whatever you're comfortable with.
+      placeholder: e.g. "Adarsh" or "alex_codes"
+    validations:
+      required: false
+
+  - type: dropdown
+    id: starting_week
+    attributes:
+      label: Which week are you starting at?
+      description: If you took the diagnostic, use the week it suggested. Otherwise pick whichever feels right.
+      options:
+        - "Week 1 (true beginner)"
+        - "Week 4-8 (some experience)"
+        - "Week 9-16 (intermediate)"
+        - "Week 17-24 (advanced)"
+        - "Week 25+ (research-level review)"
+        - "Just browsing"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: language
+    attributes:
+      label: Primary language you'll work in
+      multiple: true
+      options:
+        - Java
+        - Python
+        - C++
+        - Rust
+        - Other / multiple
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: What are you hoping to get out of this?
+      description: Interview prep? Filling DSA gaps from a non-CS degree? Curiosity? All valid.
+      placeholder: e.g. "Targeting a backend role at a mid-sized startup in 4 months; I know basic data structures but never studied DP."
+    validations:
+      required: false
+
+  - type: textarea
+    id: anything_else
+    attributes:
+      label: Anything else?
+      description: Optional. Drop a question, a meme, an introduction — whatever feels right.
+    validations:
+      required: false

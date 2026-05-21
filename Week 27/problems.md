@@ -4,19 +4,19 @@ Topics covered this week: computational geometry — points, lines, convex hull,
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Erect the Fence | Hard | Convex hull | https://leetcode.com/problems/erect-the-fence/ |
-| 2 | Max Points on a Line | Hard | Slope hashing | https://leetcode.com/problems/max-points-on-a-line/ |
-| 3 | Rectangle Overlap | Easy | Bounding box | https://leetcode.com/problems/rectangle-overlap/ |
-| 4 | Largest Triangle Area | Easy | Shoelace formula | https://leetcode.com/problems/largest-triangle-area/ |
-| 5 | Minimum Area Rectangle | Medium | Pair-of-points geometry | https://leetcode.com/problems/minimum-area-rectangle/ |
-| 6 | Minimum Area Rectangle II | Medium | Diagonals geometry | https://leetcode.com/problems/minimum-area-rectangle-ii/ |
-| 7 | Valid Square | Medium | Squared distances | https://leetcode.com/problems/valid-square/ |
-| 8 | Check If It Is a Straight Line | Easy | Cross product | https://leetcode.com/problems/check-if-it-is-a-straight-line/ |
-| 9 | The Skyline Problem | Hard | Sweep line | https://leetcode.com/problems/the-skyline-problem/ |
-| 10 | Rectangle Area II | Hard | Coordinate compression + sweep | https://leetcode.com/problems/rectangle-area-ii/ |
-| 11 | K Closest Points to Origin | Medium | Distance heap | https://leetcode.com/problems/k-closest-points-to-origin/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Erect the Fence | Hard | Convex hull | https://leetcode.com/problems/erect-the-fence/ | Google, Amazon, Common |
+| 2 | Max Points on a Line | Hard | Slope hashing | https://leetcode.com/problems/max-points-on-a-line/ | Google, LinkedIn, Bloomberg |
+| 3 | Rectangle Overlap | Easy | Bounding box | https://leetcode.com/problems/rectangle-overlap/ | Amazon, Google, Microsoft |
+| 4 | Largest Triangle Area | Easy | Shoelace formula | https://leetcode.com/problems/largest-triangle-area/ | Common |
+| 5 | Minimum Area Rectangle | Medium | Pair-of-points geometry | https://leetcode.com/problems/minimum-area-rectangle/ | Google, Microsoft, Common |
+| 6 | Minimum Area Rectangle II | Medium | Diagonals geometry | https://leetcode.com/problems/minimum-area-rectangle-ii/ | Common |
+| 7 | Valid Square | Medium | Squared distances | https://leetcode.com/problems/valid-square/ | Amazon, Google, Common |
+| 8 | Check If It Is a Straight Line | Easy | Cross product | https://leetcode.com/problems/check-if-it-is-a-straight-line/ | Amazon, Google, Common |
+| 9 | The Skyline Problem | Hard | Sweep line | https://leetcode.com/problems/the-skyline-problem/ | Amazon, Meta, Google, Microsoft |
+| 10 | Rectangle Area II | Hard | Coordinate compression + sweep | https://leetcode.com/problems/rectangle-area-ii/ | Common |
+| 11 | K Closest Points to Origin | Medium | Distance heap | https://leetcode.com/problems/k-closest-points-to-origin/ | Meta, Amazon, LinkedIn, Microsoft |
 
 ## Stretch Problems
 

@@ -1,0 +1,130 @@
+name: Showcase submission
+description: Submit a finished capstone project to the public showcase.
+title: "[showcase] "
+labels: ["showcase", "triage"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for sharing your work! This issue is the first step. After a maintainer acks it, copy the answers below into a new file at:
+
+        ```
+        showcase/submissions/<your-github-handle>-<short-slug>.md
+        ```
+
+        ...with this YAML frontmatter at the top (followed by your prose):
+
+        ```yaml
+        ---
+        name: "..."
+        capstone: "..."
+        repo_url: "..."
+        github_handle: "..."
+        demo_url: ""
+        languages: ["..."]
+        date_finished: "YYYY-MM-DD"
+        ---
+        ```
+
+        Then open a PR with that one file. Once merged, the index regenerator picks it up.
+
+  - type: input
+    id: project_name
+    attributes:
+      label: Project name
+      placeholder: e.g. "MiniMaps — A 10k-Node Dijkstra Router"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: capstone
+    attributes:
+      label: Capstone phase
+      options:
+        - "Phase 1 — Mini Graph Router"
+        - "Phase 2 — Cache & Eviction Lab"
+        - "Phase 3 — Mini Search Engine"
+        - "Phase 4 — Stream Processor"
+        - "Phase 5 — Distributed KV Store"
+        - "Other / hybrid"
+    validations:
+      required: true
+
+  - type: input
+    id: repo_url
+    attributes:
+      label: Repo URL
+      description: Must be a public GitHub repo (or another publicly reachable URL).
+      placeholder: https://github.com/your-handle/your-project
+    validations:
+      required: true
+
+  - type: input
+    id: github_handle
+    attributes:
+      label: Your GitHub handle (without the @)
+      placeholder: octocat
+    validations:
+      required: true
+
+  - type: input
+    id: demo_url
+    attributes:
+      label: Optional demo URL
+      description: Live demo, asciicast, screenshot album, or video.
+      placeholder: https://asciinema.org/a/...
+    validations:
+      required: false
+
+  - type: input
+    id: languages
+    attributes:
+      label: Language(s)
+      description: Comma-separated.
+      placeholder: e.g. "Python, Rust"
+    validations:
+      required: true
+
+  - type: input
+    id: date_finished
+    attributes:
+      label: Date finished (YYYY-MM-DD)
+      placeholder: 2026-05-21
+    validations:
+      required: true
+
+  - type: textarea
+    id: pitch
+    attributes:
+      label: One-paragraph pitch
+      description: What does it do? Who is it for? What makes it interesting?
+    validations:
+      required: true
+
+  - type: textarea
+    id: hardest
+    attributes:
+      label: What was hardest
+      description: The *technical* hard part. Be specific.
+    validations:
+      required: true
+
+  - type: textarea
+    id: learned
+    attributes:
+      label: What you learned
+      description: What surprised you? What concept finally clicked?
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: confirmations
+    attributes:
+      label: Confirmations
+      options:
+        - label: This is my own work, built on the curriculum's capstone spec.
+          required: true
+        - label: The repo URL is public and resolves to a real project.
+          required: true
+        - label: I have read [`showcase/README.md`](../../showcase/README.md) and will follow up this issue with a PR adding the `.md` file.
+          required: true

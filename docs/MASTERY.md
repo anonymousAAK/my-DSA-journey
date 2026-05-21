@@ -64,11 +64,18 @@ Each skill has:
 ```bash
 ./scripts/journey quiz 6            # Quiz on Week 6
 ./scripts/journey quiz 6 --n 3      # Only 3 random questions
+./scripts/journey quiz 6 --review   # 80% Week 6 + 20% due-skill review (FSRS)
 ./scripts/journey quiz all          # Cross-week mix (default 10 questions)
+./scripts/journey review            # Only skills FSRS says are due, across all weeks
 ./scripts/journey progress          # Print the progress table
 ./scripts/journey reset 6           # Forget Week 6 progress
 ./scripts/journey                   # Resume from current week
 ```
+
+The `review` subcommand and `--review` flag use an adaptive scheduler (FSRS) that
+surfaces skills "just before you would have forgotten them." See
+[`docs/SPACED_REPETITION.md`](SPACED_REPETITION.md) for how it picks intervals,
+the new `srs_state` block in `progress.json`, and how to use it as a daily warm-up.
 
 Results persist to `~/.journey/progress.json`. Pass `JOURNEY_NON_INTERACTIVE=1` to auto-fill correct answers (useful for CI / smoke tests; this is what the workflow uses to verify every `mastery.yml` parses cleanly).
 

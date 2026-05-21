@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Segment Tree Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--gradient:linear-gradient(135deg,#58a6ff,#3fb950)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem;display:inline-block;margin-bottom:14px}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.controls input[type=number]{width:60px}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+canvas{display:block;width:100%;background:#0d1117;border:1px solid var(--border);border-radius:6px}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.8rem;line-height:1.55;background:#0d1117;border-radius:6px;padding:10px}
+.pseudo .line{padding:2px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.stats{margin-top:10px;font-size:.85rem;color:var(--muted);font-family:monospace}
+.stats .lbl{color:var(--green);display:inline-block;min-width:90px}
+.result{margin-top:14px;padding:10px;border-radius:6px;background:rgba(63,185,80,.1);border:1px solid var(--green);color:var(--green);font-family:monospace;font-size:.95rem;display:none}
+.result.show{display:block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; All visualizations</a>
+<div class="top"><h1>Segment Tree — Range Sum Query</h1></div>
+
+<div class="controls">
+  <label>Array: <input type="text" id="arrInput" value="5,2,8,1,9,3,7,4" style="width:200px"></label>
+  <button id="apply">Build</button>
+  <label>Query [<input type="number" id="ql" value="1" min="0">, <input type="number" id="qr" value="6" min="0">]</label>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="40"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Tree</h3>
+    <canvas id="cv" height="420"></canvas>
+    <div class="stats" id="stats"></div>
+    <div class="result" id="result"></div>
+  </div>
+  <div class="panel">
+    <h3>Pseudocode</h3>
+    <div class="pseudo" id="pseudo"></div>
+    <div class="stats" style="margin-top:14px">
+      <div>Build: <span style="color:var(--text)">O(n)</span></div>
+      <div>Query: <span style="color:var(--text)">O(log n)</span></div>
+      <div>Update: <span style="color:var(--text)">O(log n)</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const LINES = [
+  'function query(node, lo, hi, ql, qr):',         // 0
+  '  if qr < lo or hi < ql:',                       // 1
+  '    return 0          // no overlap',            // 2
+  '  if ql <= lo and hi <= qr:',                    // 3
+  '    return tree[node] // total overlap',         // 4
+  '  mid = (lo + hi) / 2',                           // 5
+  '  L = query(2*node,   lo,    mid, ql, qr)',     // 6
+  '  R = query(2*node+1, mid+1, hi,  ql, qr)',     // 7
+  '  return L + R        // partial overlap',       // 8
+];
+
+let arr=[], tree=[], n=0;
+let steps=[], idx=0, state=null;
+
+function build(){
+  const raw = document.getElementById('arrInput').value;
+  arr = raw.split(/[,\s]+/).map(s=>parseInt(s,10)).filter(x=>!isNaN(x));
+  n = arr.length;
+  tree = Array(4*n).fill(0);
+  function bld(node,lo,hi){
+    if(lo===hi){ tree[node]=arr[lo]; return; }
+    const mid=(lo+hi)>>1;
+    bld(2*node,lo,mid);
+    bld(2*node+1,mid+1,hi);
+    tree[node]=tree[2*node]+tree[2*node+1];
+  }
+  if(n>0) bld(1,0,n-1);
+  // clamp inputs
+  const ql=document.getElementById('ql'), qr=document.getElementById('qr');
+  ql.max = n-1; qr.max = n-1;
+  if(+ql.value >= n) ql.value=0;
+  if(+qr.value >= n) qr.value=n-1;
+}
+
+// each tree node: id -> {lo, hi}
+let layout={};
+function computeLayout(){
+  layout={};
+  function rec(node,lo,hi,depth){
+    layout[node]={lo,hi,depth};
+    if(lo===hi) return;
+    const mid=(lo+hi)>>1;
+    rec(2*node,lo,mid,depth+1);
+    rec(2*node+1,mid+1,hi,depth+1);
+  }
+  if(n>0) rec(1,0,n-1,0);
+}
+
+function plan(ql,qr){
+  steps=[];
+  function snap(line,extra){ steps.push({line,...extra}); }
+  function q(node,lo,hi){
+    snap(0,{visit:node});
+    snap(1,{visit:node});
+    if(qr<lo||hi<ql){ snap(2,{visit:node,noOverlap:true,ret:0}); return 0; }
+    snap(3,{visit:node});
+    if(ql<=lo&&hi<=qr){ snap(4,{visit:node,totalOverlap:true,contrib:tree[node],ret:tree[node]}); return tree[node]; }
+    snap(5,{visit:node,partial:true});
+    const mid=(lo+hi)>>1;
+    snap(6,{visit:node,partial:true});
+    const L=q(2*node,lo,mid);
+    snap(7,{visit:node,partial:true});
+    const R=q(2*node+1,mid+1,hi);
+    snap(8,{visit:node,partial:true,ret:L+R});
+    return L+R;
+  }
+  q(1,0,n-1);
+}
+
+let visited=new Set(), contribSet=new Set(), partialSet=new Set(), noOverlapSet=new Set();
+let totalSum=0;
+
+function applyStep(s){
+  visited.add(s.visit);
+  if(s.totalOverlap) contribSet.add(s.visit);
+  if(s.partial) partialSet.add(s.visit);
+  if(s.noOverlap) noOverlapSet.add(s.visit);
+  state=s;
+  if(s.contrib!==undefined) totalSum += s.contrib;
+}
+
+function reset(){
+  build();
+  computeLayout();
+  visited.clear(); contribSet.clear(); partialSet.clear(); noOverlapSet.clear(); totalSum=0;
+  const ql = parseInt(document.getElementById('ql').value,10);
+  const qr = parseInt(document.getElementById('qr').value,10);
+  plan(Math.min(ql,qr), Math.max(ql,qr));
+  idx=0; state=null;
+  document.getElementById('result').classList.remove('show');
+  render();
+}
+
+function step(){
+  if(idx>=steps.length){
+    // show result on completion
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').textContent = `Query result = ${totalSum} (nodes visited: ${visited.size})`;
+    return false;
+  }
+  applyStep(steps[idx++]);
+  render();
+  if(idx>=steps.length){
+    document.getElementById('result').classList.add('show');
+    document.getElementById('result').textContent = `Query result = ${totalSum} (nodes visited: ${visited.size})`;
+  }
+  return idx<steps.length;
+}
+
+function render(){
+  const cv = document.getElementById('cv');
+  const W = cv.clientWidth; cv.width = W;
+  cv.height = 420;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,W,420);
+
+  if(n===0) return;
+
+  const ql = parseInt(document.getElementById('ql').value,10);
+  const qr = parseInt(document.getElementById('qr').value,10);
+
+  // depth/positions
+  let maxDepth=0;
+  for(const k in layout) if(layout[k].depth>maxDepth) maxDepth=layout[k].depth;
+  const yStep = Math.min(80, (420-60)/(maxDepth+1));
+
+  // position by inorder of leaves: leaf x = (lo+hi)/2 * cellW + offset
+  const leafCellW = (W-40)/n;
+
+  const nodePos={};
+  function pos(node){
+    const l = layout[node];
+    const x = 20 + ((l.lo+l.hi)/2 + 0.5) * leafCellW;
+    const y = 30 + l.depth*yStep;
+    nodePos[node]={x,y};
+  }
+  for(const k in layout) pos(+k);
+
+  // edges
+  ctx.strokeStyle='#30363d'; ctx.lineWidth=1.5;
+  for(const k in layout){
+    const node = +k;
+    if(layout[2*node]){
+      const a=nodePos[node], b=nodePos[2*node];
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    }
+    if(layout[2*node+1]){
+      const a=nodePos[node], b=nodePos[2*node+1];
+      ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+    }
+  }
+  ctx.lineWidth=1;
+
+  // nodes
+  for(const k in layout){
+    const node = +k;
+    const l = layout[node];
+    const p = nodePos[node];
+    const r = 18;
+    let bg='#22272e', stroke='#30363d';
+    if(noOverlapSet.has(node)){ bg='#1a1e24'; stroke='#8b949e'; }
+    if(partialSet.has(node)){ bg='#2d2517'; stroke='#d29922'; }
+    if(contribSet.has(node)){ bg='#1a3322'; stroke='#3fb950'; }
+    if(state && state.visit===node){ stroke='#58a6ff'; }
+    ctx.fillStyle=bg;
+    ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth=state&&state.visit===node?2.5:1.5; ctx.stroke();
+    ctx.fillStyle='#c9d1d9'; ctx.font='bold 12px monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(tree[node], p.x, p.y);
+    ctx.fillStyle='#8b949e'; ctx.font='9px monospace';
+    ctx.fillText(`[${l.lo},${l.hi}]`, p.x, p.y+r+10);
+  }
+  ctx.lineWidth=1;
+
+  // pseudo
+  document.getElementById('pseudo').innerHTML =
+    LINES.map((s,i)=>`<div class="line ${state&&i===state.line?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+
+  document.getElementById('stats').innerHTML = `
+    <div><span class="lbl">array</span> [${arr.join(', ')}]</div>
+    <div><span class="lbl">query</span> [${ql}, ${qr}] (true sum = ${arr.slice(Math.min(ql,qr),Math.max(ql,qr)+1).reduce((a,b)=>a+b,0)})</div>
+    <div><span class="lbl">running sum</span> ${totalSum}</div>
+    <div><span class="lbl">visited</span> ${visited.size} / contributing ${contribSet.size}</div>`;
+}
+
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const sp = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(80, 900 - sp*8);
+  timer = setInterval(()=>{ if(!step()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+document.getElementById('apply').onclick = ()=>{ pause(); reset(); };
+document.getElementById('step').onclick = ()=>{ pause(); step(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); reset(); };
+const sp=document.getElementById('speed'), sv=document.getElementById('speedVal');
+sp.oninput=()=>{ sv.textContent=sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent=sp.value+'%';
+
+reset();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>

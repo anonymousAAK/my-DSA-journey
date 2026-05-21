@@ -1,0 +1,777 @@
+{
+  "generated_at": "2026-05-21T06:40:57Z",
+  "weeks": [
+    {
+      "week": 1,
+      "title": "Week 1",
+      "files": [
+        {
+          "name": "1.installation.py",
+          "path": "Week 1/python/1.installation.py"
+        },
+        {
+          "name": "2.hello_world.py",
+          "path": "Week 1/python/2.hello_world.py"
+        },
+        {
+          "name": "3.better_hello_world.py",
+          "path": "Week 1/python/3.better_hello_world.py"
+        },
+        {
+          "name": "4.add_two_numbers.py",
+          "path": "Week 1/python/4.add_two_numbers.py"
+        },
+        {
+          "name": "5.arithmetic_operation.py",
+          "path": "Week 1/python/5.arithmetic_operation.py"
+        },
+        {
+          "name": "6.taking_input.py",
+          "path": "Week 1/python/6.taking_input.py"
+        },
+        {
+          "name": "7.taking_input_all.py",
+          "path": "Week 1/python/7.taking_input_all.py"
+        },
+        {
+          "name": "8.add_two_number_better.py",
+          "path": "Week 1/python/8.add_two_number_better.py"
+        },
+        {
+          "name": "9.data_types.py",
+          "path": "Week 1/python/9.data_types.py"
+        },
+        {
+          "name": "10.multiple_input.py",
+          "path": "Week 1/python/10.multiple_input.py"
+        },
+        {
+          "name": "11.integer_and_string.py",
+          "path": "Week 1/python/11.integer_and_string.py"
+        },
+        {
+          "name": "12.average_of_two_numbers.py",
+          "path": "Week 1/python/12.average_of_two_numbers.py"
+        },
+        {
+          "name": "13.how_integer_is_stored.py",
+          "path": "Week 1/python/13.how_integer_is_stored.py"
+        },
+        {
+          "name": "14.how_other_datatypes_are_stored.py",
+          "path": "Week 1/python/14.how_other_datatypes_are_stored.py"
+        },
+        {
+          "name": "15.typecasting.py",
+          "path": "Week 1/python/15.typecasting.py"
+        },
+        {
+          "name": "16.operators.py",
+          "path": "Week 1/python/16.operators.py"
+        },
+        {
+          "name": "fundamentals.py",
+          "path": "Week 1/python/fundamentals.py"
+        }
+      ]
+    },
+    {
+      "week": 2,
+      "title": "Week 2",
+      "files": [
+        {
+          "name": "1.data_types_review.py",
+          "path": "Week 2/python/1.data_types_review.py"
+        },
+        {
+          "name": "2.if_else.py",
+          "path": "Week 2/python/2.if_else.py"
+        },
+        {
+          "name": "3.find_character_case.py",
+          "path": "Week 2/python/3.find_character_case.py"
+        },
+        {
+          "name": "4.while_loop.py",
+          "path": "Week 2/python/4.while_loop.py"
+        },
+        {
+          "name": "5.infinite_loop.py",
+          "path": "Week 2/python/5.infinite_loop.py"
+        },
+        {
+          "name": "6.fahrenheit_to_celsius_table.py",
+          "path": "Week 2/python/6.fahrenheit_to_celsius_table.py"
+        },
+        {
+          "name": "7.total_salary.py",
+          "path": "Week 2/python/7.total_salary.py"
+        },
+        {
+          "name": "8.multiplication_table.py",
+          "path": "Week 2/python/8.multiplication_table.py"
+        },
+        {
+          "name": "9.sum_of_even_odd.py",
+          "path": "Week 2/python/9.sum_of_even_odd.py"
+        },
+        {
+          "name": "10.factors.py",
+          "path": "Week 2/python/10.factors.py"
+        },
+        {
+          "name": "11.find_power.py",
+          "path": "Week 2/python/11.find_power.py"
+        },
+        {
+          "name": "control_flow.py",
+          "path": "Week 2/python/control_flow.py"
+        }
+      ]
+    },
+    {
+      "week": 3,
+      "title": "Week 3",
+      "files": [
+        {
+          "name": "1.for_loop.py",
+          "path": "Week 3/python/1.for_loop.py"
+        },
+        {
+          "name": "2.for_loop_variations.py",
+          "path": "Week 3/python/2.for_loop_variations.py"
+        },
+        {
+          "name": "3.break.py",
+          "path": "Week 3/python/3.break.py"
+        },
+        {
+          "name": "4.continue.py",
+          "path": "Week 3/python/4.continue.py"
+        },
+        {
+          "name": "5.scope_of_variable.py",
+          "path": "Week 3/python/5.scope_of_variable.py"
+        },
+        {
+          "name": "6.increment_decrement_operator.py",
+          "path": "Week 3/python/6.increment_decrement_operator.py"
+        },
+        {
+          "name": "7.bitwise_operator.py",
+          "path": "Week 3/python/7.bitwise_operator.py"
+        },
+        {
+          "name": "8.precedence_associativity.py",
+          "path": "Week 3/python/8.precedence_associativity.py"
+        },
+        {
+          "name": "9.nth_fibonacci_number.py",
+          "path": "Week 3/python/9.nth_fibonacci_number.py"
+        },
+        {
+          "name": "10.all_prime_number.py",
+          "path": "Week 3/python/10.all_prime_number.py"
+        },
+        {
+          "name": "11.sum_or_product.py",
+          "path": "Week 3/python/11.sum_or_product.py"
+        },
+        {
+          "name": "12.terms_of_ap.py",
+          "path": "Week 3/python/12.terms_of_ap.py"
+        },
+        {
+          "name": "13.reverse.py",
+          "path": "Week 3/python/13.reverse.py"
+        },
+        {
+          "name": "14.binary_to_decimal.py",
+          "path": "Week 3/python/14.binary_to_decimal.py"
+        },
+        {
+          "name": "15.decimal_to_binary.py",
+          "path": "Week 3/python/15.decimal_to_binary.py"
+        },
+        {
+          "name": "16.check_no_sequence.py",
+          "path": "Week 3/python/16.check_no_sequence.py"
+        },
+        {
+          "name": "loops_and_numbers.py",
+          "path": "Week 3/python/loops_and_numbers.py"
+        }
+      ]
+    },
+    {
+      "week": 4,
+      "title": "Week 4",
+      "files": [
+        {
+          "name": "1.square_pattern.py",
+          "path": "Week 4/python/1.square_pattern.py"
+        },
+        {
+          "name": "2.tri_star_pattern.py",
+          "path": "Week 4/python/2.tri_star_pattern.py"
+        },
+        {
+          "name": "3.tri_no_pattern.py",
+          "path": "Week 4/python/3.tri_no_pattern.py"
+        },
+        {
+          "name": "4.reverse_num_pattern.py",
+          "path": "Week 4/python/4.reverse_num_pattern.py"
+        },
+        {
+          "name": "5.alpha_pattern.py",
+          "path": "Week 4/python/5.alpha_pattern.py"
+        },
+        {
+          "name": "6.char_pattern.py",
+          "path": "Week 4/python/6.char_pattern.py"
+        },
+        {
+          "name": "7.interesting_alphabet.py",
+          "path": "Week 4/python/7.interesting_alphabet.py"
+        },
+        {
+          "name": "8.mirror_image.py",
+          "path": "Week 4/python/8.mirror_image.py"
+        },
+        {
+          "name": "patterns.py",
+          "path": "Week 4/python/patterns.py"
+        }
+      ]
+    },
+    {
+      "week": 5,
+      "title": "Week 5",
+      "files": [
+        {
+          "name": "1.method_basics.py",
+          "path": "Week 5/python/1.method_basics.py"
+        },
+        {
+          "name": "2.method_overloading.py",
+          "path": "Week 5/python/2.method_overloading.py"
+        },
+        {
+          "name": "3.recursion_basics.py",
+          "path": "Week 5/python/3.recursion_basics.py"
+        },
+        {
+          "name": "4.fibonacci_recursion.py",
+          "path": "Week 5/python/4.fibonacci_recursion.py"
+        },
+        {
+          "name": "5.tower_of_hanoi.py",
+          "path": "Week 5/python/5.tower_of_hanoi.py"
+        },
+        {
+          "name": "6.recursion_patterns.py",
+          "path": "Week 5/python/6.recursion_patterns.py"
+        },
+        {
+          "name": "recursion.py",
+          "path": "Week 5/python/recursion.py"
+        }
+      ]
+    },
+    {
+      "week": 6,
+      "title": "Week 6",
+      "files": [
+        {
+          "name": "1.return_array_sum.py",
+          "path": "Week 6/python/1.return_array_sum.py"
+        },
+        {
+          "name": "2.linear_search.py",
+          "path": "Week 6/python/2.linear_search.py"
+        },
+        {
+          "name": "3.array_reverse_and_rotate.py",
+          "path": "Week 6/python/3.array_reverse_and_rotate.py"
+        },
+        {
+          "name": "4.prefix_sum_and_kadane.py",
+          "path": "Week 6/python/4.prefix_sum_and_kadane.py"
+        },
+        {
+          "name": "5.dutch_national_flag_and_missing.py",
+          "path": "Week 6/python/5.dutch_national_flag_and_missing.py"
+        },
+        {
+          "name": "arrays.py",
+          "path": "Week 6/python/arrays.py"
+        }
+      ]
+    },
+    {
+      "week": 7,
+      "title": "Week 7",
+      "files": [
+        {
+          "name": "1.string_basics.py",
+          "path": "Week 7/python/1.string_basics.py"
+        },
+        {
+          "name": "2.palindrome_and_anagram.py",
+          "path": "Week 7/python/2.palindrome_and_anagram.py"
+        },
+        {
+          "name": "3.kmp_search.py",
+          "path": "Week 7/python/3.kmp_search.py"
+        },
+        {
+          "name": "strings.py",
+          "path": "Week 7/python/strings.py"
+        }
+      ]
+    },
+    {
+      "week": 8,
+      "title": "Week 8",
+      "files": [
+        {
+          "name": "1.binary_search.py",
+          "path": "Week 8/python/1.binary_search.py"
+        },
+        {
+          "name": "2.binary_search_on_answer.py",
+          "path": "Week 8/python/2.binary_search_on_answer.py"
+        },
+        {
+          "name": "searching.py",
+          "path": "Week 8/python/searching.py"
+        }
+      ]
+    },
+    {
+      "week": 9,
+      "title": "Week 9",
+      "files": [
+        {
+          "name": "1.bubble_selection_insertion.py",
+          "path": "Week 9/python/1.bubble_selection_insertion.py"
+        },
+        {
+          "name": "2.merge_sort.py",
+          "path": "Week 9/python/2.merge_sort.py"
+        },
+        {
+          "name": "3.quick_sort.py",
+          "path": "Week 9/python/3.quick_sort.py"
+        },
+        {
+          "name": "sorting.py",
+          "path": "Week 9/python/sorting.py"
+        }
+      ]
+    },
+    {
+      "week": 10,
+      "title": "Week 10",
+      "files": [
+        {
+          "name": "1.matrix_basics.py",
+          "path": "Week 10/python/1.matrix_basics.py"
+        },
+        {
+          "name": "2.spiral_and_diagonal_traversal.py",
+          "path": "Week 10/python/2.spiral_and_diagonal_traversal.py"
+        },
+        {
+          "name": "matrix.py",
+          "path": "Week 10/python/matrix.py"
+        }
+      ]
+    },
+    {
+      "week": 11,
+      "title": "Week 11",
+      "files": [
+        {
+          "name": "1.SinglyLinkedList.py",
+          "path": "Week 11/python/1.SinglyLinkedList.py"
+        },
+        {
+          "name": "2.MergeSortedListsAndLRU.py",
+          "path": "Week 11/python/2.MergeSortedListsAndLRU.py"
+        },
+        {
+          "name": "linked_lists.py",
+          "path": "Week 11/python/linked_lists.py"
+        }
+      ]
+    },
+    {
+      "week": 12,
+      "title": "Week 12",
+      "files": [
+        {
+          "name": "1.StackImplementation.py",
+          "path": "Week 12/python/1.StackImplementation.py"
+        },
+        {
+          "name": "stacks.py",
+          "path": "Week 12/python/stacks.py"
+        }
+      ]
+    },
+    {
+      "week": 13,
+      "title": "Week 13",
+      "files": [
+        {
+          "name": "1.QueueImplementation.py",
+          "path": "Week 13/python/1.QueueImplementation.py"
+        },
+        {
+          "name": "queues.py",
+          "path": "Week 13/python/queues.py"
+        }
+      ]
+    },
+    {
+      "week": 14,
+      "title": "Week 14",
+      "files": [
+        {
+          "name": "1.BinaryTree.py",
+          "path": "Week 14/python/1.BinaryTree.py"
+        },
+        {
+          "name": "2.BinarySearchTree.py",
+          "path": "Week 14/python/2.BinarySearchTree.py"
+        },
+        {
+          "name": "trees.py",
+          "path": "Week 14/python/trees.py"
+        }
+      ]
+    },
+    {
+      "week": 15,
+      "title": "Week 15",
+      "files": [
+        {
+          "name": "1.HeapAndPriorityQueue.py",
+          "path": "Week 15/python/1.HeapAndPriorityQueue.py"
+        },
+        {
+          "name": "heaps.py",
+          "path": "Week 15/python/heaps.py"
+        }
+      ]
+    },
+    {
+      "week": 16,
+      "title": "Week 16",
+      "files": [
+        {
+          "name": "1.HashingAndHashMap.py",
+          "path": "Week 16/python/1.HashingAndHashMap.py"
+        },
+        {
+          "name": "hashing.py",
+          "path": "Week 16/python/hashing.py"
+        }
+      ]
+    },
+    {
+      "week": 17,
+      "title": "Week 17",
+      "files": [
+        {
+          "name": "1.GraphRepresentations.py",
+          "path": "Week 17/python/1.GraphRepresentations.py"
+        },
+        {
+          "name": "2.TopologicalSort.py",
+          "path": "Week 17/python/2.TopologicalSort.py"
+        },
+        {
+          "name": "graphs.py",
+          "path": "Week 17/python/graphs.py"
+        }
+      ]
+    },
+    {
+      "week": 18,
+      "title": "Week 18",
+      "files": [
+        {
+          "name": "1.DynamicProgramming.py",
+          "path": "Week 18/python/1.DynamicProgramming.py"
+        },
+        {
+          "name": "dynamic_programming.py",
+          "path": "Week 18/python/dynamic_programming.py"
+        }
+      ]
+    },
+    {
+      "week": 19,
+      "title": "Week 19",
+      "files": [
+        {
+          "name": "1.GreedyAlgorithms.py",
+          "path": "Week 19/python/1.GreedyAlgorithms.py"
+        },
+        {
+          "name": "greedy.py",
+          "path": "Week 19/python/greedy.py"
+        }
+      ]
+    },
+    {
+      "week": 20,
+      "title": "Week 20",
+      "files": [
+        {
+          "name": "1.Backtracking.py",
+          "path": "Week 20/python/1.Backtracking.py"
+        },
+        {
+          "name": "backtracking.py",
+          "path": "Week 20/python/backtracking.py"
+        }
+      ]
+    },
+    {
+      "week": 21,
+      "title": "Week 21",
+      "files": [
+        {
+          "name": "1.SegmentTreeAndBIT.py",
+          "path": "Week 21/python/1.SegmentTreeAndBIT.py"
+        },
+        {
+          "name": "2.Trie.py",
+          "path": "Week 21/python/2.Trie.py"
+        },
+        {
+          "name": "advanced_trees.py",
+          "path": "Week 21/python/advanced_trees.py"
+        }
+      ]
+    },
+    {
+      "week": 22,
+      "title": "Week 22",
+      "files": [
+        {
+          "name": "1.ShortestPaths.py",
+          "path": "Week 22/python/1.ShortestPaths.py"
+        },
+        {
+          "name": "2.MinimumSpanningTree.py",
+          "path": "Week 22/python/2.MinimumSpanningTree.py"
+        },
+        {
+          "name": "advanced_graphs.py",
+          "path": "Week 22/python/advanced_graphs.py"
+        }
+      ]
+    },
+    {
+      "week": 23,
+      "title": "Week 23",
+      "files": [
+        {
+          "name": "1.AdvancedDP.py",
+          "path": "Week 23/python/1.AdvancedDP.py"
+        },
+        {
+          "name": "advanced_dp.py",
+          "path": "Week 23/python/advanced_dp.py"
+        }
+      ]
+    },
+    {
+      "week": 24,
+      "title": "Week 24",
+      "files": [
+        {
+          "name": "1.ResearchLevelTopics.py",
+          "path": "Week 24/python/1.ResearchLevelTopics.py"
+        },
+        {
+          "name": "2.NPCompletenessAndApproximation.py",
+          "path": "Week 24/python/2.NPCompletenessAndApproximation.py"
+        },
+        {
+          "name": "research_level.py",
+          "path": "Week 24/python/research_level.py"
+        }
+      ]
+    },
+    {
+      "week": 25,
+      "title": "Week 25",
+      "files": [
+        {
+          "name": "1.kmp.py",
+          "path": "Week 25/python/1.kmp.py"
+        },
+        {
+          "name": "2.rabin_karp.py",
+          "path": "Week 25/python/2.rabin_karp.py"
+        },
+        {
+          "name": "3.z_algorithm.py",
+          "path": "Week 25/python/3.z_algorithm.py"
+        },
+        {
+          "name": "string_algorithms.py",
+          "path": "Week 25/python/string_algorithms.py"
+        }
+      ]
+    },
+    {
+      "week": 26,
+      "title": "Week 26",
+      "files": [
+        {
+          "name": "bipartite_matching.py",
+          "path": "Week 26/python/bipartite_matching.py"
+        },
+        {
+          "name": "dinic.py",
+          "path": "Week 26/python/dinic.py"
+        },
+        {
+          "name": "edmonds_karp.py",
+          "path": "Week 26/python/edmonds_karp.py"
+        },
+        {
+          "name": "ford_fulkerson.py",
+          "path": "Week 26/python/ford_fulkerson.py"
+        },
+        {
+          "name": "min_cut.py",
+          "path": "Week 26/python/min_cut.py"
+        },
+        {
+          "name": "network_flow.py",
+          "path": "Week 26/python/network_flow.py"
+        }
+      ]
+    },
+    {
+      "week": 27,
+      "title": "Week 27",
+      "files": [
+        {
+          "name": "closest_pair.py",
+          "path": "Week 27/python/closest_pair.py"
+        },
+        {
+          "name": "convex_hull.py",
+          "path": "Week 27/python/convex_hull.py"
+        },
+        {
+          "name": "geometry.py",
+          "path": "Week 27/python/geometry.py"
+        },
+        {
+          "name": "line_intersection.py",
+          "path": "Week 27/python/line_intersection.py"
+        },
+        {
+          "name": "sweep_line.py",
+          "path": "Week 27/python/sweep_line.py"
+        }
+      ]
+    },
+    {
+      "week": 28,
+      "title": "Week 28",
+      "files": [
+        {
+          "name": "alpha_beta.py",
+          "path": "Week 28/python/alpha_beta.py"
+        },
+        {
+          "name": "game_theory.py",
+          "path": "Week 28/python/game_theory.py"
+        },
+        {
+          "name": "minimax.py",
+          "path": "Week 28/python/minimax.py"
+        },
+        {
+          "name": "nim.py",
+          "path": "Week 28/python/nim.py"
+        },
+        {
+          "name": "sprague_grundy.py",
+          "path": "Week 28/python/sprague_grundy.py"
+        }
+      ]
+    },
+    {
+      "week": 29,
+      "title": "Week 29",
+      "files": [
+        {
+          "name": "caching.py",
+          "path": "Week 29/python/caching.py"
+        },
+        {
+          "name": "consistent_hashing.py",
+          "path": "Week 29/python/consistent_hashing.py"
+        },
+        {
+          "name": "message_queues.py",
+          "path": "Week 29/python/message_queues.py"
+        },
+        {
+          "name": "rate_limiting.py",
+          "path": "Week 29/python/rate_limiting.py"
+        },
+        {
+          "name": "sharding.py",
+          "path": "Week 29/python/sharding.py"
+        },
+        {
+          "name": "system_design.py",
+          "path": "Week 29/python/system_design.py"
+        }
+      ]
+    },
+    {
+      "week": 30,
+      "title": "Week 30",
+      "files": [
+        {
+          "name": "fast_slow_pointers.py",
+          "path": "Week 30/python/fast_slow_pointers.py"
+        },
+        {
+          "name": "interview_patterns.py",
+          "path": "Week 30/python/interview_patterns.py"
+        },
+        {
+          "name": "merge_intervals.py",
+          "path": "Week 30/python/merge_intervals.py"
+        },
+        {
+          "name": "sliding_window.py",
+          "path": "Week 30/python/sliding_window.py"
+        },
+        {
+          "name": "top_k_elements.py",
+          "path": "Week 30/python/top_k_elements.py"
+        },
+        {
+          "name": "two_pointers.py",
+          "path": "Week 30/python/two_pointers.py"
+        }
+      ]
+    }
+  ]
+}

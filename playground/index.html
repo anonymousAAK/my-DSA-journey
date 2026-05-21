@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Python Playground | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--card-border:#30363d;--text:#c9d1d9;
+  --text-secondary:#8b949e;--accent-blue:#58a6ff;--accent-green:#3fb950;
+  --gradient:linear-gradient(135deg,#58a6ff,#3fb950);--code-bg:#1a1e24;
+  --warning:#d29922;--danger:#f85149;--radius:10px;
+}
+html,body{height:100%}
+body{
+  font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;
+  background:var(--bg);color:var(--text);overflow:hidden;font-size:14px;
+}
+a{color:var(--accent-blue);text-decoration:none}
+a:hover{color:var(--accent-green)}
+button{font-family:inherit}
+::-webkit-scrollbar{width:10px;height:10px}
+::-webkit-scrollbar-track{background:var(--bg)}
+::-webkit-scrollbar-thumb{background:var(--card-border);border-radius:5px}
+::-webkit-scrollbar-thumb:hover{background:#4a5260}
+
+/* Layout */
+.app{display:grid;grid-template-rows:54px 1fr;height:100vh}
+.topbar{
+  display:flex;align-items:center;gap:12px;padding:0 16px;
+  background:var(--card);border-bottom:1px solid var(--card-border);
+}
+.topbar .brand{
+  font-weight:800;font-size:.95rem;
+  background:var(--gradient);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+.topbar .path{
+  color:var(--text-secondary);font-family:'SF Mono',Monaco,Consolas,monospace;
+  font-size:.82rem;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+  flex:1;min-width:0;
+}
+.topbar .actions{display:flex;gap:8px;align-items:center}
+.btn{
+  background:var(--card-border);color:var(--text);border:1px solid transparent;
+  padding:7px 14px;border-radius:6px;cursor:pointer;font-size:.82rem;
+  font-weight:600;transition:all .15s;
+}
+.btn:hover{background:#3a4150}
+.btn.primary{background:var(--accent-green);color:#0d1117}
+.btn.primary:hover{filter:brightness(1.1)}
+.btn.primary:disabled{opacity:.5;cursor:not-allowed;filter:none}
+.btn.ghost{background:transparent;border-color:var(--card-border)}
+.btn.ghost:hover{background:var(--card-border)}
+.status{
+  font-size:.75rem;color:var(--text-secondary);
+  padding:4px 10px;border-radius:12px;background:rgba(255,255,255,.04);
+  white-space:nowrap;
+}
+.status.loading{color:var(--warning)}
+.status.ready{color:var(--accent-green)}
+.status.error{color:var(--danger)}
+.status.running{color:var(--accent-blue)}
+
+.body{display:grid;grid-template-columns:260px 1fr 380px;min-height:0}
+@media(max-width:1000px){.body{grid-template-columns:220px 1fr}.right{display:none}}
+@media(max-width:700px){.body{grid-template-columns:1fr}.sidebar{display:none}}
+
+/* Sidebar (file tree) */
+.sidebar{
+  background:var(--card);border-right:1px solid var(--card-border);
+  overflow-y:auto;padding:8px 0;font-size:.85rem;
+}
+.sidebar .tree-search{padding:8px 12px}
+.sidebar .tree-search input{
+  width:100%;background:var(--bg);border:1px solid var(--card-border);
+  color:var(--text);padding:6px 10px;border-radius:6px;font-size:.8rem;
+  outline:none;
+}
+.sidebar .tree-search input:focus{border-color:var(--accent-blue)}
+.week{margin:2px 0}
+.week-header{
+  display:flex;align-items:center;gap:6px;padding:6px 12px;cursor:pointer;
+  user-select:none;color:var(--text);font-weight:600;font-size:.82rem;
+  border-left:3px solid transparent;
+}
+.week-header:hover{background:rgba(255,255,255,.04)}
+.week-header .chev{
+  display:inline-block;width:10px;color:var(--text-secondary);
+  transition:transform .15s;font-family:monospace;
+}
+.week.open > .week-header .chev{transform:rotate(90deg)}
+.week-header .count{
+  margin-left:auto;font-size:.7rem;color:var(--text-secondary);
+  background:rgba(255,255,255,.05);padding:1px 6px;border-radius:8px;
+}
+.week-files{display:none;padding:2px 0 4px 0}
+.week.open > .week-files{display:block}
+.file-link{
+  display:block;padding:4px 12px 4px 30px;color:var(--text-secondary);
+  font-size:.78rem;cursor:pointer;border-left:3px solid transparent;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  font-family:'SF Mono',Monaco,Consolas,monospace;
+}
+.file-link:hover{color:var(--accent-blue);background:rgba(88,166,255,.05)}
+.file-link.active{
+  color:var(--accent-blue);background:rgba(88,166,255,.08);
+  border-left-color:var(--accent-blue);
+}
+
+/* Editor center */
+.center{display:flex;flex-direction:column;min-width:0;min-height:0}
+.editor-host{flex:1;min-height:0;overflow:hidden;background:var(--code-bg)}
+.editor-host .cm-editor{height:100%;font-size:13px}
+.editor-host .cm-scroller{
+  font-family:'SF Mono',Monaco,'Cascadia Code','Fira Code',Consolas,monospace;
+  line-height:1.55;
+}
+.empty-state{
+  height:100%;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;text-align:center;padding:40px;color:var(--text-secondary);
+}
+.empty-state h2{
+  font-size:1.4rem;margin-bottom:10px;
+  background:var(--gradient);-webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;background-clip:text;
+}
+.empty-state p{max-width:380px;line-height:1.6;font-size:.88rem}
+.empty-state code{
+  background:var(--card);padding:2px 6px;border-radius:4px;font-size:.82rem;
+}
+
+/* Right panel: stdin + output */
+.right{
+  display:flex;flex-direction:column;border-left:1px solid var(--card-border);
+  background:var(--card);min-width:0;
+}
+.right .pane{
+  display:flex;flex-direction:column;border-bottom:1px solid var(--card-border);
+}
+.right .pane-header{
+  padding:8px 12px;font-size:.72rem;text-transform:uppercase;letter-spacing:.6px;
+  color:var(--text-secondary);font-weight:700;
+  background:rgba(255,255,255,.02);display:flex;justify-content:space-between;
+  align-items:center;
+}
+.right .pane-header .hint{
+  text-transform:none;letter-spacing:0;font-weight:400;font-size:.7rem;
+  color:var(--text-secondary);
+}
+#stdin{
+  width:100%;height:90px;resize:vertical;background:var(--code-bg);
+  color:var(--text);border:none;outline:none;padding:10px 12px;
+  font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.8rem;
+  line-height:1.5;
+}
+#out{
+  flex:1;min-height:0;overflow:auto;background:var(--code-bg);color:var(--text);
+  padding:10px 12px;font-family:'SF Mono',Monaco,Consolas,monospace;
+  font-size:.8rem;line-height:1.55;white-space:pre-wrap;word-break:break-word;
+  margin:0;
+}
+#out .err{color:var(--danger)}
+#out .ok{color:var(--accent-green)}
+#out .info{color:var(--text-secondary);font-style:italic}
+.output-pane{flex:1;display:flex;flex-direction:column;min-height:0;border-bottom:none}
+.clear-btn{
+  background:transparent;border:1px solid var(--card-border);color:var(--text-secondary);
+  font-size:.7rem;padding:2px 8px;border-radius:4px;cursor:pointer;
+}
+.clear-btn:hover{color:var(--text);border-color:var(--text-secondary)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header class="topbar">
+    <span class="brand">Python Playground</span>
+    <span class="path" id="filePath">No file selected</span>
+    <span class="status loading" id="status">Loading Pyodide…</span>
+    <div class="actions">
+      <button class="btn primary" id="runBtn" disabled>Run</button>
+      <button class="btn ghost" id="resetBtn" disabled>Reset</button>
+      <a class="btn ghost" id="ghLink" href="https://github.com/" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </header>
+
+  <div class="body">
+    <aside class="sidebar" id="sidebar">
+      <div class="tree-search">
+        <input type="search" id="treeSearch" placeholder="Filter files…" autocomplete="off"/>
+      </div>
+      <div id="tree"></div>
+    </aside>
+
+    <section class="center">
+      <div class="editor-host" id="editorHost">
+        <div class="empty-state" id="emptyState">
+          <h2>Pick a file</h2>
+          <p>Choose any <code>.py</code> file from the sidebar to load it
+          into the editor. Then press <code>Run</code> to execute it in a
+          sandboxed Pyodide runtime — entirely in your browser.</p>
+        </div>
+      </div>
+    </section>
+
+    <aside class="right">
+      <div class="pane">
+        <div class="pane-header">
+          <span>stdin</span>
+          <span class="hint">one input() per line</span>
+        </div>
+        <textarea id="stdin" placeholder="Lines typed here are fed to input() calls, one per line."></textarea>
+      </div>
+      <div class="pane output-pane">
+        <div class="pane-header">
+          <span>output</span>
+          <button class="clear-btn" id="clearOut">clear</button>
+        </div>
+        <pre id="out"><span class="info">Output will appear here.</span></pre>
+      </div>
+    </aside>
+  </div>
+</div>
+
+<!-- Pyodide -->
+<script src="https://cdn.jsdelivr.net/pyodide/v0.27.0/full/pyodide.js"></script>
+
+<!-- App -->
+<script type="module">
+import {EditorView, basicSetup} from "https://esm.sh/codemirror@6.0.1";
+import {python} from "https://esm.sh/@codemirror/lang-python@6.1.6";
+import {oneDark} from "https://esm.sh/@codemirror/theme-one-dark@6.1.2";
+import {EditorState} from "https://esm.sh/@codemirror/state@6.4.1";
+
+const REPO_BASE = "../";                 // playground lives one level inside repo root
+const GH_BASE = "https://github.com/adarshkeshri/my-DSA-journey/blob/main/"; // best-effort
+
+const els = {
+  status: document.getElementById("status"),
+  runBtn: document.getElementById("runBtn"),
+  resetBtn: document.getElementById("resetBtn"),
+  ghLink: document.getElementById("ghLink"),
+  tree: document.getElementById("tree"),
+  treeSearch: document.getElementById("treeSearch"),
+  editorHost: document.getElementById("editorHost"),
+  emptyState: document.getElementById("emptyState"),
+  filePath: document.getElementById("filePath"),
+  stdin: document.getElementById("stdin"),
+  out: document.getElementById("out"),
+  clearOut: document.getElementById("clearOut"),
+};
+
+let pyodide = null;
+let editor = null;
+let currentFile = null;     // {name, path, week}
+let originalSource = "";    // for Reset
+
+// --- Output helpers -------------------------------------------------------
+function setStatus(text, cls){
+  els.status.textContent = text;
+  els.status.className = "status " + (cls || "");
+}
+function clearOut(){ els.out.textContent = ""; }
+function writeOut(text, cls){
+  if(text === undefined || text === null) return;
+  const span = document.createElement("span");
+  if(cls) span.className = cls;
+  span.textContent = String(text);
+  els.out.appendChild(span);
+  els.out.scrollTop = els.out.scrollHeight;
+}
+els.clearOut.addEventListener("click", clearOut);
+
+// --- Editor ---------------------------------------------------------------
+function ensureEditor(initialDoc){
+  if(editor){
+    editor.dispatch({changes:{from:0, to:editor.state.doc.length, insert:initialDoc}});
+    return;
+  }
+  els.emptyState.style.display = "none";
+  editor = new EditorView({
+    parent: els.editorHost,
+    state: EditorState.create({
+      doc: initialDoc,
+      extensions: [basicSetup, python(), oneDark],
+    }),
+  });
+}
+
+// --- File tree ------------------------------------------------------------
+async function loadIndex(){
+  const r = await fetch("./file_index.json", {cache:"no-cache"});
+  if(!r.ok) throw new Error("Could not load file_index.json ("+r.status+")");
+  return r.json();
+}
+
+function renderTree(index){
+  els.tree.innerHTML = "";
+  for(const w of index.weeks){
+    const wEl = document.createElement("div");
+    wEl.className = "week";
+    wEl.dataset.week = w.week;
+
+    const hdr = document.createElement("div");
+    hdr.className = "week-header";
+    hdr.innerHTML = `<span class="chev">▶</span><span>Week ${w.week}</span>`+
+                    `<span class="count">${w.files.length}</span>`;
+    hdr.addEventListener("click", ()=>wEl.classList.toggle("open"));
+    wEl.appendChild(hdr);
+
+    const files = document.createElement("div");
+    files.className = "week-files";
+    for(const f of w.files){
+      const a = document.createElement("a");
+      a.className = "file-link";
+      a.textContent = f.name;
+      a.dataset.path = f.path;
+      a.dataset.name = f.name;
+      a.dataset.week = w.week;
+      a.title = f.path;
+      a.addEventListener("click", (ev)=>{
+        ev.preventDefault();
+        selectFile({name:f.name, path:f.path, week:w.week});
+      });
+      files.appendChild(a);
+    }
+    wEl.appendChild(files);
+    els.tree.appendChild(wEl);
+  }
+}
+
+function filterTree(q){
+  q = q.trim().toLowerCase();
+  for(const wEl of els.tree.querySelectorAll(".week")){
+    let anyVisible = false;
+    for(const a of wEl.querySelectorAll(".file-link")){
+      const match = !q || a.dataset.name.toLowerCase().includes(q);
+      a.style.display = match ? "" : "none";
+      if(match) anyVisible = true;
+    }
+    wEl.style.display = anyVisible ? "" : "none";
+    if(q && anyVisible) wEl.classList.add("open");
+  }
+}
+els.treeSearch.addEventListener("input", e=>filterTree(e.target.value));
+
+// --- File loading ---------------------------------------------------------
+async function selectFile(file){
+  // highlight
+  for(const a of els.tree.querySelectorAll(".file-link")){
+    a.classList.toggle("active", a.dataset.path === file.path);
+  }
+  // ensure parent week open
+  const wEl = els.tree.querySelector(`.week[data-week="${file.week}"]`);
+  if(wEl) wEl.classList.add("open");
+
+  els.filePath.textContent = file.path;
+  setStatus("Loading file…", "loading");
+  try{
+    const url = REPO_BASE + encodeURI(file.path);
+    const r = await fetch(url, {cache:"no-cache"});
+    if(!r.ok) throw new Error("HTTP "+r.status);
+    const text = await r.text();
+    originalSource = text;
+    currentFile = file;
+    ensureEditor(text);
+    els.ghLink.href = GH_BASE + encodeURI(file.path);
+    els.runBtn.disabled = !pyodide;
+    els.resetBtn.disabled = false;
+    setStatus(pyodide ? "Ready" : "Loading Pyodide…", pyodide ? "ready" : "loading");
+    // reflect in URL for shareable links
+    const u = new URL(location.href);
+    u.searchParams.set("file", file.path);
+    history.replaceState(null, "", u);
+  }catch(err){
+    setStatus("Load failed", "error");
+    writeOut("\nFailed to load "+file.path+": "+err.message+"\n", "err");
+  }
+}
+
+// --- Pyodide --------------------------------------------------------------
+async function initPyodide(){
+  try{
+    setStatus("Loading Pyodide…", "loading");
+    pyodide = await loadPyodide({
+      indexURL: "https://cdn.jsdelivr.net/pyodide/v0.27.0/full/",
+      stdout: (s)=>writeOut(s+"\n"),
+      stderr: (s)=>writeOut(s+"\n", "err"),
+    });
+    // route input() through our textarea, line by line
+    pyodide.setStdin({
+      stdin: ()=>{
+        const buf = els.stdin.value;
+        if(!buf) return null;
+        const nl = buf.indexOf("\n");
+        let line, rest;
+        if(nl === -1){ line = buf; rest = ""; }
+        else { line = buf.slice(0, nl); rest = buf.slice(nl+1); }
+        els.stdin.value = rest;
+        return line;
+      }
+    });
+    setStatus("Ready", "ready");
+    els.runBtn.disabled = !currentFile;
+  }catch(err){
+    setStatus("Pyodide failed", "error");
+    writeOut("Pyodide failed to load: "+err.message+"\n", "err");
+  }
+}
+
+// --- Run / Reset ----------------------------------------------------------
+async function runCode(){
+  if(!pyodide || !editor) return;
+  const code = editor.state.doc.toString();
+  clearOut();
+  setStatus("Running…", "running");
+  els.runBtn.disabled = true;
+  const savedStdin = els.stdin.value; // preserve so user sees what they fed
+  try{
+    await pyodide.runPythonAsync(code);
+    setStatus("Ready", "ready");
+    writeOut("\n", "info");
+    writeOut("[finished]\n", "ok");
+  }catch(err){
+    setStatus("Error", "error");
+    writeOut("\n"+String(err.message || err)+"\n", "err");
+  }finally{
+    els.stdin.value = savedStdin;
+    els.runBtn.disabled = false;
+  }
+}
+function resetCode(){
+  if(!editor) return;
+  editor.dispatch({changes:{from:0, to:editor.state.doc.length, insert:originalSource}});
+}
+els.runBtn.addEventListener("click", runCode);
+els.resetBtn.addEventListener("click", resetCode);
+// Ctrl/Cmd+Enter to run
+document.addEventListener("keydown", (e)=>{
+  if((e.ctrlKey || e.metaKey) && e.key === "Enter"){
+    e.preventDefault();
+    if(!els.runBtn.disabled) runCode();
+  }
+});
+
+// --- Boot -----------------------------------------------------------------
+(async function boot(){
+  try{
+    const index = await loadIndex();
+    renderTree(index);
+
+    // Open requested file from ?file=... — fall back to a sensible default.
+    const requested = new URLSearchParams(location.search).get("file");
+    let pick = null;
+    if(requested){
+      for(const w of index.weeks){
+        for(const f of w.files){
+          if(f.path === requested){ pick = {name:f.name, path:f.path, week:w.week}; break; }
+        }
+        if(pick) break;
+      }
+    }
+    if(!pick && index.weeks[0] && index.weeks[0].files[0]){
+      const w = index.weeks[0], f = w.files[0];
+      pick = {name:f.name, path:f.path, week:w.week};
+    }
+    if(pick) await selectFile(pick);
+  }catch(err){
+    writeOut("Failed to initialize playground: "+err.message+"\n", "err");
+    setStatus("Init failed", "error");
+  }
+  // Init Pyodide in parallel with file load
+  initPyodide();
+})();
+</script>
+</body>
+</html>

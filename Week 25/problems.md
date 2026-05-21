@@ -4,19 +4,19 @@ Topics covered this week: advanced string algorithms — KMP, Z-algorithm, Rabin
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Find the Index of the First Occurrence in a String | Easy | KMP / naive | https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/ |
-| 2 | Repeated Substring Pattern | Easy | KMP failure function | https://leetcode.com/problems/repeated-substring-pattern/ |
-| 3 | Rotate String | Easy | Concatenation trick | https://leetcode.com/problems/rotate-string/ |
-| 4 | Longest Happy Prefix | Hard | KMP failure | https://leetcode.com/problems/longest-happy-prefix/ |
-| 5 | Shortest Palindrome | Hard | KMP on reversed concat | https://leetcode.com/problems/shortest-palindrome/ |
-| 6 | Longest Palindromic Substring | Medium | Expand around center / Manacher | https://leetcode.com/problems/longest-palindromic-substring/ |
-| 7 | Palindromic Substrings | Medium | Expand around center | https://leetcode.com/problems/palindromic-substrings/ |
-| 8 | Distinct Echo Substrings | Hard | Rabin-Karp | https://leetcode.com/problems/distinct-echo-substrings/ |
-| 9 | Longest Duplicate Substring | Hard | Binary search + Rabin-Karp | https://leetcode.com/problems/longest-duplicate-substring/ |
-| 10 | Sum of Scores of Built Strings | Hard | Z-function | https://leetcode.com/problems/sum-of-scores-of-built-strings/ |
-| 11 | Find All Anagrams in a String | Medium | Sliding window | https://leetcode.com/problems/find-all-anagrams-in-a-string/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Find the Index of the First Occurrence in a String | Easy | KMP / naive | https://leetcode.com/problems/find-the-index-of-the-first-occurrence-in-a-string/ | Amazon, Microsoft, Apple |
+| 2 | Repeated Substring Pattern | Easy | KMP failure function | https://leetcode.com/problems/repeated-substring-pattern/ | Amazon, Google, Common |
+| 3 | Rotate String | Easy | Concatenation trick | https://leetcode.com/problems/rotate-string/ | Amazon, Google, Common |
+| 4 | Longest Happy Prefix | Hard | KMP failure | https://leetcode.com/problems/longest-happy-prefix/ | Google, Common |
+| 5 | Shortest Palindrome | Hard | KMP on reversed concat | https://leetcode.com/problems/shortest-palindrome/ | Google, Pocket Gems, Common |
+| 6 | Longest Palindromic Substring | Medium | Expand around center / Manacher | https://leetcode.com/problems/longest-palindromic-substring/ | Amazon, Microsoft, Meta, Apple |
+| 7 | Palindromic Substrings | Medium | Expand around center | https://leetcode.com/problems/palindromic-substrings/ | Meta, Amazon, Google |
+| 8 | Distinct Echo Substrings | Hard | Rabin-Karp | https://leetcode.com/problems/distinct-echo-substrings/ | Common |
+| 9 | Longest Duplicate Substring | Hard | Binary search + Rabin-Karp | https://leetcode.com/problems/longest-duplicate-substring/ | Google, Amazon, Common |
+| 10 | Sum of Scores of Built Strings | Hard | Z-function | https://leetcode.com/problems/sum-of-scores-of-built-strings/ | Common |
+| 11 | Find All Anagrams in a String | Medium | Sliding window | https://leetcode.com/problems/find-all-anagrams-in-a-string/ | Amazon, Meta, Google |
 
 ## Stretch Problems
 

@@ -42,6 +42,208 @@ PROGRESS_FILE = PROGRESS_DIR / "progress.json"
 TOTAL_WEEKS = 30
 NON_INTERACTIVE = os.environ.get("JOURNEY_NON_INTERACTIVE") == "1"
 
+# ---------------------------------------------------------------------------
+# FSRS (Free Spaced Repetition Scheduler) — minimum viable implementation.
+#
+# Reference: https://github.com/open-spaced-repetition/fsrs4anki (not a dep,
+# just the canonical source for the algorithm and default weights). FSRS
+# models each card's memory as two latent variables — Difficulty (D, 1-10)
+# and Stability (S, days) — and picks the next review interval so the
+# learner's retrievability hits a target retention rate (default 0.9).
+#
+# We use the published FSRS v4 default weights `w` (17 of them) but skip the
+# learn-to-rank training — these defaults are good enough out of the box.
+# ---------------------------------------------------------------------------
+
+# Default FSRS v4 weights (published parameters from fsrs4anki).
+FSRS_W = [
+    0.4, 0.6, 2.4, 5.8,         # initial stability per first-rating
+    4.93, 0.94, 0.86, 0.01,     # initial difficulty + update params
+    1.49, 0.14, 0.94,           # stability-after-success curve
+    2.18, 0.05, 0.34,           # stability-after-failure curve
+    1.26, 0.29, 2.61,           # interval and damping
+]
+FSRS_REQUEST_RETENTION = 0.9
+FSRS_MAX_INTERVAL = 365  # days — we cap so "mastered" still shows up yearly
+
+# Ratings: 1=again, 2=hard, 3=good, 4=easy (matches Anki convention).
+RATING_AGAIN, RATING_HARD, RATING_GOOD, RATING_EASY = 1, 2, 3, 4
+
+
+def _today() -> _dt.date:
+    return _dt.date.today()
+
+
+def _parse_date(s: str | None) -> _dt.date | None:
+    if not s:
+        return None
+    try:
+        return _dt.date.fromisoformat(s[:10])
+    except Exception:
+        return None
+
+
+def fsrs_init_state(rating: int) -> dict:
+    """Create initial SRS state from the first review's rating."""
+    # FSRS_W[0..3] give initial stability per rating (1..4).
+    s = max(0.1, FSRS_W[max(0, min(3, rating - 1))])
+    # FSRS_W[4] is initial difficulty intercept; FSRS_W[5] scales by rating.
+    d = FSRS_W[4] - FSRS_W[5] * (rating - 3)
+    d = min(10.0, max(1.0, d))
+    today = _today()
+    interval = _fsrs_next_interval(s)
+    return {
+        "difficulty": d,
+        "stability": s,
+        "last_review_date": today.isoformat(),
+        "next_review_date": (today + _dt.timedelta(days=interval)).isoformat(),
+        "reps": 1,
+        "lapses": 1 if rating == RATING_AGAIN else 0,
+        "history": [{"date": today.isoformat(), "rating": rating}],
+    }
+
+
+def _fsrs_next_interval(stability: float) -> int:
+    """Days until retrievability falls to FSRS_REQUEST_RETENTION."""
+    import math
+    if stability <= 0:
+        return 1
+    # FSRS retrievability model: R(t) = (1 + t/(9*S))^(-1)
+    factor = (FSRS_REQUEST_RETENTION ** (-1 / FSRS_W[16]) - 1) * 9
+    ivl = stability * factor
+    return max(1, min(FSRS_MAX_INTERVAL, int(round(ivl))))
+
+
+def _fsrs_update_difficulty(d: float, rating: int) -> float:
+    # Linear adjustment toward target; FSRS_W[6] is the learning rate.
+    d_new = d - FSRS_W[6] * (rating - 3)
+    # Mean-reversion toward the rating-3 baseline.
+    d_new = FSRS_W[7] * FSRS_W[4] + (1 - FSRS_W[7]) * d_new
+    return min(10.0, max(1.0, d_new))
+
+
+def _fsrs_update_stability(s: float, d: float, rating: int, retrievability: float) -> float:
+    import math
+    if rating == RATING_AGAIN:
+        # Stability after a lapse — much smaller, scaled by current d and s.
+        s_new = (
+            FSRS_W[11]
+            * (d ** -FSRS_W[12])
+            * ((s + 1) ** FSRS_W[13] - 1)
+            * math.exp((1 - retrievability) * FSRS_W[14])
+        )
+        return max(0.1, s_new)
+    # Stability after a success — grows multiplicatively.
+    hard_penalty = 1.0 if rating != RATING_HARD else FSRS_W[15]
+    easy_bonus = 1.0 if rating != RATING_EASY else FSRS_W[16]
+    s_new = s * (
+        1
+        + math.exp(FSRS_W[8])
+        * (11 - d)
+        * (s ** -FSRS_W[9])
+        * (math.exp((1 - retrievability) * FSRS_W[10]) - 1)
+        * hard_penalty
+        * easy_bonus
+    )
+    return max(0.1, min(36500.0, s_new))
+
+
+def _fsrs_retrievability(s: float, days_elapsed: float) -> float:
+    if s <= 0:
+        return 0.0
+    return (1 + days_elapsed / (9 * s)) ** -FSRS_W[16]
+
+
+def fsrs_update(state: dict, rating: int) -> dict:
+    """Update a per-skill SRS state with a new rating (1..4)."""
+    import math
+    today = _today()
+    last = _parse_date(state.get("last_review_date")) or today
+    days_elapsed = max(0, (today - last).days)
+    s_old = float(state.get("stability", 0.5))
+    d_old = float(state.get("difficulty", FSRS_W[4]))
+    r = _fsrs_retrievability(s_old, days_elapsed)
+    d_new = _fsrs_update_difficulty(d_old, rating)
+    s_new = _fsrs_update_stability(s_old, d_new, rating, r)
+    ivl = _fsrs_next_interval(s_new)
+    new = dict(state)
+    new["difficulty"] = d_new
+    new["stability"] = s_new
+    new["last_review_date"] = today.isoformat()
+    new["next_review_date"] = (today + _dt.timedelta(days=ivl)).isoformat()
+    new["reps"] = int(state.get("reps", 0)) + 1
+    new["lapses"] = int(state.get("lapses", 0)) + (1 if rating == RATING_AGAIN else 0)
+    history = list(state.get("history", []))
+    history.append({"date": today.isoformat(), "rating": rating})
+    new["history"] = history[-50:]   # cap history to avoid unbounded growth
+    return new
+
+
+def rating_from_correct(ok: bool) -> int:
+    """Auto-rate: correct → good (3), incorrect → again (1)."""
+    return RATING_GOOD if ok else RATING_AGAIN
+
+
+def get_srs_state(progress: dict, week: int, skill_id: str) -> dict | None:
+    srs = progress.get("srs_state", {})
+    return srs.get(f"{week}:{skill_id}")
+
+
+def set_srs_state(progress: dict, week: int, skill_id: str, state: dict) -> None:
+    srs = progress.setdefault("srs_state", {})
+    srs[f"{week}:{skill_id}"] = state
+
+
+def is_due(state: dict, on_date: _dt.date | None = None) -> bool:
+    """A skill is due if its next_review_date is today or earlier."""
+    on_date = on_date or _today()
+    nd = _parse_date(state.get("next_review_date"))
+    return nd is None or nd <= on_date
+
+
+def is_mastered(state: dict) -> bool:
+    """Mastered = high stability and no recent failure."""
+    if float(state.get("stability", 0.0)) < 21.0:
+        return False
+    history = state.get("history", [])
+    recent = history[-3:]
+    return all(h.get("rating", 1) != RATING_AGAIN for h in recent)
+
+
+def collect_due_skills(progress: dict, max_skills: int | None = None) -> list[dict]:
+    """Walk every week's mastery.yml, return skills that are due, oldest first.
+
+    Each returned dict is the YAML skill dict plus a `_week` tag.
+    Skills that have never been reviewed are NOT considered due — `review` is
+    for revisiting things you've already seen at least once.
+    """
+    out: list[tuple[_dt.date, dict]] = []
+    for n in range(1, TOTAL_WEEKS + 1):
+        data = load_week(n)
+        if not data:
+            continue
+        for skill in data.get("skills", []):
+            sid = skill.get("id")
+            if not sid:
+                continue
+            state = get_srs_state(progress, n, sid)
+            if not state:
+                continue
+            if is_mastered(state) and not is_due(state):
+                continue
+            if is_due(state):
+                tagged = dict(skill)
+                tagged["_week"] = n
+                tagged["_srs"] = state
+                nd = _parse_date(state.get("next_review_date")) or _today()
+                out.append((nd, tagged))
+    # Priority: oldest due date first (most overdue → highest priority).
+    out.sort(key=lambda t: t[0])
+    skills = [s for _, s in out]
+    if max_skills is not None:
+        skills = skills[:max_skills]
+    return skills
+
 
 # ---------------------------------------------------------------------------
 # Progress persistence
@@ -195,7 +397,35 @@ HANDLERS = {
 }
 
 
-def run_quiz(week_data: dict, n: int | None = None) -> dict:
+def _ask_rating(ok: bool) -> int:
+    """Optionally let the learner self-rate; otherwise auto-derive from correctness.
+
+    Returns one of the RATING_* constants (1..4). In non-interactive mode we
+    always use the auto-derived rating so CI smoke tests stay deterministic.
+    """
+    auto = rating_from_correct(ok)
+    if NON_INTERACTIVE:
+        return auto
+    hint = "again/hard/good/easy" if ok else "again/hard"
+    raw = _prompt(f"  Self-rate ({hint}, blank = auto): ").strip().lower()
+    if not raw:
+        return auto
+    if raw in ("1", "a", "again"):
+        return RATING_AGAIN
+    if raw in ("2", "h", "hard"):
+        return RATING_HARD
+    if raw in ("3", "g", "good"):
+        return RATING_GOOD
+    if raw in ("4", "e", "easy"):
+        return RATING_EASY
+    return auto
+
+
+def run_quiz(
+    week_data: dict,
+    n: int | None = None,
+    progress: dict | None = None,
+) -> dict:
     skills = list(week_data.get("skills", []))
     random.shuffle(skills)
     if n is not None:
@@ -208,9 +438,12 @@ def run_quiz(week_data: dict, n: int | None = None) -> dict:
 
     passed: list[str] = []
     missed: list[str] = []
+    srs_updates: list[tuple[int, str, int]] = []  # (week, skill_id, rating)
     for i, skill in enumerate(skills, 1):
         sid = skill.get("id", f"skill_{i}")
         stype = skill.get("type", "open")
+        # Determine the originating week for SRS bookkeeping.
+        skill_week = skill.get("_week", week_num if isinstance(week_num, int) else None)
         print(f"[{i}/{len(skills)}] ({stype}) {skill['prompt']}")
         handler = HANDLERS.get(stype, ask_open)
         try:
@@ -226,12 +459,24 @@ def run_quiz(week_data: dict, n: int | None = None) -> dict:
             print(f"  MISS — answer: {ans}")
             print(f"         {skill.get('explanation', '')}\n")
             missed.append(sid)
+        rating = _ask_rating(ok)
+        if isinstance(skill_week, int):
+            srs_updates.append((skill_week, sid, rating))
 
     total = len(passed) + len(missed)
     rate = (100 * len(passed) / total) if total else 0
     print(f"=== Summary: {len(passed)}/{total} passed ({rate:.0f}%) ===")
     if missed:
         print("Skills missed: " + ", ".join(missed))
+
+    # Apply SRS updates if we were given a progress dict to mutate.
+    if progress is not None:
+        for wk, sid, rating in srs_updates:
+            existing = get_srs_state(progress, wk, sid)
+            new_state = (
+                fsrs_update(existing, rating) if existing else fsrs_init_state(rating)
+            )
+            set_srs_state(progress, wk, sid, new_state)
 
     return {
         "week": week_num,
@@ -266,7 +511,8 @@ def cmd_quiz(args: argparse.Namespace) -> int:
         n = args.n or 10
         mixed_skills = mixed_skills[:n]
         synthetic = {"week": "ALL", "title": "Cross-week mix", "skills": mixed_skills}
-        result = run_quiz(synthetic, n=n)
+        result = run_quiz(synthetic, n=n, progress=progress)
+        save_progress(progress)
         return 0
 
     try:
@@ -280,7 +526,29 @@ def cmd_quiz(args: argparse.Namespace) -> int:
         print(f"error: Week {week}/mastery.yml not found.")
         return 1
 
-    result = run_quiz(week_data, n=args.n)
+    # --review: interleave 80% current-week / 20% due-skill review.
+    if getattr(args, "review", False):
+        current_skills = list(week_data.get("skills", []))
+        for s in current_skills:
+            s["_week"] = week
+        n_total = args.n or len(current_skills)
+        n_review = max(1, n_total // 5)            # 20% review
+        n_current = max(0, n_total - n_review)
+        random.shuffle(current_skills)
+        current_skills = current_skills[:n_current]
+        due = collect_due_skills(progress, max_skills=n_review)
+        if not due:
+            print("(no due skills to interleave — running normal quiz)")
+        skills = current_skills + due
+        random.shuffle(skills)
+        synthetic = {
+            "week": week,
+            "title": f"{week_data.get('title', '')} (with review)",
+            "skills": skills,
+        }
+        result = run_quiz(synthetic, n=len(skills), progress=progress)
+    else:
+        result = run_quiz(week_data, n=args.n, progress=progress)
 
     # Persist latest snapshot per week (unchanged behaviour).
     progress["weeks"][str(week)] = result
@@ -783,6 +1051,266 @@ def cmd_default(_args: argparse.Namespace) -> int:
 
 
 # ---------------------------------------------------------------------------
+# Daily-drip practice
+# ---------------------------------------------------------------------------
+
+# Reflection prompts cycle deterministically by day-of-year.
+_REFLECTION_PROMPTS = [
+    "What's one pattern you would have *missed* yesterday but caught today?",
+    "Name one bug you wrote this week that you've also written before. Why?",
+    "Which data structure are you most likely to over-reach for, and what's a cheaper alternative?",
+    "If you had to teach yesterday's hardest problem to a peer in three sentences, what would they be?",
+    "What is one piece of vocabulary you're still using by rote, without truly understanding?",
+    "Which complexity claim in your recent solution would you be embarrassed to defend out loud?",
+    "What's the smallest input that would have broken your last solution? Did you test it?",
+    "When did you peek at the answer in the last 24 hours? What hint would have been enough?",
+    "Of the last 5 problems you solved, which one would you bet you'd fail to re-solve next week?",
+    "What's one trick from a *different* week you could have used on today's problem?",
+    "Name the highest-leverage habit you could add to your daily loop in under 5 minutes.",
+    "What surprised you about your solution after you wrote it?",
+    "Which step of the four-step methodology (decompose / recognize / implement / journal) did you skip today?",
+    "What does 'I understood this' feel like, concretely, for the topic you just studied?",
+]
+
+
+def _parse_drill_lines(path: Path) -> list[dict]:
+    """Lightweight parser for `### N. prose` lines inside patterns.md."""
+    if not path.exists():
+        return []
+    drills: list[dict] = []
+    end_idx = None
+    lines = path.read_text(encoding="utf-8").splitlines()
+    for i, ln in enumerate(lines):
+        if ln.strip().lower().startswith("## answer key"):
+            end_idx = i
+            break
+    if end_idx is None:
+        end_idx = len(lines)
+    pat = re.compile(r"^###\s+(\d+)\.\s+(.*)$")
+    for i in range(end_idx):
+        m = pat.match(lines[i])
+        if m:
+            drills.append({"n": int(m.group(1)), "prose": m.group(2).strip()})
+    return drills
+
+
+def _parse_challenge_titles(path: Path) -> list[dict]:
+    if not path.exists():
+        return []
+    out: list[dict] = []
+    pat = re.compile(r"^##\s+Challenge\s+(\d+):\s*(.*)$", re.IGNORECASE)
+    for ln in path.read_text(encoding="utf-8").splitlines():
+        m = pat.match(ln)
+        if m:
+            out.append({"n": int(m.group(1)), "title": m.group(2).strip()})
+    return out
+
+
+def _revisit_week(current_week: int) -> int | None:
+    """Pick the revisit week per REVIEW_SCHEDULE: prefer N-3, fall back N-7."""
+    if current_week - 3 >= 1:
+        return current_week - 3
+    if current_week - 7 >= 1:
+        return current_week - 7
+    return None
+
+
+def _build_daily_plan(today: _dt.date | None = None) -> dict:
+    """Return the deterministic plan dict for the given date."""
+    if today is None:
+        today = _dt.date.today()
+    progress = load_progress()
+    current_week = progress.get("current_week", 1)
+
+    # Deterministic day index (epoch-based, stable across timezones).
+    day_idx = today.toordinal()
+
+    # Pattern drill: deterministic on (date, current_week).
+    drill_path = REPO_ROOT / f"Week {current_week}" / "patterns.md"
+    drills = _parse_drill_lines(drill_path)
+    drill: dict | None = None
+    if drills:
+        d = drills[(day_idx + current_week) % len(drills)]
+        drill = {"week": current_week, "n": d["n"], "prose": d["prose"], "path": drill_path}
+
+    # Challenge: prefer revisit week (N-3 then N-7), else current week.
+    challenge_week = _revisit_week(current_week) or current_week
+    ch_path = REPO_ROOT / f"Week {challenge_week}" / "challenges.md"
+    challenges = _parse_challenge_titles(ch_path)
+    challenge: dict | None = None
+    if challenges:
+        c = challenges[day_idx % len(challenges)]
+        challenge = {"week": challenge_week, "n": c["n"], "title": c["title"], "path": ch_path}
+
+    # Mastery quiz topic: pick a skill id from current week's mastery.yml.
+    week_data = load_week(current_week)
+    quiz_topic: dict | None = None
+    if week_data:
+        skills = week_data.get("skills", []) or []
+        if skills:
+            s = skills[day_idx % len(skills)]
+            quiz_topic = {
+                "week": current_week,
+                "id": s.get("id", "?"),
+                "prompt": s.get("prompt", ""),
+                "type": s.get("type", "open"),
+            }
+
+    reflection = _REFLECTION_PROMPTS[day_idx % len(_REFLECTION_PROMPTS)]
+
+    return {
+        "date": today.isoformat(),
+        "current_week": current_week,
+        "drill": drill,
+        "challenge": challenge,
+        "quiz_topic": quiz_topic,
+        "reflection": reflection,
+        "estimated_minutes": 25,
+    }
+
+
+def _format_daily_text(plan: dict) -> str:
+    lines: list[str] = []
+    lines.append(f"Daily Practice — {plan['date']} (Week {plan['current_week']})")
+    lines.append("=" * 60)
+    lines.append(f"Estimated time: {plan['estimated_minutes']} minutes")
+    lines.append("")
+
+    drill = plan["drill"]
+    lines.append("1. Pattern drill")
+    if drill:
+        lines.append(f"   (Week {drill['week']}, drill #{drill['n']})")
+        lines.append(f"   {drill['prose']}")
+    else:
+        lines.append("   (no drill available)")
+    lines.append("")
+
+    challenge = plan["challenge"]
+    lines.append("2. Challenge")
+    if challenge:
+        lines.append(
+            f"   Week {challenge['week']} — Challenge {challenge['n']}: {challenge['title']}"
+        )
+    else:
+        lines.append("   (no challenge available)")
+    lines.append("")
+
+    quiz = plan["quiz_topic"]
+    lines.append("3. Mastery quiz topic")
+    if quiz:
+        lines.append(f"   Skill: {quiz['id']} ({quiz['type']})")
+        lines.append(f"   Prompt: {quiz['prompt']}")
+        lines.append(f"   Run: ./scripts/journey quiz {quiz['week']} --n 1")
+    else:
+        lines.append("   (no mastery skills available)")
+    lines.append("")
+
+    lines.append("4. Reflection")
+    lines.append(f"   {plan['reflection']}")
+    return "\n".join(lines)
+
+
+def _format_daily_markdown(plan: dict) -> str:
+    lines: list[str] = []
+    lines.append(f"# Daily Practice — {plan['date']}")
+    lines.append("")
+    lines.append(
+        f"_Current week: **{plan['current_week']}**. Estimated time: "
+        f"**{plan['estimated_minutes']} minutes**._"
+    )
+    lines.append("")
+
+    drill = plan["drill"]
+    lines.append("## 1. Pattern drill")
+    if drill:
+        rel = drill["path"].relative_to(REPO_ROOT) if drill["path"].exists() else drill["path"]
+        lines.append(f"From Week {drill['week']} (drill #{drill['n']}):")
+        lines.append("")
+        lines.append(f"> {drill['prose']}")
+        lines.append("")
+        lines.append(
+            f"Name the pattern in one word; justify in one sentence. Source: `{rel}`."
+        )
+    else:
+        lines.append("_(no drill available)_")
+    lines.append("")
+
+    challenge = plan["challenge"]
+    lines.append("## 2. Challenge")
+    if challenge:
+        rel = challenge["path"].relative_to(REPO_ROOT) if challenge["path"].exists() else challenge["path"]
+        lines.append(
+            f"**Week {challenge['week']} — Challenge {challenge['n']}: {challenge['title']}**"
+        )
+        lines.append("")
+        if challenge["week"] != plan["current_week"]:
+            lines.append(
+                f"_Revisit pick (N-3 / N-7 per docs/REVIEW_SCHEDULE.md)._"
+            )
+            lines.append("")
+        lines.append(f"Spec: `{rel}`")
+    else:
+        lines.append("_(no challenge available)_")
+    lines.append("")
+
+    quiz = plan["quiz_topic"]
+    lines.append("## 3. Mastery quiz topic")
+    if quiz:
+        lines.append(f"- **Skill**: `{quiz['id']}` ({quiz['type']})")
+        lines.append(f"- **Prompt**: {quiz['prompt']}")
+        lines.append("")
+        lines.append(f"Run `./scripts/journey quiz {quiz['week']} --n 1` to drill this in isolation.")
+    else:
+        lines.append("_(no mastery skills available)_")
+    lines.append("")
+
+    lines.append("## 4. Reflection prompt")
+    lines.append("")
+    lines.append(f"> {plan['reflection']}")
+    lines.append("")
+    lines.append(
+        "Write a 2-3 sentence answer in `docs/SOLUTION_JOURNAL.md` or your own notes."
+    )
+    lines.append("")
+    lines.append("---")
+    lines.append("")
+    lines.append(
+        "Auto-generated. See [`docs/DAILY_PRACTICE.md`](docs/DAILY_PRACTICE.md) for how this list is built."
+    )
+    return "\n".join(lines)
+
+
+def cmd_daily(args: argparse.Namespace) -> int:
+    plan = _build_daily_plan()
+    if getattr(args, "markdown", False):
+        sys.stdout.write(_format_daily_markdown(plan) + "\n")
+    else:
+        sys.stdout.write(_format_daily_text(plan) + "\n")
+    return 0
+
+
+# ---------------------------------------------------------------------------
+# Review (FSRS-driven)
+# ---------------------------------------------------------------------------
+
+def cmd_review(args: argparse.Namespace) -> int:
+    """Run only skills that are due today, across all weeks, in priority order."""
+    progress = load_progress()
+    max_n = getattr(args, "n", None)
+    due = collect_due_skills(progress, max_skills=max_n)
+    if not due:
+        print("No skills are due for review right now.")
+        print("Quiz a week first (./scripts/journey quiz N) to seed the schedule,")
+        print("or come back later — review intervals grow as you keep up with them.")
+        return 0
+    print(f"Due for review: {len(due)} skill(s) (oldest first).")
+    synthetic = {"week": "REVIEW", "title": "FSRS due-skill review", "skills": due}
+    run_quiz(synthetic, n=len(due), progress=progress)
+    save_progress(progress)
+    return 0
+
+
+# ---------------------------------------------------------------------------
 # Argparse
 # ---------------------------------------------------------------------------
 
@@ -793,7 +1321,24 @@ def build_parser() -> argparse.ArgumentParser:
     q = sub.add_parser("quiz", help="Run a quiz")
     q.add_argument("target", help="Week number or 'all'")
     q.add_argument("--n", type=int, default=None, help="Limit number of questions")
+    q.add_argument(
+        "--review",
+        action="store_true",
+        help="Interleave 80% current-week skills with 20% due-for-review skills (FSRS).",
+    )
     q.set_defaults(func=cmd_quiz)
+
+    rv = sub.add_parser(
+        "review",
+        help="Quiz only skills that are due now (FSRS), across all weeks.",
+    )
+    rv.add_argument(
+        "--n",
+        type=int,
+        default=None,
+        help="Cap number of due skills to review this session.",
+    )
+    rv.set_defaults(func=cmd_review)
 
     pr = sub.add_parser("progress", help="Show progress table")
     pr.add_argument(
@@ -817,6 +1362,14 @@ def build_parser() -> argparse.ArgumentParser:
     r = sub.add_parser("reset", help="Reset a week's progress")
     r.add_argument("week", type=int)
     r.set_defaults(func=cmd_reset)
+
+    dly = sub.add_parser("daily", help="Print today's recommended practice (25 min)")
+    dly.add_argument(
+        "--markdown",
+        action="store_true",
+        help="Render as Markdown (suitable for piping into emails / issues)",
+    )
+    dly.set_defaults(func=cmd_daily)
 
     return p
 

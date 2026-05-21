@@ -4,18 +4,18 @@ Topics covered this week: arrays, 1D traversal, prefix/suffix techniques, in-pla
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Contains Duplicate | Easy | Array / Hash set | https://leetcode.com/problems/contains-duplicate/ |
-| 2 | Missing Number | Easy | Math / XOR | https://leetcode.com/problems/missing-number/ |
-| 3 | Move Zeroes | Easy | Two pointers | https://leetcode.com/problems/move-zeroes/ |
-| 4 | Best Time to Buy and Sell Stock | Easy | Single pass | https://leetcode.com/problems/best-time-to-buy-and-sell-stock/ |
-| 5 | Maximum Subarray | Medium | Kadane's algorithm | https://leetcode.com/problems/maximum-subarray/ |
-| 6 | Rotate Array | Medium | Reverse trick | https://leetcode.com/problems/rotate-array/ |
-| 7 | Product of Array Except Self | Medium | Prefix / Suffix products | https://leetcode.com/problems/product-of-array-except-self/ |
-| 8 | Find All Numbers Disappeared in an Array | Easy | Index marking | https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/ |
-| 9 | Majority Element | Easy | Boyer-Moore vote | https://leetcode.com/problems/majority-element/ |
-| 10 | Merge Sorted Array | Easy | Two pointers from end | https://leetcode.com/problems/merge-sorted-array/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Contains Duplicate | Easy | Array / Hash set | https://leetcode.com/problems/contains-duplicate/ | Amazon, Apple, Google |
+| 2 | Missing Number | Easy | Math / XOR | https://leetcode.com/problems/missing-number/ | Microsoft, Amazon, Apple |
+| 3 | Move Zeroes | Easy | Two pointers | https://leetcode.com/problems/move-zeroes/ | Meta, Amazon, Microsoft |
+| 4 | Best Time to Buy and Sell Stock | Easy | Single pass | https://leetcode.com/problems/best-time-to-buy-and-sell-stock/ | Amazon, Meta, Google, Microsoft |
+| 5 | Maximum Subarray | Medium | Kadane's algorithm | https://leetcode.com/problems/maximum-subarray/ | Amazon, Microsoft, LinkedIn, Apple |
+| 6 | Rotate Array | Medium | Reverse trick | https://leetcode.com/problems/rotate-array/ | Microsoft, Amazon, Google |
+| 7 | Product of Array Except Self | Medium | Prefix / Suffix products | https://leetcode.com/problems/product-of-array-except-self/ | Amazon, Meta, Microsoft, Apple |
+| 8 | Find All Numbers Disappeared in an Array | Easy | Index marking | https://leetcode.com/problems/find-all-numbers-disappeared-in-an-array/ | Common |
+| 9 | Majority Element | Easy | Boyer-Moore vote | https://leetcode.com/problems/majority-element/ | Amazon, Microsoft, Apple |
+| 10 | Merge Sorted Array | Easy | Two pointers from end | https://leetcode.com/problems/merge-sorted-array/ | Microsoft, Amazon, Apple, Meta |
 
 ## Stretch Problems
 

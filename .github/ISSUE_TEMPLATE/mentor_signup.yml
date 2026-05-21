@@ -1,0 +1,90 @@
+name: Mentor signup
+description: Offer mentorship to learners working through the curriculum.
+title: "[mentor] "
+labels: ["mentorship", "mentor-signup"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for offering to mentor. Please read [docs/MENTORSHIP.md](../blob/main/docs/MENTORSHIP.md) first so the expectations line up.
+
+        Eligibility: you should have completed at least the Foundation certification level (Weeks 1–10). You don't have to be done with the whole curriculum — just far enough ahead to help someone earlier in the journey.
+
+  - type: input
+    id: handle
+    attributes:
+      label: Name or GitHub handle
+      description: How you'd like to be listed in `mentors/MENTOR_DIRECTORY.md`.
+      placeholder: e.g. @octocat or "Ada L."
+    validations:
+      required: true
+
+  - type: input
+    id: available_hours
+    attributes:
+      label: Available hours per week
+      description: Rough commitment you can sustain. A typical pairing is ~30 minutes per mentee per week.
+      placeholder: e.g. 1–2 hours per week, evenings UTC+1
+    validations:
+      required: true
+
+  - type: textarea
+    id: topics
+    attributes:
+      label: Topics you're comfortable mentoring
+      description: List the curriculum weeks or specific topics where you'd be a useful debugger / reviewer.
+      placeholder: |
+        - Weeks 6–9 (arrays, strings, sorting, searching)
+        - Week 17 (graphs, BFS/DFS, shortest paths)
+        - Specific topics: union-find, segment trees, system design basics
+    validations:
+      required: true
+
+  - type: dropdown
+    id: cert_level
+    attributes:
+      label: Highest certification level you've reached
+      description: See `docs/MASTERY.md`. Foundation is the minimum to mentor.
+      options:
+        - "Foundation (Weeks 1–10)"
+        - "Practitioner (Weeks 11–20)"
+        - "Specialist (Weeks 21–25)"
+        - "Expert (Weeks 26–30)"
+    validations:
+      required: true
+
+  - type: input
+    id: contact
+    attributes:
+      label: Preferred contact method
+      description: Discord handle, email, or anywhere mentees can reach you directly. This will be public in the mentor directory.
+      placeholder: e.g. discord:ada#1234 or ada@example.com
+    validations:
+      required: true
+
+  - type: input
+    id: timezone
+    attributes:
+      label: Timezone
+      description: Helps us match you with mentees in compatible hours.
+      placeholder: e.g. UTC+1 (Europe/Berlin)
+    validations:
+      required: true
+
+  - type: textarea
+    id: notes
+    attributes:
+      label: Anything else?
+      description: Optional. Preferred format (sync video / async written), languages you'd like to mentor in (English, Hindi, etc.), or any constraints.
+    validations:
+      required: false
+
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read `docs/MENTORSHIP.md` and agree to the norms (confidentiality, code-review-not-code-writing, no-show etiquette).
+          required: true
+        - label: I understand my contact info will be public in `mentors/MENTOR_DIRECTORY.md` and I can remove myself at any time via PR.
+          required: true

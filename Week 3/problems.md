@@ -4,18 +4,18 @@ Topics covered this week: for loops, nested loops, bitwise operators (AND/OR/XOR
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Fibonacci Number | Easy | Iterative Fibonacci | https://leetcode.com/problems/fibonacci-number/ |
-| 2 | N-th Tribonacci Number | Easy | Sliding sum | https://leetcode.com/problems/n-th-tribonacci-number/ |
-| 3 | Counting Bits | Easy | Bitwise / DP | https://leetcode.com/problems/counting-bits/ |
-| 4 | Single Number | Easy | XOR trick | https://leetcode.com/problems/single-number/ |
-| 5 | Hamming Distance | Easy | XOR + popcount | https://leetcode.com/problems/hamming-distance/ |
-| 6 | Power of Four | Easy | Bitmask | https://leetcode.com/problems/power-of-four/ |
-| 7 | Reverse Bits | Easy | Bit shift loop | https://leetcode.com/problems/reverse-bits/ |
-| 8 | Missing Number | Easy | XOR / Sum | https://leetcode.com/problems/missing-number/ |
-| 9 | Single Number II | Medium | Bit counting | https://leetcode.com/problems/single-number-ii/ |
-| 10 | Sum of Two Integers | Medium | XOR + carry | https://leetcode.com/problems/sum-of-two-integers/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Fibonacci Number | Easy | Iterative Fibonacci | https://leetcode.com/problems/fibonacci-number/ | Common |
+| 2 | N-th Tribonacci Number | Easy | Sliding sum | https://leetcode.com/problems/n-th-tribonacci-number/ | Common |
+| 3 | Counting Bits | Easy | Bitwise / DP | https://leetcode.com/problems/counting-bits/ | Amazon, Apple, Google |
+| 4 | Single Number | Easy | XOR trick | https://leetcode.com/problems/single-number/ | Google, Amazon, Microsoft |
+| 5 | Hamming Distance | Easy | XOR + popcount | https://leetcode.com/problems/hamming-distance/ | Facebook, Google, Common |
+| 6 | Power of Four | Easy | Bitmask | https://leetcode.com/problems/power-of-four/ | Amazon, Apple, Common |
+| 7 | Reverse Bits | Easy | Bit shift loop | https://leetcode.com/problems/reverse-bits/ | Apple, Amazon, Microsoft |
+| 8 | Missing Number | Easy | XOR / Sum | https://leetcode.com/problems/missing-number/ | Microsoft, Amazon, Apple |
+| 9 | Single Number II | Medium | Bit counting | https://leetcode.com/problems/single-number-ii/ | Common |
+| 10 | Sum of Two Integers | Medium | XOR + carry | https://leetcode.com/problems/sum-of-two-integers/ | Common |
 
 ## Stretch Problems
 

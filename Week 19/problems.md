@@ -4,18 +4,18 @@ Topics covered this week: greedy algorithms, exchange arguments, interval schedu
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Jump Game | Medium | Reach-tracking greedy | https://leetcode.com/problems/jump-game/ |
-| 2 | Jump Game II | Medium | BFS-style greedy | https://leetcode.com/problems/jump-game-ii/ |
-| 3 | Gas Station | Medium | Total-sum + reset | https://leetcode.com/problems/gas-station/ |
-| 4 | Task Scheduler | Medium | Greedy + counts | https://leetcode.com/problems/task-scheduler/ |
-| 5 | Non-overlapping Intervals | Medium | Sort by end | https://leetcode.com/problems/non-overlapping-intervals/ |
-| 6 | Partition Labels | Medium | Last-index sweep | https://leetcode.com/problems/partition-labels/ |
-| 7 | Lemonade Change | Easy | Cash greedy | https://leetcode.com/problems/lemonade-change/ |
-| 8 | Best Time to Buy and Sell Stock II | Medium | Sum positive deltas | https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/ |
-| 9 | Assign Cookies | Easy | Sort + two pointer | https://leetcode.com/problems/assign-cookies/ |
-| 10 | Queue Reconstruction by Height | Medium | Sort + insert | https://leetcode.com/problems/queue-reconstruction-by-height/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Jump Game | Medium | Reach-tracking greedy | https://leetcode.com/problems/jump-game/ | Amazon, Meta, Microsoft, Apple |
+| 2 | Jump Game II | Medium | BFS-style greedy | https://leetcode.com/problems/jump-game-ii/ | Amazon, Meta, Microsoft |
+| 3 | Gas Station | Medium | Total-sum + reset | https://leetcode.com/problems/gas-station/ | Amazon, Google, Apple |
+| 4 | Task Scheduler | Medium | Greedy + counts | https://leetcode.com/problems/task-scheduler/ | Amazon, Meta, Microsoft, Bloomberg |
+| 5 | Non-overlapping Intervals | Medium | Sort by end | https://leetcode.com/problems/non-overlapping-intervals/ | Amazon, Google, Apple |
+| 6 | Partition Labels | Medium | Last-index sweep | https://leetcode.com/problems/partition-labels/ | Amazon, Meta, Google |
+| 7 | Lemonade Change | Easy | Cash greedy | https://leetcode.com/problems/lemonade-change/ | Amazon, Google, Common |
+| 8 | Best Time to Buy and Sell Stock II | Medium | Sum positive deltas | https://leetcode.com/problems/best-time-to-buy-and-sell-stock-ii/ | Amazon, Meta, Microsoft |
+| 9 | Assign Cookies | Easy | Sort + two pointer | https://leetcode.com/problems/assign-cookies/ | Amazon, Google, Common |
+| 10 | Queue Reconstruction by Height | Medium | Sort + insert | https://leetcode.com/problems/queue-reconstruction-by-height/ | Amazon, Google, Common |
 
 ## Stretch Problems
 

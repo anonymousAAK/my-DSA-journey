@@ -4,18 +4,18 @@ Topics covered this week: sorting algorithms (bubble, selection, insertion, merg
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Sort Colors | Medium | Dutch national flag | https://leetcode.com/problems/sort-colors/ |
-| 2 | Merge Intervals | Medium | Sort + sweep | https://leetcode.com/problems/merge-intervals/ |
-| 3 | Largest Number | Medium | Custom comparator | https://leetcode.com/problems/largest-number/ |
-| 4 | Kth Largest Element in an Array | Medium | Quickselect / sort | https://leetcode.com/problems/kth-largest-element-in-an-array/ |
-| 5 | Sort an Array | Medium | Merge / quick sort impl | https://leetcode.com/problems/sort-an-array/ |
-| 6 | Wiggle Sort | Medium | Sort + interleave | https://leetcode.com/problems/wiggle-sort/ |
-| 7 | Meeting Rooms | Easy | Sort intervals | https://leetcode.com/problems/meeting-rooms/ |
-| 8 | Meeting Rooms II | Medium | Sort + heap | https://leetcode.com/problems/meeting-rooms-ii/ |
-| 9 | Insertion Sort List | Medium | Algorithm on LL | https://leetcode.com/problems/insertion-sort-list/ |
-| 10 | Sort Characters By Frequency | Medium | Sort by count | https://leetcode.com/problems/sort-characters-by-frequency/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Sort Colors | Medium | Dutch national flag | https://leetcode.com/problems/sort-colors/ | Microsoft, Amazon, Apple, Meta |
+| 2 | Merge Intervals | Medium | Sort + sweep | https://leetcode.com/problems/merge-intervals/ | Amazon, Meta, Microsoft, Bloomberg |
+| 3 | Largest Number | Medium | Custom comparator | https://leetcode.com/problems/largest-number/ | Amazon, Microsoft, Apple |
+| 4 | Kth Largest Element in an Array | Medium | Quickselect / sort | https://leetcode.com/problems/kth-largest-element-in-an-array/ | Amazon, Meta, LinkedIn, Google |
+| 5 | Sort an Array | Medium | Merge / quick sort impl | https://leetcode.com/problems/sort-an-array/ | Common |
+| 6 | Wiggle Sort | Medium | Sort + interleave | https://leetcode.com/problems/wiggle-sort/ | Google, Apple, Common |
+| 7 | Meeting Rooms | Easy | Sort intervals | https://leetcode.com/problems/meeting-rooms/ | Common |
+| 8 | Meeting Rooms II | Medium | Sort + heap | https://leetcode.com/problems/meeting-rooms-ii/ | Common |
+| 9 | Insertion Sort List | Medium | Algorithm on LL | https://leetcode.com/problems/insertion-sort-list/ | Common |
+| 10 | Sort Characters By Frequency | Medium | Sort by count | https://leetcode.com/problems/sort-characters-by-frequency/ | Amazon, Google, Microsoft |
 
 ## Stretch Problems
 

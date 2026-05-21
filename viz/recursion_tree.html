@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recursion Tree Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--gradient:linear-gradient(135deg,#58a6ff,#3fb950)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem;display:inline-block;margin-bottom:14px}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input,.controls select{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.controls input[type=number]{width:60px}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+canvas{display:block;width:100%;background:#0d1117;border:1px solid var(--border);border-radius:6px}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.8rem;line-height:1.55;background:#0d1117;border-radius:6px;padding:10px}
+.pseudo .line{padding:2px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.stats{margin-top:10px;font-size:.85rem;color:var(--muted);font-family:monospace}
+.stats .lbl{color:var(--green);display:inline-block;min-width:110px}
+.callstack{font-family:monospace;font-size:.78rem;background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:8px;margin-top:8px;max-height:200px;overflow-y:auto}
+.callstack .frame{padding:3px 6px;margin:2px 0;background:#22272e;border-radius:3px;border-left:3px solid var(--blue)}
+.callstack .frame.top{border-left-color:var(--yellow);background:rgba(210,153,34,.1)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; All visualizations</a>
+<div class="top"><h1>Recursion Tree</h1></div>
+
+<div class="controls">
+  <label>Algorithm: <select id="mode">
+    <option value="fib" selected>Fibonacci (naive)</option>
+    <option value="hanoi">Tower of Hanoi</option>
+  </select></label>
+  <label>n: <input type="number" id="n" value="5" min="1" max="8"></label>
+  <button id="apply">Run</button>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="50"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Tree</h3>
+    <canvas id="cv" height="460"></canvas>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="panel">
+    <h3>Pseudocode</h3>
+    <div class="pseudo" id="pseudo"></div>
+    <h3 style="margin-top:14px">Call stack</h3>
+    <div class="callstack" id="cs"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const FIB_LINES = [
+  'function fib(n):',
+  '  if n <= 1:',
+  '    return n',
+  '  return fib(n-1) + fib(n-2)',
+];
+const HANOI_LINES = [
+  'function hanoi(n, src, dst, aux):',
+  '  if n == 0: return',
+  '  hanoi(n-1, src, aux, dst)',
+  '  move disk n: src -> dst',
+  '  hanoi(n-1, aux, dst, src)',
+];
+
+let mode='fib', N=5;
+let nodes=[], edges=[];
+let steps=[], idx=0;
+let calls=0, returns=0, maxDepth=0;
+let callStack=[];
+let active=null;
+
+function buildFib(n){
+  nodes=[]; edges=[]; steps=[]; let id=0;
+  function rec(v,parent,depth){
+    const me={id:id++,label:`fib(${v})`,depth,val:null,parent,expanded:false,returned:false};
+    nodes.push(me);
+    if(parent!==-1) edges.push({from:parent,to:me.id});
+    steps.push({type:'call',node:me.id,line:0,depth});
+    if(v<=1){
+      steps.push({type:'base',node:me.id,line:1,val:v});
+      steps.push({type:'return',node:me.id,line:2,val:v});
+      me.val=v;
+      return v;
+    }
+    steps.push({type:'expand',node:me.id,line:3});
+    const a=rec(v-1,me.id,depth+1);
+    const b=rec(v-2,me.id,depth+1);
+    me.val=a+b;
+    steps.push({type:'return',node:me.id,line:3,val:me.val});
+    return me.val;
+  }
+  rec(n,-1,0);
+}
+
+function buildHanoi(n){
+  nodes=[]; edges=[]; steps=[]; let id=0;
+  function rec(d,src,dst,aux,parent,depth){
+    const me={id:id++,label:`H(${d},${src}→${dst})`,depth,val:null,parent,returned:false};
+    nodes.push(me);
+    if(parent!==-1) edges.push({from:parent,to:me.id});
+    steps.push({type:'call',node:me.id,line:0,depth});
+    if(d===0){
+      steps.push({type:'base',node:me.id,line:1,val:0});
+      steps.push({type:'return',node:me.id,line:1,val:0});
+      me.val=0;
+      return 0;
+    }
+    steps.push({type:'expand',node:me.id,line:2});
+    const a=rec(d-1,src,aux,dst,me.id,depth+1);
+    steps.push({type:'move',node:me.id,line:3,msg:`move ${d}: ${src}→${dst}`});
+    steps.push({type:'expand',node:me.id,line:4});
+    const b=rec(d-1,aux,dst,src,me.id,depth+1);
+    me.val=a+1+b;
+    steps.push({type:'return',node:me.id,line:4,val:me.val});
+    return me.val;
+  }
+  rec(n,'A','C','B',-1,0);
+}
+
+let nodeStateById = {};
+let lastMoveMsg = '';
+
+function reset(){
+  mode = document.getElementById('mode').value;
+  N = parseInt(document.getElementById('n').value,10);
+  if(mode==='fib'){ N = Math.min(N,10); buildFib(N); }
+  else { N = Math.min(N,6); buildHanoi(N); }
+  idx=0; calls=0; returns=0; maxDepth=0;
+  callStack=[]; active=null; lastMoveMsg='';
+  nodeStateById={};
+  for(const nd of nodes) nodeStateById[nd.id] = {revealed:false,returned:false,val:null};
+  render();
+}
+
+function step(){
+  if(idx>=steps.length) return false;
+  const s = steps[idx++];
+  const ns = nodeStateById[s.node];
+  active = s;
+  if(s.type==='call'){
+    ns.revealed=true;
+    callStack.push(s.node);
+    calls++;
+    if(s.depth>maxDepth) maxDepth=s.depth;
+  } else if(s.type==='base'){
+    ns.val=s.val;
+  } else if(s.type==='expand'){
+    // nothing visual on this step except line highlight
+  } else if(s.type==='return'){
+    ns.returned=true;
+    ns.val=s.val;
+    if(callStack[callStack.length-1]===s.node) callStack.pop();
+    returns++;
+  } else if(s.type==='move'){
+    lastMoveMsg = s.msg;
+  }
+  render();
+  return idx<steps.length;
+}
+
+function layoutTree(){
+  // assign x by in-order leaf positions
+  const children={};
+  for(const n of nodes) children[n.id]=[];
+  for(const e of edges) children[e.from].push(e.to);
+  let leafX = 0;
+  const xs={};
+  function rec(id){
+    const ch = children[id];
+    if(!ch.length){ xs[id]=leafX++; return; }
+    for(const c of ch) rec(c);
+    xs[id] = (xs[ch[0]] + xs[ch[ch.length-1]])/2;
+  }
+  if(nodes.length) rec(nodes[0].id);
+  return xs;
+}
+
+function render(){
+  const cv = document.getElementById('cv');
+  const W = cv.clientWidth; cv.width = W;
+  cv.height = 460;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,W,460);
+
+  const xs = layoutTree();
+  // leaf count
+  const leaves = Object.values(xs);
+  const maxX = leaves.length ? Math.max(...leaves) : 0;
+  const colW = maxX>0 ? (W-60)/(maxX) : W;
+  const yStep = Math.min(60, (460-40)/(maxDepth+2));
+
+  const pos={};
+  for(const n of nodes){
+    pos[n.id] = {x:30 + xs[n.id]*colW, y: 30 + n.depth*yStep};
+  }
+
+  // edges only for revealed children
+  ctx.strokeStyle='#30363d'; ctx.lineWidth=1.5;
+  for(const e of edges){
+    if(!nodeStateById[e.to].revealed) continue;
+    const a=pos[e.from], b=pos[e.to];
+    ctx.beginPath(); ctx.moveTo(a.x,a.y); ctx.lineTo(b.x,b.y); ctx.stroke();
+  }
+  ctx.lineWidth=1;
+
+  // nodes
+  for(const n of nodes){
+    const ns = nodeStateById[n.id];
+    if(!ns.revealed) continue;
+    const p = pos[n.id];
+    const r = 22;
+    let bg='#22272e', stroke='#30363d';
+    if(ns.returned){ bg='#1a3322'; stroke='#3fb950'; }
+    if(active && active.node===n.id){
+      if(active.type==='base') stroke='#d29922';
+      else stroke='#58a6ff';
+    }
+    ctx.fillStyle=bg;
+    ctx.beginPath(); ctx.arc(p.x,p.y,r,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle=stroke; ctx.lineWidth = (active&&active.node===n.id)?2.5:1.5;
+    ctx.stroke();
+    ctx.fillStyle='#c9d1d9'; ctx.font='bold 11px monospace';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText(n.label, p.x, p.y-3);
+    ctx.fillStyle = ns.returned ? '#3fb950' : '#8b949e';
+    ctx.font='10px monospace';
+    ctx.fillText(ns.val!==null?`=${ns.val}`:'…', p.x, p.y+10);
+  }
+  ctx.lineWidth=1;
+
+  // pseudo
+  const lines = mode==='fib' ? FIB_LINES : HANOI_LINES;
+  document.getElementById('pseudo').innerHTML =
+    lines.map((s,i)=>`<div class="line ${active&&i===active.line?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+
+  // stack
+  const cs = document.getElementById('cs');
+  if(!callStack.length) cs.innerHTML = '<span style="color:var(--muted)">stack empty</span>';
+  else cs.innerHTML = callStack.map((id,i)=>`<div class="frame ${i===callStack.length-1?'top':''}">${nodes[id].label}</div>`).reverse().join('');
+
+  // stats
+  const rootVal = nodes.length ? nodeStateById[nodes[0].id].val : null;
+  const lvl = callStack.length;
+  document.getElementById('stats').innerHTML = `
+    <div><span class="lbl">algorithm</span> ${mode==='fib'?'fib':'hanoi'} · n=${N}</div>
+    <div><span class="lbl">calls</span> ${calls} (you'd expect 2^n for naive fib)</div>
+    <div><span class="lbl">returns</span> ${returns}</div>
+    <div><span class="lbl">max depth</span> ${maxDepth}</div>
+    <div><span class="lbl">current depth</span> ${lvl}</div>
+    ${lastMoveMsg?`<div><span class="lbl">last move</span> ${lastMoveMsg}</div>`:''}
+    ${rootVal!==null?`<div><span class="lbl">result</span> <span style="color:var(--green)">${rootVal}</span></div>`:''}`;
+}
+
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const sp = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(40, 600 - sp*5);
+  timer = setInterval(()=>{ if(!step()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+document.getElementById('apply').onclick = ()=>{ pause(); reset(); };
+document.getElementById('mode').onchange = ()=>{ pause(); reset(); };
+document.getElementById('step').onclick = ()=>{ pause(); step(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); reset(); };
+const sp=document.getElementById('speed'), sv=document.getElementById('speedVal');
+sp.oninput=()=>{ sv.textContent=sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent=sp.value+'%';
+
+reset();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>

@@ -4,18 +4,18 @@ Topics covered this week: network flow, max-flow / min-cut, bipartite matching, 
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Maximum Number of Accepted Invitations | Medium | Bipartite matching | https://leetcode.com/problems/maximum-number-of-accepted-invitations/ |
-| 2 | Minimum Number of Days to Disconnect Island | Hard | Min-cut intuition | https://leetcode.com/problems/minimum-number-of-days-to-disconnect-island/ |
-| 3 | Escape a Large Maze | Hard | BFS/flow bounded | https://leetcode.com/problems/escape-a-large-maze/ |
-| 4 | Maximum Students Taking Exam | Hard | Bipartite matching / DP | https://leetcode.com/problems/maximum-students-taking-exam/ |
-| 5 | Minimum Swaps to Make Sequences Increasing | Hard | DP / matching intuition | https://leetcode.com/problems/minimum-swaps-to-make-sequences-increasing/ |
-| 6 | Campus Bikes II | Medium | Assignment problem | https://leetcode.com/problems/campus-bikes-ii/ |
-| 7 | Optimal Account Balancing | Hard | Flow-like balancing | https://leetcode.com/problems/optimal-account-balancing/ |
-| 8 | Number of Operations to Make Network Connected | Medium | Connectivity (related) | https://leetcode.com/problems/number-of-operations-to-make-network-connected/ |
-| 9 | Swim in Rising Water | Hard | Max-flow style search | https://leetcode.com/problems/swim-in-rising-water/ |
-| 10 | Number of Closed Islands | Medium | Flood-fill (preview to min cut) | https://leetcode.com/problems/number-of-closed-islands/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Maximum Number of Accepted Invitations | Medium | Bipartite matching | https://leetcode.com/problems/maximum-number-of-accepted-invitations/ | Common |
+| 2 | Minimum Number of Days to Disconnect Island | Hard | Min-cut intuition | https://leetcode.com/problems/minimum-number-of-days-to-disconnect-island/ | Common |
+| 3 | Escape a Large Maze | Hard | BFS/flow bounded | https://leetcode.com/problems/escape-a-large-maze/ | Google, Common |
+| 4 | Maximum Students Taking Exam | Hard | Bipartite matching / DP | https://leetcode.com/problems/maximum-students-taking-exam/ | Common |
+| 5 | Minimum Swaps to Make Sequences Increasing | Hard | DP / matching intuition | https://leetcode.com/problems/minimum-swaps-to-make-sequences-increasing/ | Common |
+| 6 | Campus Bikes II | Medium | Assignment problem | https://leetcode.com/problems/campus-bikes-ii/ | Common |
+| 7 | Optimal Account Balancing | Hard | Flow-like balancing | https://leetcode.com/problems/optimal-account-balancing/ | Common |
+| 8 | Number of Operations to Make Network Connected | Medium | Connectivity (related) | https://leetcode.com/problems/number-of-operations-to-make-network-connected/ | Common |
+| 9 | Swim in Rising Water | Hard | Max-flow style search | https://leetcode.com/problems/swim-in-rising-water/ | Amazon, Google, Common |
+| 10 | Number of Closed Islands | Medium | Flood-fill (preview to min cut) | https://leetcode.com/problems/number-of-closed-islands/ | Common |
 
 ## Stretch Problems
 

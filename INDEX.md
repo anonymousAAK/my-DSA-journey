@@ -18,7 +18,8 @@ Every doc in this repo, grouped by purpose. Skim it once to know what exists; co
 - [`PROBLEM_SOLVING.md`](PROBLEM_SOLVING.md) — How to think like a problem solver.
 - [`docs/SOLUTION_JOURNAL.md`](docs/SOLUTION_JOURNAL.md) — Template for journaling every problem you solve.
 - [`docs/estimation.md`](docs/estimation.md) — 25 drills for complexity / hardware-budget intuition.
-- [`docs/REVIEW_SCHEDULE.md`](docs/REVIEW_SCHEDULE.md) — Spaced-repetition + interleaving plan.
+- [`docs/REVIEW_SCHEDULE.md`](docs/REVIEW_SCHEDULE.md) — Spaced-repetition + interleaving plan (hand-curated revisit table).
+- [`docs/SPACED_REPETITION.md`](docs/SPACED_REPETITION.md) — FSRS-driven adaptive scheduler powering `journey review`.
 - [`docs/MASTERY.md`](docs/MASTERY.md) — Why mastery quizzes matter and how the CLI works.
 
 ---
@@ -40,6 +41,7 @@ Every doc in this repo, grouped by purpose. Skim it once to know what exists; co
 
 - [`case_studies/`](case_studies/) — 6 phase walkthroughs from messy problems to algorithms.
 - [`case_studies/real_world/`](case_studies/real_world/) — 15 essays mapping algorithms to real products.
+- [`case_studies/real_bugs/`](case_studies/real_bugs/) — 15 short case studies of real OSS bugs whose root cause was a DSA principle from this curriculum.
 - [`mock_interviews/`](mock_interviews/) — 8 annotated interview transcripts, including one bombed interview as a negative example.
 
 ---
@@ -68,6 +70,13 @@ Every doc in this repo, grouped by purpose. Skim it once to know what exists; co
 - [`scripts/build_all.sh`](scripts/build_all.sh) — local equivalent of CI smoke test.
 - [`scripts/journey`](scripts/journey) — mastery quiz CLI; `progress` shows dashboard; `progress --html` opens visual dashboard.
 - [`scripts/coverage_report.py`](scripts/coverage_report.py) — regenerates `tests/COVERAGE.md`.
+- [`scripts/ask`](scripts/ask) — AI tutor CLI; ask natural-language questions, get answers retrieved from this repo (offline by default, optional `--llm` mode). See [`docs/AI_TUTOR.md`](docs/AI_TUTOR.md).
+
+---
+
+## 🎨 Visualizations
+
+- [`viz/index.html`](viz/index.html) — interactive algorithm visualizations (sorting, binary search, BFS/DFS, Dijkstra, segment tree, recursion tree, DP table). Vanilla JS, no build step — open in any browser.
 
 ---
 

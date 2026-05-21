@@ -4,18 +4,18 @@ Topics covered this week: heaps, priority queues, heapify, top-K patterns, two-h
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Kth Largest Element in an Array | Medium | Min-heap of size k | https://leetcode.com/problems/kth-largest-element-in-an-array/ |
-| 2 | Kth Largest Element in a Stream | Easy | Streaming heap | https://leetcode.com/problems/kth-largest-element-in-a-stream/ |
-| 3 | Top K Frequent Elements | Medium | Heap on counts | https://leetcode.com/problems/top-k-frequent-elements/ |
-| 4 | Top K Frequent Words | Medium | Heap with tiebreak | https://leetcode.com/problems/top-k-frequent-words/ |
-| 5 | Find Median from Data Stream | Hard | Two heaps | https://leetcode.com/problems/find-median-from-data-stream/ |
-| 6 | Merge k Sorted Lists | Hard | Heap of heads | https://leetcode.com/problems/merge-k-sorted-lists/ |
-| 7 | Task Scheduler | Medium | Greedy + heap | https://leetcode.com/problems/task-scheduler/ |
-| 8 | K Closest Points to Origin | Medium | Max-heap of size k | https://leetcode.com/problems/k-closest-points-to-origin/ |
-| 9 | Last Stone Weight | Easy | Max-heap simulation | https://leetcode.com/problems/last-stone-weight/ |
-| 10 | Reorganize String | Medium | Greedy via heap | https://leetcode.com/problems/reorganize-string/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Kth Largest Element in an Array | Medium | Min-heap of size k | https://leetcode.com/problems/kth-largest-element-in-an-array/ | Amazon, Meta, LinkedIn, Google |
+| 2 | Kth Largest Element in a Stream | Easy | Streaming heap | https://leetcode.com/problems/kth-largest-element-in-a-stream/ | Amazon, Apple, Common |
+| 3 | Top K Frequent Elements | Medium | Heap on counts | https://leetcode.com/problems/top-k-frequent-elements/ | Amazon, Meta, Microsoft, Apple |
+| 4 | Top K Frequent Words | Medium | Heap with tiebreak | https://leetcode.com/problems/top-k-frequent-words/ | Amazon, Bloomberg, Uber |
+| 5 | Find Median from Data Stream | Hard | Two heaps | https://leetcode.com/problems/find-median-from-data-stream/ | Amazon, Google, Meta, Microsoft |
+| 6 | Merge k Sorted Lists | Hard | Heap of heads | https://leetcode.com/problems/merge-k-sorted-lists/ | Amazon, Meta, Microsoft, Apple, Google |
+| 7 | Task Scheduler | Medium | Greedy + heap | https://leetcode.com/problems/task-scheduler/ | Amazon, Meta, Microsoft, Bloomberg |
+| 8 | K Closest Points to Origin | Medium | Max-heap of size k | https://leetcode.com/problems/k-closest-points-to-origin/ | Meta, Amazon, LinkedIn, Microsoft |
+| 9 | Last Stone Weight | Easy | Max-heap simulation | https://leetcode.com/problems/last-stone-weight/ | Amazon, Apple, Common |
+| 10 | Reorganize String | Medium | Greedy via heap | https://leetcode.com/problems/reorganize-string/ | Amazon, Meta, Google |
 
 ## Stretch Problems
 

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DP Table Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--gradient:linear-gradient(135deg,#58a6ff,#3fb950)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem;display:inline-block;margin-bottom:14px}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input,.controls select{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.controls input[type=text]{font-family:monospace}
+.controls input[type=number]{width:60px}
+.layout{display:grid;grid-template-columns:1fr 380px;gap:16px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+canvas{display:block;width:100%;background:#0d1117;border:1px solid var(--border);border-radius:6px}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.8rem;line-height:1.55;background:#0d1117;border-radius:6px;padding:10px}
+.pseudo .line{padding:2px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.stats{margin-top:10px;font-size:.85rem;color:var(--muted);font-family:monospace}
+.stats .lbl{color:var(--green);display:inline-block;min-width:110px}
+.recurrence{margin-top:14px;padding:10px;border-radius:6px;background:rgba(88,166,255,.1);border:1px solid var(--blue);color:var(--text);font-family:monospace;font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; All visualizations</a>
+<div class="top"><h1>DP Table — Fill Cell by Cell</h1></div>
+
+<div class="controls" id="cKnap">
+  <label>Problem: <select id="mode">
+    <option value="knap" selected>0/1 Knapsack</option>
+    <option value="lcs">LCS</option>
+  </select></label>
+  <span id="knapInputs">
+    <label>Weights: <input type="text" id="kW" value="2,3,4,5" style="width:120px"></label>
+    <label>Values: <input type="text" id="kV" value="3,4,5,6" style="width:120px"></label>
+    <label>Capacity: <input type="number" id="kC" value="8"></label>
+  </span>
+  <span id="lcsInputs" style="display:none">
+    <label>A: <input type="text" id="lA" value="AGCAT" style="width:120px"></label>
+    <label>B: <input type="text" id="lB" value="GAC" style="width:120px"></label>
+  </span>
+  <button id="apply">Run</button>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="60"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Table</h3>
+    <canvas id="cv" height="440"></canvas>
+    <div class="stats" id="stats"></div>
+  </div>
+  <div class="panel">
+    <h3>Pseudocode</h3>
+    <div class="pseudo" id="pseudo"></div>
+    <div class="recurrence" id="recur"></div>
+    <div class="stats" style="margin-top:12px">
+      <div>Time: <span style="color:var(--text)" id="cxT">—</span></div>
+      <div>Space: <span style="color:var(--text)" id="cxS">—</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const KNAP_LINES = [
+  'function knapsack(W[], V[], C):',
+  '  n = len(W); dp = [[0]*(C+1) for _ in 0..n]',
+  '  for i in 1..n:',
+  '    for c in 0..C:',
+  '      dp[i][c] = dp[i-1][c]                # skip',
+  '      if W[i-1] <= c:',
+  '        dp[i][c] = max(dp[i][c],            # take',
+  '                       V[i-1] + dp[i-1][c - W[i-1]])',
+  '  return dp[n][C]',
+];
+const LCS_LINES = [
+  'function lcs(A, B):',
+  '  m = |A|; n = |B|; dp = (m+1) x (n+1) zeros',
+  '  for i in 1..m:',
+  '    for j in 1..n:',
+  '      if A[i-1] == B[j-1]:',
+  '        dp[i][j] = dp[i-1][j-1] + 1',
+  '      else:',
+  '        dp[i][j] = max(dp[i-1][j], dp[i][j-1])',
+  '  return dp[m][n]',
+];
+
+let mode='knap';
+let rows=0, cols=0;
+let dp=null;
+let rowLabels=[], colLabels=[];
+let steps=[], idx=0, current=null;
+let cmps=0;
+
+function buildKnap(){
+  const W = document.getElementById('kW').value.split(/[,\s]+/).map(Number).filter(x=>!isNaN(x));
+  const V = document.getElementById('kV').value.split(/[,\s]+/).map(Number).filter(x=>!isNaN(x));
+  const C = parseInt(document.getElementById('kC').value,10);
+  const n = Math.min(W.length, V.length);
+  rows = n+1; cols = C+1;
+  dp = Array.from({length:rows},()=>Array(cols).fill(0));
+  rowLabels = ['—'].concat(W.slice(0,n).map((w,i)=>`i=${i+1} (w=${w},v=${V[i]})`));
+  colLabels = Array.from({length:cols},(_,c)=>`c=${c}`);
+  steps=[]; cmps=0;
+  for(let i=1;i<=n;i++){
+    for(let c=0;c<=C;c++){
+      const skip = dp[i-1][c];
+      let best = skip;
+      let from = [[i-1,c]];
+      if(W[i-1]<=c){
+        const take = V[i-1] + dp[i-1][c-W[i-1]];
+        if(take>skip){ best=take; from=[[i-1,c-W[i-1]]]; }
+      }
+      dp[i][c]=best;
+      steps.push({i,j:c,val:best,from,line: W[i-1]<=c ? 7 : 4});
+    }
+  }
+  document.getElementById('cxT').textContent = `O(n·C) = O(${n}·${C}) = ${n*C}`;
+  document.getElementById('cxS').textContent = `O(n·C) (or O(C) with rolling)`;
+  document.getElementById('recur').innerHTML = `dp[i][c] = max(dp[i-1][c], V[i] + dp[i-1][c-W[i]] if W[i]≤c)`;
+}
+
+function buildLCS(){
+  const A = document.getElementById('lA').value;
+  const B = document.getElementById('lB').value;
+  const m=A.length, n=B.length;
+  rows=m+1; cols=n+1;
+  dp = Array.from({length:rows},()=>Array(cols).fill(0));
+  rowLabels=['—'].concat(A.split('').map((c,i)=>`A[${i+1}]=${c}`));
+  colLabels=['—'].concat(B.split('').map((c,j)=>`B[${j+1}]=${c}`));
+  steps=[]; cmps=0;
+  for(let i=1;i<=m;i++){
+    for(let j=1;j<=n;j++){
+      let val, from, line;
+      if(A[i-1]===B[j-1]){ val=dp[i-1][j-1]+1; from=[[i-1,j-1]]; line=6; }
+      else { val=Math.max(dp[i-1][j],dp[i][j-1]); from=[[i-1,j],[i,j-1]]; line=8; }
+      dp[i][j]=val;
+      steps.push({i,j,val,from,line,match: A[i-1]===B[j-1]});
+    }
+  }
+  document.getElementById('cxT').textContent = `O(m·n) = O(${m}·${n}) = ${m*n}`;
+  document.getElementById('cxS').textContent = `O(m·n) (or O(min(m,n)) with rolling)`;
+  document.getElementById('recur').innerHTML = `dp[i][j] = 1 + dp[i-1][j-1] if A[i]==B[j]<br>          else max(dp[i-1][j], dp[i][j-1])`;
+}
+
+function reset(){
+  mode = document.getElementById('mode').value;
+  document.getElementById('knapInputs').style.display = mode==='knap'?'contents':'none';
+  document.getElementById('lcsInputs').style.display = mode==='lcs'?'contents':'none';
+  if(mode==='knap') buildKnap(); else buildLCS();
+  // initial dp values reset (we already filled it during planning; reset to zeros for animation)
+  const filled = Array.from({length:rows},()=>Array(cols).fill(null));
+  // base row/col are 0
+  for(let c=0;c<cols;c++) filled[0][c]=0;
+  for(let r=0;r<rows;r++) filled[r][0]=0;
+  shown = filled;
+  idx=0; current=null; cmps=0;
+  render();
+}
+
+let shown=null;
+
+function step(){
+  if(idx>=steps.length) return false;
+  const s = steps[idx++];
+  shown[s.i][s.j] = s.val;
+  current = s; cmps++;
+  render();
+  return idx<steps.length;
+}
+
+function render(){
+  const cv = document.getElementById('cv');
+  const W = cv.clientWidth; cv.width = W;
+  cv.height = 440;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,W,440);
+
+  const padL = 110, padT = 36;
+  const maxCellW = Math.max(28, Math.floor((W-padL-20)/cols));
+  const cellW = Math.min(maxCellW, 60);
+  const cellH = Math.max(26, Math.min(40, Math.floor((440-padT-20)/rows)));
+
+  // headers
+  ctx.fillStyle='#58a6ff'; ctx.font='bold 11px monospace';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  for(let j=0;j<cols;j++){
+    const x = padL + j*cellW + cellW/2;
+    ctx.fillText(colLabels[j] || j, x, padT-12);
+  }
+  ctx.textAlign='right';
+  for(let i=0;i<rows;i++){
+    const y = padT + i*cellH + cellH/2;
+    ctx.fillText(rowLabels[i] || i, padL-6, y);
+  }
+
+  // cells
+  ctx.textAlign='center';
+  for(let i=0;i<rows;i++){
+    for(let j=0;j<cols;j++){
+      const x = padL + j*cellW;
+      const y = padT + i*cellH;
+      const val = shown[i][j];
+      let bg = '#22272e', fg='#c9d1d9';
+      if(val===null){ bg='#161b22'; fg='#3a4150'; }
+      if(i===0||j===0){ bg='#1a1e24'; }
+      ctx.fillStyle=bg;
+      ctx.fillRect(x+1,y+1,cellW-2,cellH-2);
+      ctx.strokeStyle='#30363d';
+      ctx.strokeRect(x+1,y+1,cellW-2,cellH-2);
+      if(val!==null){
+        ctx.fillStyle=fg;
+        ctx.font='bold 12px monospace';
+        ctx.fillText(val, x+cellW/2, y+cellH/2);
+      }
+    }
+  }
+
+  // current cell + dependency arrows
+  if(current){
+    const x = padL + current.j*cellW;
+    const y = padT + current.i*cellH;
+    ctx.strokeStyle='#3fb950'; ctx.lineWidth=2.5;
+    ctx.strokeRect(x+1,y+1,cellW-2,cellH-2);
+    ctx.lineWidth=1;
+    // dependencies
+    ctx.strokeStyle='#d29922';
+    ctx.fillStyle='#d29922';
+    ctx.lineWidth=1.5;
+    for(const [fi,fj] of current.from){
+      const fx = padL + fj*cellW + cellW/2;
+      const fy = padT + fi*cellH + cellH/2;
+      const tx = x + cellW/2, ty = y + cellH/2;
+      ctx.beginPath();
+      ctx.moveTo(fx,fy); ctx.lineTo(tx,ty);
+      ctx.stroke();
+      // arrowhead
+      const ang = Math.atan2(ty-fy, tx-fx);
+      const ahx = tx - Math.cos(ang)*8, ahy = ty - Math.sin(ang)*8;
+      ctx.beginPath();
+      ctx.moveTo(tx,ty);
+      ctx.lineTo(ahx - Math.sin(ang)*4, ahy + Math.cos(ang)*4);
+      ctx.lineTo(ahx + Math.sin(ang)*4, ahy - Math.cos(ang)*4);
+      ctx.closePath();
+      ctx.fill();
+    }
+    ctx.lineWidth=1;
+  }
+
+  // pseudo
+  const lines = mode==='knap' ? KNAP_LINES : LCS_LINES;
+  document.getElementById('pseudo').innerHTML =
+    lines.map((s,i)=>`<div class="line ${current&&i===current.line?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+
+  // stats
+  const final = current && idx>=steps.length ? shown[rows-1][cols-1] : null;
+  document.getElementById('stats').innerHTML = `
+    <div><span class="lbl">cells filled</span> ${idx}/${steps.length}</div>
+    <div><span class="lbl">current</span> ${current?`dp[${current.i}][${current.j}] = ${current.val}`:'—'}</div>
+    ${mode==='lcs' && current?`<div><span class="lbl">match?</span> ${current.match?'YES (took diagonal +1)':'no (took max of left/up)'}</div>`:''}
+    <div><span class="lbl">answer so far</span> ${shown[rows-1][cols-1] ?? '—'}</div>`;
+}
+
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const sp = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(30, 500 - sp*4);
+  timer = setInterval(()=>{ if(!step()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+document.getElementById('apply').onclick = ()=>{ pause(); reset(); };
+document.getElementById('mode').onchange = ()=>{ pause(); reset(); };
+document.getElementById('step').onclick = ()=>{ pause(); step(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); reset(); };
+const sp=document.getElementById('speed'), sv=document.getElementById('speedVal');
+sp.oninput=()=>{ sv.textContent=sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent=sp.value+'%';
+
+reset();
+window.addEventListener('resize', render);
+</script>
+</body>
+</html>
