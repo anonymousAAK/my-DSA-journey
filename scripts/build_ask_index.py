@@ -53,8 +53,17 @@ def tokenize(text: str) -> list[str]:
 
 
 def iter_markdown_files(root: Path) -> Iterable[Path]:
-    """Yield .md files under root, skipping vendor/build/hidden directories."""
-    skip_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "site", ".idea", ".vscode"}
+    """Yield .md files under root, skipping vendor/build/hidden directories.
+
+    Translations are EXCLUDED from the default index because rare-token (Hindi /
+    Mandarin / Spanish) chunks dominate TF-IDF rankings when the query is in
+    English, surfacing translated chunks above the canonical English content.
+    Pass include_translations=True via JOURNEY_ASK_INCLUDE_TRANSLATIONS=1 to
+    include them.
+    """
+    skip_dirs = {".git", "node_modules", "__pycache__", ".venv", "venv", "site", "site_src", ".idea", ".vscode"}
+    if os.environ.get("JOURNEY_ASK_INCLUDE_TRANSLATIONS", "0") != "1":
+        skip_dirs.add("translations")
     for dirpath, dirnames, filenames in os.walk(root):
         # prune in-place
         dirnames[:] = [d for d in dirnames if d not in skip_dirs and not d.startswith(".")]

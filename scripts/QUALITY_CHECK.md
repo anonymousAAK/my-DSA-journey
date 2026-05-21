@@ -264,9 +264,9 @@ LeetCode problem page and replace the link in `problems.md`. If it works,
 the slug probably has a typo (uppercase letter, underscore, trailing
 period) that the script flagged.
 
-### `SMART_QUOTE chars=[L30:’] count=1 file=...`
+### `SMART_QUOTE chars=[L30:'] count=1 file=...`
 
-Open the file at the reported line. Replace `’ ‘ “ ”` with their ASCII
+Open the file at the reported line. Replace `' ' " "` with their ASCII
 equivalents `' '` and `"`. In Java this is mandatory — the compiler will
 reject smart quotes.
 
@@ -339,7 +339,7 @@ Then, based on the issue code:
 | `README_MISSING` / `README_SECTIONS` | A `Week N/README.md` is missing or lacks a required section / topic-index table. | Add the section. |
 | `COUNTERPART_MISSING ... has no <lang> counterpart` | A Java topic has no equivalent file in another language. | Create the missing per-topic file in `python/`, `cpp/`, `rust/`, or `web/`. |
 | `LEETCODE_MALFORMED ... reasons=[...]` | A LeetCode URL in `problems.md` has a malformed slug. | Open the URL; copy the correct slug from the LeetCode problem page; replace the link. |
-| `SMART_QUOTE chars=[L30:’] count=1` | The file contains U+2018/U+2019/U+201C/U+201D. | Replace the curly quotes with ASCII `'` and `"`. |
+| `SMART_QUOTE chars=[L30:'] count=1` | The file contains U+2018/U+2019/U+201C/U+201D. | Replace the curly quotes with ASCII `'` and `"`. |
 | `DOC_MISSING` | A required top-level doc is absent. | Restore the file, or update `REQUIRED_DOCS` in `quality_check.py` if the rename was intentional. |
 
 ### When the failure is a *category*, not a file

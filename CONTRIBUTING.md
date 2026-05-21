@@ -16,7 +16,7 @@ A bug is anything that compiles wrong, prints the wrong output, or breaks when y
 
 - A file fails to compile or run.
 - A function returns the wrong answer for a stated input.
-- A smart quote (`’`, `‘`, `“`, `”`) has leaked into a `.java`/`.py`/`.cpp`/`.rs` file (the Java compiler rejects these outright).
+- A smart quote (`'`, `'`, `"`, `"`) has leaked into a `.java`/`.py`/`.cpp`/`.rs` file (the Java compiler rejects these outright).
 - A header section that the quality lint requires is missing.
 - A test in `tests/` fails on `main`.
 
@@ -254,6 +254,21 @@ If any one of these is red, the PR will not be merged.
 The repo has a pull-request template at `.github/PULL_REQUEST_TEMPLATE.md` that will populate automatically. Fill it out completely — especially the checklist. The single most common failure mode is "I ran the build, I just forgot to run the lint."
 
 ---
+
+## Translations
+
+The repo's foundational mindset docs are available in Hindi, Spanish, and Mandarin under `translations/<lang>/`. To add a new language:
+
+1. Create `translations/<iso-code>/` (e.g. `translations/fr/` for French).
+2. Translate at minimum: `PROBLEM_SOLVING.md`, `QUICKSTART.md`, `docs/diagnostic.md`, and a partial `README.md` (focus on Start Here + Learning Paths sections).
+3. At the top of each translated file, add a one-line note:
+   > This is a translation of the English original. If unclear, refer to [the English version](../../FILE.md).
+4. Preserve code blocks unchanged — code stays English.
+5. Preserve markdown structure (headings, tables, lists).
+6. Update the root `README.md` "🌍 Languages" line to include your locale.
+7. Open a PR. Native-speaker review welcome — most current translations are AI-assisted and would benefit from refinement.
+
+Avoid word-for-word translation of technical terms; use what speakers in the target language actually use (e.g. "binary search" in Hindi is often left transliterated in English mid-sentence).
 
 ## Community
 
