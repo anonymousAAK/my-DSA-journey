@@ -4,20 +4,20 @@ Topics covered this week: backtracking, choice trees, pruning, subsets/permutati
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Subsets | Medium | Power-set backtracking | https://leetcode.com/problems/subsets/ |
-| 2 | Subsets II | Medium | Skip duplicates | https://leetcode.com/problems/subsets-ii/ |
-| 3 | Permutations | Medium | Pick-and-skip | https://leetcode.com/problems/permutations/ |
-| 4 | Permutations II | Medium | Dedupe permutations | https://leetcode.com/problems/permutations-ii/ |
-| 5 | Combinations | Medium | k-of-n choose | https://leetcode.com/problems/combinations/ |
-| 6 | Combination Sum | Medium | Unbounded backtracking | https://leetcode.com/problems/combination-sum/ |
-| 7 | Word Search | Medium | Grid backtracking | https://leetcode.com/problems/word-search/ |
-| 8 | N-Queens | Hard | Constraint backtracking | https://leetcode.com/problems/n-queens/ |
-| 9 | Palindrome Partitioning | Medium | String backtracking | https://leetcode.com/problems/palindrome-partitioning/ |
-| 10 | Letter Combinations of a Phone Number | Medium | Multi-branch recursion | https://leetcode.com/problems/letter-combinations-of-a-phone-number/ |
-| 11 | Restore IP Addresses | Medium | Position partition | https://leetcode.com/problems/restore-ip-addresses/ |
-| 12 | Sudoku Solver | Hard | Full backtracking | https://leetcode.com/problems/sudoku-solver/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Subsets | Medium | Power-set backtracking | https://leetcode.com/problems/subsets/ | Amazon, Meta, Microsoft, Apple |
+| 2 | Subsets II | Medium | Skip duplicates | https://leetcode.com/problems/subsets-ii/ | Amazon, Meta, Bloomberg |
+| 3 | Permutations | Medium | Pick-and-skip | https://leetcode.com/problems/permutations/ | Microsoft, Amazon, Google, Meta |
+| 4 | Permutations II | Medium | Dedupe permutations | https://leetcode.com/problems/permutations-ii/ | Amazon, Microsoft, LinkedIn |
+| 5 | Combinations | Medium | k-of-n choose | https://leetcode.com/problems/combinations/ | Amazon, Google, Common |
+| 6 | Combination Sum | Medium | Unbounded backtracking | https://leetcode.com/problems/combination-sum/ | Amazon, Meta, Microsoft, Uber |
+| 7 | Word Search | Medium | Grid backtracking | https://leetcode.com/problems/word-search/ | Amazon, Meta, Microsoft, Apple |
+| 8 | N-Queens | Hard | Constraint backtracking | https://leetcode.com/problems/n-queens/ | Amazon, Microsoft, Apple, Google |
+| 9 | Palindrome Partitioning | Medium | String backtracking | https://leetcode.com/problems/palindrome-partitioning/ | Amazon, Meta, Bloomberg |
+| 10 | Letter Combinations of a Phone Number | Medium | Multi-branch recursion | https://leetcode.com/problems/letter-combinations-of-a-phone-number/ | Amazon, Meta, Microsoft, Apple |
+| 11 | Restore IP Addresses | Medium | Position partition | https://leetcode.com/problems/restore-ip-addresses/ | Amazon, Microsoft, Common |
+| 12 | Sudoku Solver | Hard | Full backtracking | https://leetcode.com/problems/sudoku-solver/ | Amazon, Microsoft, Apple, Uber |
 
 ## Stretch Problems
 

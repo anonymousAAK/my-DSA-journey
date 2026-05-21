@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Algorithm Visualizations | DSA Journey</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--border:#30363d;
+  --text:#c9d1d9;--muted:#8b949e;
+  --blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;
+  --gradient:linear-gradient(135deg,#58a6ff,#3fb950);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.6;min-height:100vh;padding:40px 20px}
+.wrap{max-width:1100px;margin:0 auto}
+header{text-align:center;margin-bottom:48px}
+header .badge{display:inline-block;background:var(--gradient);color:#fff;font-size:.72rem;font-weight:700;padding:4px 14px;border-radius:20px;text-transform:uppercase;letter-spacing:1px;margin-bottom:14px}
+header h1{font-size:2.4rem;font-weight:800;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:10px}
+header p{color:var(--muted);max-width:640px;margin:0 auto}
+.back{display:inline-block;margin-bottom:20px;color:var(--blue);text-decoration:none;font-size:.9rem}
+.back:hover{color:var(--green)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px;text-decoration:none;color:inherit;transition:transform .15s,border-color .15s,box-shadow .15s;display:block}
+.card:hover{transform:translateY(-2px);border-color:var(--blue);box-shadow:0 6px 22px rgba(88,166,255,.15)}
+.card .thumb{height:120px;border-radius:8px;background:linear-gradient(135deg,#1a1e24,#0d1117);border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:2.4rem;margin-bottom:14px}
+.card h3{font-size:1.1rem;color:var(--blue);margin-bottom:6px}
+.card .meta{font-size:.75rem;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.card p{font-size:.88rem;color:var(--muted);line-height:1.5}
+footer{text-align:center;margin-top:60px;color:var(--muted);font-size:.85rem}
+footer a{color:var(--blue);text-decoration:none}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="../INDEX.md">&larr; Back to repo index</a>
+<header>
+  <span class="badge">Showcase</span>
+  <h1>Algorithm Visualizations</h1>
+  <p>Interactive, framework-free animations of the algorithms covered in this curriculum. Each viz runs in your browser — no install, no dependencies.</p>
+</header>
+
+<div class="grid">
+  <a class="card" href="sorts.html">
+    <div class="thumb">🔀</div>
+    <div class="meta">Week 9 · Sorting</div>
+    <h3>Sorting Algorithms</h3>
+    <p>Bubble, selection, insertion, merge, quick — race them side by side and watch comparisons + swaps.</p>
+  </a>
+  <a class="card" href="binary_search.html">
+    <div class="thumb">🎯</div>
+    <div class="meta">Week 8 · Search</div>
+    <h3>Binary Search</h3>
+    <p>Watch lo / mid / hi pointers converge on a target in a sorted array of 20 elements.</p>
+  </a>
+  <a class="card" href="bfs_dfs.html">
+    <div class="thumb">🕸️</div>
+    <div class="meta">Week 17 · Graphs</div>
+    <h3>BFS vs DFS</h3>
+    <p>Grid graph traversal — see the BFS frontier expand in waves vs DFS plunging down stacks.</p>
+  </a>
+  <a class="card" href="dijkstra.html">
+    <div class="thumb">📍</div>
+    <div class="meta">Week 22 · Shortest paths</div>
+    <h3>Dijkstra's Algorithm</h3>
+    <p>Weighted graph, edge relaxation, distance updates, and the priority queue's evolving contents.</p>
+  </a>
+  <a class="card" href="segment_tree.html">
+    <div class="thumb">🌳</div>
+    <div class="meta">Week 21 · Trees</div>
+    <h3>Segment Tree</h3>
+    <p>Array becomes a tree; range-sum query lights up only the nodes that contribute.</p>
+  </a>
+  <a class="card" href="recursion_tree.html">
+    <div class="thumb">🌿</div>
+    <div class="meta">Week 5 · Recursion</div>
+    <h3>Recursion Tree</h3>
+    <p>Watch fib(n) or Tower of Hanoi unfold as a tree, see why memoization is non-negotiable.</p>
+  </a>
+  <a class="card" href="dp_table.html">
+    <div class="thumb">🧮</div>
+    <div class="meta">Week 18 · DP</div>
+    <h3>DP Table</h3>
+    <p>Knapsack and LCS tables fill in cell by cell — watch the recurrence draw its own answer.</p>
+  </a>
+</div>
+
+<footer>
+  <p>Self-contained · vanilla JS · no build · open any file directly · <a href="README.md">how to add new visualizations</a></p>
+</footer>
+</div>
+</body>
+</html>

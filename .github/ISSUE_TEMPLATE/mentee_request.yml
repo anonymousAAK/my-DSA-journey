@@ -1,0 +1,110 @@
+name: Mentee request
+description: Request mentorship while working through the curriculum.
+title: "[mentee] "
+labels: ["mentorship", "mentee-request"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for reaching out. Anyone working through the curriculum can request mentorship — no minimum experience required. Please read [docs/MENTORSHIP.md](../blob/main/docs/MENTORSHIP.md) first.
+
+        A pairing is typically 30 minutes per week for 4–8 weeks, focused on debugging your current capstone or an unfamiliar topic.
+
+  - type: input
+    id: handle
+    attributes:
+      label: Name or GitHub handle
+      description: How a mentor should address you.
+      placeholder: e.g. @newgrad or "Sam"
+    validations:
+      required: true
+
+  - type: dropdown
+    id: current_week
+    attributes:
+      label: Current week
+      description: The week you're actively working on (or stuck on).
+      options:
+        - "Week 1"
+        - "Week 2"
+        - "Week 3"
+        - "Week 4"
+        - "Week 5"
+        - "Week 6"
+        - "Week 7"
+        - "Week 8"
+        - "Week 9"
+        - "Week 10"
+        - "Week 11"
+        - "Week 12"
+        - "Week 13"
+        - "Week 14"
+        - "Week 15"
+        - "Week 16"
+        - "Week 17"
+        - "Week 18"
+        - "Week 19"
+        - "Week 20"
+        - "Week 21"
+        - "Week 22"
+        - "Week 23"
+        - "Week 24"
+        - "Week 25"
+        - "Week 26"
+        - "Week 27"
+        - "Week 28"
+        - "Week 29"
+        - "Week 30"
+    validations:
+      required: true
+
+  - type: textarea
+    id: stuck_on
+    attributes:
+      label: What are you stuck on?
+      description: Be specific. "I don't get DP" is hard to mentor; "I can write the recurrence for 0/1 knapsack but can't see why the iteration order matters" is mentorable.
+      placeholder: |
+        I'm trying to implement Dijkstra with a fibonacci heap and can't reason about why the decrease-key operation is amortized O(1). My current code works but is O((V+E)log V) and I want to understand the tighter bound.
+    validations:
+      required: true
+
+  - type: input
+    id: timezone
+    attributes:
+      label: Preferred timezone / hours
+      description: Helps match you with a mentor who can sync up.
+      placeholder: e.g. UTC+5:30 (India), evenings 19:00–22:00 IST
+    validations:
+      required: true
+
+  - type: dropdown
+    id: format
+    attributes:
+      label: Preferred format
+      options:
+        - "Sync — video / voice call"
+        - "Sync — screen share + voice"
+        - "Async — GitHub Discussions thread"
+        - "Async — Discord DMs"
+        - "No preference"
+    validations:
+      required: true
+
+  - type: textarea
+    id: goal
+    attributes:
+      label: What does success look like in 4 weeks?
+      description: One concrete deliverable. "Finish my Week 14 capstone" or "ship two working Week 17 graph implementations and pass the harness".
+      placeholder: Ship a working segment tree with lazy propagation that passes the harness's range-update test cases.
+    validations:
+      required: true
+
+  - type: checkboxes
+    id: agreements
+    attributes:
+      label: Confirmations
+      options:
+        - label: I have read `docs/MENTORSHIP.md` and understand the mentor's role is to review and challenge my work, not to write it for me.
+          required: true
+        - label: I will close this issue with "matched with @X" once a pairing is established.
+          required: true

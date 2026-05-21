@@ -1,0 +1,101 @@
+# sync_badge.yml.example
+#
+# Opt-in workflow that keeps a public Gist of shields.io badge JSONs
+# in sync with the progress.json checked into your fork.
+#
+# THIS FILE IS A TEMPLATE — it ends in `.example` on purpose so the
+# main repository's CI doesn't run it.  To use it on your own fork:
+#
+#   1. Copy this file:
+#        cp .github/workflows/sync_badge.yml.example \
+#           .github/workflows/sync_badge.yml
+#
+#   2. Commit a `progress.json` to a branch in your fork (the example
+#      below assumes `progress`).  See docs/PUBLIC_BADGES.md for the
+#      schema — the same file your local `journey` CLI writes to
+#      ~/.journey/progress.json works verbatim.
+#
+#   3. Create a public Gist (one-time):
+#        gh gist create --public ~/.journey/badge.json
+#      Note the Gist ID printed at the end of the URL.
+#
+#   4. Add two repository secrets at
+#      Settings -> Secrets and variables -> Actions:
+#
+#        BADGE_GIST_ID    — the Gist ID from step 3
+#        BADGE_GIST_TOKEN — a personal access token (classic) with the
+#                           "gist" scope, OR a fine-grained token with
+#                           "Gists: Read and write" permission.
+#
+#   5. Push to the `progress` branch.  This workflow regenerates the
+#      badge JSONs and uploads them to the Gist via the GitHub API.
+#
+# Nothing in the main repo will trigger this — that's the point of the
+# `.example` suffix.  Remove `.example` only on your own fork.
+
+name: Sync progress badges to gist
+
+on:
+  push:
+    branches:
+      - progress
+  workflow_dispatch: {}
+
+jobs:
+  sync-badge:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - name: Check out fork
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Generate badge JSON files
+        run: |
+          mkdir -p out
+          python3 scripts/badge_generator.py \
+            --input progress.json \
+            --output-dir out \
+            --quiet
+          ls -la out/
+
+      - name: Upload badges to gist
+        env:
+          GIST_ID: ${{ secrets.BADGE_GIST_ID }}
+          GIST_TOKEN: ${{ secrets.BADGE_GIST_TOKEN }}
+        run: |
+          if [ -z "$GIST_ID" ] || [ -z "$GIST_TOKEN" ]; then
+            echo "::error::BADGE_GIST_ID and BADGE_GIST_TOKEN secrets must be set."
+            exit 1
+          fi
+
+          python3 - <<'PY'
+          import json, os, pathlib, urllib.request
+
+          gist_id = os.environ["GIST_ID"]
+          token   = os.environ["GIST_TOKEN"]
+
+          files = {}
+          for p in sorted(pathlib.Path("out").glob("badge*.json")):
+              files[p.name] = {"content": p.read_text(encoding="utf-8")}
+
+          body = json.dumps({"files": files}).encode("utf-8")
+          req = urllib.request.Request(
+              f"https://api.github.com/gists/{gist_id}",
+              data=body,
+              method="PATCH",
+              headers={
+                  "Authorization": f"Bearer {token}",
+                  "Accept": "application/vnd.github+json",
+                  "X-GitHub-Api-Version": "2022-11-28",
+                  "User-Agent": "dsa-journey-badge-sync",
+              },
+          )
+          with urllib.request.urlopen(req) as resp:
+              print("gist update:", resp.status, resp.reason)
+          PY

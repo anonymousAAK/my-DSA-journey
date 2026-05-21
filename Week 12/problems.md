@@ -4,19 +4,19 @@ Topics covered this week: stacks (array/LL-backed), push/pop/peek, monotonic sta
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Valid Parentheses | Easy | Bracket matching | https://leetcode.com/problems/valid-parentheses/ |
-| 2 | Min Stack | Medium | Auxiliary stack | https://leetcode.com/problems/min-stack/ |
-| 3 | Evaluate Reverse Polish Notation | Medium | Postfix eval | https://leetcode.com/problems/evaluate-reverse-polish-notation/ |
-| 4 | Daily Temperatures | Medium | Monotonic stack | https://leetcode.com/problems/daily-temperatures/ |
-| 5 | Next Greater Element I | Easy | Monotonic stack | https://leetcode.com/problems/next-greater-element-i/ |
-| 6 | Next Greater Element II | Medium | Circular monotonic stack | https://leetcode.com/problems/next-greater-element-ii/ |
-| 7 | Largest Rectangle in Histogram | Hard | Monotonic stack | https://leetcode.com/problems/largest-rectangle-in-histogram/ |
-| 8 | Asteroid Collision | Medium | Stack simulation | https://leetcode.com/problems/asteroid-collision/ |
-| 9 | Decode String | Medium | Stack of contexts | https://leetcode.com/problems/decode-string/ |
-| 10 | Simplify Path | Medium | Stack of tokens | https://leetcode.com/problems/simplify-path/ |
-| 11 | Basic Calculator II | Medium | Stack-based parser | https://leetcode.com/problems/basic-calculator-ii/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Valid Parentheses | Easy | Bracket matching | https://leetcode.com/problems/valid-parentheses/ | Amazon, Meta, Microsoft, Bloomberg |
+| 2 | Min Stack | Medium | Auxiliary stack | https://leetcode.com/problems/min-stack/ | Amazon, Microsoft, Bloomberg, Google |
+| 3 | Evaluate Reverse Polish Notation | Medium | Postfix eval | https://leetcode.com/problems/evaluate-reverse-polish-notation/ | Amazon, LinkedIn, Microsoft |
+| 4 | Daily Temperatures | Medium | Monotonic stack | https://leetcode.com/problems/daily-temperatures/ | Amazon, Meta, Google |
+| 5 | Next Greater Element I | Easy | Monotonic stack | https://leetcode.com/problems/next-greater-element-i/ | Amazon, Bloomberg, Common |
+| 6 | Next Greater Element II | Medium | Circular monotonic stack | https://leetcode.com/problems/next-greater-element-ii/ | Common |
+| 7 | Largest Rectangle in Histogram | Hard | Monotonic stack | https://leetcode.com/problems/largest-rectangle-in-histogram/ | Amazon, Meta, Google, Microsoft |
+| 8 | Asteroid Collision | Medium | Stack simulation | https://leetcode.com/problems/asteroid-collision/ | Amazon, Google, Uber |
+| 9 | Decode String | Medium | Stack of contexts | https://leetcode.com/problems/decode-string/ | Amazon, Meta, Google, Bloomberg |
+| 10 | Simplify Path | Medium | Stack of tokens | https://leetcode.com/problems/simplify-path/ | Meta, Amazon, Microsoft |
+| 11 | Basic Calculator II | Medium | Stack-based parser | https://leetcode.com/problems/basic-calculator-ii/ | Amazon, Microsoft, Google |
 
 ## Stretch Problems
 

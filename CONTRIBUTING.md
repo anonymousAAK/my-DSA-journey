@@ -255,6 +255,21 @@ The repo has a pull-request template at `.github/PULL_REQUEST_TEMPLATE.md` that 
 
 ---
 
+## Community
+
+Code contributions aren't the only way to make this repo better. There's a lot of value in being a present, helpful voice in the community around it.
+
+- **GitHub Discussions** is the home for questions, study-buddy pairing, capstone show-and-tell, and big-picture career chat. See [`docs/DISCUSSIONS.md`](docs/DISCUSSIONS.md) for the full category map. Two categories worth highlighting:
+  - **Stuck on a problem?** — Q&A format. Ask once, search forever. Helping here is one of the highest-leverage things you can do.
+  - **Can't see the pattern?** — for the upstream skill of *classifying* a problem before you solve it.
+- **Showcase** — finished a capstone? [Submit it to the public showcase](showcase/README.md). Other learners use these as inspiration for what's possible.
+- **Weekly digest** — for low-bandwidth contact with the repo, subscribe to the [weekly RSS feed](docs/NEWSLETTER.md). One case study, one drill, one challenge per week.
+- **Daily-practice issues** — if you'd like a daily nudge, watch the `daily-practice` label. The bot opens one issue every weekday with a 25-minute practice plan. See [`docs/DAILY_PRACTICE.md`](docs/DAILY_PRACTICE.md).
+
+When you participate in discussions, the rule of thumb mirrors the code conventions: be the kind of contributor that the learner reading this thread three years from now will be glad existed.
+
+---
+
 ## Code of Conduct
 
 This project follows the spirit of the [Contributor Covenant](https://www.contributor-covenant.org/version/2/1/code_of_conduct/). There is no separate `CODE_OF_CONDUCT.md` file yet; until there is, treat the Covenant text as authoritative: be respectful, assume good faith, criticise code not people, and remember that a learner reading this repo three years from now is the audience you're writing for.

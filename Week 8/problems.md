@@ -4,18 +4,18 @@ Topics covered this week: binary search, search space reduction, lower/upper bou
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Binary Search | Easy | Classic | https://leetcode.com/problems/binary-search/ |
-| 2 | First Bad Version | Easy | Predicate search | https://leetcode.com/problems/first-bad-version/ |
-| 3 | Search Insert Position | Easy | Lower bound | https://leetcode.com/problems/search-insert-position/ |
-| 4 | Sqrt(x) | Easy | Binary search on math | https://leetcode.com/problems/sqrtx/ |
-| 5 | Search in Rotated Sorted Array | Medium | Modified BS | https://leetcode.com/problems/search-in-rotated-sorted-array/ |
-| 6 | Find Peak Element | Medium | Slope BS | https://leetcode.com/problems/find-peak-element/ |
-| 7 | Find Minimum in Rotated Sorted Array | Medium | Pivot BS | https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/ |
-| 8 | Find First and Last Position of Element in Sorted Array | Medium | Lower & upper bound | https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/ |
-| 9 | Koko Eating Bananas | Medium | BS on answer | https://leetcode.com/problems/koko-eating-bananas/ |
-| 10 | Median of Two Sorted Arrays | Hard | Partition BS | https://leetcode.com/problems/median-of-two-sorted-arrays/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Binary Search | Easy | Classic | https://leetcode.com/problems/binary-search/ | Amazon, Google, Microsoft, Apple |
+| 2 | First Bad Version | Easy | Predicate search | https://leetcode.com/problems/first-bad-version/ | Meta, Amazon, Google |
+| 3 | Search Insert Position | Easy | Lower bound | https://leetcode.com/problems/search-insert-position/ | Amazon, Microsoft, Apple |
+| 4 | Sqrt(x) | Easy | Binary search on math | https://leetcode.com/problems/sqrtx/ | Apple, Bloomberg, Amazon, Microsoft |
+| 5 | Search in Rotated Sorted Array | Medium | Modified BS | https://leetcode.com/problems/search-in-rotated-sorted-array/ | Amazon, Meta, Microsoft, Apple |
+| 6 | Find Peak Element | Medium | Slope BS | https://leetcode.com/problems/find-peak-element/ | Meta, Google, Microsoft, Amazon |
+| 7 | Find Minimum in Rotated Sorted Array | Medium | Pivot BS | https://leetcode.com/problems/find-minimum-in-rotated-sorted-array/ | Amazon, Microsoft, Meta |
+| 8 | Find First and Last Position of Element in Sorted Array | Medium | Lower & upper bound | https://leetcode.com/problems/find-first-and-last-position-of-element-in-sorted-array/ | Amazon, Meta, LinkedIn |
+| 9 | Koko Eating Bananas | Medium | BS on answer | https://leetcode.com/problems/koko-eating-bananas/ | Google, Meta, Amazon |
+| 10 | Median of Two Sorted Arrays | Hard | Partition BS | https://leetcode.com/problems/median-of-two-sorted-arrays/ | Amazon, Google, Apple, Microsoft |
 
 ## Stretch Problems
 

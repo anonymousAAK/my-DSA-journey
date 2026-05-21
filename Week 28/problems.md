@@ -4,19 +4,19 @@ Topics covered this week: game theory, minimax, Nim/Sprague-Grundy, optimal play
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Nim Game | Easy | Nim parity | https://leetcode.com/problems/nim-game/ |
-| 2 | Stone Game | Medium | Minimax DP | https://leetcode.com/problems/stone-game/ |
-| 3 | Stone Game II | Medium | DP with state | https://leetcode.com/problems/stone-game-ii/ |
-| 4 | Stone Game III | Hard | DP with three choices | https://leetcode.com/problems/stone-game-iii/ |
-| 5 | Stone Game IV | Hard | DP from base wins | https://leetcode.com/problems/stone-game-iv/ |
-| 6 | Predict the Winner | Medium | Interval minimax DP | https://leetcode.com/problems/predict-the-winner/ |
-| 7 | Can I Win | Medium | Bitmask + memo | https://leetcode.com/problems/can-i-win/ |
-| 8 | Divisor Game | Easy | Parity / DP | https://leetcode.com/problems/divisor-game/ |
-| 9 | Cat and Mouse | Hard | Multi-state game DP | https://leetcode.com/problems/cat-and-mouse/ |
-| 10 | Flip Game II | Medium | Recursive minimax | https://leetcode.com/problems/flip-game-ii/ |
-| 11 | Guess Number Higher or Lower II | Medium | Minimax DP | https://leetcode.com/problems/guess-number-higher-or-lower-ii/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Nim Game | Easy | Nim parity | https://leetcode.com/problems/nim-game/ | Adobe, Common |
+| 2 | Stone Game | Medium | Minimax DP | https://leetcode.com/problems/stone-game/ | Amazon, Google, Common |
+| 3 | Stone Game II | Medium | DP with state | https://leetcode.com/problems/stone-game-ii/ | Amazon, Google, Common |
+| 4 | Stone Game III | Hard | DP with three choices | https://leetcode.com/problems/stone-game-iii/ | Amazon, Google, Common |
+| 5 | Stone Game IV | Hard | DP from base wins | https://leetcode.com/problems/stone-game-iv/ | Common |
+| 6 | Predict the Winner | Medium | Interval minimax DP | https://leetcode.com/problems/predict-the-winner/ | Amazon, Google, Microsoft |
+| 7 | Can I Win | Medium | Bitmask + memo | https://leetcode.com/problems/can-i-win/ | LinkedIn, Amazon, Common |
+| 8 | Divisor Game | Easy | Parity / DP | https://leetcode.com/problems/divisor-game/ | Common |
+| 9 | Cat and Mouse | Hard | Multi-state game DP | https://leetcode.com/problems/cat-and-mouse/ | Google, Common |
+| 10 | Flip Game II | Medium | Recursive minimax | https://leetcode.com/problems/flip-game-ii/ | Google, Common |
+| 11 | Guess Number Higher or Lower II | Medium | Minimax DP | https://leetcode.com/problems/guess-number-higher-or-lower-ii/ | Google, Amazon, Common |
 
 ## Stretch Problems
 

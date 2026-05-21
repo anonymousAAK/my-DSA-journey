@@ -4,20 +4,20 @@ Topics covered this week: dynamic programming, memoization vs tabulation, 1D/2D 
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Climbing Stairs | Easy | 1D DP | https://leetcode.com/problems/climbing-stairs/ |
-| 2 | House Robber | Medium | Linear DP | https://leetcode.com/problems/house-robber/ |
-| 3 | House Robber II | Medium | Circular DP | https://leetcode.com/problems/house-robber-ii/ |
-| 4 | Coin Change | Medium | Unbounded knapsack | https://leetcode.com/problems/coin-change/ |
-| 5 | Longest Increasing Subsequence | Medium | DP / patience sort | https://leetcode.com/problems/longest-increasing-subsequence/ |
-| 6 | Edit Distance | Hard | 2D DP | https://leetcode.com/problems/edit-distance/ |
-| 7 | Word Break | Medium | DP on strings | https://leetcode.com/problems/word-break/ |
-| 8 | Unique Paths | Medium | Grid DP | https://leetcode.com/problems/unique-paths/ |
-| 9 | Longest Common Subsequence | Medium | 2D DP | https://leetcode.com/problems/longest-common-subsequence/ |
-| 10 | Partition Equal Subset Sum | Medium | 0/1 knapsack | https://leetcode.com/problems/partition-equal-subset-sum/ |
-| 11 | Maximum Product Subarray | Medium | DP with two states | https://leetcode.com/problems/maximum-product-subarray/ |
-| 12 | Decode Ways | Medium | String DP | https://leetcode.com/problems/decode-ways/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Climbing Stairs | Easy | 1D DP | https://leetcode.com/problems/climbing-stairs/ | Amazon, Apple, Google, Adobe |
+| 2 | House Robber | Medium | Linear DP | https://leetcode.com/problems/house-robber/ | Amazon, LinkedIn, Apple |
+| 3 | House Robber II | Medium | Circular DP | https://leetcode.com/problems/house-robber-ii/ | Amazon, Microsoft, Apple |
+| 4 | Coin Change | Medium | Unbounded knapsack | https://leetcode.com/problems/coin-change/ | Amazon, Meta, Microsoft, Google |
+| 5 | Longest Increasing Subsequence | Medium | DP / patience sort | https://leetcode.com/problems/longest-increasing-subsequence/ | Amazon, Microsoft, Google, Meta |
+| 6 | Edit Distance | Hard | 2D DP | https://leetcode.com/problems/edit-distance/ | Amazon, Meta, Microsoft, Google |
+| 7 | Word Break | Medium | DP on strings | https://leetcode.com/problems/word-break/ | Amazon, Meta, Microsoft, Google |
+| 8 | Unique Paths | Medium | Grid DP | https://leetcode.com/problems/unique-paths/ | Amazon, Apple, Google, Bloomberg |
+| 9 | Longest Common Subsequence | Medium | 2D DP | https://leetcode.com/problems/longest-common-subsequence/ | Amazon, Microsoft, Google |
+| 10 | Partition Equal Subset Sum | Medium | 0/1 knapsack | https://leetcode.com/problems/partition-equal-subset-sum/ | Amazon, Apple, Common |
+| 11 | Maximum Product Subarray | Medium | DP with two states | https://leetcode.com/problems/maximum-product-subarray/ | Amazon, LinkedIn, Microsoft |
+| 12 | Decode Ways | Medium | String DP | https://leetcode.com/problems/decode-ways/ | Common |
 
 ## Stretch Problems
 

@@ -1,0 +1,274 @@
+#!/usr/bin/env python3
+"""AI tutor CLI for the DSA journey repo.
+
+Default mode (offline, stdlib only):
+    Retrieves the top 5 most relevant chunks from the repo's markdown content
+    using a TF-IDF index, and formats them in a templated response.
+
+LLM mode (--llm):
+    If ANTHROPIC_API_KEY is set and the `anthropic` package is installed,
+    sends the retrieved chunks + the question to Claude and streams the
+    response. Falls back to templated mode otherwise.
+
+Usage:
+    ./scripts/ask "why does Kadane fail on all-negative arrays?"
+    ./scripts/ask "explain consistent hashing"
+    ./scripts/ask --llm "compare BFS and DFS for shortest path"
+    ./scripts/ask --rebuild-index
+"""
+
+from __future__ import annotations
+
+import argparse
+import math
+import os
+import pickle
+import re
+import sys
+from collections import Counter
+from pathlib import Path
+
+REPO_ROOT = Path(__file__).resolve().parent.parent
+INDEX_PATH = Path.home() / ".journey" / "ask_index.pkl"
+
+# ---- shared tokenizer (kept in sync with build_ask_index.py) -----------------
+
+STOPWORDS = set(
+    """
+    a an and are as at be by for from has have he in is it its of on or that the to
+    was were will with you your we our us i me my so if then than this these those
+    do does did not no but also can could should would may might into about over
+    when where what why how who whom which while up down out off here there their
+    them they it's i'm i've you're they're vs etc e.g. eg ie i.e
+    """.split()
+)
+_TOKEN_RE = re.compile(r"[a-zA-Z][a-zA-Z0-9'_-]*")
+
+
+def tokenize(text: str) -> list[str]:
+    return [t.lower() for t in _TOKEN_RE.findall(text) if t.lower() not in STOPWORDS and len(t) > 1]
+
+
+# ---- index access ------------------------------------------------------------
+
+def load_index() -> dict:
+    if not INDEX_PATH.exists():
+        print(f"Index not found at {INDEX_PATH}.", file=sys.stderr)
+        print("Build it once with:  python3 scripts/build_ask_index.py", file=sys.stderr)
+        sys.exit(2)
+    with open(INDEX_PATH, "rb") as f:
+        return pickle.load(f)
+
+
+def rebuild_index() -> int:
+    # Defer to the dedicated builder so logic stays in one place.
+    builder = REPO_ROOT / "scripts" / "build_ask_index.py"
+    if not builder.exists():
+        print("Builder script missing.", file=sys.stderr)
+        return 2
+    import runpy
+    runpy.run_path(str(builder), run_name="__main__")
+    return 0
+
+
+# ---- retrieval ---------------------------------------------------------------
+
+def query_vector(question: str, idf: dict) -> tuple[dict, float]:
+    toks = tokenize(question)
+    if not toks:
+        return {}, 0.0
+    tf = Counter(toks)
+    vec = {t: (1.0 + math.log(c)) * idf.get(t, 0.0) for t, c in tf.items() if t in idf}
+    if not vec:
+        # No tokens in vocabulary — fall back to giving non-vocab tokens a small idf
+        vec = {t: 1.0 for t in toks}
+    norm = math.sqrt(sum(v * v for v in vec.values()))
+    return vec, norm
+
+
+def cosine(q_vec: dict, q_norm: float, d_vec: dict, d_norm: float) -> float:
+    if q_norm == 0 or d_norm == 0:
+        return 0.0
+    # iterate over smaller dict
+    if len(q_vec) > len(d_vec):
+        q_vec, d_vec = d_vec, q_vec
+    s = 0.0
+    for term, qv in q_vec.items():
+        dv = d_vec.get(term)
+        if dv:
+            s += qv * dv
+    return s / (q_norm * d_norm)
+
+
+def retrieve(index: dict, question: str, k: int = 5) -> list[tuple[float, dict]]:
+    q_vec, q_norm = query_vector(question, index["idf"])
+    if not q_vec:
+        return []
+    scored = []
+    for chunk, vec, norm in zip(index["chunks"], index["vectors"], index["norms"]):
+        s = cosine(q_vec, q_norm, vec, norm)
+        if s > 0:
+            scored.append((s, chunk))
+    scored.sort(key=lambda x: x[0], reverse=True)
+    # Diversify: don't return >2 chunks from the same file in the top-k.
+    out = []
+    counts: Counter = Counter()
+    for s, c in scored:
+        if counts[c["path"]] >= 2:
+            continue
+        out.append((s, c))
+        counts[c["path"]] += 1
+        if len(out) >= k:
+            break
+    return out
+
+
+# ---- templated output --------------------------------------------------------
+
+WEEK_RE = re.compile(r"^Week (\d+)[/\\]", re.I)
+
+
+def related_weeks(hits: list[tuple[float, dict]]) -> list[int]:
+    weeks = []
+    seen = set()
+    for _s, c in hits:
+        m = WEEK_RE.match(c["path"])
+        if m:
+            w = int(m.group(1))
+            if w not in seen:
+                weeks.append(w)
+                seen.add(w)
+    return weeks
+
+
+def truncate(text: str, max_chars: int = 600) -> str:
+    text = re.sub(r"\s+", " ", text).strip()
+    if len(text) <= max_chars:
+        return text
+    cut = text[:max_chars].rsplit(" ", 1)[0]
+    return cut + " …"
+
+
+def format_templated(question: str, hits: list[tuple[float, dict]]) -> str:
+    if not hits:
+        return (
+            f'No matches found in the repo for: "{question}"\n'
+            "Try rephrasing, or run with --rebuild-index if you've added new content.\n"
+        )
+    lines = [
+        f'Question: {question}',
+        "",
+        "Based on the repository, here's what I found:",
+        "",
+    ]
+    for score, c in hits:
+        section = c.get("section") or ""
+        loc = f'{c["path"]}'
+        if section:
+            loc += f', section "{section}"'
+        lines.append(f"📌 [{loc}]  (score {score:.2f})")
+        lines.append(truncate(c["text"]))
+        lines.append("")
+    weeks = related_weeks(hits)
+    if weeks:
+        lines.append("Related curriculum: " + ", ".join(f"Week {w}" for w in weeks))
+    return "\n".join(lines).rstrip() + "\n"
+
+
+# ---- LLM mode ----------------------------------------------------------------
+
+LLM_MODEL = "claude-haiku-4-5-20251001"
+
+
+def format_llm_context(hits: list[tuple[float, dict]]) -> str:
+    parts = []
+    for i, (score, c) in enumerate(hits, 1):
+        section = c.get("section") or ""
+        header = f"[Source {i}] {c['path']}"
+        if section:
+            header += f' (section "{section}")'
+        parts.append(f"{header}\n{c['text']}")
+    return "\n\n---\n\n".join(parts)
+
+
+def run_llm(question: str, hits: list[tuple[float, dict]]) -> int:
+    api_key = os.environ.get("ANTHROPIC_API_KEY")
+    if not api_key:
+        print("[--llm requested but ANTHROPIC_API_KEY is not set; using templated mode]\n", file=sys.stderr)
+        print(format_templated(question, hits))
+        return 0
+    try:
+        import anthropic  # type: ignore
+    except ImportError:
+        print("[--llm requested but `anthropic` SDK not installed; using templated mode]", file=sys.stderr)
+        print("  pip install anthropic", file=sys.stderr)
+        print("", file=sys.stderr)
+        print(format_templated(question, hits))
+        return 0
+
+    client = anthropic.Anthropic(api_key=api_key)
+    context = format_llm_context(hits)
+    system = (
+        "You are an AI tutor for a personal DSA-mastery repository. Answer the user's question "
+        "using ONLY the sources below. Be concise and concrete. When you make a claim, cite the "
+        "source like [Source 2]. If the sources don't cover the answer, say so plainly — do not "
+        "invent material."
+    )
+    user_msg = f"Sources:\n\n{context}\n\nQuestion: {question}"
+
+    try:
+        with client.messages.stream(
+            model=LLM_MODEL,
+            max_tokens=1024,
+            system=system,
+            messages=[{"role": "user", "content": user_msg}],
+        ) as stream:
+            for text in stream.text_stream:
+                sys.stdout.write(text)
+                sys.stdout.flush()
+            sys.stdout.write("\n\n")
+    except Exception as e:  # pragma: no cover  (network/runtime errors)
+        print(f"[LLM call failed: {e}; falling back to templated]", file=sys.stderr)
+        print(format_templated(question, hits))
+        return 0
+
+    weeks = related_weeks(hits)
+    if weeks:
+        sys.stdout.write("Related curriculum: " + ", ".join(f"Week {w}" for w in weeks) + "\n")
+    return 0
+
+
+# ---- entrypoint --------------------------------------------------------------
+
+def main(argv: list[str] | None = None) -> int:
+    parser = argparse.ArgumentParser(
+        prog="ask",
+        description="Ask natural-language questions about the DSA journey repo.",
+    )
+    parser.add_argument("question", nargs="*", help="The question to ask.")
+    parser.add_argument("--llm", action="store_true",
+                        help="Use the Anthropic API (requires ANTHROPIC_API_KEY).")
+    parser.add_argument("--k", type=int, default=5, help="Number of chunks to retrieve.")
+    parser.add_argument("--rebuild-index", action="store_true",
+                        help="Rebuild the TF-IDF index and exit.")
+    args = parser.parse_args(argv)
+
+    if args.rebuild_index:
+        return rebuild_index()
+
+    if not args.question:
+        parser.print_help()
+        return 0
+
+    question = " ".join(args.question).strip()
+    index = load_index()
+    hits = retrieve(index, question, k=args.k)
+
+    if args.llm:
+        return run_llm(question, hits)
+    print(format_templated(question, hits))
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -1,0 +1,203 @@
+site_name: My DSA Journey
+site_description: 30 weeks, 4 languages — a structured guide to mastering data structures and algorithms as problem-solving, not memorization.
+site_url: https://anonymousAAK.github.io/my-DSA-journey/
+repo_url: https://github.com/anonymousAAK/my-DSA-journey
+repo_name: anonymousAAK/my-DSA-journey
+edit_uri: edit/main/
+
+# Use the repository root as the docs source. The existing markdown (README.md,
+# PROBLEM_SOLVING.md, QUICKSTART.md, docs/, case_studies/, capstones/, and each
+# Week N/README.md) is rendered in place.
+docs_dir: .
+
+# Keep code, build output, configuration, and binary directories out of the site.
+exclude_docs: |
+  .git/
+  .github/
+  .devcontainer/
+  __pycache__/
+  scripts/__pycache__/
+  dist/
+  site/
+  tests/cases/
+  tests/refs/
+  tests/harness/
+  Week */java/
+  Week */cpp/
+  Week */python/
+  Week */rust/
+  Week */web/
+  Week */mastery.yml
+  capstones/solutions/
+  mkdocs.yml
+  requirements.txt
+  LICENSE
+
+theme:
+  name: material
+  language: en
+  palette:
+    # Match the existing web/index.html dark palette
+    # background #0d1117, surface #161b22, primary #58a6ff, accent #3fb950
+    - scheme: slate
+      primary: blue
+      accent: green
+      toggle:
+        icon: material/weather-sunny
+        name: Switch to light mode
+    - scheme: default
+      primary: blue
+      accent: green
+      toggle:
+        icon: material/weather-night
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.tabs.sticky
+    - navigation.instant
+    - navigation.instant.progress
+    - navigation.top
+    - navigation.tracking
+    - search.highlight
+    - search.share
+    - search.suggest
+    - content.code.copy
+    - content.code.annotate
+    - content.tabs.link
+    - toc.follow
+  icon:
+    repo: fontawesome/brands/github
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/anonymousAAK/my-DSA-journey
+      name: my-DSA-journey on GitHub
+
+extra_css:
+  - docs/assets/theme.css
+
+# Override Material's slate colors to exactly match the existing web palette.
+# (theme.css is created lazily; if absent, Material falls back to defaults.)
+
+plugins:
+  - search
+  # Optional plugins (install separately if you want them):
+  #   pip install mkdocs-awesome-pages-plugin   # auto nav from .pages files
+  #   pip install mkdocs-git-revision-date-localized-plugin
+  #   pip install mkdocs-minify-plugin
+  # They are intentionally NOT required here to keep deps minimal.
+
+markdown_extensions:
+  - admonition
+  - attr_list
+  - md_in_html
+  - tables
+  - footnotes
+  - toc:
+      permalink: true
+      permalink_title: Anchor link
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+
+nav:
+  - Home: README.md
+  - Start Here:
+      - Quickstart (4 hours): QUICKSTART.md
+      - Diagnostic Test: docs/diagnostic.md
+      - Master Index: INDEX.md
+  - Mindset:
+      - Problem Solving: PROBLEM_SOLVING.md
+      - Solution Journal: docs/SOLUTION_JOURNAL.md
+      - Estimation Drills: docs/estimation.md
+      - Review Schedule: docs/REVIEW_SCHEDULE.md
+      - Mastery Quizzes: docs/MASTERY.md
+  - Curriculum:
+      - Phase 1 — Foundations (Weeks 1-5):
+          - Week 1: Week 1/README.md
+          - Week 2: Week 2/README.md
+          - Week 3: Week 3/README.md
+          - Week 4: Week 4/README.md
+          - Week 5: Week 5/README.md
+      - Phase 2 — Arrays & Strings (Weeks 6-10):
+          - Week 6: Week 6/README.md
+          - Week 7: Week 7/README.md
+          - Week 8: Week 8/README.md
+          - Week 9: Week 9/README.md
+          - Week 10: Week 10/README.md
+      - Phase 3 — Structures (Weeks 11-15):
+          - Week 11: Week 11/README.md
+          - Week 12: Week 12/README.md
+          - Week 13: Week 13/README.md
+          - Week 14: Week 14/README.md
+          - Week 15: Week 15/README.md
+      - Phase 4 — Graphs & DP (Weeks 16-20):
+          - Week 16: Week 16/README.md
+          - Week 17: Week 17/README.md
+          - Week 18: Week 18/README.md
+          - Week 19: Week 19/README.md
+          - Week 20: Week 20/README.md
+      - Phase 5 — Advanced (Weeks 21-25):
+          - Week 21: Week 21/README.md
+          - Week 22: Week 22/README.md
+          - Week 23: Week 23/README.md
+          - Week 24: Week 24/README.md
+          - Week 25: Week 25/README.md
+      - Phase 6 — Systems & Research (Weeks 26-30):
+          - Week 26: Week 26/README.md
+          - Week 27: Week 27/README.md
+          - Week 28: Week 28/README.md
+          - Week 29: Week 29/README.md
+          - Week 30: Week 30/README.md
+  - Real-world:
+      - Phase 1 — Foundations: case_studies/phase_1_foundations.md
+      - Phase 2 — Arrays & Strings: case_studies/phase_2_arrays_strings.md
+      - Phase 3 — Structures: case_studies/phase_3_structures.md
+      - Phase 4 — Graphs & DP: case_studies/phase_4_graphs_dp.md
+      - Phase 5 — Advanced: case_studies/phase_5_advanced.md
+      - Phase 6 — Systems: case_studies/phase_6_systems.md
+      - Real-world essays:
+          - Google Maps & Dijkstra: case_studies/real_world/01_google_maps_dijkstra.md
+          - Spotify Discover Weekly: case_studies/real_world/02_spotify_discover_weekly_graph.md
+          - CDN Consistent Hashing: case_studies/real_world/03_cdn_consistent_hashing.md
+          - DNS Caching: case_studies/real_world/04_dns_caching.md
+          - Twitter Feed Heap: case_studies/real_world/05_twitter_feed_heap.md
+          - Git DAG: case_studies/real_world/06_git_dag.md
+          - Facebook News Feed Ranking: case_studies/real_world/07_facebook_news_feed_ranking.md
+          - LRU in Redis: case_studies/real_world/08_lru_in_redis.md
+          - Rate Limiting at Scale: case_studies/real_world/09_rate_limiting_at_scale.md
+          - Bloom Filters in Chrome: case_studies/real_world/10_bloom_filters_at_chrome.md
+          - Database Indexes (B-Tree): case_studies/real_world/11_database_indexes_btree.md
+          - Text Editor Rope: case_studies/real_world/12_text_editor_rope.md
+          - grep / KMP / Aho-Corasick: case_studies/real_world/13_grep_kmp_aho_corasick.md
+          - PageRank: case_studies/real_world/14_pagerank_eigenvectors.md
+          - Compiler Register Allocation: case_studies/real_world/15_compiler_register_allocation.md
+  - Capstones:
+      - Phase 1 — CLI Calculator: capstones/phase_1_cli_calculator.md
+      - Phase 2 — Text Search Tool: capstones/phase_2_text_search_tool.md
+      - Phase 3 — Trees & Heaps Visualizer: capstones/phase_3_visualizer_for_trees_and_heaps.md
+      - Phase 4 — Maze Solver: capstones/phase_4_maze_solver.md
+      - Phase 5 — Leaderboard Service: capstones/phase_5_leaderboard_service.md
+      - Phase 6 — TinyURL with Consistent Hashing: capstones/phase_6_tinyurl_with_consistent_hashing.md
+  - Reference:
+      - Site Build: docs/SITE.md
+      - eBook Build: docs/BOOK.md
+  - Contributing:
+      - Guidelines: CONTRIBUTING.md

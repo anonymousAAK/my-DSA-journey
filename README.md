@@ -25,7 +25,13 @@ All implementations available in **4 languages**: Java, Python, C++, and Rust �
 
 Already convinced? Skip ahead to [Learning Paths](#learning-paths) or jump straight to [Week 1](Week%201/).
 
+**Done a capstone?** [Submit it to the showcase →](showcase/README.md)
+
 **Looking for a specific doc?** See [INDEX.md](INDEX.md) — the master index of every file in this repo, grouped by purpose.
+
+**🌍 Languages**: English (default) · [हिन्दी](translations/hi/) · [Español](translations/es/) · [中文](translations/zh/) · [Want to add yours?](CONTRIBUTING.md#translations)
+
+**🎧 Audio version**: spoken-form transcripts ready for TTS or narration are in [`audio/`](audio/) — see [`audio/README.md`](audio/README.md) to generate them or contribute professional recordings. Video walkthroughs: [`video/`](video/).
 
 ---
 

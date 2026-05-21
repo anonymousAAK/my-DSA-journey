@@ -1,0 +1,91 @@
+{
+  "name": "dsa-journey",
+  "displayName": "DSA Journey",
+  "description": "IDE companion for the my-DSA-journey curriculum: jump between language tracks, run the test harness, open weekly quizzes, challenges, and patterns from any source file.",
+  "version": "0.1.0",
+  "publisher": "dsa-journey",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Education",
+    "Other"
+  ],
+  "keywords": [
+    "dsa",
+    "algorithms",
+    "data-structures",
+    "interview-prep",
+    "education"
+  ],
+  "main": "./out/extension.js",
+  "activationEvents": [
+    "onCommand:dsa-journey.openQuiz",
+    "onCommand:dsa-journey.openChallenges",
+    "onCommand:dsa-journey.openPatterns",
+    "onCommand:dsa-journey.openTopicAcrossLanguages",
+    "onCommand:dsa-journey.runTests",
+    "onCommand:dsa-journey.openIndex",
+    "workspaceContains:**/mastery.yml"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "dsa-journey.openQuiz",
+        "title": "DSA Journey: Open Weekly Quiz",
+        "category": "DSA Journey"
+      },
+      {
+        "command": "dsa-journey.openChallenges",
+        "title": "DSA Journey: Open Week Challenges",
+        "category": "DSA Journey"
+      },
+      {
+        "command": "dsa-journey.openPatterns",
+        "title": "DSA Journey: Open Week Patterns",
+        "category": "DSA Journey"
+      },
+      {
+        "command": "dsa-journey.openTopicAcrossLanguages",
+        "title": "DSA Journey: Open This Topic in All Languages",
+        "category": "DSA Journey"
+      },
+      {
+        "command": "dsa-journey.runTests",
+        "title": "DSA Journey: Run Full Test Harness",
+        "category": "DSA Journey"
+      },
+      {
+        "command": "dsa-journey.openIndex",
+        "title": "DSA Journey: Open INDEX.md",
+        "category": "DSA Journey"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "dsa-journey.openTopicAcrossLanguages",
+          "when": "resourceFilename =~ /\\.(java|py|cpp|rs|html)$/",
+          "group": "navigation"
+        }
+      ]
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./",
+    "package": "vsce package"
+  },
+  "devDependencies": {
+    "@types/node": "^20.10.0",
+    "@types/vscode": "^1.85.0",
+    "typescript": "^5.3.0",
+    "@vscode/vsce": "^2.22.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/your-user/my-DSA-journey"
+  }
+}

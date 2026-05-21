@@ -1,0 +1,66 @@
+name: Daily Practice
+
+on:
+  schedule:
+    # 08:00 UTC, Monday-Friday
+    - cron: "0 8 * * 1-5"
+  workflow_dispatch: {}
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  open-daily-issue:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install PyYAML
+        run: pip install pyyaml
+
+      - name: Generate today's practice
+        id: gen
+        run: |
+          set -e
+          today=$(date -u +'%Y-%m-%d')
+          echo "today=$today" >> "$GITHUB_OUTPUT"
+          ./scripts/journey daily --markdown > /tmp/daily.md
+          echo "----- body -----"
+          cat /tmp/daily.md
+
+      - name: Open daily-practice issue
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TODAY: ${{ steps.gen.outputs.today }}
+        run: |
+          gh issue create \
+            --title "Daily Practice — ${TODAY}" \
+            --body-file /tmp/daily.md \
+            --label "daily-practice" \
+            --label "auto-generated"
+
+      - name: Close stale daily-practice issues (>7 days old)
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Cutoff = today - 7 days, in YYYY-MM-DD
+          cutoff=$(date -u -d '-7 days' +'%Y-%m-%d')
+          echo "Closing open daily-practice issues created before $cutoff"
+          gh issue list \
+            --label "daily-practice" \
+            --state open \
+            --search "created:<${cutoff}" \
+            --json number \
+            -q '.[].number' \
+          | while read -r n; do
+              if [ -n "$n" ]; then
+                gh issue close "$n" --reason completed --comment "Auto-closed: superseded by a newer daily-practice issue."
+              fi
+            done

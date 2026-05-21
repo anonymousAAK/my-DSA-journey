@@ -1,2 +1,8 @@
 __pycache__/
 *.pyc
+
+# mkdocs build output
+site/
+
+# eBook build output (scripts/build_book.sh)
+dist/

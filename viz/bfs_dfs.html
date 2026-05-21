@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BFS vs DFS Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--gradient:linear-gradient(135deg,#58a6ff,#3fb950)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem;display:inline-block;margin-bottom:14px}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input,.controls select{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer;transition:all .15s}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.layout{display:grid;grid-template-columns:1fr 1fr 360px;gap:16px}
+@media(max-width:1200px){.layout{grid-template-columns:1fr 1fr}.pseudo-panel{grid-column:1/-1}}
+@media(max-width:800px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.panel h3 .stat{float:right;color:var(--muted);font-size:.7rem;font-family:monospace;text-transform:none;letter-spacing:0}
+canvas{display:block;width:100%;background:#0d1117;border:1px solid var(--border);border-radius:6px}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.78rem;line-height:1.5;background:#0d1117;border-radius:6px;padding:10px;max-height:280px;overflow-y:auto}
+.pseudo .line{padding:2px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.qcontent{font-family:monospace;font-size:.78rem;color:var(--muted);background:#0d1117;border:1px solid var(--border);border-radius:6px;padding:8px;margin-top:8px;min-height:24px}
+.qcontent .item{display:inline-block;background:#22272e;color:var(--text);padding:2px 6px;border-radius:3px;margin:2px}
+.qcontent .head{color:var(--yellow);font-weight:700}
+.legend{font-size:.7rem;color:var(--muted);margin-top:8px;display:flex;gap:10px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; All visualizations</a>
+<div class="top"><h1>BFS vs DFS — Grid Graph</h1></div>
+
+<div class="controls">
+  <label>Grid: <select id="size">
+    <option value="6">6x6</option>
+    <option value="8" selected>8x8</option>
+    <option value="10">10x10</option>
+  </select></label>
+  <button id="randomWalls">Random walls</button>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="50"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>BFS <span class="stat" id="bfsStat"></span></h3>
+    <canvas id="bfsCv" height="360"></canvas>
+    <div class="qcontent" id="bfsQ"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:#22272e"></span>unseen</span>
+      <span><span class="sw" style="background:var(--yellow)"></span>frontier</span>
+      <span><span class="sw" style="background:var(--blue)"></span>visited</span>
+      <span><span class="sw" style="background:var(--green)"></span>start</span>
+      <span><span class="sw" style="background:var(--red)"></span>wall</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>DFS <span class="stat" id="dfsStat"></span></h3>
+    <canvas id="dfsCv" height="360"></canvas>
+    <div class="qcontent" id="dfsQ"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:#22272e"></span>unseen</span>
+      <span><span class="sw" style="background:var(--yellow)"></span>on-stack</span>
+      <span><span class="sw" style="background:var(--blue)"></span>visited</span>
+      <span><span class="sw" style="background:var(--green)"></span>start</span>
+      <span><span class="sw" style="background:var(--red)"></span>wall</span>
+    </div>
+  </div>
+  <div class="panel pseudo-panel">
+    <h3>BFS pseudocode</h3>
+    <div class="pseudo" id="bfsPseudo"></div>
+    <h3 style="margin-top:14px">DFS pseudocode</h3>
+    <div class="pseudo" id="dfsPseudo"></div>
+  </div>
+</div>
+</div>
+
+<script>
+const BFS_LINES = [
+  'function bfs(start):',
+  '  q = Queue([start])',
+  '  seen = {start}',
+  '  while q not empty:',
+  '    u = q.popleft()',
+  '    visit(u)',
+  '    for v in neighbors(u):',
+  '      if v not in seen and not wall:',
+  '        seen.add(v)',
+  '        q.push(v)',
+];
+const DFS_LINES = [
+  'function dfs(start):',
+  '  stack = [start]',
+  '  seen = {start}',
+  '  while stack not empty:',
+  '    u = stack.pop()',
+  '    visit(u)',
+  '    for v in neighbors(u) reversed:',
+  '      if v not in seen and not wall:',
+  '        seen.add(v)',
+  '        stack.push(v)',
+];
+
+let N = 8;
+let walls = null; // 2d bool
+const START = [0,0];
+
+function newGrid(){
+  walls = Array.from({length:N},()=>Array.from({length:N},()=>Math.random()<0.18));
+  walls[START[0]][START[1]] = false;
+}
+
+function neighbors(r,c){
+  const out=[];
+  // up,right,down,left (BFS classic order)
+  const dirs = [[-1,0],[0,1],[1,0],[0,-1]];
+  for(const [dr,dc] of dirs){
+    const nr=r+dr,nc=c+dc;
+    if(nr>=0&&nr<N&&nc>=0&&nc<N&&!walls[nr][nc]) out.push([nr,nc]);
+  }
+  return out;
+}
+
+function planBFS(){
+  const steps=[];
+  const seen = Array.from({length:N},()=>Array(N).fill(false));
+  const q=[START.slice()];
+  seen[START[0]][START[1]]=true;
+  steps.push({line:1,q:q.map(x=>x.slice()),visited:[],frontier:q.map(x=>x.slice())});
+  steps.push({line:2,q:q.map(x=>x.slice()),visited:[],frontier:q.map(x=>x.slice())});
+  const visited=[];
+  while(q.length){
+    steps.push({line:3,q:q.map(x=>x.slice()),visited:visited.slice(),frontier:q.map(x=>x.slice())});
+    const u = q.shift();
+    visited.push(u);
+    steps.push({line:5,q:q.map(x=>x.slice()),visited:visited.slice(),frontier:q.map(x=>x.slice()),cur:u});
+    for(const v of neighbors(u[0],u[1])){
+      steps.push({line:6,q:q.map(x=>x.slice()),visited:visited.slice(),frontier:q.map(x=>x.slice()),cur:u,probe:v});
+      if(!seen[v[0]][v[1]]){
+        seen[v[0]][v[1]]=true;
+        q.push(v);
+        steps.push({line:9,q:q.map(x=>x.slice()),visited:visited.slice(),frontier:q.map(x=>x.slice()),cur:u,added:v});
+      }
+    }
+  }
+  steps.push({line:3,q:[],visited:visited.slice(),frontier:[],done:true});
+  return steps;
+}
+
+function planDFS(){
+  const steps=[];
+  const seen = Array.from({length:N},()=>Array(N).fill(false));
+  const stk=[START.slice()];
+  seen[START[0]][START[1]]=true;
+  steps.push({line:1,stk:stk.map(x=>x.slice()),visited:[],frontier:stk.map(x=>x.slice())});
+  steps.push({line:2,stk:stk.map(x=>x.slice()),visited:[],frontier:stk.map(x=>x.slice())});
+  const visited=[];
+  while(stk.length){
+    steps.push({line:3,stk:stk.map(x=>x.slice()),visited:visited.slice(),frontier:stk.map(x=>x.slice())});
+    const u = stk.pop();
+    visited.push(u);
+    steps.push({line:5,stk:stk.map(x=>x.slice()),visited:visited.slice(),frontier:stk.map(x=>x.slice()),cur:u});
+    const nb = neighbors(u[0],u[1]).slice().reverse();
+    for(const v of nb){
+      steps.push({line:6,stk:stk.map(x=>x.slice()),visited:visited.slice(),frontier:stk.map(x=>x.slice()),cur:u,probe:v});
+      if(!seen[v[0]][v[1]]){
+        seen[v[0]][v[1]]=true;
+        stk.push(v);
+        steps.push({line:9,stk:stk.map(x=>x.slice()),visited:visited.slice(),frontier:stk.map(x=>x.slice()),cur:u,added:v});
+      }
+    }
+  }
+  steps.push({line:3,stk:[],visited:visited.slice(),frontier:[],done:true});
+  return steps;
+}
+
+let bfsSteps=[], dfsSteps=[], bi=0, di=0;
+let bfsState=null, dfsState=null;
+
+function drawGrid(cv, state, frontierLabel){
+  const W = cv.clientWidth;
+  cv.width = W;
+  const cell = Math.min(40, Math.floor(W/N));
+  cv.height = cell*N + 4;
+  const ctx = cv.getContext('2d');
+  ctx.clearRect(0,0,cv.width,cv.height);
+
+  const visitedSet = new Set(state.visited.map(([r,c])=>r+','+c));
+  const frontierSet = new Set((state.frontier||[]).map(([r,c])=>r+','+c));
+
+  for(let r=0;r<N;r++){
+    for(let c=0;c<N;c++){
+      const x=c*cell+2, y=r*cell+2;
+      let bg = '#22272e';
+      if(walls[r][c]) bg = '#f85149';
+      else if(visitedSet.has(r+','+c)) bg = '#58a6ff';
+      else if(frontierSet.has(r+','+c)) bg = '#d29922';
+      if(r===START[0]&&c===START[1]) bg = '#3fb950';
+      ctx.fillStyle = bg;
+      ctx.fillRect(x,y,cell-3,cell-3);
+      ctx.strokeStyle='#30363d';
+      ctx.strokeRect(x,y,cell-3,cell-3);
+      // current cell outline
+      if(state.cur && state.cur[0]===r && state.cur[1]===c){
+        ctx.strokeStyle='#fff'; ctx.lineWidth=2;
+        ctx.strokeRect(x+1,y+1,cell-5,cell-5);
+        ctx.lineWidth=1;
+      }
+      if(state.probe && state.probe[0]===r && state.probe[1]===c){
+        ctx.strokeStyle='#a371f7'; ctx.lineWidth=2;
+        ctx.strokeRect(x+1,y+1,cell-5,cell-5);
+        ctx.lineWidth=1;
+      }
+    }
+  }
+}
+
+function renderQueue(elId, q, isStack){
+  const el = document.getElementById(elId);
+  if(!q.length){ el.innerHTML = `<span style="color:var(--muted)">${isStack?'stack':'queue'} empty</span>`; return; }
+  const items = q.map((p,i)=>`<span class="item ${i===(isStack?q.length-1:0)?'head':''}">(${p[0]},${p[1]})</span>`);
+  if(isStack) items.reverse();
+  el.innerHTML = `<span style="color:var(--muted)">${isStack?'top→':'front→'}</span> ${items.join('')}`;
+}
+
+function renderPseudo(elId, lines, active){
+  document.getElementById(elId).innerHTML =
+    lines.map((s,i)=>`<div class="line ${i===active?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+}
+
+function renderAll(){
+  drawGrid(document.getElementById('bfsCv'), bfsState || {visited:[],frontier:[]}, 'queue');
+  drawGrid(document.getElementById('dfsCv'), dfsState || {visited:[],frontier:[]}, 'stack');
+  renderQueue('bfsQ', bfsState ? bfsState.q : [], false);
+  renderQueue('dfsQ', dfsState ? dfsState.stk : [], true);
+  renderPseudo('bfsPseudo', BFS_LINES, bfsState ? bfsState.line : 0);
+  renderPseudo('dfsPseudo', DFS_LINES, dfsState ? dfsState.line : 0);
+  document.getElementById('bfsStat').textContent =
+    `visited:${bfsState?bfsState.visited.length:0} | queue:${bfsState?bfsState.q.length:0}`;
+  document.getElementById('dfsStat').textContent =
+    `visited:${dfsState?dfsState.visited.length:0} | stack:${dfsState?dfsState.stk.length:0}`;
+}
+
+function step(){
+  let any=false;
+  if(bi<bfsSteps.length){ bfsState=bfsSteps[bi++]; any=true; }
+  if(di<dfsSteps.length){ dfsState=dfsSteps[di++]; any=true; }
+  renderAll();
+  return any;
+}
+
+function reset(rebuild){
+  N = parseInt(document.getElementById('size').value,10);
+  if(rebuild || !walls || walls.length!==N) newGrid();
+  bfsSteps = planBFS();
+  dfsSteps = planDFS();
+  bi=0; di=0;
+  bfsState=null; dfsState=null;
+  renderAll();
+}
+
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const sp = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(40, 600 - sp*5);
+  timer = setInterval(()=>{ if(!step()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+document.getElementById('randomWalls').onclick = ()=>{ pause(); reset(true); };
+document.getElementById('size').onchange = ()=>{ pause(); reset(true); };
+document.getElementById('step').onclick = ()=>{ pause(); step(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); reset(false); };
+const sp=document.getElementById('speed'), sv=document.getElementById('speedVal');
+sp.oninput=()=>{ sv.textContent=sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent=sp.value+'%';
+
+reset(true);
+window.addEventListener('resize', renderAll);
+</script>
+</body>
+</html>

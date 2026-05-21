@@ -4,19 +4,19 @@ Topics covered this week: shortest paths (Dijkstra, Bellman-Ford, Floyd-Warshall
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Network Delay Time | Medium | Dijkstra | https://leetcode.com/problems/network-delay-time/ |
-| 2 | Cheapest Flights Within K Stops | Medium | Bellman-Ford / modified Dijkstra | https://leetcode.com/problems/cheapest-flights-within-k-stops/ |
-| 3 | Min Cost to Connect All Points | Medium | MST (Prim/Kruskal) | https://leetcode.com/problems/min-cost-to-connect-all-points/ |
-| 4 | Path with Minimum Effort | Medium | Dijkstra on grid | https://leetcode.com/problems/path-with-minimum-effort/ |
-| 5 | Swim in Rising Water | Hard | Dijkstra / BS + BFS | https://leetcode.com/problems/swim-in-rising-water/ |
-| 6 | Find the City With the Smallest Number of Neighbors at a Threshold Distance | Medium | Floyd-Warshall | https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/ |
-| 7 | Number of Operations to Make Network Connected | Medium | Union-Find | https://leetcode.com/problems/number-of-operations-to-make-network-connected/ |
-| 8 | Accounts Merge | Medium | Union-Find | https://leetcode.com/problems/accounts-merge/ |
-| 9 | Path with Maximum Probability | Medium | Modified Dijkstra | https://leetcode.com/problems/path-with-maximum-probability/ |
-| 10 | Connecting Cities With Minimum Cost | Medium | MST + UF | https://leetcode.com/problems/connecting-cities-with-minimum-cost/ |
-| 11 | Optimize Water Distribution in a Village | Hard | MST with virtual node | https://leetcode.com/problems/optimize-water-distribution-in-a-village/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Network Delay Time | Medium | Dijkstra | https://leetcode.com/problems/network-delay-time/ | Amazon, Microsoft, Google |
+| 2 | Cheapest Flights Within K Stops | Medium | Bellman-Ford / modified Dijkstra | https://leetcode.com/problems/cheapest-flights-within-k-stops/ | Amazon, Google, Uber |
+| 3 | Min Cost to Connect All Points | Medium | MST (Prim/Kruskal) | https://leetcode.com/problems/min-cost-to-connect-all-points/ | Amazon, Google, Common |
+| 4 | Path with Minimum Effort | Medium | Dijkstra on grid | https://leetcode.com/problems/path-with-minimum-effort/ | Common |
+| 5 | Swim in Rising Water | Hard | Dijkstra / BS + BFS | https://leetcode.com/problems/swim-in-rising-water/ | Amazon, Google, Common |
+| 6 | Find the City With the Smallest Number of Neighbors at a Threshold Distance | Medium | Floyd-Warshall | https://leetcode.com/problems/find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance/ | Amazon, Google, Common |
+| 7 | Number of Operations to Make Network Connected | Medium | Union-Find | https://leetcode.com/problems/number-of-operations-to-make-network-connected/ | Common |
+| 8 | Accounts Merge | Medium | Union-Find | https://leetcode.com/problems/accounts-merge/ | Amazon, Meta, Google |
+| 9 | Path with Maximum Probability | Medium | Modified Dijkstra | https://leetcode.com/problems/path-with-maximum-probability/ | Amazon, Google, Common |
+| 10 | Connecting Cities With Minimum Cost | Medium | MST + UF | https://leetcode.com/problems/connecting-cities-with-minimum-cost/ | Amazon, Google, Common |
+| 11 | Optimize Water Distribution in a Village | Hard | MST with virtual node | https://leetcode.com/problems/optimize-water-distribution-in-a-village/ | Common |
 
 ## Stretch Problems
 

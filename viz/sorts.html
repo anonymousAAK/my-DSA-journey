@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sorting Algorithms Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0d1117;--card:#161b22;--border:#30363d;
+  --text:#c9d1d9;--muted:#8b949e;
+  --blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;
+  --gradient:linear-gradient(135deg,#58a6ff,#3fb950);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1400px;margin:0 auto}
+.top{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;flex-wrap:wrap;gap:10px}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input,.controls select{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer;transition:all .15s}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.controls input[type=range]{padding:0;cursor:pointer}
+.controls input[type=text]{width:240px;font-family:monospace}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+.algos{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px}
+.algo{background:#0d1117;border:1px solid var(--border);border-radius:8px;padding:12px}
+.algo .name{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+.algo .name h4{color:var(--green);font-size:.92rem}
+.algo .name .stats{font-size:.7rem;color:var(--muted);font-family:monospace}
+.algo canvas{display:block;width:100%;height:120px;background:#0d1117;border-radius:4px}
+.algo.done .name h4{color:var(--blue)}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.78rem;line-height:1.55;background:#0d1117;border-radius:6px;padding:10px;max-height:540px;overflow-y:auto}
+.pseudo .line{padding:2px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.pseudo .group{margin-top:8px;color:var(--blue);font-weight:600;font-size:.75rem;text-transform:uppercase;letter-spacing:.5px}
+.complex{margin-top:12px;font-size:.78rem;color:var(--muted)}
+.complex div{padding:2px 0}
+.legend{font-size:.72rem;color:var(--muted);margin-top:8px;display:flex;gap:12px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<div class="top">
+  <div>
+    <a class="back" href="index.html">&larr; All visualizations</a>
+    <h1>Sorting Algorithms — Side-by-Side</h1>
+  </div>
+</div>
+
+<div class="controls">
+  <label>Array: <input type="text" id="inputArr" value="5,2,8,1,9,3,7,4,6,10"></label>
+  <button id="apply">Apply</button>
+  <button id="random">Randomize</button>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="40"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Algorithms</h3>
+    <div class="algos" id="algos"></div>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--muted)"></span>idle</span>
+      <span><span class="sw" style="background:var(--yellow)"></span>compared</span>
+      <span><span class="sw" style="background:var(--red)"></span>swapped</span>
+      <span><span class="sw" style="background:var(--blue)"></span>sorted</span>
+    </div>
+  </div>
+  <div class="panel">
+    <h3>Pseudocode <span id="curName" style="color:var(--muted);font-size:.7rem"></span></h3>
+    <div class="pseudo" id="pseudo"></div>
+    <div class="complex" id="complex"></div>
+  </div>
+</div>
+
+</div>
+<script>
+// ---------- Pseudocode definitions ----------
+const PSEUDO = {
+  bubble: {
+    complexity: 'Time: O(n²) avg/worst · O(n) best · Space: O(1) · Stable: yes',
+    lines: [
+      'function bubble(a):',
+      '  for i = 0 .. n-1:',
+      '    swapped = false',
+      '    for j = 0 .. n-i-2:',
+      '      if a[j] > a[j+1]:',
+      '        swap(a[j], a[j+1])',
+      '        swapped = true',
+      '    if not swapped: break',
+    ],
+  },
+  selection: {
+    complexity: 'Time: O(n²) all · Space: O(1) · Stable: no',
+    lines: [
+      'function selection(a):',
+      '  for i = 0 .. n-1:',
+      '    min = i',
+      '    for j = i+1 .. n-1:',
+      '      if a[j] < a[min]: min = j',
+      '    swap(a[i], a[min])',
+    ],
+  },
+  insertion: {
+    complexity: 'Time: O(n²) avg/worst · O(n) best · Space: O(1) · Stable: yes',
+    lines: [
+      'function insertion(a):',
+      '  for i = 1 .. n-1:',
+      '    key = a[i]; j = i-1',
+      '    while j >= 0 and a[j] > key:',
+      '      a[j+1] = a[j]; j = j-1',
+      '    a[j+1] = key',
+    ],
+  },
+  merge: {
+    complexity: 'Time: O(n log n) all · Space: O(n) · Stable: yes',
+    lines: [
+      'function merge_sort(a, lo, hi):',
+      '  if lo >= hi: return',
+      '  mid = (lo+hi)/2',
+      '  merge_sort(a, lo, mid)',
+      '  merge_sort(a, mid+1, hi)',
+      '  merge(a, lo, mid, hi)',
+      '',
+      'function merge(a, lo, mid, hi):',
+      '  L = a[lo..mid]; R = a[mid+1..hi]',
+      '  i=0; j=0; k=lo',
+      '  while i<|L| and j<|R|:',
+      '    if L[i] <= R[j]: a[k++] = L[i++]',
+      '    else:           a[k++] = R[j++]',
+      '  copy remaining',
+    ],
+  },
+  quick: {
+    complexity: 'Time: O(n log n) avg · O(n²) worst · Space: O(log n) · Stable: no',
+    lines: [
+      'function quick(a, lo, hi):',
+      '  if lo >= hi: return',
+      '  p = partition(a, lo, hi)',
+      '  quick(a, lo, p-1)',
+      '  quick(a, p+1, hi)',
+      '',
+      'function partition(a, lo, hi):',
+      '  pivot = a[hi]; i = lo-1',
+      '  for j = lo .. hi-1:',
+      '    if a[j] <= pivot:',
+      '      i++; swap(a[i], a[j])',
+      '  swap(a[i+1], a[hi]); return i+1',
+    ],
+  },
+};
+
+// ---------- Step generators ----------
+// Each generator yields {type, idx, j, line, ...} events that describe an animation step.
+// State of the array is mutated and snapshotted by the runner.
+
+function* genBubble(a){
+  const n = a.length;
+  for(let i=0;i<n;i++){
+    let swapped=false;
+    yield {line:1,marks:{}};
+    for(let j=0;j<n-i-1;j++){
+      yield {line:3,marks:{[j]:'cmp',[j+1]:'cmp'},cmp:1};
+      if(a[j]>a[j+1]){
+        [a[j],a[j+1]]=[a[j+1],a[j]];
+        swapped=true;
+        yield {line:5,marks:{[j]:'sw',[j+1]:'sw'},swap:1};
+      }
+    }
+    yield {line:7,marks:{[n-1-i]:'done'}};
+    if(!swapped){
+      for(let k=0;k<n-i;k++) yield {line:7,marks:{[k]:'done'}};
+      break;
+    }
+  }
+}
+
+function* genSelection(a){
+  const n=a.length;
+  for(let i=0;i<n;i++){
+    let min=i;
+    yield {line:2,marks:{[i]:'cmp'}};
+    for(let j=i+1;j<n;j++){
+      yield {line:4,marks:{[min]:'cmp',[j]:'cmp'},cmp:1};
+      if(a[j]<a[min]) min=j;
+    }
+    if(min!==i){
+      [a[i],a[min]]=[a[min],a[i]];
+      yield {line:5,marks:{[i]:'sw',[min]:'sw'},swap:1};
+    }
+    yield {line:5,marks:{[i]:'done'}};
+  }
+}
+
+function* genInsertion(a){
+  const n=a.length;
+  yield {line:0,marks:{0:'done'}};
+  for(let i=1;i<n;i++){
+    let key=a[i],j=i-1;
+    yield {line:2,marks:{[i]:'cmp'}};
+    while(j>=0 && a[j]>key){
+      yield {line:3,marks:{[j]:'cmp',[j+1]:'cmp'},cmp:1};
+      a[j+1]=a[j];
+      yield {line:4,marks:{[j]:'sw',[j+1]:'sw'},swap:1};
+      j--;
+    }
+    a[j+1]=key;
+    yield {line:5,marks:{[j+1]:'done'}};
+  }
+}
+
+function* genMerge(a){
+  function* sort(lo,hi){
+    if(lo>=hi){ yield {line:1,marks:{[lo]:'done'}}; return; }
+    const mid=(lo+hi)>>1;
+    yield {line:2,marks:rangeMark(lo,hi,'cmp')};
+    yield* sort(lo,mid);
+    yield* sort(mid+1,hi);
+    yield* merge(lo,mid,hi);
+  }
+  function* merge(lo,mid,hi){
+    const L=a.slice(lo,mid+1), R=a.slice(mid+1,hi+1);
+    let i=0,j=0,k=lo;
+    yield {line:8,marks:rangeMark(lo,hi,'cmp')};
+    while(i<L.length && j<R.length){
+      yield {line:10,marks:{[lo+i]:'cmp',[mid+1+j]:'cmp'},cmp:1};
+      if(L[i]<=R[j]){ a[k++]=L[i++]; yield {line:11,marks:{[k-1]:'sw'},swap:1}; }
+      else          { a[k++]=R[j++]; yield {line:12,marks:{[k-1]:'sw'},swap:1}; }
+    }
+    while(i<L.length){ a[k++]=L[i++]; yield {line:13,marks:{[k-1]:'sw'},swap:1}; }
+    while(j<R.length){ a[k++]=R[j++]; yield {line:13,marks:{[k-1]:'sw'},swap:1}; }
+    yield {line:13,marks:rangeMark(lo,hi,'done')};
+  }
+  yield* sort(0,a.length-1);
+}
+
+function rangeMark(lo,hi,t){ const m={}; for(let i=lo;i<=hi;i++) m[i]=t; return m; }
+
+function* genQuick(a){
+  function* sort(lo,hi){
+    if(lo>=hi){ if(lo===hi) yield {line:1,marks:{[lo]:'done'}}; return; }
+    yield {line:2,marks:rangeMark(lo,hi,'cmp')};
+    const pivot=a[hi]; let i=lo-1;
+    yield {line:7,marks:{[hi]:'cmp'}};
+    for(let j=lo;j<hi;j++){
+      yield {line:9,marks:{[j]:'cmp',[hi]:'cmp'},cmp:1};
+      if(a[j]<=pivot){
+        i++;
+        [a[i],a[j]]=[a[j],a[i]];
+        yield {line:10,marks:{[i]:'sw',[j]:'sw'},swap:1};
+      }
+    }
+    [a[i+1],a[hi]]=[a[hi],a[i+1]];
+    yield {line:11,marks:{[i+1]:'sw',[hi]:'sw'},swap:1};
+    yield {line:11,marks:{[i+1]:'done'}};
+    yield* sort(lo,i);
+    yield* sort(i+2,hi);
+  }
+  yield* sort(0,a.length-1);
+}
+
+const ALGOS = [
+  {key:'bubble',name:'Bubble',gen:genBubble},
+  {key:'selection',name:'Selection',gen:genSelection},
+  {key:'insertion',name:'Insertion',gen:genInsertion},
+  {key:'merge',name:'Merge',gen:genMerge},
+  {key:'quick',name:'Quick',gen:genQuick},
+];
+
+// ---------- Runner ----------
+let state = null;
+function init(arr){
+  const container = document.getElementById('algos');
+  container.innerHTML='';
+  state = ALGOS.map(a=>{
+    const data = arr.slice();
+    const el = document.createElement('div');
+    el.className='algo';
+    el.innerHTML = `
+      <div class="name"><h4>${a.name}</h4><div class="stats">cmp:0 swap:0</div></div>
+      <canvas></canvas>`;
+    container.appendChild(el);
+    const canvas = el.querySelector('canvas');
+    canvas.width = el.clientWidth - 24;
+    canvas.height = 120;
+    const o = {algo:a,data,el,canvas,ctx:canvas.getContext('2d'),gen:a.gen(data),done:false,cmp:0,swap:0,marks:{},lastLine:0};
+    draw(o);
+    return o;
+  });
+  setActive(ALGOS[0].key,0);
+}
+
+function draw(o){
+  const {ctx,canvas,data,marks} = o;
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  const n=data.length, w=canvas.width/n, max=Math.max(...data,1);
+  for(let i=0;i<n;i++){
+    const h=(data[i]/max)*(canvas.height-12);
+    let color = '#8b949e';
+    const m=marks[i];
+    if(m==='cmp') color='#d29922';
+    else if(m==='sw') color='#f85149';
+    else if(m==='done') color='#58a6ff';
+    ctx.fillStyle = color;
+    ctx.fillRect(i*w+1,canvas.height-h,w-2,h);
+    ctx.fillStyle='#c9d1d9';
+    ctx.font='10px monospace';
+    ctx.textAlign='center';
+    ctx.fillText(data[i], i*w+w/2, canvas.height-h-2);
+  }
+}
+
+function stepOne(o){
+  if(o.done) return false;
+  const r = o.gen.next();
+  if(r.done){ o.done=true; o.el.classList.add('done'); o.marks={}; for(let i=0;i<o.data.length;i++) o.marks[i]='done'; draw(o); updateStats(o); return false; }
+  const ev = r.value;
+  o.marks = ev.marks || {};
+  if(ev.cmp) o.cmp += ev.cmp;
+  if(ev.swap) o.swap += ev.swap;
+  o.lastLine = ev.line;
+  draw(o);
+  updateStats(o);
+  return true;
+}
+
+function updateStats(o){
+  o.el.querySelector('.stats').textContent = `cmp:${o.cmp} swap:${o.swap}`;
+}
+
+function stepAll(){
+  let any=false;
+  for(const o of state) if(stepOne(o)) any=true;
+  // pseudo follows first non-done
+  for(const o of state){ if(!o.done){ setActive(o.algo.key,o.lastLine); break; } }
+  return any;
+}
+
+function setActive(key,line){
+  const p = PSEUDO[key];
+  document.getElementById('curName').textContent = '· ' + key;
+  document.getElementById('complex').textContent = p.complexity;
+  const html = p.lines.map((s,i)=>`<div class="line ${i===line?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+  document.getElementById('pseudo').innerHTML = html;
+}
+
+// ---------- Playback ----------
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const speed = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(5, 320 - speed*3);
+  timer = setInterval(()=>{ if(!stepAll()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+// ---------- Wiring ----------
+function getArr(){
+  const raw = document.getElementById('inputArr').value;
+  const arr = raw.split(/[,\s]+/).map(s=>parseInt(s,10)).filter(n=>!isNaN(n));
+  return arr.length ? arr : [5,2,8,1,9,3];
+}
+document.getElementById('apply').onclick = ()=>{ pause(); init(getArr()); };
+document.getElementById('random').onclick = ()=>{
+  pause();
+  const n = 10;
+  const arr = Array.from({length:n},()=>1+Math.floor(Math.random()*99));
+  document.getElementById('inputArr').value = arr.join(',');
+  init(arr);
+};
+document.getElementById('step').onclick = ()=>{ pause(); stepAll(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); init(getArr()); };
+const sp = document.getElementById('speed'), sv = document.getElementById('speedVal');
+sp.oninput = ()=>{ sv.textContent = sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent = sp.value+'%';
+
+init(getArr());
+window.addEventListener('resize', ()=>{ for(const o of state){ o.canvas.width = o.el.clientWidth - 24; draw(o); } });
+</script>
+</body>
+</html>

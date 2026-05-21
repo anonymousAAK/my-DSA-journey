@@ -4,16 +4,16 @@ Topics covered this week: Java fundamentals, input/output, primitive datatypes, 
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Two Sum | Easy | Array / Hashing | https://leetcode.com/problems/two-sum/ |
-| 2 | Palindrome Number | Easy | Math / Digits | https://leetcode.com/problems/palindrome-number/ |
-| 3 | Reverse Integer | Easy | Math / Overflow | https://leetcode.com/problems/reverse-integer/ |
-| 4 | Fizz Buzz | Easy | Conditionals | https://leetcode.com/problems/fizz-buzz/ |
-| 5 | Add Digits | Easy | Math / Digit manipulation | https://leetcode.com/problems/add-digits/ |
-| 6 | Plus One | Easy | Array / Math | https://leetcode.com/problems/plus-one/ |
-| 7 | Number of 1 Bits | Easy | Bit basics (preview) | https://leetcode.com/problems/number-of-1-bits/ |
-| 8 | Running Sum of 1d Array | Easy | Array iteration | https://leetcode.com/problems/running-sum-of-1d-array/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Two Sum | Easy | Array / Hashing | https://leetcode.com/problems/two-sum/ | Google, Amazon, Meta, Apple |
+| 2 | Palindrome Number | Easy | Math / Digits | https://leetcode.com/problems/palindrome-number/ | Google, Amazon, Apple |
+| 3 | Reverse Integer | Easy | Math / Overflow | https://leetcode.com/problems/reverse-integer/ | Apple, Amazon, Bloomberg |
+| 4 | Fizz Buzz | Easy | Conditionals | https://leetcode.com/problems/fizz-buzz/ | Microsoft, Amazon, Bloomberg |
+| 5 | Add Digits | Easy | Math / Digit manipulation | https://leetcode.com/problems/add-digits/ | Common |
+| 6 | Plus One | Easy | Array / Math | https://leetcode.com/problems/plus-one/ | Google, Amazon, Meta |
+| 7 | Number of 1 Bits | Easy | Bit basics (preview) | https://leetcode.com/problems/number-of-1-bits/ | Apple, Microsoft, Amazon |
+| 8 | Running Sum of 1d Array | Easy | Array iteration | https://leetcode.com/problems/running-sum-of-1d-array/ | Common |
 
 ## Stretch Problems
 

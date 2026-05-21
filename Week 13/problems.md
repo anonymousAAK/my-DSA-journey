@@ -4,18 +4,18 @@ Topics covered this week: queues, deques, circular queues, BFS preview, sliding 
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Implement Queue using Stacks | Easy | Two stacks | https://leetcode.com/problems/implement-queue-using-stacks/ |
-| 2 | Implement Stack using Queues | Easy | Inverse construct | https://leetcode.com/problems/implement-stack-using-queues/ |
-| 3 | Design Circular Queue | Medium | Ring buffer | https://leetcode.com/problems/design-circular-queue/ |
-| 4 | Design Circular Deque | Medium | Doubly-ended ring | https://leetcode.com/problems/design-circular-deque/ |
-| 5 | Number of Recent Calls | Easy | Sliding queue | https://leetcode.com/problems/number-of-recent-calls/ |
-| 6 | Sliding Window Maximum | Hard | Monotonic deque | https://leetcode.com/problems/sliding-window-maximum/ |
-| 7 | Open the Lock | Medium | BFS on states | https://leetcode.com/problems/open-the-lock/ |
-| 8 | Perfect Squares | Medium | BFS / DP | https://leetcode.com/problems/perfect-squares/ |
-| 9 | Rotting Oranges | Medium | Multi-source BFS | https://leetcode.com/problems/rotting-oranges/ |
-| 10 | Walls and Gates | Medium | Multi-source BFS | https://leetcode.com/problems/walls-and-gates/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Implement Queue using Stacks | Easy | Two stacks | https://leetcode.com/problems/implement-queue-using-stacks/ | Microsoft, Amazon, Bloomberg |
+| 2 | Implement Stack using Queues | Easy | Inverse construct | https://leetcode.com/problems/implement-stack-using-queues/ | Microsoft, Amazon, Bloomberg |
+| 3 | Design Circular Queue | Medium | Ring buffer | https://leetcode.com/problems/design-circular-queue/ | Amazon, Google, Common |
+| 4 | Design Circular Deque | Medium | Doubly-ended ring | https://leetcode.com/problems/design-circular-deque/ | Common |
+| 5 | Number of Recent Calls | Easy | Sliding queue | https://leetcode.com/problems/number-of-recent-calls/ | Amazon, Common |
+| 6 | Sliding Window Maximum | Hard | Monotonic deque | https://leetcode.com/problems/sliding-window-maximum/ | Amazon, Meta, Google, Microsoft |
+| 7 | Open the Lock | Medium | BFS on states | https://leetcode.com/problems/open-the-lock/ | Google, Amazon, Common |
+| 8 | Perfect Squares | Medium | BFS / DP | https://leetcode.com/problems/perfect-squares/ | Common |
+| 9 | Rotting Oranges | Medium | Multi-source BFS | https://leetcode.com/problems/rotting-oranges/ | Amazon, Meta, Google, Microsoft |
+| 10 | Walls and Gates | Medium | Multi-source BFS | https://leetcode.com/problems/walls-and-gates/ | Meta, Amazon, Google |
 
 ## Stretch Problems
 

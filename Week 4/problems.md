@@ -4,16 +4,16 @@ Topics covered this week: pattern printing (pyramids, triangles, diamonds), nest
 
 ## Curated Problems
 
-| # | Problem | Difficulty | Topic | Link |
-|---|---------|------------|-------|------|
-| 1 | Pascal's Triangle | Easy | Row generation | https://leetcode.com/problems/pascals-triangle/ |
-| 2 | Pascal's Triangle II | Easy | In-place row | https://leetcode.com/problems/pascals-triangle-ii/ |
-| 3 | Generate Parentheses | Medium | Pattern building (preview) | https://leetcode.com/problems/generate-parentheses/ |
-| 4 | Spiral Matrix | Medium | Layered traversal | https://leetcode.com/problems/spiral-matrix/ |
-| 5 | Spiral Matrix II | Medium | Generate spiral pattern | https://leetcode.com/problems/spiral-matrix-ii/ |
-| 6 | Count and Say | Medium | String pattern generation | https://leetcode.com/problems/count-and-say/ |
-| 7 | Diagonal Traverse | Medium | Index pattern | https://leetcode.com/problems/diagonal-traverse/ |
-| 8 | Print in Order | Easy | Sequential pattern | https://leetcode.com/problems/print-in-order/ |
+| # | Problem | Difficulty | Topic | Link | Companies |
+|---|---------|------------|-------|------|------|
+| 1 | Pascal's Triangle | Easy | Row generation | https://leetcode.com/problems/pascals-triangle/ | Amazon, Apple, Bloomberg |
+| 2 | Pascal's Triangle II | Easy | In-place row | https://leetcode.com/problems/pascals-triangle-ii/ | Amazon, Apple, Common |
+| 3 | Generate Parentheses | Medium | Pattern building (preview) | https://leetcode.com/problems/generate-parentheses/ | Amazon, Meta, Microsoft, Google |
+| 4 | Spiral Matrix | Medium | Layered traversal | https://leetcode.com/problems/spiral-matrix/ | Microsoft, Amazon, Google, Meta |
+| 5 | Spiral Matrix II | Medium | Generate spiral pattern | https://leetcode.com/problems/spiral-matrix-ii/ | Common |
+| 6 | Count and Say | Medium | String pattern generation | https://leetcode.com/problems/count-and-say/ | Meta, Amazon, Apple, Google |
+| 7 | Diagonal Traverse | Medium | Index pattern | https://leetcode.com/problems/diagonal-traverse/ | Amazon, Walmart, Common |
+| 8 | Print in Order | Easy | Sequential pattern | https://leetcode.com/problems/print-in-order/ | Common |
 
 ## Stretch Problems
 

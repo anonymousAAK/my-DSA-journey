@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Binary Search Visualization</title>
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{--bg:#0d1117;--card:#161b22;--border:#30363d;--text:#c9d1d9;--muted:#8b949e;--blue:#58a6ff;--green:#3fb950;--yellow:#d29922;--red:#f85149;--gradient:linear-gradient(135deg,#58a6ff,#3fb950)}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Helvetica,Arial,sans-serif;background:var(--bg);color:var(--text);line-height:1.55;padding:20px;min-height:100vh}
+.wrap{max-width:1300px;margin:0 auto}
+.top h1{font-size:1.5rem;background:var(--gradient);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:6px}
+.back{color:var(--blue);text-decoration:none;font-size:.85rem;display:inline-block;margin-bottom:14px}
+.back:hover{color:var(--green)}
+.controls{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:14px;margin-bottom:16px;display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.controls button,.controls input{background:#0d1117;color:var(--text);border:1px solid var(--border);border-radius:6px;padding:6px 14px;font-size:.85rem;cursor:pointer;transition:all .15s}
+.controls button:hover{border-color:var(--blue);color:var(--blue)}
+.controls button:disabled{opacity:.4;cursor:not-allowed}
+.controls label{font-size:.8rem;color:var(--muted);display:flex;align-items:center;gap:6px}
+.controls input[type=number]{width:80px}
+.layout{display:grid;grid-template-columns:1fr 360px;gap:16px}
+@media(max-width:1000px){.layout{grid-template-columns:1fr}}
+.panel{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+.panel h3{font-size:.95rem;color:var(--blue);margin-bottom:10px;text-transform:uppercase;letter-spacing:.5px}
+canvas{display:block;width:100%;background:#0d1117;border:1px solid var(--border);border-radius:6px}
+.pseudo{font-family:'SF Mono',Monaco,Consolas,monospace;font-size:.82rem;line-height:1.55;background:#0d1117;border-radius:6px;padding:10px;max-height:420px;overflow-y:auto}
+.pseudo .line{padding:3px 8px;border-radius:3px;color:var(--muted);white-space:pre}
+.pseudo .line.active{background:rgba(88,166,255,.15);color:var(--text)}
+.stats{margin-top:12px;font-size:.85rem;color:var(--muted);font-family:monospace}
+.stats div{padding:2px 0}
+.stats .lbl{color:var(--green);display:inline-block;min-width:90px}
+.status{margin-top:12px;padding:10px;border-radius:6px;font-size:.85rem;display:none}
+.status.found{display:block;background:rgba(63,185,80,.1);border:1px solid var(--green);color:var(--green)}
+.status.notfound{display:block;background:rgba(248,81,73,.1);border:1px solid var(--red);color:var(--red)}
+.legend{font-size:.72rem;color:var(--muted);margin-top:10px;display:flex;gap:12px;flex-wrap:wrap}
+.legend span{display:flex;align-items:center;gap:4px}
+.legend .sw{width:10px;height:10px;border-radius:2px;display:inline-block}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="back" href="index.html">&larr; All visualizations</a>
+<div class="top"><h1>Binary Search</h1></div>
+
+<div class="controls">
+  <label>Target: <input type="number" id="target" value="37"></label>
+  <button id="apply">Search</button>
+  <button id="random">Randomize array</button>
+  <button id="step">Step</button>
+  <button id="play">Play</button>
+  <button id="pause" disabled>Pause</button>
+  <button id="reset">Reset</button>
+  <label>Speed: <input type="range" id="speed" min="1" max="100" value="40"></label>
+  <span id="speedVal" style="color:var(--muted);font-size:.78rem"></span>
+</div>
+
+<div class="layout">
+  <div class="panel">
+    <h3>Sorted Array (n=20)</h3>
+    <canvas id="cv" height="220"></canvas>
+    <div class="legend">
+      <span><span class="sw" style="background:var(--muted)"></span>out of range</span>
+      <span><span class="sw" style="background:#22272e"></span>in [lo, hi]</span>
+      <span><span class="sw" style="background:var(--yellow)"></span>mid</span>
+      <span><span class="sw" style="background:var(--green)"></span>found</span>
+      <span><span class="sw" style="background:var(--red)"></span>target</span>
+    </div>
+    <div class="stats" id="stats"></div>
+    <div class="status" id="status"></div>
+  </div>
+  <div class="panel">
+    <h3>Pseudocode</h3>
+    <div class="pseudo" id="pseudo"></div>
+    <div class="stats" style="margin-top:14px">
+      <div>Complexity: <span style="color:var(--text)">O(log n)</span></div>
+      <div>Space: <span style="color:var(--text)">O(1)</span></div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+const LINES = [
+  'function bsearch(a, target):',          // 0
+  '  lo = 0; hi = n - 1',                   // 1
+  '  while lo <= hi:',                       // 2
+  '    mid = lo + (hi - lo) / 2',           // 3
+  '    if a[mid] == target:',                // 4
+  '      return mid',                         // 5
+  '    if a[mid] < target:',                  // 6
+  '      lo = mid + 1',                       // 7
+  '    else:',                                  // 8
+  '      hi = mid - 1',                       // 9
+  '  return -1',                                // 10
+];
+
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+
+let arr=[], target=37, lo=0, hi=0, mid=-1, foundAt=-1, exhausted=false;
+let steps=[], si=0;
+let ops=0, comparisons=0;
+
+function makeArr(){
+  const set = new Set();
+  while(set.size<20) set.add(1 + Math.floor(Math.random()*80));
+  return Array.from(set).sort((a,b)=>a-b);
+}
+
+function plan(){
+  // build a sequence of "states" for stepping
+  steps = [];
+  let l=0, h=arr.length-1;
+  steps.push({line:1,lo:l,hi:h,mid:-1});
+  while(l<=h){
+    steps.push({line:2,lo:l,hi:h,mid:-1});
+    const m = l + ((h-l)>>1);
+    steps.push({line:3,lo:l,hi:h,mid:m});
+    steps.push({line:4,lo:l,hi:h,mid:m,cmp:1});
+    if(arr[m]===target){
+      steps.push({line:5,lo:l,hi:h,mid:m,found:m});
+      return;
+    }
+    steps.push({line:6,lo:l,hi:h,mid:m,cmp:1});
+    if(arr[m]<target){
+      l=m+1;
+      steps.push({line:7,lo:l,hi:h,mid:m});
+    } else {
+      h=m-1;
+      steps.push({line:9,lo:l,hi:h,mid:m});
+    }
+  }
+  steps.push({line:10,lo:l,hi:h,mid:-1,notFound:true});
+}
+
+function applyState(s){
+  lo=s.lo; hi=s.hi; mid=s.mid;
+  if(s.cmp) comparisons++;
+  ops++;
+  if(s.found!==undefined) foundAt=s.found;
+  if(s.notFound) exhausted=true;
+  curLine = s.line;
+}
+
+let curLine=0;
+
+function draw(){
+  // canvas size
+  const W = cv.clientWidth;
+  cv.width = W;
+  cv.height = 220;
+  ctx.clearRect(0,0,cv.width,cv.height);
+  const n=arr.length;
+  const pad=10;
+  const cellW = (cv.width - 2*pad) / n;
+  const y = 80, h = 60;
+
+  for(let i=0;i<n;i++){
+    const x = pad + i*cellW;
+    let bg = '#22272e', fg=getComputedStyle(document.body).color;
+    let inRange = i>=lo && i<=hi;
+    if(!inRange){ bg='#161b22'; fg='var(--muted)'; }
+    if(i===mid && mid>=0){ bg='#d29922'; fg='#0d1117'; }
+    if(i===foundAt){ bg='#3fb950'; fg='#0d1117'; }
+    ctx.fillStyle = bg;
+    ctx.fillRect(x+1, y, cellW-2, h);
+    ctx.strokeStyle='#30363d';
+    ctx.strokeRect(x+1, y, cellW-2, h);
+
+    if(arr[i]===target && foundAt<0){
+      ctx.strokeStyle='#f85149';
+      ctx.lineWidth=2;
+      ctx.strokeRect(x+2, y+1, cellW-4, h-2);
+      ctx.lineWidth=1;
+    }
+
+    ctx.fillStyle = fg==='var(--muted)' ? '#8b949e' : '#c9d1d9';
+    if(i===mid || i===foundAt) ctx.fillStyle='#0d1117';
+    ctx.font='bold 13px monospace';
+    ctx.textAlign='center';
+    ctx.textBaseline='middle';
+    ctx.fillText(arr[i], x+cellW/2, y+h/2);
+    // index
+    ctx.fillStyle='#8b949e';
+    ctx.font='10px monospace';
+    ctx.fillText(i, x+cellW/2, y+h+12);
+  }
+
+  // pointer labels
+  function ptr(idx,label,color,dy){
+    if(idx<0||idx>=n) return;
+    const x = pad + idx*cellW + cellW/2;
+    ctx.fillStyle = color;
+    ctx.font='bold 11px monospace';
+    ctx.textAlign='center';
+    ctx.fillText(label, x, y - 10 - dy);
+    ctx.beginPath();
+    ctx.moveTo(x, y-2-dy);
+    ctx.lineTo(x-4, y-12-dy);
+    ctx.lineTo(x+4, y-12-dy);
+    ctx.closePath();
+    ctx.fill();
+  }
+  ptr(lo,'lo','#58a6ff',0);
+  ptr(hi,'hi','#a371f7',0);
+  ptr(mid,'mid','#d29922',18);
+
+  // pseudo
+  document.getElementById('pseudo').innerHTML =
+    LINES.map((s,i)=>`<div class="line ${i===curLine?'active':''}">${s.length?s:'&nbsp;'}</div>`).join('');
+
+  document.getElementById('stats').innerHTML = `
+    <div><span class="lbl">target</span> ${target}</div>
+    <div><span class="lbl">lo</span> ${lo}</div>
+    <div><span class="lbl">hi</span> ${hi}</div>
+    <div><span class="lbl">mid</span> ${mid<0?'—':mid+' (a[mid]='+arr[mid]+')'}</div>
+    <div><span class="lbl">comparisons</span> ${comparisons}</div>
+    <div><span class="lbl">ops</span> ${ops}</div>`;
+
+  const status=document.getElementById('status');
+  status.className='status';
+  if(foundAt>=0){ status.className='status found'; status.textContent=`Found ${target} at index ${foundAt} in ${comparisons} comparisons.`; }
+  else if(exhausted){ status.className='status notfound'; status.textContent=`${target} not present (lo > hi after ${comparisons} comparisons).`; }
+}
+
+function reset(rebuild){
+  if(rebuild){ arr = makeArr(); }
+  target = parseInt(document.getElementById('target').value,10);
+  if(isNaN(target)) target=arr[Math.floor(arr.length/2)];
+  lo=0; hi=arr.length-1; mid=-1; foundAt=-1; exhausted=false;
+  ops=0; comparisons=0; curLine=0;
+  plan();
+  si=0;
+  draw();
+}
+
+function step(){
+  if(si>=steps.length) return false;
+  applyState(steps[si++]);
+  draw();
+  return si<steps.length;
+}
+
+let playing=false, timer=null;
+function play(){
+  if(playing) return;
+  playing=true;
+  document.getElementById('play').disabled=true;
+  document.getElementById('pause').disabled=false;
+  const sp = parseInt(document.getElementById('speed').value,10);
+  const delay = Math.max(80, 900 - sp*8);
+  timer = setInterval(()=>{ if(!step()) pause(); }, delay);
+}
+function pause(){
+  playing=false;
+  document.getElementById('play').disabled=false;
+  document.getElementById('pause').disabled=true;
+  if(timer){ clearInterval(timer); timer=null; }
+}
+
+document.getElementById('apply').onclick = ()=>{ pause(); reset(false); };
+document.getElementById('random').onclick = ()=>{ pause(); reset(true); };
+document.getElementById('step').onclick = ()=>{ pause(); step(); };
+document.getElementById('play').onclick = play;
+document.getElementById('pause').onclick = pause;
+document.getElementById('reset').onclick = ()=>{ pause(); reset(false); };
+const sp=document.getElementById('speed'), sv=document.getElementById('speedVal');
+sp.oninput=()=>{ sv.textContent=sp.value+'%'; if(playing){ pause(); play(); } };
+sv.textContent=sp.value+'%';
+
+arr = makeArr();
+document.getElementById('target').value = arr[Math.floor(Math.random()*arr.length)];
+reset(false);
+window.addEventListener('resize', draw);
+</script>
+</body>
+</html>

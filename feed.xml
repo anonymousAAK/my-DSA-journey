@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<rss version="2.0">
+  <channel>
+    <title>My DSA Journey — Weekly Digest</title>
+    <link>https://github.com/anonymousAAK/my-DSA-journey</link>
+    <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 21 May 2026 06:48:48 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W21</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: How &quot;Discover Weekly&quot; is a Graph + Matrix Factorization Problem
+Pattern drill (Week 2, #2): Read an integer score 0–100 and print the letter grade: A (&gt;=90), B (&gt;=80), C (&gt;=70), D (&gt;=60), F otherwise.
+Challenge 2 (Week 2): Tax Bracket Salary Computer</description>
+      <pubDate>Thu, 21 May 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W21</guid>
+    </item>
+  </channel>
+</rss>

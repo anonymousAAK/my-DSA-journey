@@ -1,0 +1,26 @@
+{
+  "_comment": "Hidden tests for the 2026-W21 tail() competition. The grader feeds 'input' to the solution (first line is 'lines path/to/file') and compares stdout to 'expected'.",
+  "timeout_seconds": 5,
+  "tests": [
+    {
+      "name": "exact boundary",
+      "input": "3 fixtures/exact5.log",
+      "expected": "[INFO] connect\n[WARN] retry\n[ERR ] timeout"
+    },
+    {
+      "name": "fewer lines than requested",
+      "input": "10 fixtures/exact5.log",
+      "expected": "[INFO] boot\n[INFO] connect\n[WARN] retry\n[ERR ] timeout\n[INFO] shutdown"
+    },
+    {
+      "name": "zero lines",
+      "input": "0 fixtures/exact5.log",
+      "expected": ""
+    },
+    {
+      "name": "single line of a 10M-line file",
+      "input": "1 fixtures/10m.log",
+      "expected": "line-10000000"
+    }
+  ]
+}
