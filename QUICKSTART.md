@@ -16,6 +16,7 @@ You will do that loop eight times today.
 2. Copy [`docs/SOLUTION_JOURNAL.md`](docs/SOLUTION_JOURNAL.md) to `my_journal.md` in your working directory (not committed). You will append one entry per problem.
 3. Set a 4-hour timer. If you blow past a budget by more than 5 minutes on any problem, stop, peek at the reference file, and move on. The point today is *coverage of the loop*, not perfect solutions.
 4. Open your scratch editor with two panes: the problem on the left, your journal on the right.
+4. **Optional: skip the manual file-hunting** — `./scripts/journey start && ./scripts/journey next` will tell you exactly which file to open for each of the 8 problems below. The CLI is faster than manually navigating to each file.
 
 > **One rule, non-negotiable.** Attempt every problem *before* opening the reference file. Reading the answer first turns this from training into entertainment.
 

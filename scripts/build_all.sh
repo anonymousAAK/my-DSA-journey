@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Local smoke test: compile every file in every language.
-# Usage: ./scripts/build_all.sh [python|cpp|rust|java|all|quiz N]
+# Usage: ./scripts/build_all.sh [python|cpp|rust|java|all|quiz N|next [args]]
 set -e
 LANG="${1:-all}"
 
@@ -8,6 +8,12 @@ LANG="${1:-all}"
 if [ "$LANG" = "quiz" ]; then
   shift
   exec "$(dirname "$0")/journey" quiz "$@"
+fi
+
+# Convenience passthrough: `./scripts/build_all.sh next [args]` -> `./scripts/journey next [args]`
+if [ "$LANG" = "next" ]; then
+  shift
+  exec "$(dirname "$0")/journey" next "$@"
 fi
 
 run_python() { find "Week "* -maxdepth 2 -name "*.py" -print0 | xargs -0 -n1 python3 -m py_compile; echo "Python OK"; }

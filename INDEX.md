@@ -67,10 +67,41 @@ Every doc in this repo, grouped by purpose. Skim it once to know what exists; co
 
 ## 🛠️ Tools
 
-- [`scripts/build_all.sh`](scripts/build_all.sh) — local equivalent of CI smoke test.
-- [`scripts/journey`](scripts/journey) — mastery quiz CLI; `progress` shows dashboard; `progress --html` opens visual dashboard.
-- [`scripts/coverage_report.py`](scripts/coverage_report.py) — regenerates `tests/COVERAGE.md`.
-- [`scripts/ask`](scripts/ask) — AI tutor CLI; ask natural-language questions, get answers retrieved from this repo (offline by default, optional `--llm` mode). See [`docs/AI_TUTOR.md`](docs/AI_TUTOR.md).
+**Daily learning loop (the journey CLI):**
+
+- `./scripts/journey start` — 2-minute onboarding
+- `./scripts/journey next` — next session, time-scaled (`--time 15m | 30m | 1h | weekend`)
+- `./scripts/journey new-attempt <topic>` — create a workbook stub to code in
+- `./scripts/journey verify <topic> <file>` — run YOUR code against the topic's fixtures
+- `./scripts/journey reflect` — append today's reflection prompts to your journal
+- `./scripts/journey quiz N [--review]` — mastery quiz with optional FSRS interleave
+- `./scripts/journey review` — FSRS-due skills across all weeks
+- `./scripts/journey daily` — today's drill + challenge + reflection
+- `./scripts/journey progress --html` — visual dashboard
+
+See [`docs/JOURNEY_CLI.md`](docs/JOURNEY_CLI.md) for examples and the full reference.
+
+**Build / smoke test:**
+
+- `./scripts/build_all.sh [python|cpp|rust|java|all]` — local smoke test (same as CI)
+- `./scripts/build_all.sh next` — passthrough to journey CLI
+
+**Quality + coverage:**
+
+- `python scripts/quality_check.py` — 8-category schema & consistency lint
+- `python scripts/coverage_report.py` — regenerates `tests/COVERAGE.md`
+- `python scripts/build_ask_index.py` — rebuilds the AI tutor's TF-IDF index
+
+**AI tutor:**
+
+- `./scripts/ask "<question>"` — retrieve from repo content (templated response)
+- `./scripts/ask --llm "<question>"` — same, using Anthropic API if `ANTHROPIC_API_KEY` is set
+
+**Site / book / playground:**
+
+- `bash scripts/prepare_site.sh && mkdocs build` — render the static site
+- `bash scripts/build_book.sh` — generate PDF + ePub via pandoc
+- `playground/index.html` — Pyodide-powered browser playground for any python file
 
 ---
 

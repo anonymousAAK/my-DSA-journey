@@ -1,10 +1,41 @@
-# Week 29
+# Week 29 — System Design for Engineers
 
-> Self-check: `./scripts/journey quiz 29` — run the mastery checkpoints for this week.
+> Self-check: `./scripts/journey quiz 29`  |  Next session: `./scripts/journey next`
 
-Each topic is implemented in all five languages: **Java, Python, C++, Rust, and Web (HTML/JS)**. The Java track is the primary detailed walkthrough; the others mirror it with idiomatic constructs.
+## Today's session (~45 min)
 
-## Topic index
+1. **Concept** (10 min) — Read [`python/caching.py`](python/caching.py) (CONCEPT + KEY POINTS blocks).
+2. **Recognize the pattern** (5 min) — Try drills 1-5 in [`patterns.md`](patterns.md) cold.
+3. **Implement from spec** (20 min) — Pick Challenge 1 from [`challenges.md`](challenges.md). Code it in `workbook/week_29/attempts/`.
+4. **Verify YOUR code** (5 min) — `./scripts/journey verify lru_data_structures workbook/week_29/attempts/<your-file>.py`
+5. **Mastery quiz** (5 min) — `./scripts/journey quiz 29`
+
+If you got stuck: open [`python/caching.py`](python/caching.py) and diff against your attempt.
+If you finish early: drills 6-10 in `patterns.md`, or Challenge 2.
+
+**Primary language: Python.** Want to compare implementations? See the per-language table below.
+
+---
+
+## Topic overview
+
+This week covers **System Design for Engineers**. You'll touch: caching, consistent hashing, message queues, rate limiting, sharding, system design. The flagship algorithm/concept for the week is implemented in all five languages, and the Python file listed in Today's session is the canonical walkthrough.
+
+## Related materials
+
+| Resource | Use it when |
+|----------|-------------|
+| Mock interview: [`mock_interviews/06_design_rate_limiter.md`](../mock_interviews/06_design_rate_limiter.md) | A system-design conversation about rate limiting |
+| Mock interview: [`mock_interviews/07_consistent_hashing_deep_dive.md`](../mock_interviews/07_consistent_hashing_deep_dive.md) | A deep-dive system-design conversation on consistent hashing |
+| [`problems.md`](problems.md) | You want extra practice with company-tagged problems |
+
+## Reference: per-language topic index
+
+<details>
+<summary>All implementations (Java / Python / C++ / Rust / Web)</summary>
+
+**Topic index**
+
 
 | # | Topic | Java | Python | C++ | Rust | Web |
 |---|-------|------|--------|-----|------|-----|
@@ -15,7 +46,8 @@ Each topic is implemented in all five languages: **Java, Python, C++, Rust, and 
 | 5 | sharding | `java/sharding.java` | `python/sharding.py` | `cpp/sharding.cpp` | `rust/sharding.rs` | `web/sharding.html` |
 | 6 | system design | `java/system_design.java` | `python/system_design.py` | `cpp/system_design.cpp` | `rust/system_design.rs` | — |
 
-## Survey companions
+**Survey companions**
+
 
 Cross-cutting files that summarize the week or provide an interactive overview:
 
@@ -23,29 +55,8 @@ Cross-cutting files that summarize the week or provide an interactive overview:
 |-------|------|--------|-----|------|-----|
 | Interactive index | — | — | — | — | `web/index.html` |
 
-## How to run a topic file
+**Topic roadmap**
 
-From the week's directory:
-
-```bash
-# Java
-javac java/<file>.java && java -cp java <ClassName>
-
-# Python
-python3 python/<file>.py
-
-# C++
-g++ -std=c++17 cpp/<file>.cpp -o /tmp/a && /tmp/a
-
-# Rust
-rustc --edition 2021 rust/<file>.rs -o /tmp/a && /tmp/a
-
-# Web — open in a browser
-open web/<file>.html   # macOS
-xdg-open web/<file>.html   # Linux
-```
-
-## Topic roadmap
 
 - **1. caching**
 - **2. consistent hashing**
@@ -54,7 +65,13 @@ xdg-open web/<file>.html   # Linux
 - **5. sharding**
 - **6. system design**
 
-## Tradeoff Matrix
+</details>
+
+## Reference: tradeoff matrix
+
+<details>
+<summary>Approach x Time x Space x When-to-prefer</summary>
+
 
 Flagship topic: System design building blocks (caching, consistent hashing, rate limiting, sharding, message queues).
 
@@ -81,7 +98,13 @@ Flagship topic: System design building blocks (caching, consistent hashing, rate
 | Consistent hashing + virtual nodes | O(data/N) | Low | Production default |
 | Range-based | Cheap key moves | Hot ranges possible | Range scans needed |
 
-## Anti-patterns to avoid
+</details>
+
+## Reference: anti-patterns to avoid
+
+<details>
+<summary>Common mistakes specific to this week's topic</summary>
+
 
 - **Caching without a TTL** — entries live forever, drift from the source of truth, and you'll be debugging "why is the user seeing 3-day-old data" for the rest of the quarter. Always set a TTL, even a generous one.
 - **Read-through cache with thundering herd on key expiry** — when a hot key expires, N concurrent requests all miss and stampede the DB. Use single-flight, request coalescing, or stagger expiries with jitter.
@@ -89,7 +112,38 @@ Flagship topic: System design building blocks (caching, consistent hashing, rate
 - **Building a message queue on top of a DB table and polling** — works for hundreds of messages/sec, falls over past that. Use a purpose-built queue (Kafka, SQS, RabbitMQ) before you scale.
 - **Treating rate limiting as a single-node problem when the service is horizontally scaled** — N replicas each enforcing `M` requests/sec allows `N·M` total. Use a shared store (Redis with Lua) or a sticky-routing layer.
 
+</details>
+
+## Reference: how to run a topic file
+
+<details>
+<summary>Java / Python / C++ / Rust / Web one-liners</summary>
+
+
+From the week's directory:
+
+```bash
+# Java
+javac java/<file>.java && java -cp java <ClassName>
+
+# Python
+python3 python/<file>.py
+
+# C++
+g++ -std=c++17 cpp/<file>.cpp -o /tmp/a && /tmp/a
+
+# Rust
+rustc --edition 2021 rust/<file>.rs -o /tmp/a && /tmp/a
+
+# Web — open in a browser
+open web/<file>.html   # macOS
+xdg-open web/<file>.html   # Linux
+```
+
+</details>
+
 ## Reflection prompts
+
 
 - Which topic this week was hardest, and what made it hard?
 - Was there a pattern you didn't recognize and had to be told about? Which one?
