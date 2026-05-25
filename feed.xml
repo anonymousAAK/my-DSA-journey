@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Thu, 21 May 2026 06:48:48 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 25 May 2026 12:21:50 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W22</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: Why Your CDN Uses Consistent Hashing (and What Happens Without It)
+Pattern drill (Week 3, #3): Given an integer `n`, determine whether it is a power of two. n fits in 32 bits.
+Challenge 3 (Week 3): Generalized Fibonacci (Pisano Period)</description>
+      <pubDate>Mon, 25 May 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W22</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W21</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>

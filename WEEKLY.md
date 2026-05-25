@@ -1,46 +1,39 @@
-# Weekly Digest — 2026-05-21 (ISO 2026-W21)
+# Weekly Digest — 2026-05-25 (ISO 2026-W22)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**How "Discover Weekly" is a Graph + Matrix Factorization Problem**
+**Why Your CDN Uses Consistent Hashing (and What Happens Without It)**
 
-Every Monday, 500+ million Spotify users get a personalized 30-song playlist. Each playlist needs to feel like it understands you, contain songs you haven't heard before, and *not* repeat across weeks. With a catalog of ~100M tracks and hundreds of millions of users, generating 500M personalized playlists is the algorithmic equivalent of cooking 500M custom meals every week from a kitchen of 100M ingredients.
+A content delivery network has a fleet of edge servers around the world — let's say 10,000 of them — and a catalog of cacheable objects (images, JS bundles, video chunks): billions of them. When a request comes in for object `cat.jpg`, you need to pick *which* edge server caches it. The same object should land on the same cache every time (so cache hits work). When you add or remove edge servers (which happens constantly — autoscaling, failures, rolling deploys), the mapping can't change for *most* objects, or you'd invalidate the entire cache and the origin servers would melt under the traffic spike.
 
-Read it in full: [`case_studies/real_world/02_spotify_discover_weekly_graph.md`](case_studies/real_world/02_spotify_discover_weekly_graph.md)
+Read it in full: [`case_studies/real_world/03_cdn_consistent_hashing.md`](case_studies/real_world/03_cdn_consistent_hashing.md)
 
 ## Pattern drill
-_From Week 2 (drill #2)._
+_From Week 3 (drill #3)._
 
-> Read an integer score 0–100 and print the letter grade: A (>=90), B (>=80), C (>=70), D (>=60), F otherwise.
+> Given an integer `n`, determine whether it is a power of two. n fits in 32 bits.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 2/patterns.md`](Week 2/patterns.md)
+Drill source: [`Week 3/patterns.md`](Week 3/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 2 (Week 2): Tax Bracket Salary Computer
+### Challenge 3 (Week 3): Generalized Fibonacci (Pisano Period)
 
 **Spec**:
-Read a non-negative integer gross annual salary in USD. Compute the take-home pay using these progressive brackets (in order):
-- 0% on the first 10,000
-- 10% on the next 30,000 (i.e., income from 10,001 to 40,000)
-- 20% on the next 60,000 (40,001 to 100,000)
-- 30% on the next 150,000 (100,001 to 250,000)
-- 40% on everything above 250,000
-
-Print the net salary as an integer (round half-to-even). Use only `if/else` control flow — no arrays, no maps. The challenge is to compose the conditional structure cleanly.
+Read two non-negative integers `n` and `m`. Print the `n`-th Fibonacci number modulo `m`. `n` can be astronomically large, so you may not iterate `n` times; exploit the **Pisano period**: the sequence `F(i) mod m` is periodic with some period `π(m)`. Find `π(m)` by iterating until you see the pair `(0, 1)` repeat, then reduce `n mod π(m)` and print `F(n mod π(m)) mod m`.
 
 **Constraints**:
-- Input size: salary in `[0, 10^9]`
-- Time: O(1)
+- Input size: `n` up to `10^18`, `m` up to `10^4`
+- Time: O(π(m)), which is at most ~6m
 - Memory: O(1)
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 2/challenges.md`](Week 2/challenges.md)
+Full spec: [`Week 3/challenges.md`](Week 3/challenges.md)
 
 ---
 
