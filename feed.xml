@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 25 May 2026 12:21:50 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 01 Jun 2026 14:54:24 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W23</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: Caching Strategies in DNS Resolvers
+Pattern drill (Week 4, #4): Print Pascal's triangle up to row `n` (n ≤ 20), each row centered.
+Challenge 1 (Week 4): Hollow Diamond With Border</description>
+      <pubDate>Mon, 01 Jun 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W23</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W22</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>

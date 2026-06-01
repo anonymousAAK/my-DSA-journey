@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-05-25 (ISO 2026-W22)
+# Weekly Digest — 2026-06-01 (ISO 2026-W23)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Why Your CDN Uses Consistent Hashing (and What Happens Without It)**
+**Caching Strategies in DNS Resolvers**
 
-A content delivery network has a fleet of edge servers around the world — let's say 10,000 of them — and a catalog of cacheable objects (images, JS bundles, video chunks): billions of them. When a request comes in for object `cat.jpg`, you need to pick *which* edge server caches it. The same object should land on the same cache every time (so cache hits work). When you add or remove edge servers (which happens constantly — autoscaling, failures, rolling deploys), the mapping can't change for *most* objects, or you'd invalidate the entire cache and the origin servers would melt under the traffic spike.
+Every time you type a URL, your machine needs to translate the domain name (`github.com`) into an IP address. The authoritative source of that mapping is a DNS server somewhere in the world — possibly multiple hops away. If every page load required a fresh DNS lookup, the internet would feel like the 1990s again. Resolvers cache aggressively. But DNS records are sometimes wrong, sometimes change, and operators *need* changes to propagate within bounded time — so the cache can't be eternal.
 
-Read it in full: [`case_studies/real_world/03_cdn_consistent_hashing.md`](case_studies/real_world/03_cdn_consistent_hashing.md)
+Read it in full: [`case_studies/real_world/04_dns_caching.md`](case_studies/real_world/04_dns_caching.md)
 
 ## Pattern drill
-_From Week 3 (drill #3)._
+_From Week 4 (drill #4)._
 
-> Given an integer `n`, determine whether it is a power of two. n fits in 32 bits.
+> Print Pascal's triangle up to row `n` (n ≤ 20), each row centered.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 3/patterns.md`](Week 3/patterns.md)
+Drill source: [`Week 4/patterns.md`](Week 4/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 3 (Week 3): Generalized Fibonacci (Pisano Period)
+### Challenge 1 (Week 4): Hollow Diamond With Border
 
 **Spec**:
-Read two non-negative integers `n` and `m`. Print the `n`-th Fibonacci number modulo `m`. `n` can be astronomically large, so you may not iterate `n` times; exploit the **Pisano period**: the sequence `F(i) mod m` is periodic with some period `π(m)`. Find `π(m)` by iterating until you see the pair `(0, 1)` repeat, then reduce `n mod π(m)` and print `F(n mod π(m)) mod m`.
+Read an odd integer `n >= 3`. Print a "hollow diamond" of total height `n`. The diamond has `*` on its border only — interior is spaces. The widest row has `n` stars positioned with the leftmost and rightmost being `*` and everything between being a space (or just one `*` for n = 1 / first row). Use only nested loops over rows and columns. No string multiplication operators.
 
 **Constraints**:
-- Input size: `n` up to `10^18`, `m` up to `10^4`
-- Time: O(π(m)), which is at most ~6m
-- Memory: O(1)
+- Input size: `n` odd, `3 <= n <= 99`
+- Time: O(n^2)
+- Memory: O(1) extra
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 3/challenges.md`](Week 3/challenges.md)
+Full spec: [`Week 4/challenges.md`](Week 4/challenges.md)
 
 ---
 
