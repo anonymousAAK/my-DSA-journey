@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 01 Jun 2026 14:54:24 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 08 Jun 2026 13:01:02 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W24</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: How Priority Queues Power a Real-Time Feed
+Pattern drill (Week 5, #5): Compute `gcd(a, b)` for positive integers a, b ≤ 10^9.
+Challenge 2 (Week 5): Mutual Recursion: Hofstadter Female/Male</description>
+      <pubDate>Mon, 08 Jun 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W24</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W23</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
