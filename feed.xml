@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 15 Jun 2026 14:59:49 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 22 Jun 2026 14:29:56 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W26</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: How Ranking Interacts with Sorting + Priority Queues
+Pattern drill (Week 7, #7): Distractor: Given two strings `s` and `t` of length up to 10^6, decide whether `t` occurs in `s`. (Naïve is too slow — what now?)
+Challenge 3 (Week 7): KMP With Multiple Patterns at Once</description>
+      <pubDate>Mon, 22 Jun 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W26</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W25</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>

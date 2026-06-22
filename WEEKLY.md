@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-06-15 (ISO 2026-W25)
+# Weekly Digest — 2026-06-22 (ISO 2026-W26)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Git's Commit Graph as a DAG, Why Topological Sort Matters**
+**How Ranking Interacts with Sorting + Priority Queues**
 
-Git tracks the history of a codebase. Every commit references its parent commit(s), forming a graph. That graph is a **directed acyclic graph** — directed (commits point to their parents, time flows one way), and acyclic (you can't be your own ancestor). Almost every interesting Git operation is a graph-algorithm query on this DAG: "Is commit A an ancestor of commit B?" "What's the most recent common ancestor of these two branches?" "List all commits between these two tags in a sensible order."
+Facebook's News Feed ranks thousands of candidate posts per user per visit. Each user has hundreds of friends, follows hundreds of pages, may be in dozens of groups. For each session, the feed serves the "best" ~30 posts. The candidate set per user is in the low thousands; the ranking is done by an ML model that scores each candidate with a relevance prediction. Then we sort and emit the top 30. All within ~100ms of you opening the app.
 
-Read it in full: [`case_studies/real_world/06_git_dag.md`](case_studies/real_world/06_git_dag.md)
+Read it in full: [`case_studies/real_world/07_facebook_news_feed_ranking.md`](case_studies/real_world/07_facebook_news_feed_ranking.md)
 
 ## Pattern drill
-_From Week 6 (drill #6)._
+_From Week 7 (drill #7)._
 
-> Given an array, move all zeros to the end, preserving the relative order of non-zero elements. In place.
+> Distractor: Given two strings `s` and `t` of length up to 10^6, decide whether `t` occurs in `s`. (Naïve is too slow — what now?)
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 6/patterns.md`](Week 6/patterns.md)
+Drill source: [`Week 7/patterns.md`](Week 7/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 2 (Week 6): In-Place Multi-Block Rotation
+### Challenge 3 (Week 7): KMP With Multiple Patterns at Once
 
 **Spec**:
-Read `n`, `k`, and `n` integers. Rotate the array left by `k` positions **in place** using O(1) extra memory. Don't use slicing into a new buffer. Required technique: three-reversal trick OR cyclic-replacement using gcd. Print the final array.
+Read a text `t` followed by `k` patterns `p_1..p_k`. For each pattern, print on one line: the pattern, a colon, and a space-separated list of all starting indices where it occurs in `t`. You may not run KMP separately `k` times — implement Aho–Corasick (a multi-pattern generalization that builds a trie + failure links analogous to KMP's failure function).
 
 **Constraints**:
-- Input size: `1 <= n <= 10^6`, `0 <= k <= 10^9`
-- Time: O(n)
-- Memory: O(1) auxiliary
+- Input size: `|t| <= 10^6`, total pattern length `<= 10^5`, `k <= 10^4`
+- Time: O(|t| + total pattern length + total occurrences)
+- Memory: O(total pattern length)
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 6/challenges.md`](Week 6/challenges.md)
+Full spec: [`Week 7/challenges.md`](Week 7/challenges.md)
 
 ---
 
