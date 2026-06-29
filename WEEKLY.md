@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-06-22 (ISO 2026-W26)
+# Weekly Digest — 2026-06-29 (ISO 2026-W27)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**How Ranking Interacts with Sorting + Priority Queues**
+**LRU vs LFU vs ARC in Redis**
 
-Facebook's News Feed ranks thousands of candidate posts per user per visit. Each user has hundreds of friends, follows hundreds of pages, may be in dozens of groups. For each session, the feed serves the "best" ~30 posts. The candidate set per user is in the low thousands; the ranking is done by an ML model that scores each candidate with a relevance prediction. Then we sort and emit the top 30. All within ~100ms of you opening the app.
+Redis is an in-memory data store, often used as a cache in front of slower databases. A user configures Redis with a max memory cap. When that cap is hit and a new write arrives, Redis must **evict** something. The choice of *what* to evict is shockingly impactful: a wrong policy can collapse cache hit rate from 90% to 40% and double your database load. The eviction policy is also one of the most well-studied algorithmic problems in computer systems — it's essentially the page replacement problem, which was the subject of OS research literature for decades.
 
-Read it in full: [`case_studies/real_world/07_facebook_news_feed_ranking.md`](case_studies/real_world/07_facebook_news_feed_ranking.md)
+Read it in full: [`case_studies/real_world/08_lru_in_redis.md`](case_studies/real_world/08_lru_in_redis.md)
 
 ## Pattern drill
-_From Week 7 (drill #7)._
+_From Week 8 (drill #8)._
 
-> Distractor: Given two strings `s` and `t` of length up to 10^6, decide whether `t` occurs in `s`. (Naïve is too slow — what now?)
+> Find the integer square root of n (largest `k` with `k*k ≤ n`), n up to 10^18.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 7/patterns.md`](Week 7/patterns.md)
+Drill source: [`Week 8/patterns.md`](Week 8/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 3 (Week 7): KMP With Multiple Patterns at Once
+### Challenge 4 (Week 8): Aggressive Cows / Maximum Minimum Distance
 
 **Spec**:
-Read a text `t` followed by `k` patterns `p_1..p_k`. For each pattern, print on one line: the pattern, a colon, and a space-separated list of all starting indices where it occurs in `t`. You may not run KMP separately `k` times — implement Aho–Corasick (a multi-pattern generalization that builds a trie + failure links analogous to KMP's failure function).
+Read `n`, `k`, and `n` stall positions on a number line (1D coordinates). Place `k` cows in stalls so that the **minimum** distance between any two cows is maximized. Print that maximum-min distance. Sort positions first, then binary search on the distance: for a candidate `d`, greedily place cows from left to right whenever they are at least `d` apart.
 
 **Constraints**:
-- Input size: `|t| <= 10^6`, total pattern length `<= 10^5`, `k <= 10^4`
-- Time: O(|t| + total pattern length + total occurrences)
-- Memory: O(total pattern length)
+- Input size: `2 <= k <= n <= 10^5`, positions up to `10^9`
+- Time: O(n log n + n log(max position))
+- Memory: O(1) past sorting
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 7/challenges.md`](Week 7/challenges.md)
+Full spec: [`Week 8/challenges.md`](Week 8/challenges.md)
 
 ---
 

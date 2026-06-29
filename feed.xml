@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 22 Jun 2026 14:29:56 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 29 Jun 2026 13:00:24 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W27</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: LRU vs LFU vs ARC in Redis
+Pattern drill (Week 8, #8): Find the integer square root of n (largest `k` with `k*k ≤ n`), n up to 10^18.
+Challenge 4 (Week 8): Aggressive Cows / Maximum Minimum Distance</description>
+      <pubDate>Mon, 29 Jun 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W27</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W26</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
