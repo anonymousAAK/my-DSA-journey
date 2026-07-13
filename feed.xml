@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 06 Jul 2026 12:40:03 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 13 Jul 2026 11:54:56 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W29</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: Git's Commit Graph as a DAG, Why Topological Sort Matters
+Pattern drill (Week 10, #10): Given an `n × n` matrix, find the saddle point if any (minimum in its row AND maximum in its column).
+Challenge 2 (Week 10): Set Matrix Zeroes With O(1) Extra Space</description>
+      <pubDate>Mon, 13 Jul 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W29</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W28</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
