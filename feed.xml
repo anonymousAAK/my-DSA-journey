@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 13 Jul 2026 11:54:56 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 20 Jul 2026 11:38:17 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W30</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: How Ranking Interacts with Sorting + Priority Queues
+Pattern drill (Week 11, #1): Given the head of a singly linked list of up to 10^5 nodes, detect whether it contains a cycle. O(1) extra space.
+Challenge 3 (Week 11): LRU Cache From Scratch (No Library Containers)</description>
+      <pubDate>Mon, 20 Jul 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W30</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W29</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>

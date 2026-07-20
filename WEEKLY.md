@@ -1,41 +1,42 @@
-# Weekly Digest — 2026-07-13 (ISO 2026-W29)
+# Weekly Digest — 2026-07-20 (ISO 2026-W30)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Git's Commit Graph as a DAG, Why Topological Sort Matters**
+**How Ranking Interacts with Sorting + Priority Queues**
 
-Git tracks the history of a codebase. Every commit references its parent commit(s), forming a graph. That graph is a **directed acyclic graph** — directed (commits point to their parents, time flows one way), and acyclic (you can't be your own ancestor). Almost every interesting Git operation is a graph-algorithm query on this DAG: "Is commit A an ancestor of commit B?" "What's the most recent common ancestor of these two branches?" "List all commits between these two tags in a sensible order."
+Facebook's News Feed ranks thousands of candidate posts per user per visit. Each user has hundreds of friends, follows hundreds of pages, may be in dozens of groups. For each session, the feed serves the "best" ~30 posts. The candidate set per user is in the low thousands; the ranking is done by an ML model that scores each candidate with a relevance prediction. Then we sort and emit the top 30. All within ~100ms of you opening the app.
 
-Read it in full: [`case_studies/real_world/06_git_dag.md`](case_studies/real_world/06_git_dag.md)
+Read it in full: [`case_studies/real_world/07_facebook_news_feed_ranking.md`](case_studies/real_world/07_facebook_news_feed_ranking.md)
 
 ## Pattern drill
-_From Week 10 (drill #10)._
+_From Week 11 (drill #1)._
 
-> Given an `n × n` matrix, find the saddle point if any (minimum in its row AND maximum in its column).
+> Given the head of a singly linked list of up to 10^5 nodes, detect whether it contains a cycle. O(1) extra space.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 10/patterns.md`](Week 10/patterns.md)
+Drill source: [`Week 11/patterns.md`](Week 11/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 2 (Week 10): Set Matrix Zeroes With O(1) Extra Space
+### Challenge 3 (Week 11): LRU Cache From Scratch (No Library Containers)
 
 **Spec**:
-Read an `m x n` matrix of integers. If a cell is 0, set its entire row and column to 0. Do it in place with O(1) extra space — you may not use a `boolean[m] + boolean[n]` (that's O(m+n)).
+Implement an LRU cache with capacity `C`. Operations: `put(key, value)` and `get(key)` (returns `-1` if absent). Each op must be O(1) amortized. You may not use a hashmap-of-doubly-linked-list-from-the-standard-library — build the doubly linked list yourself, and you may use only a *plain* hashmap (with no LRU semantics).
 
-Hint: use the first row and first column themselves as the markers, but save two flags to remember whether the first row/column originally contained a zero.
+Read a sequence of operations from stdin and print the output of each `get`.
 
 **Constraints**:
-- Input size: `1 <= m, n <= 1000`
-- Time: O(m * n)
-- Memory: O(1) extra
+- `1 <= C <= 10^5`
+- Up to `10^6` ops
+- Time: O(1) per op
+- Memory: O(C)
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 10/challenges.md`](Week 10/challenges.md)
+Full spec: [`Week 11/challenges.md`](Week 11/challenges.md)
 
 ---
 
