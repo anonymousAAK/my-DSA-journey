@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 20 Jul 2026 11:38:17 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 27 Jul 2026 12:14:28 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W31</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: LRU vs LFU vs ARC in Redis
+Pattern drill (Week 12, #2): Evaluate a postfix arithmetic expression with tokens `+ - * /` and integer operands. Length up to 10^5.
+Challenge 4 (Week 12): Next Greater Element — Circular Array Variant</description>
+      <pubDate>Mon, 27 Jul 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W31</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W30</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
