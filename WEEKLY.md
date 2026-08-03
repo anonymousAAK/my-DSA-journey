@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-07-27 (ISO 2026-W31)
+# Weekly Digest — 2026-08-03 (ISO 2026-W32)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**LRU vs LFU vs ARC in Redis**
+**Token Bucket vs Sliding Window at Cloudflare/AWS**
 
-Redis is an in-memory data store, often used as a cache in front of slower databases. A user configures Redis with a max memory cap. When that cap is hit and a new write arrives, Redis must **evict** something. The choice of *what* to evict is shockingly impactful: a wrong policy can collapse cache hit rate from 90% to 40% and double your database load. The eviction policy is also one of the most well-studied algorithmic problems in computer systems — it's essentially the page replacement problem, which was the subject of OS research literature for decades.
+A public API needs to throttle clients. Each client is allowed, say, 1,000 requests per minute. Above that, return HTTP 429. The naïve implementation breaks in a dozen ways at scale: clock skew between machines, bursty legitimate traffic, distributed state across thousands of front-ends, the desire to support multiple rate-limit tiers (per second, per minute, per day) on the same client. Cloudflare processes tens of millions of req/sec at edge; AWS API Gateway is similar. Their rate limiter has to be both algorithmically right and operationally fast.
 
-Read it in full: [`case_studies/real_world/08_lru_in_redis.md`](case_studies/real_world/08_lru_in_redis.md)
+Read it in full: [`case_studies/real_world/09_rate_limiting_at_scale.md`](case_studies/real_world/09_rate_limiting_at_scale.md)
 
 ## Pattern drill
-_From Week 12 (drill #2)._
+_From Week 13 (drill #3)._
 
-> Evaluate a postfix arithmetic expression with tokens `+ - * /` and integer operands. Length up to 10^5.
+> Given an undirected graph with up to 10^5 nodes, find the shortest path (in edges) from node `s` to every other node.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 12/patterns.md`](Week 12/patterns.md)
+Drill source: [`Week 13/patterns.md`](Week 13/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 4 (Week 12): Next Greater Element — Circular Array Variant
+### Challenge 1 (Week 13): Sliding Window Maximum via Monotonic Deque
 
 **Spec**:
-Read `n` and `n` integers viewed as a **circular** array (after the last element comes the first). For each index `i`, find the next greater element when scanning forward (with wrap-around). If none exists, output `-1`. Required complexity O(n) using a monotonic stack on a "doubled" iteration of indices.
+Read `n`, `k`, and `n` integers. For every window of size `k`, print the maximum. Required complexity O(n) using a monotonic-decreasing deque of indices. The O(n log k) heap approach is acceptable for stretch credit only; the O(n k) brute force is forbidden.
 
 **Constraints**:
-- `1 <= n <= 10^6`, values in `[-10^9, 10^9]`
+- `1 <= k <= n <= 10^6`
 - Time: O(n)
-- Memory: O(n)
+- Memory: O(k)
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 12/challenges.md`](Week 12/challenges.md)
+Full spec: [`Week 13/challenges.md`](Week 13/challenges.md)
 
 ---
 

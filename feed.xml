@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 27 Jul 2026 12:14:28 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 03 Aug 2026 12:14:54 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W32</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: Token Bucket vs Sliding Window at Cloudflare/AWS
+Pattern drill (Week 13, #3): Given an undirected graph with up to 10^5 nodes, find the shortest path (in edges) from node `s` to every other node.
+Challenge 1 (Week 13): Sliding Window Maximum via Monotonic Deque</description>
+      <pubDate>Mon, 03 Aug 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W32</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W31</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
