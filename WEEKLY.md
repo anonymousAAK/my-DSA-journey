@@ -1,39 +1,43 @@
-# Weekly Digest — 2026-08-03 (ISO 2026-W32)
+# Weekly Digest — 2026-08-10 (ISO 2026-W33)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Token Bucket vs Sliding Window at Cloudflare/AWS**
+**Bloom Filters for Safe Browsing**
 
-A public API needs to throttle clients. Each client is allowed, say, 1,000 requests per minute. Above that, return HTTP 429. The naïve implementation breaks in a dozen ways at scale: clock skew between machines, bursty legitimate traffic, distributed state across thousands of front-ends, the desire to support multiple rate-limit tiers (per second, per minute, per day) on the same client. Cloudflare processes tens of millions of req/sec at edge; AWS API Gateway is similar. Their rate limiter has to be both algorithmically right and operationally fast.
+Google's Safe Browsing service maintains a list of millions of URLs known to host malware or phishing. Chrome checks every URL you navigate to against this list and warns you before loading dangerous pages. The catch: shipping the entire list to every Chrome client is unreasonable — it's gigabytes. Querying Google for every URL you visit would leak your entire browsing history. So the local check has to be **on-device**, *fast*, and **compact**.
 
-Read it in full: [`case_studies/real_world/09_rate_limiting_at_scale.md`](case_studies/real_world/09_rate_limiting_at_scale.md)
+Read it in full: [`case_studies/real_world/10_bloom_filters_at_chrome.md`](case_studies/real_world/10_bloom_filters_at_chrome.md)
 
 ## Pattern drill
-_From Week 13 (drill #3)._
+_From Week 14 (drill #4)._
 
-> Given an undirected graph with up to 10^5 nodes, find the shortest path (in edges) from node `s` to every other node.
+> Given two nodes `u` and `v` in a binary tree, find their lowest common ancestor. n ≤ 10^5.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 13/patterns.md`](Week 13/patterns.md)
+Drill source: [`Week 14/patterns.md`](Week 14/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 1 (Week 13): Sliding Window Maximum via Monotonic Deque
+### Challenge 2 (Week 14): Lowest Common Ancestor in a BST and in a General Binary Tree
 
 **Spec**:
-Read `n`, `k`, and `n` integers. For every window of size `k`, print the maximum. Required complexity O(n) using a monotonic-decreasing deque of indices. The O(n log k) heap approach is acceptable for stretch credit only; the O(n k) brute force is forbidden.
+Implement two LCA functions:
+1. For a BST: O(h) using the BST property (descend left/right based on comparisons).
+2. For a general binary tree: O(n) using a single recursive postorder pass that returns either the found node or null.
+
+Read the tree (level-order with `null`), then read pairs `(u, v)` and print their LCA value.
 
 **Constraints**:
-- `1 <= k <= n <= 10^6`
-- Time: O(n)
-- Memory: O(k)
+- Up to `10^5` nodes
+- Time: BST O(h), general O(n) per query
+- Memory: O(h) recursion
 
 **Test inputs**:
-| Input | Expected output |
+| Tree | Query | Expected |
 |
 
-Full spec: [`Week 13/challenges.md`](Week 13/challenges.md)
+Full spec: [`Week 14/challenges.md`](Week 14/challenges.md)
 
 ---
 
