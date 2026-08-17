@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 10 Aug 2026 10:10:42 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 17 Aug 2026 09:33:14 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W34</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: B-trees vs LSM Trees vs Hash Indexes
+Pattern drill (Week 15, #5): Given an array of CPU tasks with cooldown constraints (same task needs ≥ n idle time between consecutive runs), return the minimum total time. Up to 10^4 tasks.
+Challenge 3 (Week 15): K-th Largest Element With Constant-Memory Online Selection</description>
+      <pubDate>Mon, 17 Aug 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W34</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W33</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>

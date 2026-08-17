@@ -1,43 +1,39 @@
-# Weekly Digest — 2026-08-10 (ISO 2026-W33)
+# Weekly Digest — 2026-08-17 (ISO 2026-W34)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Bloom Filters for Safe Browsing**
+**B-trees vs LSM Trees vs Hash Indexes**
 
-Google's Safe Browsing service maintains a list of millions of URLs known to host malware or phishing. Chrome checks every URL you navigate to against this list and warns you before loading dangerous pages. The catch: shipping the entire list to every Chrome client is unreasonable — it's gigabytes. Querying Google for every URL you visit would leak your entire browsing history. So the local check has to be **on-device**, *fast*, and **compact**.
+A relational database needs to find rows fast. The table might have a billion rows; finding by primary key needs to be sub-millisecond. The database also needs to insert, update, and delete rows, *and* support range queries (`WHERE created_at BETWEEN ? AND ?`). All this while the data lives on disk — far slower than RAM — and while concurrent transactions are mutating things.
 
-Read it in full: [`case_studies/real_world/10_bloom_filters_at_chrome.md`](case_studies/real_world/10_bloom_filters_at_chrome.md)
+Read it in full: [`case_studies/real_world/11_database_indexes_btree.md`](case_studies/real_world/11_database_indexes_btree.md)
 
 ## Pattern drill
-_From Week 14 (drill #4)._
+_From Week 15 (drill #5)._
 
-> Given two nodes `u` and `v` in a binary tree, find their lowest common ancestor. n ≤ 10^5.
+> Given an array of CPU tasks with cooldown constraints (same task needs ≥ n idle time between consecutive runs), return the minimum total time. Up to 10^4 tasks.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 14/patterns.md`](Week 14/patterns.md)
+Drill source: [`Week 15/patterns.md`](Week 15/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 2 (Week 14): Lowest Common Ancestor in a BST and in a General Binary Tree
+### Challenge 3 (Week 15): K-th Largest Element With Constant-Memory Online Selection
 
 **Spec**:
-Implement two LCA functions:
-1. For a BST: O(h) using the BST property (descend left/right based on comparisons).
-2. For a general binary tree: O(n) using a single recursive postorder pass that returns either the found node or null.
-
-Read the tree (level-order with `null`), then read pairs `(u, v)` and print their LCA value.
+Process a stream and, after every insert, print the `k`-th largest value seen so far (or `-1` if fewer than `k` values). Required: O(log k) per insert, O(k) memory. Technique: a min-heap of size `k` — the heap's root is the k-th largest.
 
 **Constraints**:
-- Up to `10^5` nodes
-- Time: BST O(h), general O(n) per query
-- Memory: O(h) recursion
+- `1 <= k <= 10^5`, stream up to `10^7`
+- Time: O(log k) per insert
+- Memory: O(k)
 
 **Test inputs**:
-| Tree | Query | Expected |
+| Input | Expected output |
 |
 
-Full spec: [`Week 14/challenges.md`](Week 14/challenges.md)
+Full spec: [`Week 15/challenges.md`](Week 15/challenges.md)
 
 ---
 
