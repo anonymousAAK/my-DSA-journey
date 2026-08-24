@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-08-17 (ISO 2026-W34)
+# Weekly Digest — 2026-08-24 (ISO 2026-W35)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**B-trees vs LSM Trees vs Hash Indexes**
+**Rope Data Structure in VS Code / Sublime**
 
-A relational database needs to find rows fast. The table might have a billion rows; finding by primary key needs to be sub-millisecond. The database also needs to insert, update, and delete rows, *and* support range queries (`WHERE created_at BETWEEN ? AND ?`). All this while the data lives on disk — far slower than RAM — and while concurrent transactions are mutating things.
+A text editor displays a document and lets the user type, delete, paste, and undo. If the document is 10 lines, any data structure works — even a flat string. If it's a 500 MB log file or a 200,000-line generated source file, naïve representations collapse: inserting one character at the beginning of a 500 MB string would require shifting all 500 MB. VS Code, Sublime, Atom, Vim — all face this. How do you represent a giant editable document so every keystroke is fast?
 
-Read it in full: [`case_studies/real_world/11_database_indexes_btree.md`](case_studies/real_world/11_database_indexes_btree.md)
+Read it in full: [`case_studies/real_world/12_text_editor_rope.md`](case_studies/real_world/12_text_editor_rope.md)
 
 ## Pattern drill
-_From Week 15 (drill #5)._
+_From Week 16 (drill #6)._
 
-> Given an array of CPU tasks with cooldown constraints (same task needs ≥ n idle time between consecutive runs), return the minimum total time. Up to 10^4 tasks.
+> Distractor: Given a *sorted* array and a target sum, find a pair summing to T. (Should you use a hash set?)
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 15/patterns.md`](Week 15/patterns.md)
+Drill source: [`Week 16/patterns.md`](Week 16/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 3 (Week 15): K-th Largest Element With Constant-Memory Online Selection
+### Challenge 1 (Week 16): Custom Open-Addressing HashMap
 
 **Spec**:
-Process a stream and, after every insert, print the `k`-th largest value seen so far (or `-1` if fewer than `k` values). Required: O(log k) per insert, O(k) memory. Technique: a min-heap of size `k` — the heap's root is the k-th largest.
+Implement a hashmap from scratch using **open addressing with linear probing** (or quadratic — pick one). No `HashMap` library. Support `put`, `get`, `remove`. Use a tombstone marker for deletions. Resize (double + rehash) when load factor exceeds 0.7. Implement your own hash function for integer or string keys.
 
 **Constraints**:
-- `1 <= k <= 10^5`, stream up to `10^7`
-- Time: O(log k) per insert
-- Memory: O(k)
+- Up to `10^6` ops
+- Time: O(1) amortized per op
+- Memory: O(capacity)
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 15/challenges.md`](Week 15/challenges.md)
+Full spec: [`Week 16/challenges.md`](Week 16/challenges.md)
 
 ---
 
