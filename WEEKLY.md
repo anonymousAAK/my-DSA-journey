@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-08-31 (ISO 2026-W36)
+# Weekly Digest — 2026-09-07 (ISO 2026-W37)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**What grep / ripgrep Actually Do**
+**PageRank as a Graph Algorithm**
 
-You type `grep "foo" *.log` and a tool scans gigabytes of text looking for matches. You don't think about it — it's instant. But "find substring in a file" is one of the most studied algorithmic problems in computer science, with a rich history of algorithms ranging from "obvious and slow" to "subtle and astonishingly fast." Modern tools (GNU grep, ripgrep, ag) routinely outperform what a naïve implementation could do by 10-100x.
+Imagine you've just built the first web crawler, and you have a corpus of millions of pages. A user types "computer science"; thousands of pages match. Which do you show first? The pre-Google search engines (AltaVista, Lycos, Excite) ranked by keyword frequency, page length, and other content-only features. The result was a mess of keyword-stuffed garbage. Sergey Brin and Larry Page's 1998 insight: **use the link structure of the web itself as a quality signal**. If many pages link to a page, it's probably important. If important pages link to it, it's even more important.
 
-Read it in full: [`case_studies/real_world/13_grep_kmp_aho_corasick.md`](case_studies/real_world/13_grep_kmp_aho_corasick.md)
+Read it in full: [`case_studies/real_world/14_pagerank_eigenvectors.md`](case_studies/real_world/14_pagerank_eigenvectors.md)
 
 ## Pattern drill
-_From Week 17 (drill #7)._
+_From Week 18 (drill #8)._
 
-> Distractor: Given a weighted graph with non-negative edges, find the shortest path from `s` to `t`. (Is BFS enough?)
+> Given a string of length n ≤ 500, find the length of the longest palindromic subsequence (not necessarily contiguous).
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 17/patterns.md`](Week 17/patterns.md)
+Drill source: [`Week 18/patterns.md`](Week 18/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 2 (Week 17): Count Distinct Shortest Paths in an Unweighted Graph
+### Challenge 2 (Week 18): Longest Increasing Subsequence in O(n log n)
 
 **Spec**:
-Read `n`, `m`, and `m` edges of an undirected unweighted graph (1-indexed vertices). Read `s` and `t`. Print the number of distinct shortest paths from `s` to `t` modulo `10^9 + 7`. Use BFS computing `dist[v]` and `count[v]` simultaneously: when relaxing `v` from `u`, if `dist[v] == dist[u] + 1` add `count[u]` to `count[v]`.
+Read `n` and `n` integers. Print the length of the longest strictly increasing subsequence. Required complexity O(n log n) using patience sorting (maintain `tails[k]` = smallest tail of any increasing subsequence of length `k+1`; binary-search to update). The O(n^2) classic DP is forbidden.
 
 **Constraints**:
-- `1 <= n, m <= 10^5`
-- Time: O(n + m)
-- Memory: O(n + m)
+- `1 <= n <= 10^6`, values up to `10^9`
+- Time: O(n log n)
+- Memory: O(n)
 
 **Test inputs**:
 | Input | Expected output |
 |
 
-Full spec: [`Week 17/challenges.md`](Week 17/challenges.md)
+Full spec: [`Week 18/challenges.md`](Week 18/challenges.md)
 
 ---
 
