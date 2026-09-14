@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Sep 2026 14:39:27 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 14 Sep 2026 15:32:15 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W38</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: Graph Coloring in Compilers
+Pattern drill (Week 19, #9): Distractor: Given arbitrary coin denominations and a target sum, find the minimum number of coins. (Same as 8?)
+Challenge 3 (Week 19): Huffman Coding Build + Encode + Decode</description>
+      <pubDate>Mon, 14 Sep 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W38</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W37</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>

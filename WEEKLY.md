@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-09-07 (ISO 2026-W37)
+# Weekly Digest — 2026-09-14 (ISO 2026-W38)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**PageRank as a Graph Algorithm**
+**Graph Coloring in Compilers**
 
-Imagine you've just built the first web crawler, and you have a corpus of millions of pages. A user types "computer science"; thousands of pages match. Which do you show first? The pre-Google search engines (AltaVista, Lycos, Excite) ranked by keyword frequency, page length, and other content-only features. The result was a mess of keyword-stuffed garbage. Sergey Brin and Larry Page's 1998 insight: **use the link structure of the web itself as a quality signal**. If many pages link to a page, it's probably important. If important pages link to it, it's even more important.
+A CPU has a small fixed number of registers (16 general-purpose on x86-64, 31 on ARM64). A program, after the compiler's optimization passes, has hundreds or thousands of "virtual" variables that all want to live in registers because RAM access is 100x slower. The compiler's job: assign each virtual variable to a physical register, while ensuring that two variables which need to hold distinct values at the same time aren't given the same register. When you run out of registers, "spill" some variables to the stack — accepting the slowdown.
 
-Read it in full: [`case_studies/real_world/14_pagerank_eigenvectors.md`](case_studies/real_world/14_pagerank_eigenvectors.md)
+Read it in full: [`case_studies/real_world/15_compiler_register_allocation.md`](case_studies/real_world/15_compiler_register_allocation.md)
 
 ## Pattern drill
-_From Week 18 (drill #8)._
+_From Week 19 (drill #9)._
 
-> Given a string of length n ≤ 500, find the length of the longest palindromic subsequence (not necessarily contiguous).
+> Distractor: Given arbitrary coin denominations and a target sum, find the minimum number of coins. (Same as 8?)
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 18/patterns.md`](Week 18/patterns.md)
+Drill source: [`Week 19/patterns.md`](Week 19/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 2 (Week 18): Longest Increasing Subsequence in O(n log n)
+### Challenge 3 (Week 19): Huffman Coding Build + Encode + Decode
 
 **Spec**:
-Read `n` and `n` integers. Print the length of the longest strictly increasing subsequence. Required complexity O(n log n) using patience sorting (maintain `tails[k]` = smallest tail of any increasing subsequence of length `k+1`; binary-search to update). The O(n^2) classic DP is forbidden.
+Read a string. Build a Huffman tree (greedy via min-heap), compute the canonical prefix-free code for each character, encode the string to a bit string, then decode it back. Print the encoded bit string length, the codebook, and verify decoded string equals the original.
 
 **Constraints**:
-- `1 <= n <= 10^6`, values up to `10^9`
-- Time: O(n log n)
-- Memory: O(n)
+- String length up to `10^6`, alphabet up to 256 symbols
+- Time: O(L + sigma log sigma)
+- Memory: O(sigma + L)
 
 **Test inputs**:
-| Input | Expected output |
+| Input | Expected behavior |
 |
 
-Full spec: [`Week 18/challenges.md`](Week 18/challenges.md)
+Full spec: [`Week 19/challenges.md`](Week 19/challenges.md)
 
 ---
 
