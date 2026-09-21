@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 14 Sep 2026 15:32:15 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 21 Sep 2026 15:32:31 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W39</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: real\_world
+Pattern drill (Week 20, #10): Distractor: Given n ≤ 1000 items with weights and a knapsack capacity, find the maximum value subset. (Backtracking?)
+Challenge 5 (Week 20): Generate All Valid Parentheses Combinations</description>
+      <pubDate>Mon, 21 Sep 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W39</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W38</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
