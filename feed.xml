@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 28 Sep 2026 17:13:47 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 05 Oct 2026 17:39:51 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W41</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: How &quot;Discover Weekly&quot; is a Graph + Matrix Factorization Problem
+Pattern drill (Week 22, #2): Given a directed graph that may contain negative edge weights (no negative cycles), find shortest distances from `s`. n ≤ 500.
+Challenge 2 (Week 22): Negative-Weight Cycle Detection (Bellman–Ford)</description>
+      <pubDate>Mon, 05 Oct 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W41</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W40</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
