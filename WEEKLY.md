@@ -1,39 +1,39 @@
-# Weekly Digest — 2026-10-12 (ISO 2026-W42)
+# Weekly Digest — 2026-10-19 (ISO 2026-W43)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Why Your CDN Uses Consistent Hashing (and What Happens Without It)**
+**Caching Strategies in DNS Resolvers**
 
-A content delivery network has a fleet of edge servers around the world — let's say 10,000 of them — and a catalog of cacheable objects (images, JS bundles, video chunks): billions of them. When a request comes in for object `cat.jpg`, you need to pick *which* edge server caches it. The same object should land on the same cache every time (so cache hits work). When you add or remove edge servers (which happens constantly — autoscaling, failures, rolling deploys), the mapping can't change for *most* objects, or you'd invalidate the entire cache and the origin servers would melt under the traffic spike.
+Every time you type a URL, your machine needs to translate the domain name (`github.com`) into an IP address. The authoritative source of that mapping is a DNS server somewhere in the world — possibly multiple hops away. If every page load required a fresh DNS lookup, the internet would feel like the 1990s again. Resolvers cache aggressively. But DNS records are sometimes wrong, sometimes change, and operators *need* changes to propagate within bounded time — so the cache can't be eternal.
 
-Read it in full: [`case_studies/real_world/03_cdn_consistent_hashing.md`](case_studies/real_world/03_cdn_consistent_hashing.md)
+Read it in full: [`case_studies/real_world/04_dns_caching.md`](case_studies/real_world/04_dns_caching.md)
 
 ## Pattern drill
-_From Week 23 (drill #3)._
+_From Week 24 (drill #4)._
 
-> Count the integers in `[L, R]` (up to 10^18) whose decimal digit sum is divisible by 7.
+> Given n ≤ 10^4 jobs each with weight `w_i` and value `v_i` and a knapsack capacity 10^9, maximize value subject to capacity. Distractor flavor.
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 23/patterns.md`](Week 23/patterns.md)
+Drill source: [`Week 24/patterns.md`](Week 24/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 3 (Week 23): SOS DP — Sum Over Subsets
+### Challenge 4 (Week 24): Subset Sum FPTAS (Fully Polynomial-Time Approximation)
 
 **Spec**:
-Read `n` and `2^n` values `f(S)` indexed by subset `S` of `[0..n-1]`. Compute `g(S) = sum over T subset of S of f(T)`. Required: O(n * 2^n) using the SOS DP recurrence (iterate over each bit; for each subset that includes the bit, add the value at the subset with that bit removed).
+Read `n`, target `T`, integers `a_1..a_n`, and accuracy parameter `ε > 0`. Output a sum `S <= T` such that `S >= (1 - ε) * OPT`, where OPT is the best achievable sum `<= T`. Implementation: maintain a list of reachable sums; after each insertion, "trim" the list so consecutive entries differ by factor `>= 1 + ε/(2n)`. Polynomial in `n` and `1/ε`.
 
 **Constraints**:
-- `1 <= n <= 20`
-- Time: O(n * 2^n)
-- Memory: O(2^n)
+- `1 <= n <= 100`, values up to `10^9`, `ε` in `(0, 1)`
+- Time: O(n^2 / ε)
+- Memory: O(n / ε)
 
 **Test inputs**:
-| Input | Expected output |
+| Input | Expected behavior |
 |
 
-Full spec: [`Week 23/challenges.md`](Week 23/challenges.md)
+Full spec: [`Week 24/challenges.md`](Week 24/challenges.md)
 
 ---
 
