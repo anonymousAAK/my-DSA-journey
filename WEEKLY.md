@@ -1,39 +1,44 @@
-# Weekly Digest — 2026-10-19 (ISO 2026-W43)
+# Weekly Digest — 2026-10-26 (ISO 2026-W44)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**Caching Strategies in DNS Resolvers**
+**How Priority Queues Power a Real-Time Feed**
 
-Every time you type a URL, your machine needs to translate the domain name (`github.com`) into an IP address. The authoritative source of that mapping is a DNS server somewhere in the world — possibly multiple hops away. If every page load required a fresh DNS lookup, the internet would feel like the 1990s again. Resolvers cache aggressively. But DNS records are sometimes wrong, sometimes change, and operators *need* changes to propagate within bounded time — so the cache can't be eternal.
+When you open Twitter (or any timeline-based social app — Mastodon, Bluesky, Instagram), you see a stream of posts ordered by some notion of "what's most relevant or recent." For a single user that's a manageable computation. For *every* user, where each follows hundreds or thousands of others, where new posts arrive at ~thousands per second globally — naively recomputing each feed on each page load is impossible.
 
-Read it in full: [`case_studies/real_world/04_dns_caching.md`](case_studies/real_world/04_dns_caching.md)
+Read it in full: [`case_studies/real_world/05_twitter_feed_heap.md`](case_studies/real_world/05_twitter_feed_heap.md)
 
 ## Pattern drill
-_From Week 24 (drill #4)._
+_From Week 25 (drill #5)._
 
-> Given n ≤ 10^4 jobs each with weight `w_i` and value `v_i` and a knapsack capacity 10^9, maximize value subject to capacity. Distractor flavor.
+> Given two strings of equal length n, decide whether one is a rotation of the other in O(n).
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 24/patterns.md`](Week 24/patterns.md)
+Drill source: [`Week 25/patterns.md`](Week 25/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 4 (Week 24): Subset Sum FPTAS (Fully Polynomial-Time Approximation)
+### Challenge 5 (Week 25): Palindromic Tree (Eertree)
 
 **Spec**:
-Read `n`, target `T`, integers `a_1..a_n`, and accuracy parameter `ε > 0`. Output a sum `S <= T` such that `S >= (1 - ε) * OPT`, where OPT is the best achievable sum `<= T`. Implementation: maintain a list of reachable sums; after each insertion, "trim" the list so consecutive entries differ by factor `>= 1 + ε/(2n)`. Polynomial in `n` and `1/ε`.
+Build the palindromic tree for string `s` and output:
+- The number of distinct palindromic substrings of `s`.
+- The longest palindromic substring.
+- For each position `i`, the number of palindromes ending at `i`.
+
+Eertree construction: each node represents a distinct palindrome; suffix links point to the longest proper palindromic suffix.
 
 **Constraints**:
-- `1 <= n <= 100`, values up to `10^9`, `ε` in `(0, 1)`
-- Time: O(n^2 / ε)
-- Memory: O(n / ε)
+- `1 <= |s| <= 10^6`
+- Time: O(n * alphabet) or O(n log alphabet)
+- Memory: O(n)
 
 **Test inputs**:
-| Input | Expected behavior |
+| Input | Distinct palindromic substrings | Longest |
 |
 
-Full spec: [`Week 24/challenges.md`](Week 24/challenges.md)
+Full spec: [`Week 25/challenges.md`](Week 25/challenges.md)
 
 ---
 

@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 19 Oct 2026 16:04:23 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 26 Oct 2026 15:41:16 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W44</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: How Priority Queues Power a Real-Time Feed
+Pattern drill (Week 25, #5): Given two strings of equal length n, decide whether one is a rotation of the other in O(n).
+Challenge 5 (Week 25): Palindromic Tree (Eertree)</description>
+      <pubDate>Mon, 26 Oct 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W44</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W43</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
