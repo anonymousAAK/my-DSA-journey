@@ -1,44 +1,39 @@
-# Weekly Digest — 2026-10-26 (ISO 2026-W44)
+# Weekly Digest — 2026-11-02 (ISO 2026-W45)
 
 One case study, one pattern drill, one challenge. Rotated weekly. Read these in any order; the goal is one bite-sized prompt per week to keep recognition warm even when you can't sit down for a full session.
 
 ## Case study
-**How Priority Queues Power a Real-Time Feed**
+**Git's Commit Graph as a DAG, Why Topological Sort Matters**
 
-When you open Twitter (or any timeline-based social app — Mastodon, Bluesky, Instagram), you see a stream of posts ordered by some notion of "what's most relevant or recent." For a single user that's a manageable computation. For *every* user, where each follows hundreds or thousands of others, where new posts arrive at ~thousands per second globally — naively recomputing each feed on each page load is impossible.
+Git tracks the history of a codebase. Every commit references its parent commit(s), forming a graph. That graph is a **directed acyclic graph** — directed (commits point to their parents, time flows one way), and acyclic (you can't be your own ancestor). Almost every interesting Git operation is a graph-algorithm query on this DAG: "Is commit A an ancestor of commit B?" "What's the most recent common ancestor of these two branches?" "List all commits between these two tags in a sensible order."
 
-Read it in full: [`case_studies/real_world/05_twitter_feed_heap.md`](case_studies/real_world/05_twitter_feed_heap.md)
+Read it in full: [`case_studies/real_world/06_git_dag.md`](case_studies/real_world/06_git_dag.md)
 
 ## Pattern drill
-_From Week 25 (drill #5)._
+_From Week 26 (drill #6)._
 
-> Given two strings of equal length n, decide whether one is a rotation of the other in O(n).
+> Distractor: Given a DAG, find the longest path. (Network flow?)
 
 Name the pattern in one word and justify in one sentence. Do **not** look at the answer key until you've written your guess down.
 
-Drill source: [`Week 25/patterns.md`](Week 25/patterns.md)
+Drill source: [`Week 26/patterns.md`](Week 26/patterns.md)
 
 ## Hard-mode challenge
-### Challenge 5 (Week 25): Palindromic Tree (Eertree)
+### Challenge 1 (Week 26): Max-Flow via Dinic's Algorithm
 
 **Spec**:
-Build the palindromic tree for string `s` and output:
-- The number of distinct palindromic substrings of `s`.
-- The longest palindromic substring.
-- For each position `i`, the number of palindromes ending at `i`.
-
-Eertree construction: each node represents a distinct palindrome; suffix links point to the longest proper palindromic suffix.
+Read `n`, `m`, `s`, `t`, and `m` directed edges `(u, v, capacity)`. Compute and print the maximum flow from `s` to `t`. Required: Dinic's algorithm — BFS for level graph, then DFS with blocking flows + current-arc optimization. Don't use Edmonds–Karp (BFS-augment-only); that's O(V E^2) and the canonical implementation.
 
 **Constraints**:
-- `1 <= |s| <= 10^6`
-- Time: O(n * alphabet) or O(n log alphabet)
-- Memory: O(n)
+- `1 <= n <= 1000`, `1 <= m <= 10^5`, capacities up to `10^9`
+- Time: O(V^2 E), much faster in practice
+- Memory: O(V + E)
 
 **Test inputs**:
-| Input | Distinct palindromic substrings | Longest |
+| Input | Expected output |
 |
 
-Full spec: [`Week 25/challenges.md`](Week 25/challenges.md)
+Full spec: [`Week 26/challenges.md`](Week 26/challenges.md)
 
 ---
 
