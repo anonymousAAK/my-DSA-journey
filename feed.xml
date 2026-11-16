@@ -5,7 +5,16 @@
     <link>https://github.com/anonymousAAK/my-DSA-journey</link>
     <description>Weekly rotation of one real-world case study, one pattern drill, and one hard-mode challenge from the 30-week DSA Journey.</description>
     <language>en-us</language>
-    <lastBuildDate>Mon, 09 Nov 2026 19:23:32 +0000</lastBuildDate>
+    <lastBuildDate>Mon, 16 Nov 2026 19:07:40 +0000</lastBuildDate>
+    <item>
+      <title>Weekly Digest 2026-W47</title>
+      <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
+      <description>Case study: LRU vs LFU vs ARC in Redis
+Pattern drill (Week 28, #8): Two players alternate moves on a 6×7 connect-four board. Compute the perfect-play outcome from the empty board.
+Challenge 3 (Week 28): Sprague–Grundy on a Custom Nim Variant</description>
+      <pubDate>Mon, 16 Nov 2026 09:00:00 +0000</pubDate>
+      <guid isPermaLink="false">weekly-2026-W47</guid>
+    </item>
     <item>
       <title>Weekly Digest 2026-W46</title>
       <link>https://github.com/anonymousAAK/my-DSA-journey/blob/main/WEEKLY.md</link>
